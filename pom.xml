@@ -12,7 +12,7 @@
 	<groupId>life.qbic</groupId>
 	<version>0.1.0-SNAPSHOT</version> <!-- <<QUBE_FORCE_BUMP>> -->
 	<name>Sample Tracking Status Overview</name>
-	<url>http://github.com/qbicsoftware/Sample_Tracking_Status_Overview</url>
+	<url>http://github.com/qbicsoftware/sample-tracking-status-overview</url>
 	<description>Gives a visual overview of sample statuses</description>
 	<packaging>pom</packaging>
 	<!-- we only need to tell maven where to find our parent pom and other QBiC dependencies -->
