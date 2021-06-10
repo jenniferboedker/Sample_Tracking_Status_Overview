@@ -32,7 +32,7 @@ public abstract class QBiCPortletUI extends UI {
     static final String INFO_LABEL_CLASS = "portlet-footer";
     static final String INFO_LABEL_ID = "qbic-portlet-info-label";
     static final String DEFAULT_REPO = "http://github.com/qbicsoftware";
-    static final String DEFAULT_VERSION = "0.0.1-alpha";
+    static final String DEFAULT_VERSION = "0.1.0-SNAPSHOT";
 
 
     private static final Logger LOG = LogManager.getLogger(QBiCPortletUI.class);
