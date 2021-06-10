@@ -15,7 +15,7 @@ import life.qbic.portal.sampletracking.components.StyledNotification
 /**
  * Entry point for the application. This class derives from {@link life.qbic.portal.portlet.QBiCPortletUI}.
  *
- * @since: 1.0.0
+ * @since: 0.1.0
  * @author: Jennifer Bödker
  * @see <a href=https://github.com/qbicsoftware/portal-utils-lib>portal-utils-lib</a>
  */
