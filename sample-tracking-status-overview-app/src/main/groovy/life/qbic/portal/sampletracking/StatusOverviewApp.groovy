@@ -10,6 +10,8 @@ import com.vaadin.ui.VerticalLayout
 import groovy.transform.CompileStatic
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.components.StyledNotification
+import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
+import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 
 
 /**
@@ -43,7 +45,8 @@ class StatusOverviewApp extends QBiCPortletUI {
         log.info "Generating content for class {}", StatusOverviewApp.getCanonicalName()
         try {
             //todo add the app layout here
-            layout = new HorizontalLayout() //this.dependencyManager.getPortletView()
+            ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel()
+            layout = new ProjectOverviewView(viewModel) //this.dependencyManager.getPortletView()
         } catch (Exception e) {
             log.error("Failed generating content for class {}", StatusOverviewApp.getCanonicalName())
             log.error(e)

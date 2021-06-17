@@ -1,4 +1,4 @@
-package life.qbic.business
+package life.qbic.business.test
 /**
  * <h1><short description></h1>
  *
