@@ -1,6 +1,5 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
-import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.shared.data.sort.SortDirection
@@ -11,10 +10,9 @@ import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.DateRenderer
-import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.themes.ValoTheme
 import life.qbic.business.projectoverview.Project
-import life.qbic.datamodel.dtos.business.services.Product
+import life.qbic.portal.sampletracking.components.GridUtils
 
 /**
  * <h1>This class generates the layout for the ProductOverview use case</h1>
@@ -75,7 +73,7 @@ class ProjectOverviewView extends VerticalLayout{
         //specify size of grid and layout
         projectGrid.setWidthFull()
         //todo introduce variable for description column width
-        descriptionColumn.setWidth(400)
+        descriptionColumn.setWidth(GridUtils.DESCRIPTION_COLUMN_LIMIT)
         projectGrid.setHeightMode(HeightMode.ROW)
         projectGrid.sort("LastUpdate", SortDirection.ASCENDING)
     }
