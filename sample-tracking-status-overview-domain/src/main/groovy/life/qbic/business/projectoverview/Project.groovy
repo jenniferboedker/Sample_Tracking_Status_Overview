@@ -16,7 +16,7 @@ class Project {
     final String projectDescription
     final List<Sample> samples
     float progress
-    int failedSamples
+    FailedSamplesRatio failedSamples
     Date lastUpdate
 
     static class Builder {
@@ -24,7 +24,7 @@ class Project {
         private final String projectDescription
         private final List<Sample> samples
         private float progress = 0
-        private int failedSamples = 0
+        private FailedSamplesRatio failedSamples
         private Date lastUpdate = new Date()
 
         Builder(String projectCode, String projectDescription, List<Sample> samples) {
@@ -32,6 +32,8 @@ class Project {
             this.projectCode = projectCode
             this.projectDescription = projectDescription
             this.samples = samples
+
+            failedSamples = new FailedSamplesRatio(0,samples.size())
         }
 
         Builder progress(float value) {
@@ -41,7 +43,7 @@ class Project {
         }
 
         Builder failedSamples(int value) {
-            failedSamples = value
+            failedSamples = new FailedSamplesRatio(value,samples.size())
             return this
         }
 

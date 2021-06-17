@@ -27,9 +27,9 @@ class ProjectOverviewViewModel {
         sample.setCode("Q1234AC")
         sample.setCurrentLocation(location)
 
-        Project project1 = new Project.Builder("Q1234","This is a test project",[]).progress(0).build()
-        Project project2 = new Project.Builder("Q1244","This is a test project 2",[]).progress(1).build()
-        Project project3 = new Project.Builder("Q1233","This is a test project 3",[]).progress(0.9).failedSamples(1).build()
+        Project project1 = new Project.Builder("Q1234","This is a test project",[sample]).progress(0).build()
+        Project project2 = new Project.Builder("Q1244","This is a test project 2",[sample]).progress(1).build()
+        Project project3 = new Project.Builder("Q1233","This is a test project 3",[sample]).progress(0.9).failedSamples(1).build()
 
         projects.addAll(project1,project2,project3)
     }

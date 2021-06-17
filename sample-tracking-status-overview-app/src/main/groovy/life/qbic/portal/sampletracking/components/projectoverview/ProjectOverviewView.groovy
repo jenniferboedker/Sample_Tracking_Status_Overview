@@ -10,7 +10,9 @@ import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.DateRenderer
+import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
+import life.qbic.business.projectoverview.FailedSamplesRatio
 import life.qbic.business.projectoverview.Project
 import life.qbic.portal.sampletracking.components.GridUtils
 
@@ -62,8 +64,9 @@ class ProjectOverviewView extends VerticalLayout{
         Grid.Column<Project,String> descriptionColumn = projectGrid.addColumn({ it.projectDescription })
                 .setCaption("Description").setId("Description")
         //todo add progressbar here
-        Grid.Column<Project,Integer> failedSamplesColumn = projectGrid.addColumn({ it.failedSamples })
+        Grid.Column<Project, FailedSamplesRatio> failedSamplesColumn = projectGrid.addColumn({ it.failedSamples })
                 .setCaption("Failed Samples").setId("FailedSamples")
+        //failedSamplesColumn.setRenderer(failedSamples -> failedSamples, new TextRenderer())
         Grid.Column<Project,Date> dateColumn = projectGrid.addColumn({ it.lastUpdate })
                 .setCaption("Last Update").setId("LastUpdate")
         dateColumn.setRenderer(date -> date, new DateRenderer('%1$tY-%1$tm-%1$td'))
