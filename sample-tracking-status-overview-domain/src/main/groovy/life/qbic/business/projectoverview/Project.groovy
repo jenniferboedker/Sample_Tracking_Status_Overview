@@ -16,7 +16,7 @@ class Project {
     final String projectCode
     final String projectDescription
     final List<Sample> samples
-    float projectProgress
+    double projectProgress
     FailedSamplesRatio failedSamples
     Date lastUpdate
 
@@ -24,7 +24,7 @@ class Project {
         private final String projectCode
         private final String projectDescription
         private final List<Sample> samples
-        private float progress = 0
+        private double progress = 0
         private FailedSamplesRatio failedSamples
         private Date lastUpdate = new Date()
 
@@ -37,7 +37,7 @@ class Project {
             failedSamples = new FailedSamplesRatio(0,samples.size())
         }
 
-        Builder progress(float value) {
+        Builder progress(double value) {
             //todo check that values are between 1-10
             progress = value
             return this
