@@ -61,8 +61,6 @@ class ProjectOverviewView extends VerticalLayout{
     private void fillGrid(){
         projectGrid.addColumn({ it.projectCode })
                 .setCaption("Project Code").setId("ProjectCode")
-        Grid.Column<Project,String> descriptionColumn = projectGrid.addColumn({ it.projectDescription })
-                .setCaption("Description").setId("Description")
         //todo add progressbar here
         Grid.Column<Project, FailedSamplesRatio> failedSamplesColumn = projectGrid.addColumn({ it.failedSamples })
                 .setCaption("Failed Samples").setId("FailedSamples")
@@ -70,6 +68,8 @@ class ProjectOverviewView extends VerticalLayout{
         Grid.Column<Project,Date> lastUpdatedColumn = projectGrid.addColumn({ it.lastUpdate })
                 .setCaption("Last Update").setId("LastUpdate")
         lastUpdatedColumn.setRenderer(date -> date, new DateRenderer('%1$tY-%1$tm-%1$td'))
+        Grid.Column<Project,String> descriptionColumn = projectGrid.addColumn({ it.projectDescription })
+                .setCaption("Description").setId("Description").setDescriptionGenerator({it.projectDescription})
 
         setupDataProvider()
 
