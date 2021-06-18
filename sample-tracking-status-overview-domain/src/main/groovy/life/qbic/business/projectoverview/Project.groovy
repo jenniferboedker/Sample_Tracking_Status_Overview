@@ -3,9 +3,10 @@ package life.qbic.business.projectoverview
 import life.qbic.datamodel.samples.Sample
 
 /**
- * <h1><short description></h1>
+ * <h1>A QBiC project</h1>
  *
- * <p><detailed description></p>
+ * <p>A project contains a unique project code, a description and the samples registered for this project.
+ * Furthermore, a projects progress can be determined form the {@link FailedSamplesRatio}.</p>
  *
  * @since 1.0.0
  *
@@ -15,7 +16,7 @@ class Project {
     final String projectCode
     final String projectDescription
     final List<Sample> samples
-    float progress
+    float projectProgress
     FailedSamplesRatio failedSamples
     Date lastUpdate
 
@@ -56,7 +57,7 @@ class Project {
         projectCode = builder.projectCode
         projectDescription = builder.projectDescription
         samples = builder.samples
-        progress = builder.progress
+        projectProgress = builder.progress
         failedSamples = builder.failedSamples
         lastUpdate = builder.lastUpdate
     }

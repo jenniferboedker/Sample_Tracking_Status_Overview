@@ -67,9 +67,9 @@ class ProjectOverviewView extends VerticalLayout{
         Grid.Column<Project, FailedSamplesRatio> failedSamplesColumn = projectGrid.addColumn({ it.failedSamples })
                 .setCaption("Failed Samples").setId("FailedSamples")
         //failedSamplesColumn.setRenderer(failedSamples -> failedSamples, new TextRenderer())
-        Grid.Column<Project,Date> dateColumn = projectGrid.addColumn({ it.lastUpdate })
+        Grid.Column<Project,Date> lastUpdatedColumn = projectGrid.addColumn({ it.lastUpdate })
                 .setCaption("Last Update").setId("LastUpdate")
-        dateColumn.setRenderer(date -> date, new DateRenderer('%1$tY-%1$tm-%1$td'))
+        lastUpdatedColumn.setRenderer(date -> date, new DateRenderer('%1$tY-%1$tm-%1$td'))
 
         setupDataProvider()
 
