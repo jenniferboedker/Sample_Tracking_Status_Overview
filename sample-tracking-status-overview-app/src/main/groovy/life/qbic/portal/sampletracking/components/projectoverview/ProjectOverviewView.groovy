@@ -8,12 +8,9 @@ import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
 import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.Label
-import com.vaadin.ui.ProgressBar
 import com.vaadin.ui.VerticalLayout
-import com.vaadin.ui.renderers.ComponentRenderer
 import com.vaadin.ui.renderers.DateRenderer
 import com.vaadin.ui.renderers.ProgressBarRenderer
-import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
 import life.qbic.business.projectoverview.FailedSamplesRatio
 import life.qbic.business.projectoverview.Project
