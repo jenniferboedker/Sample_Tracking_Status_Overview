@@ -10,7 +10,7 @@ import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.DateRenderer
-import com.vaadin.ui.renderers.TextRenderer
+import com.vaadin.ui.renderers.ProgressBarRenderer
 import com.vaadin.ui.themes.ValoTheme
 import life.qbic.business.projectoverview.FailedSamplesRatio
 import life.qbic.business.projectoverview.Project
@@ -61,7 +61,7 @@ class ProjectOverviewView extends VerticalLayout{
     private void fillGrid(){
         projectGrid.addColumn({ it.projectCode })
                 .setCaption("Project Code").setId("ProjectCode")
-        //todo add progressbar here
+        projectGrid.addColumn({it.projectProgress}).setRenderer(progress -> progress, new ProgressBarRenderer())
         Grid.Column<Project, FailedSamplesRatio> failedSamplesColumn = projectGrid.addColumn({ it.failedSamples })
                 .setCaption("Failed Samples").setId("FailedSamples")
         //failedSamplesColumn.setRenderer(failedSamples -> failedSamples, new TextRenderer())
