@@ -4,11 +4,7 @@ import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.shared.data.sort.SortDirection
 import com.vaadin.shared.ui.grid.HeightMode
-import com.vaadin.ui.Button
-import com.vaadin.ui.Grid
-import com.vaadin.ui.HorizontalLayout
-import com.vaadin.ui.Label
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.*
 import com.vaadin.ui.renderers.DateRenderer
 import com.vaadin.ui.renderers.ProgressBarRenderer
 import com.vaadin.ui.themes.ValoTheme
