@@ -18,7 +18,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectOvervie
  *
  * @since: 0.1.0
  * @author: Jennifer Bödker
- * @see <a href=https://github.com/qbicsoftware/portal-utils-lib>portal-utils-lib</a>
+ * @see @link <a href=https://github.com/qbicsoftware/portal-utils-lib>portal-utils-lib</a>
  */
 @Theme("mytheme")
 @SuppressWarnings("serial")
