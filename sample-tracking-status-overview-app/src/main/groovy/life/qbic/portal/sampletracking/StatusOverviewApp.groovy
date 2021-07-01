@@ -27,11 +27,13 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectOvervie
 @CompileStatic
 class StatusOverviewApp extends QBiCPortletUI {
 
+    private DependencyManager dependencyManager
+
     StatusOverviewApp() {
         super()
         // The constructor MUST NOT fail since the user does not get any feedback otherwise.
         try {
-        //todo create the app here
+            dependencyManager = new DependencyManager()
         } catch (Exception e) {
             log.error("Could not initialize {}", StatusOverviewApp.getCanonicalName(), e)
         } catch (Error error) {
