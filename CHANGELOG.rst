@@ -10,6 +10,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Github workflow that checks that the changelog has been updated
 * Created the project using cookietemple
 
 **Fixed**

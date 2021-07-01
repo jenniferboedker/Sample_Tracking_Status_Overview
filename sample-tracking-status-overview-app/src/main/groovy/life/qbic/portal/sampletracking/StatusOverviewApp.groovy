@@ -3,7 +3,6 @@ package life.qbic.portal.sampletracking
 import com.vaadin.annotations.Theme
 import com.vaadin.server.Page
 import com.vaadin.server.VaadinRequest
-import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.Layout
 import com.vaadin.ui.Notification
 import com.vaadin.ui.VerticalLayout
