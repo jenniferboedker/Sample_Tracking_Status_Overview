@@ -6,7 +6,7 @@ import life.qbic.portal.sampletracking.communication.Message
 /**
  * <p>A message that communicates changes in a resource of type T</p>
  *
- * @param < T >  the data type stored in the resource
+ * @param <T>  the data type stored in the resource
  * @since 1.0.0
  */
 abstract class ResourceMessage<T> extends Message {

@@ -9,7 +9,7 @@ import life.qbic.portal.sampletracking.communication.Channel
  * <p>This service acts as a channel where publishers can publish changes to data
  * and subscribers are notified of changes. The data that is published is stored in the service.</p>
  *
- * @param < V >  the type of data to be communicated using this service
+ * @param <V>  the type of data to be communicated using this service
  * @since 1.0.0
  */
 abstract class ResourceService<V> extends Channel<ResourceMessage<V>> {
