@@ -46,9 +46,7 @@ class StatusOverviewApp extends QBiCPortletUI {
         def layout
         log.info "Generating content for class {}", StatusOverviewApp.getCanonicalName()
         try {
-            //todo add the app layout here
-            ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel()
-            layout = new ProjectOverviewView(viewModel) //this.dependencyManager.getPortletView()
+            layout = dependencyManager.getPortletView()
         } catch (Exception e) {
             log.error("Failed generating content for class {}", StatusOverviewApp.getCanonicalName())
             log.error(e)
