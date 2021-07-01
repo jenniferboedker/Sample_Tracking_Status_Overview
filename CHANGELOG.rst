@@ -10,11 +10,12 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Provides a ``life.qbic.portal.sampletracking.system.Utils`` class, that provides the current logged in user
 * Github workflow that checks that the changelog has been updated
 * Created the project using cookietemple
 
 **Fixed**
 
-**Dependencies**
+**Dependencies*
 
 **Deprecated**
