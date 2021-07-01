@@ -1,4 +1,9 @@
 package life.qbic.portal.sampletracking
+
+import com.vaadin.ui.VerticalLayout
+import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
+import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
+
 /**
  * <h1>Class that manages all the dependency injections and class instance creations</h1>
  *
@@ -10,4 +15,14 @@ package life.qbic.portal.sampletracking
  *
 */
 class DependencyManager {
+    VerticalLayout portletView
+
+    DependencyManager() {
+        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel()
+        portletView = new ProjectOverviewView(viewModel)
+    }
+
+    VerticalLayout getPortletView() {
+        return portletView
+    }
 }
