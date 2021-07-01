@@ -10,7 +10,7 @@ import life.qbic.portal.utils.user.UserRelated
  *
  * @since 1.0.0
  */
-class Utils {
+class SystemContext {
 
     /**
      * <p>Provides user information, if the application runs in an portal environment</p>
