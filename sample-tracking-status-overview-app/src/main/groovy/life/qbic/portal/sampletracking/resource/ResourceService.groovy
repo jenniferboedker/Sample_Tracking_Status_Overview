@@ -110,38 +110,4 @@ abstract class ResourceService<T> {
     Iterator<? extends T> iterator() {
         return new ArrayList<>(this.content).iterator()
     }
-
-    /**
-     * Clears the content of the resource service
-     *
-     * @since 1.0.0
-     */
-    void clear() {
-        // we have to copy otherwise there is a concurrent modification exception
-        List<? extends T> copy = new ArrayList<>(content)
-        for (def item in copy) {
-            removeFromResource(item)
-        }
-    }
-
-    /**
-     * Adds all items to the resource
-     * @param items
-     */
-    protected void addAll(List<? extends T> items) {
-        for (def item in items) {
-            addToResource(item)
-        }
-    }
-
-    /**
-     * This method clears the content of the resource service and populates it with a new set of data.
-     *
-     * @see #clear
-     * @since 1.0.0
-     */
-    void setItems(List<? extends T> items) {
-        clear()
-        addAll(items)
-    }
 }
