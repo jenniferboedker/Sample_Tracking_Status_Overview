@@ -5,17 +5,17 @@ import life.qbic.portal.sampletracking.communication.Subscriber
 import life.qbic.portal.sampletracking.communication.Topic
 
 /**
- * <b>A service that holds a resource of type DATA and communicates changes to its content</b>
+ * <b>A service that holds a resource of type T and communicates changes to its content</b>
  *
  * <p>This service acts as a channel where publishers can publish changes to data
  * and subscribers are notified of changes. The data that is published is stored in the service.</p>
  *
- * @param <DATA>  the type of data to be communicated using this service
+ * @param <T>  the type of data to be communicated using this service
  * @since 1.0.0
  */
-abstract class ResourceService<DATA> {
-    protected final List<? extends DATA> content
-    protected final Map<Topic, Channel<DATA>> channels
+abstract class ResourceService<T> {
+    protected final List<? extends T> content
+    protected final Map<Topic, Channel<T>> channels
 
     /**
      * Creates a resource service with an empty content.
@@ -32,11 +32,11 @@ abstract class ResourceService<DATA> {
      * @param subscriber The subscriber to register for update events
      * @param topic the topic to subscribe to
      */
-    void subscribe(Subscriber<DATA> subscriber, Topic topic) {
+    void subscribe(Subscriber<T> subscriber, Topic topic) {
         if( channels.containsKey(topic)) {
             channels.get(topic).subscribe(subscriber)
         } else {
-            Channel<DATA> topicChannel = new Channel<DATA>()
+            Channel<T> topicChannel = new Channel<T>()
             channels.put(topic, topicChannel)
             topicChannel.subscribe(subscriber)
         }
@@ -57,7 +57,7 @@ abstract class ResourceService<DATA> {
      * @param data the data to be published
      * @param topic the topic to publish to
      */
-    protected void publish(DATA data, Topic topic) {
+    protected void publish(T data, Topic topic) {
         channels.get(topic)?.publish(data)
     }
 
@@ -67,7 +67,7 @@ abstract class ResourceService<DATA> {
      * @param resourceItem the resource item to add
      * @since 1.0.0
      */
-    abstract void addToResource(DATA resourceItem)
+    abstract void addToResource(T resourceItem)
 
     /**
      * Removes a resource item from the resource of the service.
@@ -75,7 +75,7 @@ abstract class ResourceService<DATA> {
      * @param resourceItem the resource item to remove
      * @since 1.0.0
      */
-    abstract void removeFromResource(DATA resourceItem)
+    abstract void removeFromResource(T resourceItem)
 
     /**
      * Returns an iterator that provides access to all resource items of the service.
@@ -83,7 +83,7 @@ abstract class ResourceService<DATA> {
      * @return An iterator over the content of the resource
      * @since 1.0.0
      */
-    Iterator<? extends DATA> iterator() {
+    Iterator<? extends T> iterator() {
         return new ArrayList<>(this.content).iterator()
     }
 
@@ -94,7 +94,7 @@ abstract class ResourceService<DATA> {
      */
     void clear() {
         // we have to copy otherwise there is a concurrent modification exception
-        List<? extends DATA> toRemove = new ArrayList<>(content)
+        List<? extends T> toRemove = new ArrayList<>(content)
         toRemove.forEach { removeFromResource(it) }
     }
 
@@ -104,7 +104,7 @@ abstract class ResourceService<DATA> {
      * @see #clear
      * @since 1.0.0
      */
-    void items(List<? extends DATA> items) {
+    void items(List<? extends T> items) {
         clear()
         for (def item in items) {
             addToResource(item)

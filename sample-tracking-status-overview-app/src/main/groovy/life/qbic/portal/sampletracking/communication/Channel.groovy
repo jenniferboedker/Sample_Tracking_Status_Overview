@@ -2,12 +2,12 @@ package life.qbic.portal.sampletracking.communication
 /**
  * A channel used to publish to that informs subscribers about publications
  *
- * @param <DATA> the type of data that can be moved over the channel
+ * @param <T> the type of data that can be moved over the channel
  * @since 1.0.0
  */
-class Channel<DATA> {
+class Channel<T> {
 
-    protected final Collection<Subscriber<DATA>> subscribers
+    protected final Collection<Subscriber<T>> subscribers
 
     Channel() {
         this.subscribers = new LinkedList<>()
@@ -18,7 +18,7 @@ class Channel<DATA> {
      *
      * @param subscriber The subscriber to register for update events
      */
-    void subscribe(Subscriber<DATA> subscriber) {
+    void subscribe(Subscriber<T> subscriber) {
         subscribers.add(subscriber)
     }
 
@@ -27,7 +27,7 @@ class Channel<DATA> {
      *
      * @param subscription The subscription to remove
      */
-    void unsubscribe(Subscriber<DATA> subscriber) {
+    void unsubscribe(Subscriber<T> subscriber) {
         subscribers.remove(subscriber)
     }
 
@@ -37,8 +37,8 @@ class Channel<DATA> {
      * @param message the message to be sent
      * @since 1.0.0
      */
-    void publish(DATA message) {
-        for (Subscriber<DATA> subscriber : subscribers) {
+    void publish(T message) {
+        for (Subscriber<T> subscriber : subscribers) {
             subscriber.receive(message)
         }
     }
