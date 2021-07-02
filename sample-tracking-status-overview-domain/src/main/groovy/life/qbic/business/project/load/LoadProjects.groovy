@@ -7,7 +7,7 @@ package life.qbic.business.project.load
  * @since 1.0.0
  */
 class LoadProjects implements LoadProjectsInput{
-    private final LoadProjectsInfoDataSource dataSource
+    private final LoadProjectsDataSource dataSource
     private final LoadProjectsOutput output
 
     /**
@@ -16,7 +16,7 @@ class LoadProjects implements LoadProjectsInput{
      * @param output the output to where results are published
      * @since 1.0.0
      */
-    LoadProjects(LoadProjectsInfoDataSource dataSource, LoadProjectsOutput output) {
+    LoadProjects(LoadProjectsDataSource dataSource, LoadProjectsOutput output) {
         this.dataSource = dataSource
         this.output = output
     }

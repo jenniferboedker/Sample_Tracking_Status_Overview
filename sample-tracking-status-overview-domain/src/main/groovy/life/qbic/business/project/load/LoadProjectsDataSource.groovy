@@ -9,7 +9,7 @@ import life.qbic.datamodel.dtos.projectmanagement.ProjectIdentifier
  *
  * @since 1.0.0
  */
-interface LoadProjectsIdDataSource {
+interface LoadProjectsDataSource {
 
     //TODO implement
     // suggestion:
