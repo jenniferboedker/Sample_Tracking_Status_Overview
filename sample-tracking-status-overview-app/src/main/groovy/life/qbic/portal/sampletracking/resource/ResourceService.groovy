@@ -80,7 +80,10 @@ abstract class ResourceService<T> {
 
     /**
      * Adds a resource item to a resource of the service.
-     *
+     * This method is expected to publish the changed item in an appropriate channel
+     * <p> Assuming you have one general topic for all messages, then you would publish to the matching channel</p>
+     * <p> Assuming you have a dedicated topic for adding items, then you would publish to the matching channel.</p>
+     * <p><b>After execution, the resource item must be contained in the resource content.</b></p>
      * @param resourceItem the resource item to add
      * @since 1.0.0
      */
@@ -88,6 +91,10 @@ abstract class ResourceService<T> {
 
     /**
      * Removes a resource item from the resource of the service.
+     * This method is expected to publish the changed item in an appropriate channel
+     * <p> Assuming you have one general topic for all messages, then you would publish to the matching channel</p>
+     * <p> Assuming you have a dedicated topic for removing items, then you would publish to the matching channel.</p>
+     * <p><b>After execution, the resource item must not be contained in the resource content.</b></p>
      *
      * @param resourceItem the resource item to remove
      * @since 1.0.0
