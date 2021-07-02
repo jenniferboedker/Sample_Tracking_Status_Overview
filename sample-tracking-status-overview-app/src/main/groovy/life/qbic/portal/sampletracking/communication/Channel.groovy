@@ -1,11 +1,11 @@
 package life.qbic.portal.sampletracking.communication
 /**
- * A channel used to publish to a chosen topic and informs subscribers about publications
+ * A channel used to publish to that informs subscribers about publications
  *
- * @param <T>  the type of message this channel accepts
+ * @param <T> the type of data that can be moved over the channel
  * @since 1.0.0
  */
-abstract class Channel<T extends Message> {
+class Channel<T> {
 
     protected final Collection<Subscriber<T>> subscribers
 
@@ -14,8 +14,7 @@ abstract class Channel<T extends Message> {
     }
 
     /**
-     * Subscribes to service update events. Update events are emitted by the service when new
-     * resource items are added, removed or the resource has refreshed.
+     * Subscribes to service update events.
      *
      * @param subscriber The subscriber to register for update events
      */
@@ -38,8 +37,8 @@ abstract class Channel<T extends Message> {
      * @param message the message to be sent
      * @since 1.0.0
      */
-    protected void publish(T message) {
-        for (Subscriber subscriber : subscribers) {
+    void publish(T message) {
+        for (Subscriber<T> subscriber : subscribers) {
             subscriber.receive(message)
         }
     }

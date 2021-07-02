@@ -5,7 +5,7 @@ import life.qbic.datamodel.dtos.projectmanagement.ProjectCode
 import life.qbic.datamodel.dtos.projectmanagement.ProjectIdentifier
 import life.qbic.datamodel.dtos.projectmanagement.ProjectSpace
 import life.qbic.portal.sampletracking.communication.Subscriber
-import life.qbic.portal.sampletracking.resource.ResourceMessage
+import life.qbic.portal.sampletracking.communication.Topic
 import spock.lang.Specification
 
 /**
@@ -14,41 +14,38 @@ import spock.lang.Specification
 class ProjectResourceServiceSpec extends Specification {
 
     ProjectResourceService projectResourceService = new ProjectResourceService()
-    Subscriber<ResourceMessage<Project>> subscriber1 = Mock()
-    Subscriber<ResourceMessage<Project>> subscriber2 = Mock()
+    Subscriber<Project> subscriber1 = Mock()
+    Subscriber<Project> subscriber2 = Mock()
 
-    def "Clear on the service informs all subscribers"() {
-        when: "the service resources are cleared"
-        projectResourceService.addToResource(getFakeProject("project1"))
-        projectResourceService.addToResource(getFakeProject("project2"))
-        projectResourceService.subscribe(subscriber1)
-        projectResourceService.subscribe(subscriber2)
-        projectResourceService.clear()
-        then: "all subscribers subscribed to the service are informed"
-        2 * subscriber1.receive(_ as ProjectRemovedMessage)
-        2 * subscriber2.receive(_ as ProjectRemovedMessage)
+    def "Removing of a project on the service informs all subscribers"() {
+        given: "a service with projects"
+        Project project = getFakeProject("project1")
+        projectResourceService.addToResource(project)
+
+        when: "the the project is removed from the resource"
+        projectResourceService.subscribe(subscriber1, Topic.PROJECT_REMOVED)
+        projectResourceService.subscribe(subscriber2, Topic.PROJECT_ADDED)
+        projectResourceService.removeFromResource(project)
+
+        then: "all subscribers subscribed to the topic are informed"
+        1 * subscriber1.receive(project)
+        and: "no subscribers subscribed to other topics are informed"
+        0 * subscriber2.receive(_)
     }
 
-    def "Items adds all items and removes all old items and informs all subscribers"() {
-        given: "a service that has content and subscribers"
-        projectResourceService.addToResource(getFakeProject("project1"))
-        projectResourceService.addToResource(getFakeProject("project2"))
-        projectResourceService.subscribe(subscriber1)
-        projectResourceService.subscribe(subscriber2)
+    def "Adding of a project on the service informs all subscribers"() {
+        given: "a service"
+        Project project = getFakeProject("project1")
 
-        when: "the service resources are repopulated"
-        def newProjects = [getFakeProject("project3")]
-        projectResourceService.items(newProjects)
+        when: "the the project is removed from the resource"
+        projectResourceService.subscribe(subscriber1, Topic.PROJECT_ADDED)
+        projectResourceService.subscribe(subscriber2, Topic.PROJECT_REMOVED)
+        projectResourceService.addToResource(project)
 
-        then: "all subscribers subscribed to the service are informed"
-        def contentAfterManipulation = projectResourceService.iterator().toList()
-        2 * subscriber1.receive(_ as ProjectRemovedMessage)
-        1 * subscriber1.receive(_ as ProjectAddedMessage)
-        2 * subscriber2.receive(_ as ProjectRemovedMessage)
-        1 * subscriber2.receive(_ as ProjectAddedMessage)
-        and: "the service only holds the last project"
-        contentAfterManipulation.size() == newProjects.size()
-        projectResourceService.iterator().collect().containsAll(newProjects)
+        then: "all subscribers subscribed to the topic are informed"
+        1 * subscriber1.receive(project)
+        and: "no subscribers subscribed to other topics are informed"
+        0 * subscriber2.receive(_)
     }
 
     static Project getFakeProject(String name) {
