@@ -13,9 +13,9 @@ import life.qbic.datamodel.dtos.projectmanagement.ProjectIdentifier
 import life.qbic.datamodel.dtos.projectmanagement.ProjectSpace
 
 /**
- * <class short description - 1 Line!>
+ * <b>OpenBIS connection provider</b>
  *
- * <More detailed description - When to use, what it solves, etc.>
+ * <p>Serves as a simple gateway to interact with the data management system openBIS.</p>
  *
  * @since 1.0.0
  */
@@ -32,6 +32,9 @@ class OpenBisConnector implements LoadProjectsDataSource{
         this.sessionToken = api.loginAs(credentials.user, credentials.password, portalUser.authProviderId)
     }
 
+    /**
+     * @inheritDocs
+     */
     @Override
     List<Project> fetchUserProjects(String userId) {
         ProjectFetchOptions fetchOptions = new ProjectFetchOptions()
