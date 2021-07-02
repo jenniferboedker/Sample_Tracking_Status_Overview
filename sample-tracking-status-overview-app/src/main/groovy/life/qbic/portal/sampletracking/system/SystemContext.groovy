@@ -31,13 +31,14 @@ class SystemContext {
         if (!user) {
             return Optional.empty()
         }
-        PortalUser portalUser = createUserFromLiferay(user)
+        PortalUser portalUser = createUserFromLiferay(user, userId)
         return Optional.of(portalUser)
     }
 
-    private static PortalUser createUserFromLiferay(User user) {
+    private static PortalUser createUserFromLiferay(User user, String authId) {
         return new PortalUser.Builder(
                 user.emailAddress,
+                authId,
                 user.firstName,
                 user.lastName,
                 user.emailAddress
