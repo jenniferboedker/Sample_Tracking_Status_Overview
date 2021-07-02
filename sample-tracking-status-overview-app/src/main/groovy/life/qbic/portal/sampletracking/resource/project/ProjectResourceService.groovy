@@ -13,8 +13,8 @@ import life.qbic.portal.sampletracking.resource.ResourceService
 class ProjectResourceService extends ResourceService<Project> {
 
     ProjectResourceService() {
-        channels.put(Topic.PROJECT_ADDED, new Channel())
-        channels.put(Topic.PROJECT_REMOVED, new Channel())
+        addTopic(Topic.PROJECT_ADDED)
+        addTopic(Topic.PROJECT_REMOVED)
     }
 
     /**
