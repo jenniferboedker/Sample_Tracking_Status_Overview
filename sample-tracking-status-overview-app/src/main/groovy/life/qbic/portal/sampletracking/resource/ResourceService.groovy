@@ -59,7 +59,11 @@ abstract class ResourceService<T> {
      * @param topic the topic to publish to
      */
     protected void publish(T data, Topic topic) {
-        channels.get(topic)?.publish(data)
+        if (channels.containsKey(topic)) {
+            channels.get(topic).publish(data)
+        } else {
+            throw new IllegalArgumentException("Topic $topic cannot be published to.")
+        }
     }
 
     /**
