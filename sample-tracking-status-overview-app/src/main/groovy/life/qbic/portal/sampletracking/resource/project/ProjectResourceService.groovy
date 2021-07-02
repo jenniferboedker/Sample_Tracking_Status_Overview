@@ -10,8 +10,6 @@ import life.qbic.portal.sampletracking.resource.ResourceService
  */
 class ProjectResourceService extends ResourceService<Project> {
 
-    //TODO write db interface
-
     @Override
     <RESOURCE extends Project> void addToResource(RESOURCE resourceItem) {
         content.add(resourceItem)
