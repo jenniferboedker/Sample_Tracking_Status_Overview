@@ -36,9 +36,7 @@ abstract class ResourceService<T> {
         if( channels.containsKey(topic)) {
             channels.get(topic).subscribe(subscriber)
         } else {
-            Channel<T> topicChannel = new Channel<T>()
-            channels.put(topic, topicChannel)
-            topicChannel.subscribe(subscriber)
+            throw new IllegalArgumentException("Topic $topic cannot be subscribed to.")
         }
     }
 
@@ -59,6 +57,14 @@ abstract class ResourceService<T> {
      */
     protected void publish(T data, Topic topic) {
         channels.get(topic)?.publish(data)
+    }
+
+    /**
+     * Adds a new topic to the possible topics
+     * @param topic the topic to be added
+     */
+    protected void addTopic(Topic topic) {
+        channels.put(topic, new Channel<T>())
     }
 
     /**
