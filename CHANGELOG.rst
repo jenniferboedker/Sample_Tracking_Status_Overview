@@ -10,6 +10,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Provide the authentication provider id with the user information
 * Provides a ``life.qbic.portal.sampletracking.system.Utils`` class, that provides the current logged in user (`#21 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/21>`_)
 * Github workflow that checks that the changelog has been updated
 * Created the project using cookietemple
