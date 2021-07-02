@@ -35,7 +35,7 @@ abstract class ResourceService<T> {
      * @since 1.0.0
      */
     void subscribe(Subscriber<T> subscriber, Topic topic) {
-        if( channels.containsKey(topic)) {
+        if (channels.containsKey(topic)) {
             channels.get(topic).subscribe(subscriber)
         } else {
             throw new IllegalArgumentException("Topic $topic cannot be subscribed to.")
@@ -50,7 +50,11 @@ abstract class ResourceService<T> {
      * @since 1.0.0
      */
     void unsubscribe(Subscriber subscriber, Topic topic) {
-        channels.get(topic)?.unsubscribe(subscriber)
+        if (channels.containsKey(topic)) {
+            channels.get(topic).unsubscribe(subscriber)
+        } else {
+            throw new IllegalArgumentException("Topic $topic cannot be unsubscribed from.")
+        }
     }
 
     /**
