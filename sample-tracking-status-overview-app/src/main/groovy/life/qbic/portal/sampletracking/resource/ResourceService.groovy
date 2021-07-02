@@ -19,6 +19,7 @@ abstract class ResourceService<T> {
 
     /**
      * Creates a resource service with an empty content.
+     * @since 1.0.0
      */
     ResourceService() {
         this.content = new ArrayList<>() //generics inferred from field
@@ -31,6 +32,7 @@ abstract class ResourceService<T> {
      *
      * @param subscriber The subscriber to register for update events
      * @param topic the topic to subscribe to
+     * @since 1.0.0
      */
     void subscribe(Subscriber<T> subscriber, Topic topic) {
         if( channels.containsKey(topic)) {
@@ -45,6 +47,7 @@ abstract class ResourceService<T> {
      *
      * @param subscription The subscription to remove
      * @param topic the topic to unsubscribe from
+     * @since 1.0.0
      */
     void unsubscribe(Subscriber subscriber, Topic topic) {
         channels.get(topic)?.unsubscribe(subscriber)

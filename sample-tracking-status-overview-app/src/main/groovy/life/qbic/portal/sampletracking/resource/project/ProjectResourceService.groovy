@@ -1,7 +1,6 @@
 package life.qbic.portal.sampletracking.resource.project
 
 import life.qbic.datamodel.dtos.projectmanagement.Project
-import life.qbic.portal.sampletracking.communication.Channel
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
 
