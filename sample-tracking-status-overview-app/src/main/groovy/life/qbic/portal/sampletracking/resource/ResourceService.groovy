@@ -118,8 +118,20 @@ abstract class ResourceService<T> {
      */
     void clear() {
         // we have to copy otherwise there is a concurrent modification exception
-        List<? extends T> toRemove = new ArrayList<>(content)
-        toRemove.forEach { removeFromResource(it) }
+        List<? extends T> copy = new ArrayList<>(content)
+        for (def item in copy) {
+            removeFromResource(item)
+        }
+    }
+
+    /**
+     * Adds all items to the resource
+     * @param items
+     */
+    protected void addAll(List<? extends T> items) {
+        for (def item in items) {
+            addToResource(item)
+        }
     }
 
     /**
@@ -128,10 +140,8 @@ abstract class ResourceService<T> {
      * @see #clear
      * @since 1.0.0
      */
-    void items(List<? extends T> items) {
+    void setItems(List<? extends T> items) {
         clear()
-        for (def item in items) {
-            addToResource(item)
-        }
+        addAll(items)
     }
 }
