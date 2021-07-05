@@ -24,6 +24,7 @@ class ProjectResourceService extends ResourceService<Project> {
      */
     @Override
     void addToResource(Project resourceItem) {
+        content.add(resourceItem)
         publish(resourceItem, Topic.PROJECT_ADDED)
     }
 
@@ -35,6 +36,7 @@ class ProjectResourceService extends ResourceService<Project> {
      */
     @Override
     void removeFromResource(Project resourceItem) {
+        content.remove(resourceItem)
         publish(resourceItem, Topic.PROJECT_REMOVED)
     }
 }
