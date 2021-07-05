@@ -1,6 +1,7 @@
 package life.qbic.portal.sampletracking
 
 import com.vaadin.ui.VerticalLayout
+import life.qbic.business.project.load.LoadProjectsDataSource
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
@@ -25,19 +26,17 @@ class DependencyManager {
     ConfigurationManager configurationManager
     PortalUser portalUser
 
+    LoadProjectsDataSource loadProjectsDataSource
+
     DependencyManager(PortalUser user) {
         portalUser = user
         // Load the app environment configuration
         configurationManager = ConfigurationManagerFactory.getInstance()
-        Credentials openBisCredentials = new Credentials(
-                user: configurationManager.getDataSourceUser(),
-                password: configurationManager.getDataSourcePassword()
-        )
-        // fixme: Just for demonstration purposes
-        demonstrateProjectLoading(openBisCredentials)
 
         ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel()
         portletView = new ProjectOverviewView(viewModel)
+
+        setupDatabaseConnections()
     }
 
     private demonstrateProjectLoading(Credentials credentials) {
@@ -46,6 +45,14 @@ class DependencyManager {
         for (Project project : projects) {
             println("${project.projectId}:${project.projectTitle}")
         }
+    }
+    private void setupDatabaseConnections() {
+        Credentials openBisCredentials = new Credentials(
+                user: configurationManager.getDataSourceUser(),
+                password: configurationManager.getDataSourcePassword()
+        )
+        OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
+        loadProjectsDataSource = openBisConnector
     }
 
     VerticalLayout getPortletView() {
