@@ -42,7 +42,7 @@ class DependencyManager {
 
     private demonstrateProjectLoading(Credentials credentials) {
         def obisConnector = new OpenBisConnector(credentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
-        List<Project> projects = obisConnector.fetchUserProjects("")
+        List<Project> projects = obisConnector.fetchUserProjects()
         for (Project project : projects) {
             println("${project.projectId}:${project.projectTitle}")
         }

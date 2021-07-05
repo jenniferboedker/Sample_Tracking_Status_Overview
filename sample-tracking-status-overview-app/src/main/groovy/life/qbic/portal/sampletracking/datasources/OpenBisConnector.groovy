@@ -38,7 +38,7 @@ class OpenBisConnector implements LoadProjectsDataSource{
      * @inheritDocs
      */
     @Override
-    List<Project> fetchUserProjects(String userId) {
+    List<Project> fetchUserProjects() {
         ProjectFetchOptions fetchOptions = new ProjectFetchOptions()
         fetchOptions.withSpace()
         SearchResult<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> projects =
