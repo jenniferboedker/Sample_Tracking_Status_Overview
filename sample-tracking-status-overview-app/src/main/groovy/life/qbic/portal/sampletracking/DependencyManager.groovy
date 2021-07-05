@@ -2,6 +2,9 @@ package life.qbic.portal.sampletracking
 
 import com.vaadin.ui.VerticalLayout
 import life.qbic.datamodel.dtos.projectmanagement.Project
+import life.qbic.datamodel.dtos.projectmanagement.ProjectCode
+import life.qbic.datamodel.dtos.projectmanagement.ProjectIdentifier
+import life.qbic.datamodel.dtos.projectmanagement.ProjectSpace
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 import life.qbic.portal.sampletracking.resource.ResourceService
@@ -25,6 +28,9 @@ class DependencyManager {
     DependencyManager() {
         initializeDependencies()
         portletView = setupPortletView()
+
+        //FIXME remove demo material
+        demo()
     }
 
     private void initializeDependencies() {
@@ -54,5 +60,16 @@ class DependencyManager {
     private createProjectOverviewView() {
         ProjectOverviewViewModel projectOverviewViewModel = new ProjectOverviewViewModel(projectResourceService)
         return new ProjectOverviewView(projectOverviewViewModel)
+    }
+
+    //FIXME remove
+    private void demo() {
+        Project project1 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 1"), new ProjectCode("QABCD")), "My Awesome Project1").build()
+        Project project2 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 2"), new ProjectCode("QABCE")), "My Awesome Project2").build()
+        Project project3 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 3"), new ProjectCode("QABCF")), "My Awesome Project3").build()
+
+        projectResourceService.addToResource(project1)
+        projectResourceService.addToResource(project2)
+        projectResourceService.addToResource(project3)
     }
 }

@@ -18,7 +18,6 @@ class ProjectResourceService extends ResourceService<Project> {
     ProjectResourceService() {
         addTopic(Topic.PROJECT_ADDED)
         addTopic(Topic.PROJECT_REMOVED)
-        generateMockData()
     }
 
     /**
@@ -41,16 +40,6 @@ class ProjectResourceService extends ResourceService<Project> {
     @Override
     void removeFromResource(Project resourceItem) {
         publish(resourceItem, Topic.PROJECT_REMOVED)
-    }
-
-    void generateMockData(){
-
-        Project project1 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 1"), new ProjectCode("QABCD")), "My Awesome Project1").build()
-        Project project2 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 2"), new ProjectCode("QABCE")), "My Awesome Project2").build()
-        Project project3 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 3"), new ProjectCode("QABCF")), "My Awesome Project3").build()
-        ArrayList<Project> projectList = new ArrayList<>()
-        projectList.addAll(project1, project2, project3)
-        content.addAll(projectList)
     }
 
 }
