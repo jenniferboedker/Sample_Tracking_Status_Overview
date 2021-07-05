@@ -1,6 +1,6 @@
 package life.qbic.portal.sampletracking.system
 
-import com.vaadin.server.VaadinService
+
 import life.qbic.datamodel.dtos.portal.PortalUser
 
 /**
