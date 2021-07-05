@@ -41,7 +41,7 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.addColumn({ it.projectId.projectCode.code})
                 .setCaption("Project Code").setId("ProjectCode")
         projectGrid.addColumn({ it.projectTitle })
-                .setCaption("Project Title").setId("ProjectTitle").setWidth(GridUtils.DESCRIPTION_COLUMN_LIMIT)
+                .setCaption("Project Title").setId("ProjectTitle").setWidth(GridUtils.TITLE_COLUMN_WIDTH)
         setupDataProvider()
         //specify size of grid and layout
         projectGrid.setWidthFull()
