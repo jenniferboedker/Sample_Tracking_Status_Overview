@@ -46,6 +46,10 @@ class DependencyManager {
         )
         OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
         loadProjectsDataSource = openBisConnector
+        //FIXME remove demo material
+        for (def project: loadProjectsDataSource.fetchUserProjects()) {
+            println(project.projectId)
+        }
     }
 
     VerticalLayout getPortletView() {
