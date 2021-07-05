@@ -1,6 +1,7 @@
 package life.qbic.business.project.load
 
-import life.qbic.datamodel.dtos.projectmanagement.ProjectIdentifier
+import life.qbic.datamodel.dtos.projectmanagement.Project
+
 
 /**
  * <b>Provides project identifiers</b>
@@ -11,13 +12,10 @@ import life.qbic.datamodel.dtos.projectmanagement.ProjectIdentifier
  */
 interface LoadProjectsDataSource {
 
-    //TODO implement
-    // suggestion:
-//    /**
-//     * Loads project identifiers given a user identifier
-//     * @param userId the identifier that can be used to retrieve projects
-//     * @return a list of project identifiers the user has access to
-//     * @since 1.0.0
-//     */
-//    List<ProjectIdentifier> projectIdentifiersForUser(String userId)
+    /**
+     * Loads projects from a user, given a user identifier
+     * @return a list of projects the user has access to
+     * @since 1.0.0
+     */
+    List<Project> fetchUserProjects()
 }
