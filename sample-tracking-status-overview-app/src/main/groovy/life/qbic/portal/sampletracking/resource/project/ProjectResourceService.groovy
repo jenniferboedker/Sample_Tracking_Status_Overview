@@ -1,6 +1,9 @@
 package life.qbic.portal.sampletracking.resource.project
 
 import life.qbic.datamodel.dtos.projectmanagement.Project
+import life.qbic.datamodel.dtos.projectmanagement.ProjectCode
+import life.qbic.datamodel.dtos.projectmanagement.ProjectIdentifier
+import life.qbic.datamodel.dtos.projectmanagement.ProjectSpace
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
 
@@ -10,6 +13,7 @@ import life.qbic.portal.sampletracking.resource.ResourceService
  * @since 1.0.0
  */
 class ProjectResourceService extends ResourceService<Project> {
+
 
     ProjectResourceService() {
         addTopic(Topic.PROJECT_ADDED)
@@ -39,4 +43,5 @@ class ProjectResourceService extends ResourceService<Project> {
         content.remove(resourceItem)
         publish(resourceItem, Topic.PROJECT_REMOVED)
     }
+
 }

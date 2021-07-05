@@ -9,8 +9,6 @@ import com.vaadin.ui.VerticalLayout
 import groovy.transform.CompileStatic
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.components.StyledNotification
-import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
-import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 
 
 /**

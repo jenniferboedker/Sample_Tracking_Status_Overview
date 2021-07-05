@@ -1,8 +1,9 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
-import life.qbic.business.projectoverview.Project
-import life.qbic.datamodel.samples.Location
-import life.qbic.datamodel.samples.Sample
+import life.qbic.datamodel.dtos.projectmanagement.Project
+import life.qbic.portal.sampletracking.communication.Subscriber
+import life.qbic.portal.sampletracking.communication.Topic
+import life.qbic.portal.sampletracking.resource.ResourceService
 
 /**
  * <h1>ViewModel for the {@link ProjectOverviewView}</h1>
@@ -14,23 +15,22 @@ import life.qbic.datamodel.samples.Sample
 */
 class ProjectOverviewViewModel {
 
-    List<Project> projects = []
+    ObservableList projects = new ArrayList<Project>()
+    private final ResourceService<Project> projectResourceService
 
-    ProjectOverviewViewModel(){
-        generateMockData()
+    ProjectOverviewViewModel(ResourceService<Project> projectResourceService){
+        this.projectResourceService = projectResourceService
+        fetchProjectData()
+        subscribeToResources()
     }
 
-    void generateMockData(){
-        Location location = new Location()
+    private void fetchProjectData() {
+        projects.clear()
+        projects.addAll(projectResourceService.iterator())
+    }
 
-        Sample sample = new Sample()
-        sample.setCode("Q1234AC")
-        sample.setCurrentLocation(location)
-
-        Project project1 = new Project.Builder("Q1234","This is a test project",[sample]).progress(0).build()
-        Project project2 = new Project.Builder("Q1244","This is a test project 2",[sample]).progress(1).build()
-        Project project3 = new Project.Builder("Q1233","This is a test project 3",[sample]).progress(0.9).failedSamples(1).build()
-
-        projects.addAll(project1,project2,project3)
+    private void subscribeToResources() {
+        this.projectResourceService.subscribe({ projects.add(it) }, Topic.PROJECT_ADDED)
+        this.projectResourceService.subscribe({ projects.remove(it) }, Topic.PROJECT_REMOVED)
     }
 }

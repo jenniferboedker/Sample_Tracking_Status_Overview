@@ -10,6 +10,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Introduce a grid showing all project codes and titles for a user (`#27 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/27>`_)
+
 * Provide the authentication provider id with the user information
 
 * Add a mechanism for in app communication between components (`#23 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/23>`_)
