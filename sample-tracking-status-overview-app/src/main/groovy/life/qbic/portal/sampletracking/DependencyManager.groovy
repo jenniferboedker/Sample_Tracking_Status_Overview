@@ -33,7 +33,7 @@ class DependencyManager {
                 user: configurationManager.getDataSourceUser(),
                 password: configurationManager.getDataSourcePassword()
         )
-        // Just for demonstration purposes
+        // fixme: Just for demonstration purposes
         demonstrateProjectLoading(openBisCredentials)
 
         ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel()
