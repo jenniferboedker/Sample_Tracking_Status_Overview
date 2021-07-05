@@ -1,14 +1,21 @@
 package life.qbic.portal.sampletracking
 
 import com.vaadin.ui.VerticalLayout
+import life.qbic.business.project.load.LoadProjects
+import life.qbic.business.project.load.LoadProjectsDataSource
+import life.qbic.business.project.load.LoadProjectsInput
+import life.qbic.business.project.load.LoadProjectsOutput
+import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
-import life.qbic.datamodel.dtos.projectmanagement.ProjectCode
-import life.qbic.datamodel.dtos.projectmanagement.ProjectIdentifier
-import life.qbic.datamodel.dtos.projectmanagement.ProjectSpace
+import life.qbic.portal.sampletracking.components.projectoverview.LoadProjectsPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
+import life.qbic.portal.sampletracking.datasources.Credentials
+import life.qbic.portal.sampletracking.datasources.OpenBisConnector
 import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
+import life.qbic.portal.utils.ConfigurationManager
+import life.qbic.portal.utils.ConfigurationManagerFactory
 
 /**
  * <h1>Class that manages all the dependency injections and class instance creations</h1>
@@ -21,19 +28,27 @@ import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
  *
 */
 class DependencyManager {
-    VerticalLayout portletView
+    private VerticalLayout portletView
+    private ConfigurationManager configurationManager
+    private final PortalUser portalUser
 
-    ResourceService<Project> projectResourceService
+    private LoadProjectsDataSource loadProjectsDataSource
+    private ResourceService<Project> projectResourceService
 
-    DependencyManager() {
+    DependencyManager(PortalUser user) {
+        portalUser = user
+        // Load the app environment configuration
+        configurationManager = ConfigurationManagerFactory.getInstance()
+
         initializeDependencies()
-        portletView = setupPortletView()
+        populateProjectService()
 
-        //FIXME remove demo material
-        demo()
+        portletView = setupPortletView()
     }
 
+
     private void initializeDependencies() {
+        setupDatabaseConnections()
         setupServices()
     }
 
@@ -41,6 +56,19 @@ class DependencyManager {
         projectResourceService = new ProjectResourceService()
     }
 
+    private void setupDatabaseConnections() {
+        Credentials openBisCredentials = new Credentials(
+                user: configurationManager.getDataSourceUser(),
+                password: configurationManager.getDataSourcePassword()
+        )
+        OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
+        loadProjectsDataSource = openBisConnector
+    }
+
+    /**
+     * @return the main view of the application
+     * @since 1.0.0
+     */
     VerticalLayout getPortletView() {
         return portletView
     }
@@ -54,22 +82,23 @@ class DependencyManager {
      * Creates a new ProjectOverviewView using
      * <ul>
      *     <li>{@link #projectResourceService}</li>
+     *     <li>{@link #loadProjectsDataSource}</li>
      * </ul>
      * @return a new ProjectOverviewView
      */
-    private createProjectOverviewView() {
-        ProjectOverviewViewModel projectOverviewViewModel = new ProjectOverviewViewModel(projectResourceService)
-        return new ProjectOverviewView(projectOverviewViewModel)
+    private ProjectOverviewView createProjectOverviewView() {
+        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService)
+        ProjectOverviewView view =  new ProjectOverviewView(viewModel)
+        return view
     }
 
-    //FIXME remove
-    private void demo() {
-        Project project1 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 1"), new ProjectCode("QABCD")), "My Awesome Project1").build()
-        Project project2 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 2"), new ProjectCode("QABCE")), "My Awesome Project2").build()
-        Project project3 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 3"), new ProjectCode("QABCF")), "My Awesome Project3").build()
-
-        projectResourceService.addToResource(project1)
-        projectResourceService.addToResource(project2)
-        projectResourceService.addToResource(project3)
+    /**
+     * Triggers the project loading initially to have data in the service
+     */
+    private void populateProjectService() {
+        LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService)
+        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output)
+        loadProjects.loadProjects()
     }
+
 }

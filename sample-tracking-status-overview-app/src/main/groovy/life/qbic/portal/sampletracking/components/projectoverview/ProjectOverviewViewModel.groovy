@@ -1,7 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import life.qbic.datamodel.dtos.projectmanagement.Project
-import life.qbic.portal.sampletracking.communication.Subscriber
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
 
@@ -15,7 +14,7 @@ import life.qbic.portal.sampletracking.resource.ResourceService
 */
 class ProjectOverviewViewModel {
 
-    ObservableList projects = new ArrayList<Project>()
+    ObservableList projects = new ObservableList(new ArrayList<Project>())
     private final ResourceService<Project> projectResourceService
 
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService){

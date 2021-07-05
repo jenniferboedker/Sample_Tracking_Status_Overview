@@ -2,7 +2,9 @@ package life.qbic.portal.sampletracking.components.projectoverview
 
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.shared.ui.grid.HeightMode
-import com.vaadin.ui.*
+import com.vaadin.ui.Grid
+import com.vaadin.ui.Label
+import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.components.GridUtils
