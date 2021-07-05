@@ -22,8 +22,7 @@ class DependencyManager {
 
     DependencyManager() {
         setupServices()
-        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService)
-        portletView = new ProjectOverviewView(viewModel)
+        portletView = setupPortletView()
     }
 
     private void setupServices() {
@@ -32,5 +31,23 @@ class DependencyManager {
 
     VerticalLayout getPortletView() {
         return portletView
+    }
+
+    private VerticalLayout setupPortletView() {
+        ProjectOverviewView projectOverviewView = createProjectOverviewView()
+        return projectOverviewView
+    }
+
+    /**
+     * Creates a new ProjectOverviewView using
+     * <ul>
+     *     <li>{@link #projectResourceService}</li>
+     * </ul>
+     * @return a new ProjectOverviewView
+     */
+    private createProjectOverviewView() {
+        ProjectResourceService projectResourceService = this.projectResourceService
+        ProjectOverviewViewModel projectOverviewViewModel = new ProjectOverviewViewModel(projectResourceService)
+        return new ProjectOverviewView(projectOverviewViewModel)
     }
 }
