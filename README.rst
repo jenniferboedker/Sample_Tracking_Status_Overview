@@ -24,7 +24,7 @@ You can run the application in a ``testing`` mode:
   mvn clean jetty:run -Denvironment=testing -Demail=<email> -Dauth_id=<auth provider id>
 
 You also see, that you need to provide two more properties then, ``email`` and ``auth_id``. The email property is used
-to form you portal-user id, the auth-id is the one that is provided by the authentication provider after successful login into the portal.
+to generate your portal-user id, the auth-id is the one that is provided by the authentication provider after successful login into the portal.
 As wen run in test mode here, you need to simulate it with the properties.
 
 
