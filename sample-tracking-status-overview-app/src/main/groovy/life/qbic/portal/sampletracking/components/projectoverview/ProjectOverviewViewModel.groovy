@@ -1,9 +1,9 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
-import life.qbic.business.projectoverview.Project
+import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.Subscriber
 import life.qbic.portal.sampletracking.communication.Topic
-import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
+import life.qbic.portal.sampletracking.resource.ResourceService
 
 /**
  * <h1>ViewModel for the {@link ProjectOverviewView}</h1>
@@ -16,12 +16,12 @@ import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
 class ProjectOverviewViewModel {
 
     ObservableList projects = new ArrayList<Project>()
-    final ProjectResourceService projectResourceService
+    private final ResourceService<Project> projectResourceService
 
     Subscriber<Project> projectAddedSubscription
     Subscriber<Project> projectRemovedSubscription
 
-    ProjectOverviewViewModel(ProjectResourceService projectResourceService){
+    ProjectOverviewViewModel(ResourceService<Project> projectResourceService){
         this.projectResourceService = projectResourceService
         fetchProjectData()
         subscribeToResources()

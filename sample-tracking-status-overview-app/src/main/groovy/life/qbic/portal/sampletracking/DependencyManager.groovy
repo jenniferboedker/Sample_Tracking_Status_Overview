@@ -1,8 +1,10 @@
 package life.qbic.portal.sampletracking
 
 import com.vaadin.ui.VerticalLayout
+import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
+import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
 
 /**
@@ -18,15 +20,19 @@ import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
 class DependencyManager {
     VerticalLayout portletView
 
-    private ProjectResourceService projectResourceService
+    ResourceService<Project> projectResourceService
 
     DependencyManager() {
-        setupServices()
+        initializeDependencies()
         portletView = setupPortletView()
     }
 
+    private void initializeDependencies() {
+        setupServices()
+    }
+
     private void setupServices() {
-        this.projectResourceService = new ProjectResourceService()
+        projectResourceService = new ProjectResourceService()
     }
 
     VerticalLayout getPortletView() {
@@ -46,7 +52,6 @@ class DependencyManager {
      * @return a new ProjectOverviewView
      */
     private createProjectOverviewView() {
-        ProjectResourceService projectResourceService = this.projectResourceService
         ProjectOverviewViewModel projectOverviewViewModel = new ProjectOverviewViewModel(projectResourceService)
         return new ProjectOverviewView(projectOverviewViewModel)
     }

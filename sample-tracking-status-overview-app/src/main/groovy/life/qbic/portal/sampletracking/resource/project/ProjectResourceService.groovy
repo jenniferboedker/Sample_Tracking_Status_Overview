@@ -14,12 +14,10 @@ import life.qbic.portal.sampletracking.resource.ResourceService
  */
 class ProjectResourceService extends ResourceService<Project> {
 
-    private final List<Project> projects
 
     ProjectResourceService() {
         addTopic(Topic.PROJECT_ADDED)
         addTopic(Topic.PROJECT_REMOVED)
-        this.projects = new ArrayList<Project>()
         generateMockData()
     }
 
@@ -50,11 +48,9 @@ class ProjectResourceService extends ResourceService<Project> {
         Project project1 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 1"), new ProjectCode("QABCD")), "My Awesome Project1").build()
         Project project2 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 2"), new ProjectCode("QABCE")), "My Awesome Project2").build()
         Project project3 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 3"), new ProjectCode("QABCF")), "My Awesome Project3").build()
-        projects.addAll(project1,project2,project3)
+        ArrayList<Project> projectList = new ArrayList<>()
+        projectList.addAll(project1, project2, project3)
+        content.addAll(projectList)
     }
 
-    @Override
-    Iterator<Project> iterator() {
-        return new ArrayList(projects).iterator()
-    }
 }
