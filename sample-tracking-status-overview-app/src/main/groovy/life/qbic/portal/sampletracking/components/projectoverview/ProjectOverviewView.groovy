@@ -1,16 +1,10 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import com.vaadin.data.provider.ListDataProvider
-import com.vaadin.icons.VaadinIcons
-import com.vaadin.shared.data.sort.SortDirection
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
-import com.vaadin.ui.renderers.DateRenderer
-import com.vaadin.ui.renderers.ProgressBarRenderer
 import com.vaadin.ui.themes.ValoTheme
-import life.qbic.business.projectoverview.FailedSamplesRatio
-import life.qbic.business.projectoverview.Project
-import life.qbic.portal.sampletracking.components.GridUtils
+import life.qbic.datamodel.dtos.projectmanagement.Project
 
 /**
  * <h1>This class generates the layout for the ProductOverview use case</h1>
@@ -25,7 +19,6 @@ class ProjectOverviewView extends VerticalLayout{
 
     private Label titleLabel
     private ProjectOverviewViewModel viewModel
-
     private Grid<Project> projectGrid
 
     ProjectOverviewView(ProjectOverviewViewModel viewModel){
@@ -44,7 +37,7 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private void fillGrid(){
-        projectGrid.addColumn({ it.projectCode })
+        projectGrid.addColumn({ it.projectId.projectCode.code})
                 .setCaption("Project Code").setId("ProjectCode")
         projectGrid.addColumn({ it.projectTitle })
                 .setCaption("Project Title").setId("ProjectTitle")
