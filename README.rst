@@ -25,7 +25,7 @@ You can run the application in a ``testing`` mode:
 
 You also see, that you need to provide two more properties then, ``email`` and ``auth_id``. The email property is used
 to generate your portal-user id, the auth-id is the one that is provided by the authentication provider after successful login into the portal.
-As wen run in test mode here, you need to simulate it with the properties.
+As we run in test mode here, you need to simulate it with the properties.
 
 
 Credits
