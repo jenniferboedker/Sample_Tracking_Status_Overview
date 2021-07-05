@@ -18,9 +18,6 @@ class ProjectOverviewViewModel {
     ObservableList projects = new ArrayList<Project>()
     private final ResourceService<Project> projectResourceService
 
-    Subscriber<Project> projectAddedSubscription
-    Subscriber<Project> projectRemovedSubscription
-
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService){
         this.projectResourceService = projectResourceService
         fetchProjectData()
@@ -33,7 +30,7 @@ class ProjectOverviewViewModel {
     }
 
     private void subscribeToResources() {
-        this.projectResourceService.subscribe(projectAddedSubscription, Topic.PROJECT_ADDED)
-        this.projectResourceService.subscribe(projectRemovedSubscription, Topic.PROJECT_REMOVED)
+        this.projectResourceService.subscribe({ projects.add(it) }, Topic.PROJECT_ADDED)
+        this.projectResourceService.subscribe({ projects.remove(it) }, Topic.PROJECT_REMOVED)
     }
 }
