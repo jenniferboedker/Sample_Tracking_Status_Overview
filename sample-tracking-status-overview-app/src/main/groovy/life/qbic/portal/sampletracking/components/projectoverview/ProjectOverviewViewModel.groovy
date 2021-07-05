@@ -14,7 +14,7 @@ import life.qbic.portal.sampletracking.resource.ResourceService
 */
 class ProjectOverviewViewModel {
 
-    ObservableList projects = new ArrayList<Project>()
+    ObservableList projects = new ObservableList(new ArrayList<Project>())
     private final ResourceService<Project> projectResourceService
 
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService){

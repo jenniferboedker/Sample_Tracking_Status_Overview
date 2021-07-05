@@ -1,12 +1,13 @@
 package life.qbic.portal.sampletracking
 
 import com.vaadin.ui.VerticalLayout
+import life.qbic.business.project.load.LoadProjects
 import life.qbic.business.project.load.LoadProjectsDataSource
+import life.qbic.business.project.load.LoadProjectsInput
+import life.qbic.business.project.load.LoadProjectsOutput
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
-import life.qbic.datamodel.dtos.projectmanagement.ProjectCode
-import life.qbic.datamodel.dtos.projectmanagement.ProjectIdentifier
-import life.qbic.datamodel.dtos.projectmanagement.ProjectSpace
+import life.qbic.portal.sampletracking.components.projectoverview.LoadProjectsPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 import life.qbic.portal.sampletracking.datasources.Credentials
@@ -34,25 +35,25 @@ class DependencyManager {
     LoadProjectsDataSource loadProjectsDataSource
     ResourceService<Project> projectResourceService
 
-    private void initializeDependencies() {
-        setupServices()
-        setupDatabaseConnections()
-    }
-
-    private void setupServices() {
-        projectResourceService = new ProjectResourceService()
-    }
-
     DependencyManager(PortalUser user) {
         portalUser = user
         // Load the app environment configuration
         configurationManager = ConfigurationManagerFactory.getInstance()
 
         initializeDependencies()
-        portletView = setupPortletView()
+        populateProjectService()
 
-        //FIXME remove demo material
-        demo()
+        portletView = setupPortletView()
+    }
+
+
+    private void initializeDependencies() {
+        setupDatabaseConnections()
+        setupServices()
+    }
+
+    private void setupServices() {
+        projectResourceService = new ProjectResourceService()
     }
 
     private void setupDatabaseConnections() {
@@ -82,19 +83,18 @@ class DependencyManager {
      * @return a new ProjectOverviewView
      */
     private ProjectOverviewView createProjectOverviewView() {
-        ProjectOverviewViewModel projectOverviewViewModel = new ProjectOverviewViewModel(projectResourceService)
-        return new ProjectOverviewView(projectOverviewViewModel)
+        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService)
+        ProjectOverviewView view =  new ProjectOverviewView(viewModel)
+        return view
     }
 
-    //FIXME remove
-    private void demo() {
-        Project project1 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 1"), new ProjectCode("QABCD")), "My Awesome Project1").build()
-        Project project2 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 2"), new ProjectCode("QABCE")), "My Awesome Project2").build()
-        Project project3 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 3"), new ProjectCode("QABCF")), "My Awesome Project3").build()
-
-        projectResourceService.addToResource(project1)
-        projectResourceService.addToResource(project2)
-        projectResourceService.addToResource(project3)
+    /**
+     * Triggers the project loading initially to have data in the service
+     */
+    void populateProjectService() {
+        LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService)
+        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output)
+        loadProjects.loadProjects()
     }
 
 }
