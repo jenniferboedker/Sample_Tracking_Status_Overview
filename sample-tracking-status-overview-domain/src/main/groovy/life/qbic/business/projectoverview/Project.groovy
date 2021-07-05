@@ -15,7 +15,6 @@ class Project {
 
     final String projectCode
     final String projectDescription
-    final String projectTitle
     final List<Sample> samples
     double projectProgress
     FailedSamplesRatio failedSamples
@@ -24,17 +23,15 @@ class Project {
     static class Builder {
         private final String projectCode
         private final String projectDescription
-        private final String projectTitle
         private final List<Sample> samples
         private double progress = 0
         private FailedSamplesRatio failedSamples
         private Date lastUpdate = new Date()
 
-        Builder(String projectCode, String projectDescription, String projectTitle, List<Sample> samples) {
+        Builder(String projectCode, String projectDescription, List<Sample> samples) {
             //todo verify the projectCode??
             this.projectCode = projectCode
             this.projectDescription = projectDescription
-            this.projectTitle = projectTitle
             this.samples = samples
 
             failedSamples = new FailedSamplesRatio(0,samples.size())
@@ -59,7 +56,6 @@ class Project {
     private Project(Builder builder) {
         projectCode = builder.projectCode
         projectDescription = builder.projectDescription
-        projectTitle = builder.projectTitle
         samples = builder.samples
         projectProgress = builder.progress
         failedSamples = builder.failedSamples

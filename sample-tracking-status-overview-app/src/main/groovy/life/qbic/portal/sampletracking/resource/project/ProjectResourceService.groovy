@@ -4,8 +4,6 @@ import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.datamodel.dtos.projectmanagement.ProjectCode
 import life.qbic.datamodel.dtos.projectmanagement.ProjectIdentifier
 import life.qbic.datamodel.dtos.projectmanagement.ProjectSpace
-import life.qbic.datamodel.samples.Location
-import life.qbic.datamodel.samples.Sample
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
 
@@ -48,11 +46,6 @@ class ProjectResourceService extends ResourceService<Project> {
     }
 
     void generateMockData(){
-        Location location = new Location()
-
-        Sample sample = new Sample()
-        sample.setCode("Q1234AC")
-        sample.setCurrentLocation(location)
 
         Project project1 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 1"), new ProjectCode("QABCD")), "My Awesome Project1").build()
         Project project2 = new Project.Builder(new ProjectIdentifier(new ProjectSpace("My Awesome ProjectSpace 2"), new ProjectCode("QABCE")), "My Awesome Project2").build()
