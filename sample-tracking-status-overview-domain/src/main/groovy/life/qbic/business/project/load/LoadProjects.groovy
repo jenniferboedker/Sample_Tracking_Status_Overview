@@ -21,10 +21,21 @@ class LoadProjects implements LoadProjectsInput{
         this.output = output
     }
 
+    /**
+     * This method calls the output interface with all projects found.
+     * In case of failure the output interface failure method is called.
+     * @since 1.0.0
+     */
     @Override
-    void execute(String identifier) {
-        //TODO get all project codes from openBIS data source
-        //TODO get all project information from database data source
-        //TODO pass result to output
+    void loadProjects() {
+        try {
+            List projects = dataSource.fetchUserProjects()
+            output.loadedProjects(projects)
+        } catch (Exception e) {
+            output.failedExecution(e.getMessage())
+        }
     }
+
+
+
 }

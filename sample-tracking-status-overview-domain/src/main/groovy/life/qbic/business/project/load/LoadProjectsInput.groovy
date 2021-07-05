@@ -12,8 +12,7 @@ interface LoadProjectsInput {
     /**
      * This method calls the output interface with all projects found.
      * In case of failure the output interface failure method is called.
-     * @param identifier the identifier for which projects should be searched
      * @since 1.0.0
      */
-    void execute(String identifier)
+    void loadProjects()
 }
