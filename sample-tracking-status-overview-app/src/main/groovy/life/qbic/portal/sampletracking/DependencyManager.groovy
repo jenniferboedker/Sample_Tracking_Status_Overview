@@ -28,12 +28,12 @@ import life.qbic.portal.utils.ConfigurationManagerFactory
  *
 */
 class DependencyManager {
-    VerticalLayout portletView
-    ConfigurationManager configurationManager
-    PortalUser portalUser
+    private VerticalLayout portletView
+    private ConfigurationManager configurationManager
+    private final PortalUser portalUser
 
-    LoadProjectsDataSource loadProjectsDataSource
-    ResourceService<Project> projectResourceService
+    private LoadProjectsDataSource loadProjectsDataSource
+    private ResourceService<Project> projectResourceService
 
     DependencyManager(PortalUser user) {
         portalUser = user
@@ -65,6 +65,10 @@ class DependencyManager {
         loadProjectsDataSource = openBisConnector
     }
 
+    /**
+     * @return the main view of the application
+     * @since 1.0.0
+     */
     VerticalLayout getPortletView() {
         return portletView
     }
@@ -91,7 +95,7 @@ class DependencyManager {
     /**
      * Triggers the project loading initially to have data in the service
      */
-    void populateProjectService() {
+    private void populateProjectService() {
         LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService)
         LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output)
         loadProjects.loadProjects()
