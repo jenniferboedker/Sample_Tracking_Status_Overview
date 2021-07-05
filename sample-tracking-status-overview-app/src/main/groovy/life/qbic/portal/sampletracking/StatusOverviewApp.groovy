@@ -11,12 +11,8 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Log4j2
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.portal.sampletracking.components.StyledNotification
-import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
-import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 import life.qbic.portal.sampletracking.system.SystemContext
 import life.qbic.portal.sampletracking.system.TestingSystemContext
-
-import javax.swing.text.html.Option
 
 
 /**
