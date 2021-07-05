@@ -14,6 +14,7 @@ import life.qbic.portal.sampletracking.components.StyledNotification
 import life.qbic.portal.sampletracking.system.SystemContext
 import life.qbic.portal.sampletracking.system.TestingSystemContext
 
+
 /**
  * Entry point for the application. This class derives from {@link life.qbic.portal.portlet.QBiCPortletUI}.
  *

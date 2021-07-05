@@ -11,6 +11,7 @@ import life.qbic.portal.sampletracking.resource.ResourceService
  */
 class ProjectResourceService extends ResourceService<Project> {
 
+
     ProjectResourceService() {
         addTopic(Topic.PROJECT_ADDED)
         addTopic(Topic.PROJECT_REMOVED)
@@ -39,4 +40,5 @@ class ProjectResourceService extends ResourceService<Project> {
         content.remove(resourceItem)
         publish(resourceItem, Topic.PROJECT_REMOVED)
     }
+
 }

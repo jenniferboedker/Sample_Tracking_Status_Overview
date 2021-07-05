@@ -1,15 +1,12 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import com.vaadin.data.provider.ListDataProvider
-import com.vaadin.icons.VaadinIcons
-import com.vaadin.shared.data.sort.SortDirection
 import com.vaadin.shared.ui.grid.HeightMode
-import com.vaadin.ui.*
-import com.vaadin.ui.renderers.DateRenderer
-import com.vaadin.ui.renderers.ProgressBarRenderer
+import com.vaadin.ui.Grid
+import com.vaadin.ui.Label
+import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
-import life.qbic.business.projectoverview.FailedSamplesRatio
-import life.qbic.business.projectoverview.Project
+import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.components.GridUtils
 
 /**
@@ -25,10 +22,7 @@ class ProjectOverviewView extends VerticalLayout{
 
     private Label titleLabel
     private ProjectOverviewViewModel viewModel
-
     private Grid<Project> projectGrid
-    private Button detailsButton
-    private Button downloadButton
 
     ProjectOverviewView(ProjectOverviewViewModel viewModel){
         this.viewModel = viewModel
@@ -42,39 +36,19 @@ class ProjectOverviewView extends VerticalLayout{
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         projectGrid = new Grid<>()
 
-        detailsButton = new Button("Show Details",VaadinIcons.INFO_CIRCLE_O)
-        detailsButton.addStyleName(ValoTheme.LABEL_LARGE)
-        detailsButton.enabled = false
-        downloadButton = new Button("Download Batch Data",VaadinIcons.DOWNLOAD)
-        downloadButton.addStyleName(ValoTheme.LABEL_LARGE)
-        downloadButton.enabled = false
-
-        HorizontalLayout buttonLayout = new HorizontalLayout(detailsButton,downloadButton)
-
-        this.addComponents(titleLabel,buttonLayout,projectGrid)
+        this.addComponents(titleLabel, projectGrid)
     }
 
     private void fillGrid(){
-        projectGrid.addColumn({ it.projectCode })
+        projectGrid.addColumn({ it.projectId.projectCode.code})
                 .setCaption("Project Code").setId("ProjectCode")
-        projectGrid.addColumn({it.projectProgress}).setRenderer(progress -> progress, new ProgressBarRenderer())
-        Grid.Column<Project, FailedSamplesRatio> failedSamplesColumn = projectGrid.addColumn({ it.failedSamples })
-                .setCaption("Failed Samples").setId("FailedSamples")
-        //failedSamplesColumn.setRenderer(failedSamples -> failedSamples, new TextRenderer())
-        Grid.Column<Project,Date> lastUpdatedColumn = projectGrid.addColumn({ it.lastUpdate })
-                .setCaption("Last Update").setId("LastUpdate")
-        lastUpdatedColumn.setRenderer(date -> date, new DateRenderer('%1$tY-%1$tm-%1$td'))
-        Grid.Column<Project,String> descriptionColumn = projectGrid.addColumn({ it.projectDescription })
-                .setCaption("Description").setId("Description").setDescriptionGenerator({it.projectDescription})
-
+        projectGrid.addColumn({ it.projectTitle })
+                .setCaption("Project Title").setId("ProjectTitle").setWidth(GridUtils.TITLE_COLUMN_WIDTH)
         setupDataProvider()
-
         //specify size of grid and layout
         projectGrid.setWidthFull()
         //todo introduce variable for description column width
-        descriptionColumn.setWidth(GridUtils.DESCRIPTION_COLUMN_LIMIT)
         projectGrid.setHeightMode(HeightMode.ROW)
-        projectGrid.sort("LastUpdate", SortDirection.ASCENDING)
     }
 
     private void setupDataProvider() {
