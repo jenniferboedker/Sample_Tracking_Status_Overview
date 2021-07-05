@@ -48,6 +48,28 @@ class ProjectResourceServiceSpec extends Specification {
         0 * subscriber2.receive(_)
     }
 
+    def "Adding of a project adds the project to the resource"() {
+        given: "a project"
+        Project project = getFakeProject("I am added")
+        when: "a project is added to the resource service"
+        projectResourceService.addToResource(project)
+        then: "the project is added to the resource"
+        projectResourceService.iterator().toList().contains(project)
+    }
+
+    def "Removing of a project removes the project to the resource"() {
+        given: "a project from the service"
+        Project project = getFakeProject("I am added")
+        projectResourceService.addToResource(project)
+        and: "the adding functionality works"
+        assert projectResourceService.iterator().toList().contains(project)
+        when: "a project is removed from the resource service"
+        projectResourceService.removeFromResource(project)
+        then: "the project is added to the resource"
+        ! projectResourceService.iterator().toList().contains(project)
+    }
+
+
     static Project getFakeProject(String name) {
         ProjectSpace projectSpace = new ProjectSpace("TEST_SPACE")
         ProjectCode projectCode = new ProjectCode("QABCD")
