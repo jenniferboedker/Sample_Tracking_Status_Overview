@@ -18,8 +18,8 @@ class ProjectOverviewViewModel {
     ObservableList projects = new ArrayList<Project>()
     final ProjectResourceService projectResourceService
 
-    Subscriber<life.qbic.datamodel.dtos.projectmanagement.Project> projectAddedSubscription
-    Subscriber<life.qbic.datamodel.dtos.projectmanagement.Project> projectRemovedSubscription
+    Subscriber<Project> projectAddedSubscription
+    Subscriber<Project> projectRemovedSubscription
 
     ProjectOverviewViewModel(ProjectResourceService projectResourceService){
         this.projectResourceService = projectResourceService

@@ -5,6 +5,7 @@ import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 import life.qbic.datamodel.dtos.projectmanagement.Project
+import life.qbic.portal.sampletracking.components.GridUtils
 
 /**
  * <h1>This class generates the layout for the ProductOverview use case</h1>
@@ -40,8 +41,7 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.addColumn({ it.projectId.projectCode.code})
                 .setCaption("Project Code").setId("ProjectCode")
         projectGrid.addColumn({ it.projectTitle })
-                .setCaption("Project Title").setId("ProjectTitle")
-
+                .setCaption("Project Title").setId("ProjectTitle").setWidth(GridUtils.DESCRIPTION_COLUMN_LIMIT)
         setupDataProvider()
         //specify size of grid and layout
         projectGrid.setWidthFull()
