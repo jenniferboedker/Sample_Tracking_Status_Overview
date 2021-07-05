@@ -19,13 +19,14 @@ class LoadProjectsPresenter implements LoadProjectsOutput {
     }
 
     @Override
-    void failedExecution(String reason, String identifier) {
+    void failedExecution(String reason) {
         //TODO implement
     }
 
     @Override
-    void loadedProjects(List<Project> projects, String identifier) {
-        //TODO implement
-        //TODO use the project service
+    void loadedProjects(List<Project> projects) {
+        for (Project project in projects) {
+            projectResourceService.addToResource(project)
+        }
     }
 }
