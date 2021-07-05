@@ -34,7 +34,7 @@ class LoadProjectsSpec extends Specification {
         LoadProjects loadProjects = new LoadProjects(dataSource, output)
         when:"the use case is run"
         loadProjects.loadProjects()
-        then:"a successful message is send"
+        then:"a failure message is send"
         1 * output.failedExecution(_)
         0 * output.loadedProjects(_)
     }
