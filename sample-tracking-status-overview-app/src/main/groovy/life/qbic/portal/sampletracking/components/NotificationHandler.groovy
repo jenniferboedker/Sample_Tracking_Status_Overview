@@ -13,11 +13,11 @@ import life.qbic.portal.sampletracking.communication.notification.NotificationSe
  * @since 1.0.0
  */
 @Log4j2
-class NotificationCenter {
+class NotificationHandler {
 
     private final NotificationService notificationService
 
-    NotificationCenter(NotificationService notificationService) {
+    NotificationHandler(NotificationService notificationService) {
         this.notificationService = notificationService
         subscribeToService()
     }

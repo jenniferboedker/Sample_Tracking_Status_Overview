@@ -10,7 +10,7 @@ import com.vaadin.ui.VerticalLayout
 import groovy.transform.CompileStatic
 import groovy.util.logging.Log4j2
 import life.qbic.datamodel.dtos.portal.PortalUser
-import life.qbic.portal.sampletracking.components.NotificationCenter
+import life.qbic.portal.sampletracking.components.NotificationHandler
 import life.qbic.portal.sampletracking.components.StyledNotification
 import life.qbic.portal.sampletracking.system.SystemContext
 import life.qbic.portal.sampletracking.system.TestingSystemContext
@@ -30,7 +30,7 @@ import life.qbic.portal.sampletracking.system.TestingSystemContext
 class StatusOverviewApp extends QBiCPortletUI {
 
     private DependencyManager dependencyManager
-    private NotificationCenter notificationCenter
+    private NotificationHandler notificationCenter
 
     StatusOverviewApp() {
         super()
