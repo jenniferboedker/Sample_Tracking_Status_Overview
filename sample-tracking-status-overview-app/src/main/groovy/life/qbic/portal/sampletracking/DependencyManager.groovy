@@ -47,9 +47,9 @@ class DependencyManager {
         configurationManager = ConfigurationManagerFactory.getInstance()
 
         initializeDependencies()
-        populateProjectService()
-
         notificationCenter = new NotificationCenter(notificationService)
+
+        populateProjectService()
         portletView = setupPortletView()
     }
 
