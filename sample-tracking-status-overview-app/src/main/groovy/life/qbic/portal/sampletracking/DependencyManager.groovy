@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking
 
+import com.vaadin.ui.Button
 import com.vaadin.ui.VerticalLayout
 import life.qbic.business.project.load.LoadProjects
 import life.qbic.business.project.load.LoadProjectsDataSource
@@ -7,6 +8,9 @@ import life.qbic.business.project.load.LoadProjectsInput
 import life.qbic.business.project.load.LoadProjectsOutput
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
+import life.qbic.portal.sampletracking.communication.notification.MessageBroker
+import life.qbic.portal.sampletracking.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.components.NotificationCenter
 import life.qbic.portal.sampletracking.components.projectoverview.LoadProjectsPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
@@ -31,9 +35,11 @@ class DependencyManager {
     private VerticalLayout portletView
     private ConfigurationManager configurationManager
     private final PortalUser portalUser
+    private final NotificationCenter notificationCenter
 
     private LoadProjectsDataSource loadProjectsDataSource
     private ResourceService<Project> projectResourceService
+    private NotificationService notificationService
 
     DependencyManager(PortalUser user) {
         portalUser = user
@@ -43,6 +49,7 @@ class DependencyManager {
         initializeDependencies()
         populateProjectService()
 
+        notificationCenter = new NotificationCenter(notificationService)
         portletView = setupPortletView()
     }
 
@@ -54,6 +61,7 @@ class DependencyManager {
 
     private void setupServices() {
         projectResourceService = new ProjectResourceService()
+        notificationService = new MessageBroker()
     }
 
     private void setupDatabaseConnections() {
@@ -94,11 +102,19 @@ class DependencyManager {
 
     /**
      * Triggers the project loading initially to have data in the service
+     * This is to be called after the view was initialized
      */
-    private void populateProjectService() {
-        LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService)
+    public void populateProjectService() {
+        LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService, notificationService)
         LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output)
         loadProjects.loadProjects()
     }
 
+    /**
+     * Returns the global notification center
+     * @return a notification center that handles app notifications
+     */
+    NotificationCenter getNotificationCenter() {
+        return notificationCenter
+    }
 }

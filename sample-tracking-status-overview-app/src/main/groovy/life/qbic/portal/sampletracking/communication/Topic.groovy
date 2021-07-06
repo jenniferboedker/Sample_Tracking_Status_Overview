@@ -8,7 +8,10 @@ package life.qbic.portal.sampletracking.communication
 enum Topic {
 
     PROJECT_ADDED("A project was added"),
-    PROJECT_REMOVED("A project was removed")
+    PROJECT_REMOVED("A project was removed"),
+    NOTIFICATION_FAILURE("Failure notification"),
+    NOTIFICATION_SUCCESS("Success notification"),
+    NOTIFICATION_INFO("Information notification")
 
     @Override
     String toString() {

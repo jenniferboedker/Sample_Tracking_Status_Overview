@@ -4,6 +4,7 @@ import com.vaadin.annotations.Theme
 import com.vaadin.server.VaadinRequest
 import com.vaadin.shared.ui.ContentMode
 import com.vaadin.ui.*
+import life.qbic.portal.sampletracking.components.NotificationCenter
 import org.apache.commons.lang3.StringUtils
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
