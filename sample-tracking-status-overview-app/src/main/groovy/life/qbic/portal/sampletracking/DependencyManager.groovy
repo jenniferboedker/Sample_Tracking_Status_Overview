@@ -1,6 +1,7 @@
 package life.qbic.portal.sampletracking
 
-
+import com.vaadin.icons.VaadinIcons
+import com.vaadin.ui.Button
 import com.vaadin.ui.VerticalLayout
 import life.qbic.business.project.load.LoadProjects
 import life.qbic.business.project.load.LoadProjectsDataSource
@@ -83,6 +84,11 @@ class DependencyManager {
 
     private VerticalLayout setupPortletView() {
         ProjectOverviewView projectOverviewView = createProjectOverviewView()
+        /* FIXME remove demo button*/
+        Button button = new Button( "Reload Projects", VaadinIcons.REFRESH)
+        button.addClickListener({populateProjectService()})
+        return new VerticalLayout(button, projectOverviewView)
+        /* end fixme */
         return projectOverviewView
     }
 
