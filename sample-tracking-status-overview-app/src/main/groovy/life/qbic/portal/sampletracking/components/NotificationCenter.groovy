@@ -24,7 +24,11 @@ class NotificationCenter {
 
     private static void showMessage(String message, Type type) {
         Notification notification = new Notification(message, type)
-        notification.show(Page.getCurrent())
+        if (Page.getCurrent()) {
+            notification.show(Page.getCurrent())
+        } else {
+            log.info("No page loaded. Tried to show [$type]: $message")
+        }
     }
 
 
