@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.resource.status
 
+import groovy.transform.EqualsAndHashCode
 import life.qbic.datamodel.samples.Status
 
 /**
@@ -7,6 +8,7 @@ import life.qbic.datamodel.samples.Status
  *
  * @since 1.0.0
  */
+@EqualsAndHashCode(includeFields = true)
 class StatusCount {
 
     final String projectId

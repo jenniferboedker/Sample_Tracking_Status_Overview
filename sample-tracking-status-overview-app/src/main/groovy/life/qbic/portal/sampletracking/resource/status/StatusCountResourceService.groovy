@@ -27,7 +27,6 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
                 // this is an unknown status. nothing is to be done
                 break
         }
-
     }
 
     @Override
