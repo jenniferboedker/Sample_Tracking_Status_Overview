@@ -10,6 +10,7 @@ import com.vaadin.ui.VerticalLayout
 import groovy.transform.CompileStatic
 import groovy.util.logging.Log4j2
 import life.qbic.datamodel.dtos.portal.PortalUser
+import life.qbic.portal.sampletracking.components.NotificationHandler
 import life.qbic.portal.sampletracking.components.StyledNotification
 import life.qbic.portal.sampletracking.system.SystemContext
 import life.qbic.portal.sampletracking.system.TestingSystemContext
@@ -29,6 +30,7 @@ import life.qbic.portal.sampletracking.system.TestingSystemContext
 class StatusOverviewApp extends QBiCPortletUI {
 
     private DependencyManager dependencyManager
+    private NotificationHandler notificationCenter
 
     StatusOverviewApp() {
         super()
@@ -36,12 +38,15 @@ class StatusOverviewApp extends QBiCPortletUI {
         try {
             PortalUser user = loadUser()
             dependencyManager = new DependencyManager(user)
+            notificationCenter = dependencyManager.getNotificationCenter()
         } catch (Exception e) {
             log.error("Could not initialize {}", StatusOverviewApp.getCanonicalName(), e)
         } catch (Error error) {
             log.error("Unexpected runtime error.", error)
         }
     }
+
+
 
     private static PortalUser loadUser() {
         return determinePortalUser().orElseThrow({
