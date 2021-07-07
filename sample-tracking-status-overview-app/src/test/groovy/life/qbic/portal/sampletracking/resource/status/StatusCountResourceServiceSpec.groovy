@@ -19,21 +19,14 @@ class StatusCountResourceServiceSpec extends Specification {
     def "Removing and adding a count for #status informs all subscribers"() {
         given: "a status count"
         StatusCount statusCount = generateRandomStatusCount(status)
-
-        and: "an unrelated topic"
-        Topic unrelatedTopic = Topic.NOTIFICATION_INFO
-
         when: "subscribers subscribed to the service"
         statusCountService.subscribe(subscriber1, topic)
-        statusCountService.subscribe(subscriber2, unrelatedTopic)
         and: "the count is added and removed from the resource"
         statusCountService.addToResource(statusCount)
         statusCountService.removeFromResource(statusCount)
 
         then: "all subscribers subscribed to the topic are informed"
         2 * subscriber1.receive(statusCount)
-        and: "no subscribers subscribed to other topics are informed"
-        0 * subscriber2.receive(_)
 
         where:
         topic | status
