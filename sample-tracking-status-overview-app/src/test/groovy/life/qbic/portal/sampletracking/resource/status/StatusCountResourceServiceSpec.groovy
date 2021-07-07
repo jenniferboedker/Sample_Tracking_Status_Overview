@@ -16,7 +16,7 @@ class StatusCountResourceServiceSpec extends Specification {
     Subscriber<StatusCount> subscriber1 = Mock()
     Subscriber<StatusCount> subscriber2 = Mock()
 
-    def "Removing and adding a count for #status informs all subscribers"() {
+    def "Removing and adding a count for #status informs all subscribers to #topic"() {
         given: "a status count"
         StatusCount statusCount = generateRandomStatusCount(status)
         when: "subscribers subscribed to the service"
