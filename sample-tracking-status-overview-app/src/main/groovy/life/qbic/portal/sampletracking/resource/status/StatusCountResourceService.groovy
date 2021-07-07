@@ -19,6 +19,7 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
 
     @Override
     void addToResource(StatusCount statusCount) {
+        content.add(statusCount)
         switch (statusCount.status) {
             case Status.SAMPLE_RECEIVED:
                 publish(statusCount, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
@@ -31,6 +32,7 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
 
     @Override
     void removeFromResource(StatusCount statusCount) {
+        content.remove(statusCount)
         switch (statusCount.status) {
             case Status.SAMPLE_RECEIVED:
                 publish(statusCount, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
