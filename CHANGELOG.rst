@@ -10,6 +10,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Add resource service for project status counts. (`#34 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/34>`_)
+
 **Fixed**
 
 **Dependencies**
