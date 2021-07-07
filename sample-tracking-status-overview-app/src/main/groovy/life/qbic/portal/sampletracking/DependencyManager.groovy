@@ -84,11 +84,6 @@ class DependencyManager {
 
     private VerticalLayout setupPortletView() {
         ProjectOverviewView projectOverviewView = createProjectOverviewView()
-        /* FIXME remove demo button*/
-        Button button = new Button( "Reload Projects", VaadinIcons.REFRESH)
-        button.addClickListener({populateProjectService()})
-        return new VerticalLayout(button, projectOverviewView)
-        /* end fixme */
         return projectOverviewView
     }
 
