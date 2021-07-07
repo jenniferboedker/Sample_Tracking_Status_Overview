@@ -20,6 +20,4 @@ class StatusCount {
         this.status = Objects.requireNonNull(status, "The sample status must not be null.")
         this.count = Objects.requireNonNull(count, "The count must not be null.")
     }
-
-
 }
