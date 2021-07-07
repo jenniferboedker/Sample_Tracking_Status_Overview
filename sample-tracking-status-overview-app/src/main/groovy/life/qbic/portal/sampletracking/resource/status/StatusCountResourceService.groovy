@@ -17,29 +17,41 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
         this.addTopic(Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>An {@link IllegalArgumentException} is thrown in case the status is unknown to the service</p>
+     * @param statusCount the status count to add
+     * @throws IllegalArgumentException in case the status is unknown to the service
+     */
     @Override
-    void addToResource(StatusCount statusCount) {
+    void addToResource(StatusCount statusCount) throws IllegalArgumentException {
         switch (statusCount.status) {
             case Status.SAMPLE_RECEIVED:
                 publish(statusCount, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
+                content.add(statusCount)
                 break
             default:
-                // this is an unknown status. nothing is to be done
+                throw new IllegalArgumentException("Could not process status count for status: $statusCount.status")
                 break
         }
-        content.add(statusCount)
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>An {@link IllegalArgumentException} is thrown in case the status is unknown to the service</p>
+     * @param statusCount the status count to remove
+     * @throws IllegalArgumentException in case the status is unknown to the service
+     */
     @Override
-    void removeFromResource(StatusCount statusCount) {
+    void removeFromResource(StatusCount statusCount) throws IllegalArgumentException {
         switch (statusCount.status) {
             case Status.SAMPLE_RECEIVED:
                 publish(statusCount, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
+                content.remove(statusCount)
                 break
             default:
-                // this is an unknown status. nothing is to be done
+                throw new IllegalArgumentException("Could not process status count for status: $statusCount.status")
                 break
         }
-        content.remove(statusCount)
     }
 }
