@@ -1,4 +1,7 @@
 package life.qbic.business.project.load
+
+import life.qbic.business.DataSourceException
+
 /**
  * <b>Load projects</b>
  *
@@ -31,8 +34,10 @@ class LoadProjects implements LoadProjectsInput{
         try {
             List projects = dataSource.fetchUserProjects()
             output.loadedProjects(projects)
+        } catch (DataSourceException dataSourceException) {
+            output.failedExecution(dataSourceException.getMessage())
         } catch (Exception e) {
-            output.failedExecution(e.getMessage())
+            output.failedExecution("Could not load projects")
         }
     }
 
