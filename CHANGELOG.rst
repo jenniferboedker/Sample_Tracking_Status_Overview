@@ -5,10 +5,24 @@ Changelog
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
-0.1.0-SNAPSHOT (2021-06-02)
-----------------------------------------------
+0.1.0 (2021-07-07)
+------------------
 
 **Added**
+
+* Introduce user notifications (`#29 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/29>`_)
+
+* Introduce a grid showing all project codes and titles for a user (`#27 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/27>`_)
+
+* Add functionality to load projects for a given user (`#25 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/25>`_)
+
+* Provide the authentication provider id with the user information
+
+* Add a mechanism for in app communication between components (`#23 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/23>`_)
+
+* Provides a ``life.qbic.portal.sampletracking.system.SystemContext`` class, that provides the current logged in user (`#21 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/21>`_)
+
+* Github workflow that checks that the changelog has been updated
 
 * Created the project using cookietemple
 
