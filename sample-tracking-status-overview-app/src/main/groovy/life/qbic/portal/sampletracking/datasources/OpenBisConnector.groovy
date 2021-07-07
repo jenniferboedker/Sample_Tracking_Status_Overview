@@ -6,6 +6,7 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.project.fetchoptions.ProjectFetc
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.project.search.ProjectSearchCriteria
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils
 import groovy.util.logging.Log4j2
+import life.qbic.business.DataSourceException
 import life.qbic.business.project.load.LoadProjectsDataSource
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
@@ -39,22 +40,27 @@ class OpenBisConnector implements LoadProjectsDataSource{
      */
     @Override
     List<Project> fetchUserProjects() {
-        ProjectFetchOptions fetchOptions = new ProjectFetchOptions()
-        fetchOptions.withSpace()
-        SearchResult<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> projects =
-                 api.searchProjects(sessionToken, new ProjectSearchCriteria(), fetchOptions)
         def userProjects = []
-        for (def project : projects.getObjects()) {
-            try {
-                def projectCode = new ProjectCode(project.code)
-                def projectSpace = new ProjectSpace(project.space.code)
-                Project projectOverview = new Project.Builder(new ProjectIdentifier(projectSpace, projectCode),
-                        project.description?:"").build()
-                userProjects << projectOverview
-            } catch (IllegalArgumentException e) {
-                // Mal-formatted project codes or spaces
-                log.error(e.message)
+        try {
+            ProjectFetchOptions fetchOptions = new ProjectFetchOptions()
+            fetchOptions.withSpace()
+            SearchResult<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> projects =
+                    api.searchProjects(sessionToken, new ProjectSearchCriteria(), fetchOptions)
+            for (def project : projects.getObjects()) {
+                try {
+                    def projectCode = new ProjectCode(project.code)
+                    def projectSpace = new ProjectSpace(project.space.code)
+                    Project projectOverview = new Project.Builder(new ProjectIdentifier(projectSpace,
+                            projectCode),
+                            project.description ?: "").build()
+                    userProjects << projectOverview
+                } catch (IllegalArgumentException e) {
+                    // Mal-formatted project codes or spaces
+                    log.error(e.message)
+                }
             }
+        } catch (Exception unexpected) {
+            throw new DataSourceException("Could not load projects.", unexpected)
         }
         return userProjects
     }
