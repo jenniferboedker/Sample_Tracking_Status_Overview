@@ -21,7 +21,7 @@ class CountSamplesSpec extends Specification {
         when:"the use case is run"
         countSamples.countSamples("QABCD")
         then:"a successful message is send"
-        1 * output.countedSamples(_ as int, _ as int)
+        1 * output.countedSamples(_ as Integer, _ as Integer)
         0 * output.failedExecution(_ as String)
     }
 
