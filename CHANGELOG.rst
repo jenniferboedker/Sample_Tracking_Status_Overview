@@ -10,7 +10,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
-* Interface for fetching samples given a project code and sample status
+* Interface for counting samples and received samples given a project code
 
 **Fixed**
 
