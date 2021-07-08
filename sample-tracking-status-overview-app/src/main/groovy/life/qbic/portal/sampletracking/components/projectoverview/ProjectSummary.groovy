@@ -4,19 +4,20 @@ import groovy.transform.EqualsAndHashCode
 import life.qbic.datamodel.dtos.projectmanagement.Project
 
 /**
- * <b>Project Overview DTO</b>
+ * <b>Project Summary POJO</b>
  *
- * <p>A simple java DTO to be used in the project overview grid</p>
+ * <p>A simple java object to be used in the project overview grid.</p>
+ * <p>This class hold information to be shown to the user concerning a specific project.</p>
  *
  * @since 1.0.0
  */
 @EqualsAndHashCode(includeFields = true)
-class ProjectOverview {
+class ProjectSummary {
     String code
     String title
     int samplesReceived
 
-    private ProjectOverview(Builder builder) {
+    private ProjectSummary(Builder builder) {
         this.code = builder.code
         this.title = builder.title
         this.samplesReceived = builder.samplesReceived
@@ -29,8 +30,8 @@ class ProjectOverview {
 
         /**
          * Constructs a builder and sets the code and title.
-         * @param code the project code to be used to build a ProjectOverview
-         * @param title the project title to be used to build a ProjectOverview
+         * @param code the project code to be used to build a ProjectSummary
+         * @param title the project title to be used to build a ProjectSummary
          * @since 1.0.0
          */
         Builder(String code, String title) {
@@ -62,12 +63,12 @@ class ProjectOverview {
         }
 
         /**
-         * Builds a ProjectOverview using this builder
-         * @return a new instance of a ProjectOverview
+         * Builds a ProjectSummary using this builder
+         * @return a new instance of a ProjectSummary
          * @since 1.0.0
          */
-        ProjectOverview build() {
-            return new ProjectOverview(this)
+        ProjectSummary build() {
+            return new ProjectSummary(this)
         }
     }
 }

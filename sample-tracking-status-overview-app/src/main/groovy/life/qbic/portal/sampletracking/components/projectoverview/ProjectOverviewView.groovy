@@ -21,7 +21,7 @@ class ProjectOverviewView extends VerticalLayout{
 
     private Label titleLabel
     private ProjectOverviewViewModel viewModel
-    private Grid<ProjectOverview> projectGrid
+    private Grid<ProjectSummary> projectGrid
 
     ProjectOverviewView(ProjectOverviewViewModel viewModel){
         this.viewModel = viewModel
@@ -43,12 +43,15 @@ class ProjectOverviewView extends VerticalLayout{
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(GridUtils.MAX_CODE_COLUMN_WIDTH)
         projectGrid.addColumn({ it.title })
                 .setCaption("Project Title").setId("ProjectTitle")
+        projectGrid.addColumn({it.samplesReceived})
+                .setCaption("Samples Received").setId("SamplesReceived")
         setupDataProvider()
         //specify size of grid and layout
         projectGrid.setWidthFull()
         projectGrid.getColumn("ProjectTitle")
                 .setMinimumWidth(200)
-                .setExpandRatio(1)
+        projectGrid.getColumn("SamplesReceived")
+                .setMaximumWidth(GridUtils.MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.setHeightMode(HeightMode.ROW)
     }
 

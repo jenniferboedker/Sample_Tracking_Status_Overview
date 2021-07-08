@@ -14,7 +14,7 @@ import life.qbic.portal.sampletracking.resource.ResourceService
 */
 class ProjectOverviewViewModel {
 
-    ObservableList projectOverviews = new ObservableList(new ArrayList<ProjectOverview>())
+    ObservableList projectOverviews = new ObservableList(new ArrayList<ProjectSummary>())
     private final ResourceService<Project> projectResourceService
 
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService){
@@ -41,20 +41,20 @@ class ProjectOverviewViewModel {
     }
 
     private void addProject(Project project) {
-        ProjectOverview.Builder builder = new ProjectOverview.Builder(project)
+        ProjectSummary.Builder builder = new ProjectSummary.Builder(project)
         projectOverviews.add(builder.build())
     }
 
     private void removeProject(Project project) {
-        ProjectOverview projectOverview = projectOverviews.collect {it as ProjectOverview}.find { it ->
-            (it as ProjectOverview).code == project.projectId.projectCode.toString()
+        ProjectSummary projectOverview = projectOverviews.collect {it as ProjectSummary}.find { it ->
+            (it as ProjectSummary).code == project.projectId.projectCode.toString()
         }
         projectOverviews.remove(projectOverview)
     }
 
     private void updateSamplesReceived(String projectCode, int sampleCount) {
-        ProjectOverview projectOverview = projectOverviews.collect {it as ProjectOverview}.find { it ->
-            (it as ProjectOverview).code == projectCode
+        ProjectSummary projectOverview = projectOverviews.collect {it as ProjectSummary}.find { it ->
+            (it as ProjectSummary).code == projectCode
         }
         projectOverview.samplesReceived = sampleCount
     }
