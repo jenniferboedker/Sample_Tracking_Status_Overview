@@ -7,7 +7,7 @@ import life.qbic.datamodel.samples.Status
 /**
  * <b>Provides project identifiers</b>
  *
- * <p>This interface is used by {@link LoadProjects}</p>
+ * <p>This interface is used by {@link LoadSamples}</p>
  *
  * @since 1.0.0
  */
