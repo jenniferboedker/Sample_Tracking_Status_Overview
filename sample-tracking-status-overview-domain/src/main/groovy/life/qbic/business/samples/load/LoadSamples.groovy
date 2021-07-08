@@ -34,7 +34,7 @@ class LoadSamples implements LoadSamplesInput{
     void loadSamples(String projectCode, Status sampleStatus) {
         try {
             println "x"
-            List sampleCodes = dataSource.fetchSamplesWithCurrentStatus(String projectCode, Status sampleStatus)
+            List sampleCodes = dataSource.fetchSamplesWithCurrentStatus(projectCode, sampleStatus)
             println "y"
             output.loadedSamples(sampleCodes)
         } catch (DataSourceException dataSourceException) {
