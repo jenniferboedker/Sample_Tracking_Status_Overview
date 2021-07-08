@@ -1,7 +1,6 @@
 package life.qbic.portal.sampletracking
 
-import com.vaadin.icons.VaadinIcons
-import com.vaadin.ui.Button
+
 import com.vaadin.ui.VerticalLayout
 import life.qbic.business.project.load.LoadProjects
 import life.qbic.business.project.load.LoadProjectsDataSource
@@ -9,6 +8,7 @@ import life.qbic.business.project.load.LoadProjectsInput
 import life.qbic.business.project.load.LoadProjectsOutput
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
+import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.NotificationHandler
@@ -19,6 +19,8 @@ import life.qbic.portal.sampletracking.datasources.Credentials
 import life.qbic.portal.sampletracking.datasources.OpenBisConnector
 import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
+import life.qbic.portal.sampletracking.resource.status.StatusCount
+import life.qbic.portal.sampletracking.resource.status.StatusCountResourceService
 import life.qbic.portal.utils.ConfigurationManager
 import life.qbic.portal.utils.ConfigurationManagerFactory
 
@@ -40,6 +42,7 @@ class DependencyManager {
 
     private LoadProjectsDataSource loadProjectsDataSource
     private ResourceService<Project> projectResourceService
+    private ResourceService<StatusCount> statusCountService
     private NotificationService notificationService
 
     DependencyManager(PortalUser user) {
@@ -52,6 +55,7 @@ class DependencyManager {
 
         populateProjectService()
         portletView = setupPortletView()
+        populateStatusCountService()
     }
 
 
@@ -62,6 +66,7 @@ class DependencyManager {
 
     private void setupServices() {
         projectResourceService = new ProjectResourceService()
+        statusCountService = new StatusCountResourceService()
         notificationService = new MessageBroker()
     }
 
@@ -91,12 +96,12 @@ class DependencyManager {
      * Creates a new ProjectOverviewView using
      * <ul>
      *     <li>{@link #projectResourceService}</li>
-     *     <li>{@link #loadProjectsDataSource}</li>
+     *     <li>{@link #statusCountService}</li>
      * </ul>
      * @return a new ProjectOverviewView
      */
     private ProjectOverviewView createProjectOverviewView() {
-        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService)
+        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService)
         ProjectOverviewView view =  new ProjectOverviewView(viewModel)
         return view
     }
@@ -112,6 +117,16 @@ class DependencyManager {
     }
 
     /**
+     * Triggers the project status count loading initially to have data in the service
+     */
+    private void populateStatusCountService() {
+        //TODO replace mock data
+        Project firstProject = projectResourceService.iterator().toList().first()
+        statusCountService.addToResource(new StatusCount(firstProject.projectId.projectCode.toString(),
+                Status.SAMPLE_RECEIVED, 42))
+    }
+
+        /**
      * Returns the global notification center
      * @return a notification center that handles app notifications
      */
