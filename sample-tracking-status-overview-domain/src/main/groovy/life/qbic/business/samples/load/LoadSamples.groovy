@@ -33,9 +33,7 @@ class LoadSamples implements LoadSamplesInput{
     @Override
     void loadSamples(String projectCode, Status sampleStatus) {
         try {
-            println "x"
             List sampleCodes = dataSource.fetchSamplesWithCurrentStatus(projectCode, sampleStatus)
-            println "y"
             output.loadedSamples(sampleCodes)
         } catch (DataSourceException dataSourceException) {
             output.failedExecution(dataSourceException.getMessage())
