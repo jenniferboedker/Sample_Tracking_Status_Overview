@@ -121,9 +121,16 @@ class DependencyManager {
      */
     private void populateStatusCountService() {
         //TODO replace mock data
-        Project firstProject = projectResourceService.iterator().toList().first()
-        statusCountService.addToResource(new StatusCount(firstProject.projectId.projectCode.toString(),
-                Status.SAMPLE_RECEIVED, 42))
+        List<String> projectCodes = projectResourceService.iterator().collect {
+            return (it as Project).projectId.projectCode.toString()
+        }
+        for (String projectCode : projectCodes) {
+            Random random = new Random()
+            int randomCount = random.nextInt(100)
+            randomCount = Math.abs(randomCount) * -1 // so we clearly identify it as mock data
+            statusCountService.addToResource(new StatusCount(projectCode,
+                    Status.SAMPLE_RECEIVED, randomCount))
+        }
     }
 
         /**
