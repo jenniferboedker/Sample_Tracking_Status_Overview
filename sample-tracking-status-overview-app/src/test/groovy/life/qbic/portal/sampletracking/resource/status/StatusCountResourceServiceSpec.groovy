@@ -79,7 +79,7 @@ class StatusCountResourceServiceSpec extends Specification {
         given: "a status count"
         StatusCount statusCount = generateRandomStatusCount(status)
         List originalContent = statusCountService.iterator().toList()
-        when: "the status count is added to the resource service"
+        when: "the status count is removed from the resource service"
         statusCountService.removeFromResource(statusCount)
         then: "the status count is not added to the resource"
         statusCountService.iterator().toList() == originalContent
