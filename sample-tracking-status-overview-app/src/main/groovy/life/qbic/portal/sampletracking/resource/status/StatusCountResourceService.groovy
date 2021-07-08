@@ -5,7 +5,7 @@ import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
 
 /**
- * <b>A resource service holding data on status counts per project</b>
+ * <b>A resource service holding data on sample status counts per project</b>
  *
  * <p>This service offers functionality to publish status counts for a specific project.</p>
  *
