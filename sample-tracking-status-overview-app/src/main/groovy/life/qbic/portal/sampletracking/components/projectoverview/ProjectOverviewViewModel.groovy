@@ -25,22 +25,31 @@ class ProjectOverviewViewModel {
 
     private void fetchProjectData() {
         projectOverviews.clear()
-        projectOverviews.addAll(projectResourceService.iterator())
+        for (Project project : projectResourceService.iterator()) {
+            addProject(project)
+        }
     }
 
     private void subscribeToResources() {
         this.projectResourceService.subscribe({
-            projectOverviews.add(it)
+            addProject(it)
         }, Topic.PROJECT_ADDED)
         this.projectResourceService.subscribe({
-            projectOverviews.remove(it)
+            removeProject(it)
         }, Topic.PROJECT_REMOVED)
         //TODO subscribe to changes in sample counts
     }
 
     private void addProject(Project project) {
-        ProjectOverview.Builder builder = new ProjectOverview.Builder(project.projectId.projectCode.toString(), project.projectTitle)
+        ProjectOverview.Builder builder = new ProjectOverview.Builder(project)
         projectOverviews.add(builder.build())
+    }
+
+    private void removeProject(Project project) {
+        ProjectOverview projectOverview = projectOverviews.collect {it as ProjectOverview}.find { it ->
+            (it as ProjectOverview).code == project.projectId.projectCode.toString()
+        }
+        projectOverviews.remove(projectOverview)
     }
 
     private void updateSamplesReceived(String projectCode, int sampleCount) {

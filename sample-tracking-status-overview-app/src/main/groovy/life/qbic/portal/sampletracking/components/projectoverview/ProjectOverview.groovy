@@ -1,6 +1,7 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import groovy.transform.EqualsAndHashCode
+import life.qbic.datamodel.dtos.projectmanagement.Project
 
 /**
  * <b>Project Overview DTO</b>
@@ -35,6 +36,17 @@ class ProjectOverview {
         Builder(String code, String title) {
             this.code = code
             this.title = title
+            this.samplesReceived = 0
+        }
+
+        /**
+         * Constructs a builder using infromation from a project dto
+         * @param projectDto the project dto to be read
+         * @since 1.0.0
+         */
+        Builder(Project projectDto) {
+            this.code = projectDto.projectId.projectCode.toString()
+            this.title = projectDto.projectTitle
             this.samplesReceived = 0
         }
 
