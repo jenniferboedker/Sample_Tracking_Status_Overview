@@ -4,7 +4,7 @@ import groovy.transform.EqualsAndHashCode
 import life.qbic.datamodel.samples.Status
 
 /**
- * <p>A DTO representing a status count for a specific project</p>
+ * <p>A DTO representing a status count for samples of a specific project</p>
  *
  * @since 1.0.0
  */
