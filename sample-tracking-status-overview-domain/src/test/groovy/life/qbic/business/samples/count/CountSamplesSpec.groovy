@@ -1,58 +1,59 @@
-package life.qbic.business.samples.load
+package life.qbic.business.samples.count
 
 import life.qbic.business.DataSourceException
 import spock.lang.Specification
+import life.qbic.datamodel.samples.Status
 
 /**
  * <b>Tests the load samples use case</b>
  *
  * @since 1.0.0
  */
-class LoadSamplesSpec extends Specification {
+class CountSamplesSpec extends Specification {
 
 
     def "successful execution of the use case lead to success notifications"() {
         given:
-        LoadSamplesDataSource dataSource = Stub()
-        dataSource.fetchSamplesWithCurrentStatus("QABCD") >> { new Map<String, Status>() }
-        LoadSamplesOutput output = Mock()
-        LoadSamples loadSamples = new LoadSamples(dataSource, output)
+        CountSamplesDataSource dataSource = Stub()
+        dataSource.fetchSampleStatusesForProject("QABCD") >> { new ArrayList<Status>() }
+        CountSamplesOutput output = Mock()
+        CountSamples countSamples = new CountSamples(dataSource, output)
         when:"the use case is run"
-        loadSamples.loadSamples("QABCD")
+        countSamples.countSamples("QABCD")
         then:"a successful message is send"
-        1 * output.loadedSamples(_ as List<String>)
+        1 * output.countedSamples(_ as int, _ as int)
         0 * output.failedExecution(_ as String)
     }
 
     def "unsuccessful execution of the use case lead to failure notifications"() {
         given:
-        LoadSamplesDataSource dataSource = Stub()
-        dataSource.fetchSamplesWithCurrentStatus("QABCD") >> {
+        CountSamplesDataSource dataSource = Stub()
+        dataSource.fetchSampleStatusesForProject("QABCD") >> {
             throw new RuntimeException("Testing runtime exceptions")
         }
-        LoadSamplesOutput output = Mock()
-        LoadSamples loadSamples = new LoadSamples(dataSource, output)
+        CountSamplesOutput output = Mock()
+        CountSamples countSamples = new CountSamples(dataSource, output)
         when:"the use case is run"
-        loadSamples.loadSamples("QABCD")
+        countSamples.countSamples("QABCD")
         then:"a failure message is send"
         1 * output.failedExecution(_)
-        0 * output.loadedSamples(_)
+        0 * output.countedSamples(_)
     }
 
     def "a DataSourceException leads to a failure notification and no samples being loaded"() {
         given:
-        LoadSamplesDataSource dataSource = Stub()
-        dataSource.fetchSamplesWithCurrentStatus("QABCD") >> {
+        CountSamplesDataSource dataSource = Stub()
+        dataSource.fetchSampleStatusesForProject("QABCD") >> {
             throw new DataSourceException("Testing data source exception")
         }
-        LoadSamplesOutput output = Mock()
-        LoadSamples loadSamples = new LoadSamples(dataSource, output)
+        CountSamplesOutput output = Mock()
+        CountSamples countSamples = new CountSamples(dataSource, output)
 
         when:"the use case is run"
-        loadSamples.loadSamples("QABCD")
+        countSamples.countSamples("QABCD")
 
         then:"a failure message is send"
         1 * output.failedExecution(_)
-        0 * output.loadedSamples(_)
+        0 * output.countedSamples(_)
     }
 }
