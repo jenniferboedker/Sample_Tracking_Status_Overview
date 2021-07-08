@@ -1,7 +1,6 @@
 package life.qbic.business.samples.load
 
 import life.qbic.business.DataSourceException
-import life.qbic.datamodel.samples.Status
 
 /**
  * <b>Load samples</b>
@@ -31,9 +30,9 @@ class LoadSamples implements LoadSamplesInput{
      * @since 1.0.0
      */
     @Override
-    void loadSamples(String projectCode, Status sampleStatus) {
+    void loadSamples(String projectCode) {
         try {
-            List sampleCodes = dataSource.fetchSamplesWithCurrentStatus(projectCode, sampleStatus)
+            List sampleCodes = dataSource.fetchSamplesWithCurrentStatus(projectCode)
             output.loadedSamples(sampleCodes)
         } catch (DataSourceException dataSourceException) {
             output.failedExecution(dataSourceException.getMessage())

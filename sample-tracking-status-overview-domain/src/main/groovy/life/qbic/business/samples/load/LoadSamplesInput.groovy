@@ -1,7 +1,5 @@
 package life.qbic.business.samples.load
 
-import life.qbic.datamodel.samples.Status
-
 /**
  * <b>Input interface for the {@link LoadSamples} feature</b>
  *
@@ -16,5 +14,5 @@ interface LoadSamplesInput {
      * In case of failure the output interface failure method is called.
      * @since 1.0.0
      */
-    void loadSamples(String projectCode, Status sampleStatus)
+    void loadSamples(String projectCode)
 }
