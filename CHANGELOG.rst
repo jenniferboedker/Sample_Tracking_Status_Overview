@@ -12,6 +12,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * Interface for counting samples and received samples given a project code
 
+* Add resource service for project sample status counts. (`#34 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/34>`_)
+
 **Fixed**
 
 **Dependencies**
