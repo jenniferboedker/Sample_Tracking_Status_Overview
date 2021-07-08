@@ -81,7 +81,7 @@ class StatusCountResourceServiceSpec extends Specification {
         List originalContent = statusCountService.iterator().toList()
         when: "the status count is removed from the resource service"
         statusCountService.removeFromResource(statusCount)
-        then: "the status count is not added to the resource"
+        then: "the status count is not removed from the resource"
         statusCountService.iterator().toList() == originalContent
         and: "an illegal argument exception is thrown"
         thrown(IllegalArgumentException)
