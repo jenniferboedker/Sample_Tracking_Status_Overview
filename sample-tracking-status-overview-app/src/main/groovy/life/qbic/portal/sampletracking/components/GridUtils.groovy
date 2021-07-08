@@ -6,5 +6,5 @@ package life.qbic.portal.sampletracking.components
  * @since 1.0.0
  */
 class GridUtils {
-    final static int TITLE_COLUMN_WIDTH = 400
+    final static int MAX_CODE_COLUMN_WIDTH = 400
 }

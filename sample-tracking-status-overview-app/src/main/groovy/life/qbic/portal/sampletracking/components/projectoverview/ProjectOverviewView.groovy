@@ -6,7 +6,6 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
-import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.components.GridUtils
 
 /**
@@ -22,7 +21,7 @@ class ProjectOverviewView extends VerticalLayout{
 
     private Label titleLabel
     private ProjectOverviewViewModel viewModel
-    private Grid<Project> projectGrid
+    private Grid<ProjectOverview> projectGrid
 
     ProjectOverviewView(ProjectOverviewViewModel viewModel){
         this.viewModel = viewModel
@@ -40,19 +39,21 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private void fillGrid(){
-        projectGrid.addColumn({ it.projectId.projectCode.code})
-                .setCaption("Project Code").setId("ProjectCode")
-        projectGrid.addColumn({ it.projectTitle })
-                .setCaption("Project Title").setId("ProjectTitle").setWidth(GridUtils.TITLE_COLUMN_WIDTH)
+        projectGrid.addColumn({ it.code})
+                .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(GridUtils.MAX_CODE_COLUMN_WIDTH)
+        projectGrid.addColumn({ it.title })
+                .setCaption("Project Title").setId("ProjectTitle")
         setupDataProvider()
         //specify size of grid and layout
         projectGrid.setWidthFull()
-        //todo introduce variable for description column width
+        projectGrid.getColumn("ProjectTitle")
+                .setMinimumWidth(200)
+                .setExpandRatio(1)
         projectGrid.setHeightMode(HeightMode.ROW)
     }
 
     private void setupDataProvider() {
-        def dataProvider = new ListDataProvider(viewModel.projects)
+        def dataProvider = new ListDataProvider(viewModel.projectOverviews)
         projectGrid.setDataProvider(dataProvider)
     }
 }
