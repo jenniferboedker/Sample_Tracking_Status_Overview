@@ -4,11 +4,8 @@ import life.qbic.datamodel.samples.Status
 import spock.lang.Specification
 
 /**
- * <b><short description></b>
- *
- * <p><detailed description></p>
- *
- * @since <versiontag>
+ * <p>Tests the equals method for the StatusCount DTO</p>
+ * @since 1.0.0
  */
 class StatusCountSpec extends Specification {
 
