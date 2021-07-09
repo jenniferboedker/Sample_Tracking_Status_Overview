@@ -10,7 +10,9 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
-* Use case counting all samples of a project and the subset of samples having been received at the lab
+* Use case counting all samples of a project and the subset of samples having been received at the lab  (`#38 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/38>`_)
+
+* Add a database connector for the sample tracking database. (`#39 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/39>`_)
 
 * Shows the number of received sample to each customer (`#36 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/36>`_)
 
