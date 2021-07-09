@@ -28,10 +28,10 @@ class ProjectOverviewViewModel {
 
     private void fetchProjectData() {
         projectOverviews.clear()
-        for (Project project : projectResourceService.iterator()) {
+        projectResourceService.iterator().each {Project project ->
             addProject(project)
         }
-        for (StatusCount statusCount : statusCountService.iterator()) {
+        statusCountService.iterator().each { StatusCount statusCount ->
             updateSamplesReceived(statusCount.projectCode, statusCount.count)
         }
     }
