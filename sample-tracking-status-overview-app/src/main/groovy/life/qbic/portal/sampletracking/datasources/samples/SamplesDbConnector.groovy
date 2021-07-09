@@ -1,9 +1,14 @@
 package life.qbic.portal.sampletracking.datasources.samples
 
+import groovy.util.logging.Log4j2
 import life.qbic.business.DataSourceException
 import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
+
+import java.sql.Connection
+import java.sql.PreparedStatement
+import java.sql.ResultSet
 
 /**
  * <b>Database connector to the sample tracking database</b>
@@ -15,6 +20,7 @@ import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
  *
  * @since 1.0.0
  */
+@Log4j2
 class SamplesDbConnector implements CountSamplesDataSource {
     private final ConnectionProvider connectionProvider
 
@@ -30,15 +36,71 @@ class SamplesDbConnector implements CountSamplesDataSource {
     }
 
 
+    /**
+     * {@inheritDoc}
+     * <p><b><i>PLEASE NOTE: In case multiple statuses were entered at the same time,
+     * this method adds all statuses to the returned list!</i></b></p>
+     * @since 1.0.0
+     */
     @Override
     List<Status> fetchSampleStatusesForProject(String projectCode) throws DataSourceException {
-        final String sqlQuery = "SELECT sample_id, sample_status FROM samples_locations WHERE sample_id LIKE \"$projectCode%\" AND sample_id NOT LIKE \"%ENTITY%\""
-        /* TODO
-            1. select (sample_id, sample_status)
-            2. group by sample_id
-            3. find newest sample_status
-            4. return list of sample_statuses
+        String queryTemplate = constructQuery()
+        Connection connection = connectionProvider.connect()
+        List<Status> statuses = new ArrayList<>()
+        String sqlRegex = "$projectCode%"
+        connection.withCloseable {
+            PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
+            preparedStatement.setString(1, sqlRegex)
+            ResultSet resultSet = preparedStatement.executeQuery()
+            while (resultSet.next()) {
+                String sampleCode = resultSet.getString("sample_id")
+                String sampleStatusString = resultSet.getString("sample_status")
+                String arrivalTime = resultSet.getString("arrival_time")
+                Status sampleStatus
+                try {
+                    sampleStatus = Status.valueOf(sampleStatusString)
+                } catch(IllegalArgumentException statusNotFound) {
+                    // The status in the database is invalid. This should never be the case!
+                    log.error("Could not parse status $sampleStatusString for $sampleCode at $arrivalTime", statusNotFound)
+                    throw new DataSourceException("Retrieval of sample statuses failed for sample $sampleCode")
+                }
+                statuses.add(sampleStatus)
+            }
+        }
+        return statuses
+    }
+
+    static String constructQuery() {
+        /*
+        The filter criteria to avoid applying the query to the whole table.
+        Replace `?` with your matching sample_id.
          */
-        return null
+        final String filterCriteria = "WHERE sample_id LIKE ? AND sample_id NOT LIKE \"%ENTITY%\""
+        /*
+         * This query constructs a table in the form of
+         # sample_id| MAX(arrival_time)
+         QSTTS030A8 | 2021-05-11 15:05:00
+         QSTTS029A5 | 2021-05-11 15:05:00
+         QSTTS028AV | 2021-05-11 15:05:00
+         QSTTS027AN | 2021-05-11 15:05:00
+         QSTTS026AF | 2021-05-11 15:05:00
+         QSTTS025A7 | 2021-05-11 15:05:00
+         QSTTS024AX | 2021-05-11 15:05:00
+         QSTTS023AP | 2021-05-11 15:05:00
+         QSTTS022AH | 2021-05-11 15:05:00
+         */
+        final String latestEditQuery = "SELECT sample_id, MAX(arrival_time) as arrival_time FROM samples_locations $filterCriteria GROUP BY sample_id"
+
+        /*
+         * This query filters the samples_locations table and only returns samples whose
+         * arrival_time matches the latest arrival_time.
+         * We do need this since we cannot assume that there is only one entry with the latest time.
+         */
+        final String latestEntriesQuery = "SELECT samples_locations.* FROM samples_locations " +
+                "INNER JOIN ($latestEditQuery) AS latest_arrivals " +
+                "ON latest_arrivals.sample_id = samples_locations.sample_id " +
+                "AND latest_arrivals.arrival_time = samples_locations.arrival_time;"
+
+        return latestEntriesQuery
     }
 }

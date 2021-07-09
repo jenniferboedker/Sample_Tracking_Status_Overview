@@ -29,6 +29,11 @@
             <artifactId>commons-dbcp2</artifactId>
             <version>2.7.0</version>
         </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.25</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.liferay.portal/portal-service -->
         <dependency>
             <groupId>com.liferay.portal</groupId>
