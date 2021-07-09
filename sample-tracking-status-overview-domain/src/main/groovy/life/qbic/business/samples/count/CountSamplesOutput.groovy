@@ -21,5 +21,5 @@ interface CountSamplesOutput {
      * @param number of all samples and samples that have been received by the lab
      * @since 1.0.0
      */
-    void countedSamples(int allSamples, int receivedSamples)
+    void countedReceivedSamples(int allSamples, int receivedSamples)
 }
