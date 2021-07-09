@@ -10,6 +10,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Add a database connector for the sample tracking database. (`#39 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/39>`_)
+
 * Shows the number of received sample to each customer (`#36 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/36>`_)
 
 * Add resource service for project sample status counts. (`#34 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/34>`_)
