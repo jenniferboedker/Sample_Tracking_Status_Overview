@@ -44,7 +44,7 @@ class SamplesDbConnector implements CountSamplesDataSource {
      */
     @Override
     List<Status> fetchSampleStatusesForProject(String projectCode) throws DataSourceException {
-        String queryTemplate = constructQuery()
+        String queryTemplate = Query.fetchLatestSampleEntries()
         Connection connection = connectionProvider.connect()
         List<Status> statuses = new ArrayList<>()
         String sqlRegex = "$projectCode%"
@@ -70,37 +70,47 @@ class SamplesDbConnector implements CountSamplesDataSource {
         return statuses
     }
 
-    private static String constructQuery() {
-        /*
-        The filter criteria to avoid applying the query to the whole table.
-        Replace `?` with your matching sample_id.
+    private class Query {
+        /**
+         * Generates a query with one wildcard ? that can be filled with a sql match to
+         * filter by sample_id.
+         * <p>The returned query provides all rows for which the arrival_time matches the
+         * latest arrival_time recorded for this sample_id.</p>
+         * @return a query template
+         * @since 1.0.0
          */
-        final String filterCriteria = "WHERE sample_id LIKE ? AND sample_id NOT LIKE \"%ENTITY%\""
-        /*
-         * This query constructs a table in the form of
-         # sample_id| MAX(arrival_time)
-         QSTTS030A8 | 2021-05-11 15:05:00
-         QSTTS029A5 | 2021-05-11 15:05:00
-         QSTTS028AV | 2021-05-11 15:05:00
-         QSTTS027AN | 2021-05-11 15:05:00
-         QSTTS026AF | 2021-05-11 15:05:00
-         QSTTS025A7 | 2021-05-11 15:05:00
-         QSTTS024AX | 2021-05-11 15:05:00
-         QSTTS023AP | 2021-05-11 15:05:00
-         QSTTS022AH | 2021-05-11 15:05:00
-         */
-        final String latestEditQuery = "SELECT sample_id, MAX(arrival_time) as arrival_time FROM samples_locations $filterCriteria GROUP BY sample_id"
+        private static String fetchLatestSampleEntries() {
+            /*
+            The filter criteria to avoid applying the query to the whole table.
+            Replace `?` with your matching sample_id.
+             */
+            final String filterCriteria = "WHERE sample_id LIKE ? AND sample_id NOT LIKE \"%ENTITY%\""
+            /*
+             * This query constructs a table in the form of
+             # sample_id| MAX(arrival_time)
+             QSTTS030A8 | 2021-05-11 15:05:00
+             QSTTS029A5 | 2021-05-11 15:05:00
+             QSTTS028AV | 2021-05-11 15:05:00
+             QSTTS027AN | 2021-05-11 15:05:00
+             QSTTS026AF | 2021-05-11 15:05:00
+             QSTTS025A7 | 2021-05-11 15:05:00
+             QSTTS024AX | 2021-05-11 15:05:00
+             QSTTS023AP | 2021-05-11 15:05:00
+             QSTTS022AH | 2021-05-11 15:05:00
+             */
+            final String latestEditQuery = "SELECT sample_id, MAX(arrival_time) as arrival_time FROM samples_locations $filterCriteria GROUP BY sample_id"
 
-        /*
-         * This query filters the samples_locations table and only returns samples whose
-         * arrival_time matches the latest arrival_time.
-         * We do need this since we cannot assume that there is only one entry with the latest time.
-         */
-        final String latestEntriesQuery = "SELECT samples_locations.* FROM samples_locations " +
-                "INNER JOIN ($latestEditQuery) AS latest_arrivals " +
-                "ON latest_arrivals.sample_id = samples_locations.sample_id " +
-                "AND latest_arrivals.arrival_time = samples_locations.arrival_time;"
+            /*
+             * This query filters the samples_locations table and only returns samples whose
+             * arrival_time matches the latest arrival_time.
+             * We do need this since we cannot assume that there is only one entry with the latest time.
+             */
+            final String latestEntriesQuery = "SELECT samples_locations.* FROM samples_locations " +
+                    "INNER JOIN ($latestEditQuery) AS latest_arrivals " +
+                    "ON latest_arrivals.sample_id = samples_locations.sample_id " +
+                    "AND latest_arrivals.arrival_time = samples_locations.arrival_time;"
 
-        return latestEntriesQuery
+            return latestEntriesQuery
+        }
     }
 }
