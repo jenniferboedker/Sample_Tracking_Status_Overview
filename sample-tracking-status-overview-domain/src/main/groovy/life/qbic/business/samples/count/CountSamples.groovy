@@ -15,9 +15,8 @@ class CountSamples implements CountSamplesInput{
   private final CountSamplesOutput output
   // used to be able to count samples for having completed a status when they are in a further step
   private final List<Status> statusesInOrder = [Status.METADATA_REGISTERED, Status.SAMPLE_RECEIVED,
-    Status.SAMPLE_QC_FAIL, Status.FAILED_QC, Status.SAMPLE_QC_PASS,
-    Status.LIBRARY_PREP_FINISHED, Status.SEQUENCING, Status.SEQUENCING_COMPLETE,
-    Status.DATA_AVAILABLE, Status.DATA_AT_QBIC]
+    Status.SAMPLE_QC_FAIL, Status.SAMPLE_QC_PASS,
+    Status.LIBRARY_PREP_FINISHED, Status.DATA_AVAILABLE]
 
   /**
    * Default constructor for this use case
