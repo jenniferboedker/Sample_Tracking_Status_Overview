@@ -28,7 +28,7 @@ class LoadProjectsPresenter implements LoadProjectsOutput {
 
     @Override
     void loadedProjects(List<Project> projects) {
-        for (Project project in projects) {
+        projects.each {project ->
             // we only add it if it is not already part of the list
             if (!projectResourceService.iterator().toList().contains(project)) {
                 projectResourceService.addToResource(project)
