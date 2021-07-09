@@ -15,5 +15,5 @@ interface CountSamplesInput {
      * In case of failure the output interface failure method is called.
      * @since 1.0.0
      */
-    void countSamples(String projectCode)
+    void countReceivedSamples(String projectCode)
 }
