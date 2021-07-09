@@ -1,12 +1,11 @@
 package life.qbic.portal.sampletracking
 
-import com.vaadin.icons.VaadinIcons
-import com.vaadin.ui.Button
 import com.vaadin.ui.VerticalLayout
 import life.qbic.business.project.load.LoadProjects
 import life.qbic.business.project.load.LoadProjectsDataSource
 import life.qbic.business.project.load.LoadProjectsInput
 import life.qbic.business.project.load.LoadProjectsOutput
+import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
@@ -17,6 +16,8 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectOvervie
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 import life.qbic.portal.sampletracking.datasources.Credentials
 import life.qbic.portal.sampletracking.datasources.OpenBisConnector
+import life.qbic.portal.sampletracking.datasources.database.DatabaseSession
+import life.qbic.portal.sampletracking.datasources.samples.SamplesDbConnector
 import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
 import life.qbic.portal.utils.ConfigurationManager
@@ -39,6 +40,8 @@ class DependencyManager {
     private final NotificationHandler notificationHandler
 
     private LoadProjectsDataSource loadProjectsDataSource
+    private CountSamplesDataSource countSamplesDataSource
+
     private ResourceService<Project> projectResourceService
     private NotificationService notificationService
 
@@ -66,6 +69,16 @@ class DependencyManager {
     }
 
     private void setupDatabaseConnections() {
+        String user = Objects.requireNonNull(configurationManager.getMysqlUser(), "Mysql user missing.")
+        String password = Objects.requireNonNull(configurationManager.getMysqlPass(), "Mysql password missing.")
+        String host = Objects.requireNonNull(configurationManager.getMysqlHost(), "Mysql host missing.")
+        String port = Objects.requireNonNull(configurationManager.getMysqlPort(), "Mysql port missing.")
+        String sqlDatabase = Objects.requireNonNull(configurationManager.getMysqlDB(), "Mysql database name missing.")
+
+        DatabaseSession.init(user, password, host, port, sqlDatabase)
+        SamplesDbConnector samplesDbConnector = new SamplesDbConnector(DatabaseSession.getInstance())
+        countSamplesDataSource = samplesDbConnector
+
         Credentials openBisCredentials = new Credentials(
                 user: configurationManager.getDataSourceUser(),
                 password: configurationManager.getDataSourcePassword()
