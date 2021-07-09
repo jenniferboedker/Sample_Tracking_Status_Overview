@@ -8,6 +8,7 @@ import life.qbic.business.project.load.LoadProjectsOutput
 import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
+import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.NotificationHandler
@@ -20,6 +21,8 @@ import life.qbic.portal.sampletracking.datasources.database.DatabaseSession
 import life.qbic.portal.sampletracking.datasources.samples.SamplesDbConnector
 import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
+import life.qbic.portal.sampletracking.resource.status.StatusCount
+import life.qbic.portal.sampletracking.resource.status.StatusCountResourceService
 import life.qbic.portal.utils.ConfigurationManager
 import life.qbic.portal.utils.ConfigurationManagerFactory
 
@@ -43,6 +46,7 @@ class DependencyManager {
     private CountSamplesDataSource countSamplesDataSource
 
     private ResourceService<Project> projectResourceService
+    private ResourceService<StatusCount> statusCountService
     private NotificationService notificationService
 
     DependencyManager(PortalUser user) {
@@ -55,6 +59,7 @@ class DependencyManager {
 
         populateProjectService()
         portletView = setupPortletView()
+        populateStatusCountService()
     }
 
 
@@ -65,6 +70,7 @@ class DependencyManager {
 
     private void setupServices() {
         projectResourceService = new ProjectResourceService()
+        statusCountService = new StatusCountResourceService()
         notificationService = new MessageBroker()
     }
 
@@ -104,12 +110,12 @@ class DependencyManager {
      * Creates a new ProjectOverviewView using
      * <ul>
      *     <li>{@link #projectResourceService}</li>
-     *     <li>{@link #loadProjectsDataSource}</li>
+     *     <li>{@link #statusCountService}</li>
      * </ul>
      * @return a new ProjectOverviewView
      */
     private ProjectOverviewView createProjectOverviewView() {
-        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService)
+        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService)
         ProjectOverviewView view =  new ProjectOverviewView(viewModel)
         return view
     }
@@ -125,6 +131,23 @@ class DependencyManager {
     }
 
     /**
+     * Triggers the project status count loading initially to have data in the service
+     */
+    private void populateStatusCountService() {
+        //TODO replace mock data
+        List<String> projectCodes = projectResourceService.iterator().collect {
+            return (it as Project).projectId.projectCode.toString()
+        }
+        for (String projectCode : projectCodes) {
+            Random random = new Random()
+            int randomCount = random.nextInt(100)
+            randomCount = Math.abs(randomCount) * -1 // so we clearly identify it as mock data
+            statusCountService.addToResource(new StatusCount(projectCode,
+                    Status.SAMPLE_RECEIVED, randomCount))
+        }
+    }
+
+        /**
      * Returns the global notification center
      * @return a notification center that handles app notifications
      */
