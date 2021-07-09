@@ -11,12 +11,12 @@ import life.qbic.datamodel.samples.Status
 @EqualsAndHashCode(includeFields = true)
 class StatusCount {
 
-    final String projectId
+    final String projectCode
     final Status status
     final int count
 
-    StatusCount(String projectId, Status status, int count) {
-        this.projectId = Objects.requireNonNull(projectId, "The project id must not be null.")
+    StatusCount(String projectCode, Status status, int count) {
+        this.projectCode = Objects.requireNonNull(projectCode, "The project id must not be null.")
         this.status = Objects.requireNonNull(status, "The sample status must not be null.")
         this.count = Objects.requireNonNull(count, "The count must not be null.")
     }
