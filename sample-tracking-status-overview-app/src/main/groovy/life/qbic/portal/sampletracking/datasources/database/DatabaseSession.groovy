@@ -7,11 +7,11 @@ import java.sql.Connection
 import java.sql.SQLException
 
 /**
- * Creates a connection to the user database
+ * <b>Creates a connection to a SQL database</b>
  *
- * A class for setting up the connection to the user database.
+ * <p>A class for setting up the connection to the user database.
  * It should be used when data needs to be retrieved from the
- * DB or written into it.
+ * DB or written into it.</p>
  *
  * @since 1.0.0
  */
@@ -73,11 +73,11 @@ class DatabaseSession implements ConnectionProvider {
 
     /**
      * Returns the current DatabaseSession object
-     * @return
+     * @return the global database session
      */
     static DatabaseSession getInstance() {
         if (! INSTANCE) {
-            throw new AssertionError("Call the init method first. Instance has not been initialized.")
+            throw new RuntimeException("Call the init method first. Instance has not been initialized.")
         } else {
             return INSTANCE
         }

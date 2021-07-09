@@ -23,6 +23,12 @@
             <groupId>life.qbic</groupId>
             <artifactId>data-model-lib</artifactId>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-dbcp2 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>2.7.0</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.liferay.portal/portal-service -->
         <dependency>
             <groupId>com.liferay.portal</groupId>
