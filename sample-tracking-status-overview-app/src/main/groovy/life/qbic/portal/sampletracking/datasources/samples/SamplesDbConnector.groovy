@@ -70,7 +70,7 @@ class SamplesDbConnector implements CountSamplesDataSource {
         return statuses
     }
 
-    static String constructQuery() {
+    private static String constructQuery() {
         /*
         The filter criteria to avoid applying the query to the whole table.
         Replace `?` with your matching sample_id.
