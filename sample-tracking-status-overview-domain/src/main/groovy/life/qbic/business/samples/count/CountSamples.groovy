@@ -36,11 +36,11 @@ class CountSamples implements CountSamplesInput{
    * @since 1.0.0
    */
   @Override
-  void countSamples(String projectCode) {
+  void countReceivedSamples(String projectCode) {
     try {
       List sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      int receivedAmount = countReceivedSamples(sampleStatuses)
-      output.countedSamples(sampleStatuses.size(), receivedAmount)
+      int receivedAmount = countReceivedSamplesFromStatus(sampleStatuses)
+      output.countedReceivedSamples(sampleStatuses.size(), receivedAmount)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
     } catch (Exception e) {
@@ -48,7 +48,7 @@ class CountSamples implements CountSamplesInput{
     }
   }
 
-  private int countReceivedSamples(List<Status> sampleStatuses) {
+  private int countReceivedSamplesFromStatus(List<Status> sampleStatuses) {
     int res = 0
     int receivedIndex = statusesInOrder.indexOf(Status.SAMPLE_RECEIVED)
     for (Status status : sampleStatuses) {
