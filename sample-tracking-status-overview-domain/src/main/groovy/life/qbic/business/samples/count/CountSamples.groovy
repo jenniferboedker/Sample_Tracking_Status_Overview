@@ -44,7 +44,7 @@ class CountSamples implements CountSamplesInput{
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
     } catch (Exception e) {
-      output.failedExecution("Could not count samples")
+      output.failedExecution("Could not count received samples.")
     }
   }
 
