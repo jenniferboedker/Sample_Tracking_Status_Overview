@@ -10,6 +10,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Received samples are now counted (`#41 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/41>`_)
+
 * Use case counting all samples of a project and the subset of samples having been received at the lab  (`#38 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/38>`_)
 
 * Add a logging facade to be used in the business domain. (`#40 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/40>`_)
