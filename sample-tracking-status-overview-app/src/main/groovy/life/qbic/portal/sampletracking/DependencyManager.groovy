@@ -5,13 +5,15 @@ import life.qbic.business.project.load.LoadProjects
 import life.qbic.business.project.load.LoadProjectsDataSource
 import life.qbic.business.project.load.LoadProjectsInput
 import life.qbic.business.project.load.LoadProjectsOutput
+import life.qbic.business.samples.count.CountSamples
 import life.qbic.business.samples.count.CountSamplesDataSource
+import life.qbic.business.samples.count.CountSamplesOutput
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
-import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.NotificationHandler
+import life.qbic.portal.sampletracking.components.projectoverview.CountSamplesPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.LoadProjectsPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
@@ -134,17 +136,12 @@ class DependencyManager {
      * Triggers the project status count loading initially to have data in the service
      */
     private void populateStatusCountService() {
-        //TODO replace mock data
+        CountSamplesOutput output = new CountSamplesPresenter(notificationService, statusCountService)
+        CountSamples countSamples = new CountSamples(countSamplesDataSource, output)
         List<String> projectCodes = projectResourceService.iterator().collect {
-            return (it as Project).projectId.projectCode.toString()
+            return it.projectId.projectCode.toString()
         }
-        for (String projectCode : projectCodes) {
-            Random random = new Random()
-            int randomCount = random.nextInt(100)
-            randomCount = Math.abs(randomCount) * -1 // so we clearly identify it as mock data
-            statusCountService.addToResource(new StatusCount(projectCode,
-                    Status.SAMPLE_RECEIVED, randomCount))
-        }
+        projectCodes.each {countSamples.countReceivedSamples(it)}
     }
 
         /**

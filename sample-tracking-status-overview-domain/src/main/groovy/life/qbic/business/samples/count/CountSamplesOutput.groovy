@@ -19,7 +19,8 @@ interface CountSamplesOutput {
     /**
      * To be called after successfully counting samples for the provided code.
      * @param number of all samples and samples that have been received by the lab
+     * @param projectCode the code of the project samples were counted for
      * @since 1.0.0
      */
-    void countedReceivedSamples(int allSamples, int receivedSamples)
+    void countedReceivedSamples(String projectCode, int allSamples, int receivedSamples)
 }
