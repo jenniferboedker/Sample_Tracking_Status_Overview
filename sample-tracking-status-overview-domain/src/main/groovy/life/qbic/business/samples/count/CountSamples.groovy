@@ -51,13 +51,8 @@ class CountSamples implements CountSamplesInput{
   private int countReceivedSamplesFromStatus(List<Status> sampleStatuses) {
     int res = 0
     int receivedIndex = statusesInOrder.indexOf(Status.SAMPLE_RECEIVED)
-    for (Status status : sampleStatuses) {
-      // if an index is notfound, -1 is returned, resulting in that sample not being counted
-      if (statusesInOrder.indexOf(status) >= receivedIndex) {
-        res++
-      }
-    }
-    return res
+    // statuses that are not considered in the ordered list return -1, meaning the sample is not counted
+    return sampleStatuses.findAll {statusesInOrder.indexOf(it) >= receivedIndex}.size()
   }
 
 
