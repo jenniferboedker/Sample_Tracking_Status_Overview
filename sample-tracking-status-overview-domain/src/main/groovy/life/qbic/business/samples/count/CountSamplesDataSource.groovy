@@ -1,13 +1,12 @@
 package life.qbic.business.samples.count
 
-import life.qbic.datamodel.samples.Status
 import life.qbic.business.DataSourceException
-
+import life.qbic.datamodel.samples.Status
 
 /**
  * <b>Provides project identifiers</b>
  *
- * <p>This interface is used by {@link LoadSamples}</p>
+ * <p>This interface is used by {@link CountSamples}</p>
  *
  * @since 1.0.0
  */

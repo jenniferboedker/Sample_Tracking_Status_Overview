@@ -40,7 +40,7 @@ class CountSamples implements CountSamplesInput{
     try {
       List sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
       int receivedAmount = countReceivedSamplesFromStatus(sampleStatuses)
-      output.countedReceivedSamples(sampleStatuses.size(), receivedAmount)
+      output.countedReceivedSamples(projectCode, sampleStatuses.size(), receivedAmount)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
     } catch (Exception e) {
@@ -49,7 +49,6 @@ class CountSamples implements CountSamplesInput{
   }
 
   private int countReceivedSamplesFromStatus(List<Status> sampleStatuses) {
-    int res = 0
     int receivedIndex = statusesInOrder.indexOf(Status.SAMPLE_RECEIVED)
     // statuses that are not considered in the ordered list return -1, meaning the sample is not counted
     return sampleStatuses.findAll {statusesInOrder.indexOf(it) >= receivedIndex}.size()
