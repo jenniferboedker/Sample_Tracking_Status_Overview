@@ -8,7 +8,7 @@ import life.qbic.datamodel.samples.Status
  *
  * @since 1.0.0
  */
-@EqualsAndHashCode(includeFields = true)
+@EqualsAndHashCode
 class StatusCount {
 
     final String projectCode

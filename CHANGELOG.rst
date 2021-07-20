@@ -5,8 +5,20 @@ Changelog
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
-0.2.0-SNAPSHOT (2021-07-07)
+0.3.0-SNAPSHOT (2021-07-20)
 ---------------------------
+
+**Added**
+
+**Fixed**
+
+**Dependencies**
+
+**Deprecated**
+
+
+0.2.0 (2021-07-20)
+------------------
 
 **Added**
 
@@ -29,6 +41,11 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 **Fixed**
 
 **Dependencies**
+
+* Add ``org.apache.commons:commons-dbcp2:2.7.0``
+
+* Add ``mysql:mysql-connector-java:8.0.25``
+
 
 **Deprecated**
 

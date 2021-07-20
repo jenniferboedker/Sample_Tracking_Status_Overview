@@ -6,7 +6,6 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
-import life.qbic.portal.sampletracking.components.GridUtils
 
 /**
  * <h1>This class generates the layout for the ProductOverview use case</h1>
@@ -22,6 +21,9 @@ class ProjectOverviewView extends VerticalLayout{
     private Label titleLabel
     private ProjectOverviewViewModel viewModel
     private Grid<ProjectSummary> projectGrid
+
+    final static int MAX_CODE_COLUMN_WIDTH = 400
+    final static int MAX_STATUS_COLUMN_WIDTH = 200
 
     ProjectOverviewView(ProjectOverviewViewModel viewModel){
         this.viewModel = viewModel
@@ -40,7 +42,7 @@ class ProjectOverviewView extends VerticalLayout{
 
     private void fillGrid(){
         projectGrid.addColumn({ it.code})
-                .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(GridUtils.MAX_CODE_COLUMN_WIDTH)
+                .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(MAX_CODE_COLUMN_WIDTH)
         projectGrid.addColumn({ it.title })
                 .setCaption("Project Title").setId("ProjectTitle")
         projectGrid.addColumn({it.samplesReceived})
@@ -51,7 +53,7 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.getColumn("ProjectTitle")
                 .setMinimumWidth(200)
         projectGrid.getColumn("SamplesReceived")
-                .setMaximumWidth(GridUtils.MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
+                .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.setHeightMode(HeightMode.ROW)
     }
 
