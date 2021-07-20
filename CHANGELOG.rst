@@ -30,6 +30,11 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Dependencies**
 
+* Add ``org.apache.commons:commons-dbcp2:2.7.0``
+
+* Add ``mysql:mysql-connector-java:8.0.25``
+
+
 **Deprecated**
 
 
