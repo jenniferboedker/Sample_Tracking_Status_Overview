@@ -11,7 +11,7 @@ import life.qbic.datamodel.dtos.projectmanagement.Project
  *
  * @since 1.0.0
  */
-@EqualsAndHashCode(includeFields = true)
+@EqualsAndHashCode
 class ProjectSummary {
     String code
     String title
