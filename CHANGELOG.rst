@@ -5,6 +5,20 @@ Changelog
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
+0.2.1 (2021-07-20)
+------------------
+
+**Added**
+
+**Fixed**
+
+* The correct authentication provider is now used.
+
+**Dependencies**
+
+**Deprecated**
+
+
 0.2.0 (2021-07-20)
 ------------------
 
