@@ -6,8 +6,6 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
-import life.qbic.datamodel.dtos.projectmanagement.Project
-import life.qbic.portal.sampletracking.components.GridUtils
 
 /**
  * <h1>This class generates the layout for the ProductOverview use case</h1>
@@ -22,7 +20,10 @@ class ProjectOverviewView extends VerticalLayout{
 
     private Label titleLabel
     private ProjectOverviewViewModel viewModel
-    private Grid<Project> projectGrid
+    private Grid<ProjectSummary> projectGrid
+
+    final static int MAX_CODE_COLUMN_WIDTH = 400
+    final static int MAX_STATUS_COLUMN_WIDTH = 200
 
     ProjectOverviewView(ProjectOverviewViewModel viewModel){
         this.viewModel = viewModel
@@ -40,19 +41,24 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private void fillGrid(){
-        projectGrid.addColumn({ it.projectId.projectCode.code})
-                .setCaption("Project Code").setId("ProjectCode")
-        projectGrid.addColumn({ it.projectTitle })
-                .setCaption("Project Title").setId("ProjectTitle").setWidth(GridUtils.TITLE_COLUMN_WIDTH)
+        projectGrid.addColumn({ it.code})
+                .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(MAX_CODE_COLUMN_WIDTH)
+        projectGrid.addColumn({ it.title })
+                .setCaption("Project Title").setId("ProjectTitle")
+        projectGrid.addColumn({it.samplesReceived})
+                .setCaption("Samples Received").setId("SamplesReceived")
         setupDataProvider()
         //specify size of grid and layout
         projectGrid.setWidthFull()
-        //todo introduce variable for description column width
+        projectGrid.getColumn("ProjectTitle")
+                .setMinimumWidth(200)
+        projectGrid.getColumn("SamplesReceived")
+                .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.setHeightMode(HeightMode.ROW)
     }
 
     private void setupDataProvider() {
-        def dataProvider = new ListDataProvider(viewModel.projects)
+        def dataProvider = new ListDataProvider(viewModel.projectOverviews)
         projectGrid.setDataProvider(dataProvider)
     }
 }

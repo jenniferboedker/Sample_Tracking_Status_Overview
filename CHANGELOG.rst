@@ -5,6 +5,39 @@ Changelog
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
+0.2.0 (2021-07-20)
+------------------
+
+**Added**
+
+* Received samples are now counted (`#41 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/41>`_)
+
+* Use case counting all samples of a project and the subset of samples having been received at the lab  (`#38 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/38>`_)
+
+* Add a logging facade to be used in the business domain. (`#40 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/40>`_)
+
+* Add a database connector for the sample tracking database. (`#39 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/39>`_)
+
+* Shows the number of received sample to each customer (`#36 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/36>`_)
+
+* Add resource service for project sample status counts. (`#34 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/34>`_)
+
+* Interface for counting samples and received samples given a project code
+
+* Add resource service for project samples status list. (`#34 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/34>`_)
+
+**Fixed**
+
+**Dependencies**
+
+* Add ``org.apache.commons:commons-dbcp2:2.7.0``
+
+* Add ``mysql:mysql-connector-java:8.0.25``
+
+
+**Deprecated**
+
+
 0.1.0 (2021-07-07)
 ------------------
 

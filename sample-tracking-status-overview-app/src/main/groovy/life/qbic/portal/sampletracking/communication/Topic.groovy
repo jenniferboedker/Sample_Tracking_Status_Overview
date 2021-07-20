@@ -11,7 +11,8 @@ enum Topic {
     PROJECT_REMOVED("A project was removed"),
     NOTIFICATION_FAILURE("Failure notification"),
     NOTIFICATION_SUCCESS("Success notification"),
-    NOTIFICATION_INFO("Information notification")
+    NOTIFICATION_INFO("Information notification"),
+    SAMPLE_RECEIVED_COUNT_UPDATE("The count of received samples was updated")
 
     @Override
     String toString() {
