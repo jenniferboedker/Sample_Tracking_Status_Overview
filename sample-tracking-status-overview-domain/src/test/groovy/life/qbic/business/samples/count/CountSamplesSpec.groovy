@@ -104,4 +104,51 @@ class CountSamplesSpec extends Specification {
         1 * output.failedExecution(_)
         0 * output.countedReceivedSamples(_)
     }
+
+    def "successful execution of counting failed qc samples lead to success notifications"() {
+        given:
+        CountSamplesDataSource dataSource = Stub()
+        String projectCode = "QABCD"
+        dataSource.fetchSampleStatusesForProject(projectCode) >> { new ArrayList<Status>() }
+        CountSamplesOutput output = Mock()
+        CountSamples countSamples = new CountSamples(dataSource, output)
+        when:"the use case is run"
+        countSamples.countQcFailedSamples(projectCode)
+        then:"a successful message is send"
+        1 * output.countedFailedQcSamples(projectCode, _ as Integer, _ as Integer)
+        0 * output.failedExecution(_ as String)
+    }
+
+    def "amount of samples failing QC is correctly returned"() {
+        given:
+        CountSamplesDataSource dataSource = Stub()
+        List<Status> statuses = [Status.SAMPLE_QC_FAIL, Status.METADATA_REGISTERED, Status.SAMPLE_QC_FAIL]
+        String projectCode = "QABCD"
+        dataSource.fetchSampleStatusesForProject(projectCode) >> { statuses }
+        CountSamplesOutput output = Mock()
+        CountSamples countSamples = new CountSamples(dataSource, output)
+        when:"the use case is run"
+        countSamples.countQcFailedSamples(projectCode)
+        then:"the correct amounts of samples are returned"
+        1 * output.countedFailedQcSamples(projectCode, 3, 2)
+        0 * output.failedExecution(_ as String)
+    }
+
+
+    def "unsuccessful execution of counting failed qc samples leads to failure notifications"() {
+        given:
+        String projectCode = "QABCD"
+        CountSamplesDataSource dataSource = Stub()
+        dataSource.fetchSampleStatusesForProject(projectCode) >> {
+            throw new RuntimeException("Testing runtime exceptions")
+        }
+        CountSamplesOutput output = Mock()
+        CountSamples countSamples = new CountSamples(dataSource, output)
+        when:"the use case is run"
+        countSamples.countQcFailedSamples(projectCode)
+        then:"a failure message is send"
+        1 * output.failedExecution(_)
+        0 * output.countedFailedQcSamples(_)
+    }
+
 }
