@@ -53,7 +53,7 @@ class CountSamples implements CountSamplesInput{
   void countQcFailedSamples(String projectCode) {
     try {
       sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      int receivedAmount = countSamplesFromStatus(Status.SAMPLE_QC_FAIL)
+      int receivedAmount = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
       output.countedFailedQcSamples(projectCode, sampleStatuses.size(), receivedAmount)
     }catch (Exception e) {
       output.failedExecution("Could not count failed qc samples.")

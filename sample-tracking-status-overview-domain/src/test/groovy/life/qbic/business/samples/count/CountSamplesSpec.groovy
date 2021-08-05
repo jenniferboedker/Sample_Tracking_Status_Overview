@@ -122,7 +122,7 @@ class CountSamplesSpec extends Specification {
     def "amount of samples failing QC is correctly returned"() {
         given:
         CountSamplesDataSource dataSource = Stub()
-        List<Status> statuses = [Status.SAMPLE_QC_FAIL, Status.METADATA_REGISTERED, Status.SAMPLE_QC_FAIL]
+        List<Status> statuses = [Status.SAMPLE_QC_FAIL, Status.DATA_AVAILABLE, Status.SAMPLE_QC_FAIL]
         String projectCode = "QABCD"
         dataSource.fetchSampleStatusesForProject(projectCode) >> { statuses }
         CountSamplesOutput output = Mock()
