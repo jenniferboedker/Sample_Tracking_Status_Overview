@@ -115,7 +115,7 @@ class CountSamplesSpec extends Specification {
         when:"the use case is run"
         countSamples.countQcFailedSamples(projectCode)
         then:"a successful message is send"
-        1 * output.countedFailedQcSamples(projectCode, _ as Integer, _ as Integer)
+        1 * output.countedFailedQcSamples(projectCode, 0, 0)
         0 * output.failedExecution(_ as String)
     }
 
@@ -150,5 +150,24 @@ class CountSamplesSpec extends Specification {
         1 * output.failedExecution(_)
         0 * output.countedFailedQcSamples(_)
     }
-
+def "countFailedQcSamples does not count samples with status #status"() {
+        given: "a project code"
+        String projectCode = "QABCD"
+        and: "a datasource stub returning one sample of the status"
+        CountSamplesDataSource dataSource = Stub()
+        dataSource.fetchSampleStatusesForProject(projectCode) >> {
+            return [status] * 5
+        }
+        CountSamplesOutput output = Mock()
+        when:
+        CountSamples countSamples = new CountSamples(dataSource, output)
+        countSamples.countQcFailedSamples(projectCode)
+        then:
+        0 * output.failedExecution(_)
+        1 * output.countedFailedQcSamples(projectCode, totalNumber, 0)
+        where: "one sample is returned every time with each sample status once"
+        status << Status.values() - Status.SAMPLE_QC_FAIL
+        and: "the only the failedQC status is counted since it is an endpoint"
+        totalNumber = 5
+    }
 }
