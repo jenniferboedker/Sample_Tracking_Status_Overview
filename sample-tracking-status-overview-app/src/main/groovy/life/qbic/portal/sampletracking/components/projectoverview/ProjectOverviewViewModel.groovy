@@ -33,6 +33,7 @@ class ProjectOverviewViewModel {
         }
         statusCountService.iterator().each { StatusCount statusCount ->
             updateSamplesReceived(statusCount.projectCode, statusCount.count)
+            updateSamplesFailedQc(statusCount.projectCode, statusCount.count)
         }
     }
 
@@ -41,6 +42,8 @@ class ProjectOverviewViewModel {
         this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
 
         this.statusCountService.subscribe({updateSamplesReceived(it.projectCode, it.count)}, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
+        this.statusCountService.subscribe({updateSamplesFailedQc(it.projectCode, it.count)}, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
+
     }
 
     private void addProject(Project project) {
@@ -60,5 +63,12 @@ class ProjectOverviewViewModel {
             (it as ProjectSummary).code == projectCode
         }
         projectOverview.samplesReceived = sampleCount
+    }
+
+    private void updateSamplesFailedQc(String projectCode, int sampleCount) {
+        ProjectSummary projectOverview = projectOverviews.collect {it as ProjectSummary}.find { it ->
+            (it as ProjectSummary).code == projectCode
+        }
+        projectOverview.samplesQcFailed = sampleCount
     }
 }

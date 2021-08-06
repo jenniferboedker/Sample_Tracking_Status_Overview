@@ -47,12 +47,16 @@ class ProjectOverviewView extends VerticalLayout{
                 .setCaption("Project Title").setId("ProjectTitle")
         projectGrid.addColumn({it.samplesReceived})
                 .setCaption("Samples Received").setId("SamplesReceived")
+        projectGrid.addColumn({it.samplesQcFailed})
+                .setCaption("Samples Failed QC").setId("SamplesFailedQc")
         setupDataProvider()
         //specify size of grid and layout
         projectGrid.setWidthFull()
         projectGrid.getColumn("ProjectTitle")
                 .setMinimumWidth(200)
         projectGrid.getColumn("SamplesReceived")
+                .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
+        projectGrid.getColumn("SamplesFailedQc")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.setHeightMode(HeightMode.ROW)
     }

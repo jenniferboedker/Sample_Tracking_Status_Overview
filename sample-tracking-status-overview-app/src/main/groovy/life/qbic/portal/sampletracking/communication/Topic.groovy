@@ -12,7 +12,8 @@ enum Topic {
     NOTIFICATION_FAILURE("Failure notification"),
     NOTIFICATION_SUCCESS("Success notification"),
     NOTIFICATION_INFO("Information notification"),
-    SAMPLE_RECEIVED_COUNT_UPDATE("The count of received samples was updated")
+    SAMPLE_RECEIVED_COUNT_UPDATE("The count of received samples was updated"),
+    SAMPLE_FAILED_QC_COUNT_UPDATE("The count of samples failing QC was updated")
 
     @Override
     String toString() {
