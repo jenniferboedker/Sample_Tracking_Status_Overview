@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.resource.status
 
+import ch.systemsx.cisd.base.unix.Unix
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.Subscriber
 import life.qbic.portal.sampletracking.communication.Topic
@@ -16,7 +17,7 @@ class StatusCountResourceServiceSpec extends Specification {
     StatusCountResourceService statusCountService = new StatusCountResourceService()
     Subscriber<StatusCount> subscriber1 = Mock()
 
-    @Shared def knownStatuses = [Status.SAMPLE_RECEIVED].sort {a,b -> a.name() <=> b.name()}
+    @Shared def knownStatuses = [Status.SAMPLE_RECEIVED, Status.SAMPLE_QC_FAIL].sort { a, b -> a.name() <=> b.name()}
     @Shared def unknownStatuses = Status.values().findAll {! (it in knownStatuses)}.sort {a,b -> a.name() <=> b.name()}
 
     def "Removing and adding a count for #status informs all subscribers to #topic"() {
