@@ -17,6 +17,7 @@ class CountSamples implements CountSamplesInput{
   private final List<Status> statusesInOrder = [Status.METADATA_REGISTERED, Status.SAMPLE_RECEIVED,
     Status.SAMPLE_QC_FAIL, Status.SAMPLE_QC_PASS,
     Status.LIBRARY_PREP_FINISHED, Status.DATA_AVAILABLE]
+  private List<Status> sampleStatuses
 
   /**
    * Default constructor for this use case
@@ -38,8 +39,8 @@ class CountSamples implements CountSamplesInput{
   @Override
   void countReceivedSamples(String projectCode) {
     try {
-      List sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      int receivedAmount = countReceivedSamplesFromStatus(sampleStatuses)
+      sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
+      int receivedAmount = countSamplesFromStatus(Status.SAMPLE_RECEIVED)
       output.countedReceivedSamples(projectCode, sampleStatuses.size(), receivedAmount)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
@@ -48,12 +49,20 @@ class CountSamples implements CountSamplesInput{
     }
   }
 
-  private int countReceivedSamplesFromStatus(List<Status> sampleStatuses) {
-    int receivedIndex = statusesInOrder.indexOf(Status.SAMPLE_RECEIVED)
-    // statuses that are not considered in the ordered list return -1, meaning the sample is not counted
-    return sampleStatuses.findAll {statusesInOrder.indexOf(it) >= receivedIndex}.size()
+  @Override
+  void countQcFailedSamples(String projectCode) {
+    try {
+      sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
+      int receivedAmount = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
+      output.countedFailedQcSamples(projectCode, sampleStatuses.size(), receivedAmount)
+    }catch (Exception e) {
+      output.failedExecution("Could not count failed qc samples.")
+    }
   }
 
-
-
+  private int countSamplesFromStatus(Status status) {
+    int receivedIndex = statusesInOrder.indexOf(status)
+    // statuses that are not considered in the ordered list return -1, meaning the sample is not counted
+    return sampleStatuses.findAll { statusesInOrder.indexOf(it) >= receivedIndex }.size()
+  }
 }

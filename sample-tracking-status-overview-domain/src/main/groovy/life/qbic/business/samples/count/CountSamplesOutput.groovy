@@ -17,10 +17,18 @@ interface CountSamplesOutput {
     void failedExecution(String reason)
 
     /**
-     * To be called after successfully counting samples for the provided code.
+     * To be called after successfully counting received samples for the provided code.
      * @param number of all samples and samples that have been received by the lab
      * @param projectCode the code of the project samples were counted for
      * @since 1.0.0
      */
     void countedReceivedSamples(String projectCode, int allSamples, int receivedSamples)
+
+    /**
+     * To be called after successfully counting failed QC samples for the provided code.
+     * @param number of all samples and samples that have failed QC
+     * @param projectCode the code of the project samples were counted for
+     * @since 1.0.0
+     */
+    void countedFailedQcSamples(String projectCode, int allSamples, int failedQcSamples)
 }
