@@ -1,9 +1,6 @@
 package life.qbic.portal.sampletracking.resource
 
-import life.qbic.portal.sampletracking.communication.Channel
 import life.qbic.portal.sampletracking.communication.Service
-import life.qbic.portal.sampletracking.communication.Subscriber
-import life.qbic.portal.sampletracking.communication.Topic
 
 /**
  * <b>A service that holds a resource of type T and communicates changes to its content</b>
