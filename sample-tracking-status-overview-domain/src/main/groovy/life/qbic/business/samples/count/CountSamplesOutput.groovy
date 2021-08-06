@@ -30,5 +30,5 @@ interface CountSamplesOutput {
      * @param projectCode the code of the project samples were counted for
      * @since 1.0.0
      */
-    void countedFailedQcSamples(String projectCode, int allSamples, int receivedSamples)
+    void countedFailedQcSamples(String projectCode, int allSamples, int failedQcSamples)
 }
