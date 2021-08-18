@@ -141,7 +141,10 @@ class DependencyManager {
         List<String> projectCodes = projectResourceService.iterator().collect {
             return it.projectId.projectCode.toString()
         }
-        projectCodes.each {countSamples.countReceivedSamples(it)}
+        projectCodes.each {
+            countSamples.countReceivedSamples(it)
+            countSamples.countQcFailedSamples(it)
+        }
     }
 
         /**
