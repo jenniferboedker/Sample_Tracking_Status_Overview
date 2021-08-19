@@ -42,33 +42,23 @@ class SamplesDbConnector implements CountSamplesDataSource {
      * Status.DATA_AVAILABLE is the last status a sample can reach.
      */
     @Override
-    List<String> fetchSampleCodesWithData(String projectCode) throws DataSourceException {
+    List<String> fetchSampleCodesWithData(String projectCode) {
         String queryTemplate = Query.fetchLatestSampleEntries()
+        queryTemplate += "WHERE sample_status = ?"
         Connection connection = connectionProvider.connect()
-        List<Status> statuses = new ArrayList<>()
-        String sqlRegex = "$projectCode%"
+        List<String> sampleCodes = new ArrayList<>()
+        String sqlRegex = "${projectCode}%"
         connection.withCloseable {
             PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
             preparedStatement.setString(1, sqlRegex)
+            preparedStatement.setString(2, Status.DATA_AVAILABLE.toString())
             ResultSet resultSet = preparedStatement.executeQuery()
             while (resultSet.next()) {
                 String sampleCode = resultSet.getString("sample_id")
-                String sampleStatusString = resultSet.getString("sample_status")
-                String arrivalTime = resultSet.getString("arrival_time")
-                Status sampleStatus
-                try {
-                    sampleStatus = Status.valueOf(sampleStatusString)
-                } catch(IllegalArgumentException statusNotFound) {
-                    // The status in the database is invalid. This should never be the case!
-                    log.error("Could not parse status $sampleStatusString for $sampleCode at $arrivalTime", statusNotFound)
-                    throw new DataSourceException("Retrieval of sample statuses failed for sample $sampleCode")
-                }
-                if(Status.DATA_AVAILABLE.equals(sampleStatus)) {
-                    statuses.add(sampleCode)
-                }
+                sampleCodes.add(sampleCode)
             }
         }
-        return statuses
+        return sampleCodes
     }
 
     /**
@@ -82,7 +72,7 @@ class SamplesDbConnector implements CountSamplesDataSource {
         String queryTemplate = Query.fetchLatestSampleEntries()
         Connection connection = connectionProvider.connect()
         List<Status> statuses = new ArrayList<>()
-        String sqlRegex = "$projectCode%"
+        String sqlRegex = "${projectCode}%"
         connection.withCloseable {
             PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
             preparedStatement.setString(1, sqlRegex)
@@ -108,7 +98,7 @@ class SamplesDbConnector implements CountSamplesDataSource {
     private class Query {
         /**
          * Generates a query with one wildcard ? that can be filled with a sql match to
-         * filter by sample_id.
+         * filter by sample_id. Does not return "ENTITY" samples.
          * <p>The returned query provides all rows for which the arrival_time matches the
          * latest arrival_time recorded for this sample_id.</p>
          * @return a query template
@@ -143,7 +133,7 @@ class SamplesDbConnector implements CountSamplesDataSource {
             final String latestEntriesQuery = "SELECT samples_locations.* FROM samples_locations " +
                     "INNER JOIN ($latestEditQuery) AS latest_arrivals " +
                     "ON latest_arrivals.sample_id = samples_locations.sample_id " +
-                    "AND latest_arrivals.arrival_time = samples_locations.arrival_time;"
+                    "AND latest_arrivals.arrival_time = samples_locations.arrival_time"
 
             return latestEntriesQuery
         }
