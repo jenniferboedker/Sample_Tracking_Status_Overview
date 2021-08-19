@@ -20,4 +20,11 @@ interface CountSamplesDataSource {
      */
     List<Status> fetchSampleStatusesForProject(String projectCode) throws DataSourceException
 
+    /**
+     * Given a project code, returns all sample codes with the current sample statuses "data available"
+     * @return List of sample codes of a project that are set to data available
+     * @since 1.0.0
+     * @throws DataSourceException in case of a technical error with the data source
+     */
+    List<String> fetchSampleCodesWithData(String projectCode) throws DataSourceException
 }
