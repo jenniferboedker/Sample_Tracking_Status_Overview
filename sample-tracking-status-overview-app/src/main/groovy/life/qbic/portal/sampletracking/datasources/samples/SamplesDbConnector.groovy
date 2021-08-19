@@ -46,7 +46,7 @@ class SamplesDbConnector implements CountSamplesDataSource {
         String queryTemplate = Query.fetchLatestSampleEntries()
         Connection connection = connectionProvider.connect()
         List<Status> statuses = new ArrayList<>()
-        String sqlRegex = "$projectCode%"
+        String sqlRegex = "${projectCode}%"
         connection.withCloseable {
             PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
             preparedStatement.setString(1, sqlRegex)
