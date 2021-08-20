@@ -17,7 +17,6 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
         this.addTopic(Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
         this.addTopic(Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
         this.addTopic(Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
-
     }
 
     /**
