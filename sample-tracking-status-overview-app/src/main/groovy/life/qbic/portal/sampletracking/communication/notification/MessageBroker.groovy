@@ -22,7 +22,6 @@ class MessageBroker extends NotificationService {
         addTopic(Topic.NOTIFICATION_FAILURE)
         addTopic(Topic.NOTIFICATION_SUCCESS)
         addTopic(Topic.NOTIFICATION_INFO)
-        addTopic(Topic.SAMPLE_DATA_AVAILABLE)
     }
 
     @Override
