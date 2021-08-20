@@ -17,12 +17,14 @@ class ProjectSummary {
     String title
     int samplesReceived
     int samplesQcFailed
+    int sampleDataAvailable
 
     private ProjectSummary(Builder builder) {
         this.code = builder.code
         this.title = builder.title
         this.samplesReceived = builder.samplesReceived
         this.samplesQcFailed = builder.samplesQcFailed
+        this.sampleDataAvailable = builder.sampleDataAvailable
     }
 
     static class Builder {
@@ -30,6 +32,7 @@ class ProjectSummary {
         private String title
         private int samplesReceived
         private int samplesQcFailed
+        private int sampleDataAvailable
 
         /**
          * Constructs a builder and sets the code and title.
@@ -42,6 +45,7 @@ class ProjectSummary {
             this.title = title
             this.samplesReceived = 0
             this.samplesQcFailed = 0
+            this.sampleDataAvailable = 0
         }
 
         /**
@@ -54,6 +58,7 @@ class ProjectSummary {
             this.title = projectDto.projectTitle
             this.samplesReceived = 0
             this.samplesQcFailed = 0
+            this.sampleDataAvailable = 0
         }
 
         /**
@@ -76,6 +81,17 @@ class ProjectSummary {
          */
         Builder samplesQcFailed(int number) {
             this.samplesQcFailed = number
+            return this
+        }
+
+        /**
+         * Sets the number of samples that failed QC
+         * @param number
+         * @return the current Builder with the number set
+         * @since 1.0.0
+         */
+        Builder sampleDataAvailable(int number) {
+            this.sampleDataAvailable = number
             return this
         }
 
