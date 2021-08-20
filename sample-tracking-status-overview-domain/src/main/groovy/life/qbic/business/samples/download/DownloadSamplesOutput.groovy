@@ -22,6 +22,6 @@ interface DownloadSamplesOutput {
      * @param sampleCodes list of sample codes with available data
      * @since 1.0.0
      */
-    void fetchSampleCodesWithData(String projectCode, List<String> sampleCodes)
+    void foundDownloadableSamples(String projectCode, List<String> sampleCodes)
 
 }
