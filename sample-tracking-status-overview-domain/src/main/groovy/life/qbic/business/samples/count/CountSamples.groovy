@@ -65,7 +65,7 @@ class CountSamples implements CountSamplesInput{
     try {
       sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
       int availableData = countSamplesFromStatus(Status.DATA_AVAILABLE)
-      output.countedReceivedSamples(projectCode, sampleStatuses.size(), availableData)
+      output.countedAvailableSampleData(projectCode, sampleStatuses.size(), availableData)
     } catch (Exception e) {
       output.failedExecution(e.getMessage())
     }
