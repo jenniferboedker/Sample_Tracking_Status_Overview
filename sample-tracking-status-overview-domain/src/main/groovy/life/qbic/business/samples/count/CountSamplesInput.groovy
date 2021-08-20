@@ -14,7 +14,7 @@ interface CountSamplesInput {
      * and the number of samples that have been received in the sequencing lab.
      * In case of failure the output interface failure method is called.
      *
-     * @param projectCode A code specifying the samples that should be considered
+     * @param projectCode a code specifying the samples that should be considered
      * @since 1.0.0
      */
     void countReceivedSamples(String projectCode)
@@ -24,7 +24,7 @@ interface CountSamplesInput {
      * and the number of samples that have failed quality control.
      * In case of failure the output interface failure method is called.
      *
-     * @param projectCode A code specifying the samples that should be considered
+     * @param projectCode a code specifying the samples that should be considered
      * @since 1.0.0
      */
     void countQcFailedSamples(String projectCode)
