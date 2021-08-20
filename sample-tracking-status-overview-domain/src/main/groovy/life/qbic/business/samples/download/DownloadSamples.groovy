@@ -34,13 +34,13 @@ class DownloadSamples implements DownloadSamplesInput {
    * @since 1.0.0
    */
   @Override
-  void fetchSampleCodesWithData(String projectCode) {
+  void requestSampleCodesFor(String projectCode) {
     sampleCodes = new ArrayList<>()
     try {
       for(Status status : statusesWithData) {
         sampleCodes.addAll(dataSource.fetchSampleCodesFor(projectCode, status))
       }
-      output.fetchSampleCodesWithData(projectCode, sampleCodes)
+      output.foundDownloadableSamples(projectCode, sampleCodes)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
     } catch (Exception e) {

@@ -10,17 +10,6 @@ import spock.lang.Specification
  * @since 1.0.0
  */
 class DownloadSamplesSpec extends Specification {
-
-
-//  DownloadSamples(DownloadSamplesDataSource dataSource, DownloadSamplesOutput output) {
-//    this.dataSource = dataSource
-//    this.output = output
-//  
-//
-//  void fetchSampleCodesWithData(String projectCode) {
-//dataSource.fetchSampleCodesFor(projectCode, status))
-//      
-//      output.fetchSampleCodesWithData(projectCode, sampleCodes)
   
     def "successful execution of the use case lead to success notifications"() {
         given:
@@ -31,9 +20,9 @@ class DownloadSamplesSpec extends Specification {
         DownloadSamples downloadSamples = new DownloadSamples(dataSource, output)
         
         when:"the use case is run"
-        downloadSamples.fetchSampleCodesWithData(projectCode)
+        downloadSamples.requestSampleCodesFor(projectCode)
         then:"a successful message is send"
-        1 * output.fetchSampleCodesWithData(projectCode, _ as List<String>)
+        1 * output.foundDownloadableSamples(projectCode, _ as List<String>)
         0 * output.failedExecution(_ as String)
     }
     
@@ -46,9 +35,9 @@ class DownloadSamplesSpec extends Specification {
         DownloadSamplesOutput output = Mock()
         DownloadSamples downloadSamples = new DownloadSamples(dataSource, output)
         when:"the use case is run"
-        downloadSamples.fetchSampleCodesWithData(projectCode)
+        downloadSamples.requestSampleCodesFor(projectCode)
         then:"the correct amounts of samples are returned"
-        1 * output.fetchSampleCodesWithData(projectCode, codes)
+        1 * output.foundDownloadableSamples(projectCode, codes)
         0 * output.failedExecution(_ as String)
     }
     
@@ -62,10 +51,10 @@ class DownloadSamplesSpec extends Specification {
         DownloadSamplesOutput output = Mock()
         DownloadSamples downloadSamples = new DownloadSamples(dataSource, output)
         when:"the use case is run"
-        downloadSamples.fetchSampleCodesWithData(projectCode)
+        downloadSamples.requestSampleCodesFor(projectCode)
         then:"a failure message is send"
         1 * output.failedExecution(_)
-        0 * output.fetchSampleCodesWithData(_)
+        0 * output.foundDownloadableSamples(_)
     }
 
     def "a DataSourceException leads to a failure notification and no sample codes being loaded"() {
@@ -79,11 +68,11 @@ class DownloadSamplesSpec extends Specification {
         DownloadSamples downloadSamples = new DownloadSamples(dataSource, output)
 
         when:"the use case is run"
-        downloadSamples.fetchSampleCodesWithData(projectCode)
+        downloadSamples.requestSampleCodesFor(projectCode)
 
         then:"a failure message is send"
         1 * output.failedExecution(_)
-        0 * output.fetchSampleCodesWithData(_)
+        0 * output.foundDownloadableSamples(_)
     }
 
 }

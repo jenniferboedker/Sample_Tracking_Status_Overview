@@ -17,6 +17,6 @@ interface DownloadSamplesInput {
      * @param projectCode a code specifying the samples that should be considered
      * @since 1.0.0
      */
-    void fetchSampleCodesWithData(String projectCode)
+    void requestSampleCodesFor(String projectCode)
 
 }
