@@ -6,6 +6,7 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
+import life.qbic.portal.sampletracking.components.download.DownloadProjectComponent
 
 /**
  * <h1>This class generates the layout for the ProductOverview use case</h1>
@@ -27,7 +28,6 @@ class ProjectOverviewView extends VerticalLayout{
 
     ProjectOverviewView(ProjectOverviewViewModel viewModel){
         this.viewModel = viewModel
-
         initLayout()
         fillGrid()
     }
@@ -50,6 +50,7 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.addColumn({it.samplesQcFailed})
                 .setCaption("Samples Failed QC").setId("SamplesFailedQc")
         setupDataProvider()
+        projectGrid.addComponentColumn({ DownloadProjectComponent.from(it)})
         //specify size of grid and layout
         projectGrid.setWidthFull()
         projectGrid.getColumn("ProjectTitle")
