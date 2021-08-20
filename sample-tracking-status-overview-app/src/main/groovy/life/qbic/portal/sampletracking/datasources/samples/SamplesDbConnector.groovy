@@ -38,11 +38,9 @@ class SamplesDbConnector implements CountSamplesDataSource {
     /**
      * {@inheritDoc}
      * @since 1.0.0
-     * We need to fetch all samples initially, since only the latest status counts. This only remains true, while
-     * Status.DATA_AVAILABLE is the last status a sample can reach.
      */
     @Override
-    List<String> fetchSampleCodesWithData(String projectCode) {
+    List<String> fetchSampleCodesFor(String projectCode, Status status) {
         String queryTemplate = Query.fetchLatestSampleEntries()
         queryTemplate += " WHERE sample_status = ?"
         Connection connection = connectionProvider.connect()
@@ -51,7 +49,7 @@ class SamplesDbConnector implements CountSamplesDataSource {
         connection.withCloseable {
             PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
             preparedStatement.setString(1, sqlRegex)
-            preparedStatement.setString(2, Status.DATA_AVAILABLE.toString())
+            preparedStatement.setString(2, status.toString())
             ResultSet resultSet = preparedStatement.executeQuery()
             while (resultSet.next()) {
                 String sampleCode = resultSet.getString("sample_id")
