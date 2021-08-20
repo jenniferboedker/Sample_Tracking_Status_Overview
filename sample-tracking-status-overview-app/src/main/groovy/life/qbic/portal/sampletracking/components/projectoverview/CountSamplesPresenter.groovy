@@ -50,6 +50,7 @@ class CountSamplesPresenter implements CountSamplesOutput {
 
     @Override
     void countedAvailableSampleData(String projectCode, int allSamples, int availableData) {
-
+        StatusCount statusCount = new StatusCount(projectCode, Status.DATA_AVAILABLE, availableData)
+        statusCountResourceService.addToResource(statusCount)
     }
 }

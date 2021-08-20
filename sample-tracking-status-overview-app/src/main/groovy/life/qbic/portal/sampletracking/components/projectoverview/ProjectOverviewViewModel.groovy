@@ -43,12 +43,11 @@ class ProjectOverviewViewModel {
 
         this.statusCountService.subscribe({updateSamplesReceived(it.projectCode, it.count)}, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
         this.statusCountService.subscribe({updateSamplesFailedQc(it.projectCode, it.count)}, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
-
+        this.statusCountService.subscribe({updateDataAvailable(it.projectCode, it.count)}, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
     }
 
     private void addProject(Project project) {
-        ProjectSummary.Builder builder = new ProjectSummary.Builder(project)
-        projectOverviews.add(builder.build())
+        projectOverviews.add(ProjectSummary.of(project))
     }
 
     private void removeProject(Project project) {
@@ -59,16 +58,26 @@ class ProjectOverviewViewModel {
     }
 
     private void updateSamplesReceived(String projectCode, int sampleCount) {
-        ProjectSummary projectOverview = projectOverviews.collect {it as ProjectSummary}.find { it ->
-            (it as ProjectSummary).code == projectCode
-        }
-        projectOverview.samplesReceived = sampleCount
+        getProjectSummary(projectCode).samplesReceived = sampleCount
+    }
+
+    private void updateDataAvailable(String projectCode, int sampleCount) {
+        getProjectSummary(projectCode).sampleDataAvailable = sampleCount
     }
 
     private void updateSamplesFailedQc(String projectCode, int sampleCount) {
+        getProjectSummary(projectCode).samplesQcFailed = sampleCount
+    }
+
+    /**
+     * Returns the project summary for a given project code based on the projects listed in the overview
+     * @param projectCode The project code specifies a project
+     * @return The project summary for the respective code
+     */
+    private ProjectSummary getProjectSummary(String projectCode){
         ProjectSummary projectOverview = projectOverviews.collect {it as ProjectSummary}.find { it ->
             (it as ProjectSummary).code == projectCode
         }
-        projectOverview.samplesQcFailed = sampleCount
+        return projectOverview
     }
 }
