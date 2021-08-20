@@ -44,7 +44,7 @@ class SamplesDbConnector implements CountSamplesDataSource {
     @Override
     List<String> fetchSampleCodesWithData(String projectCode) {
         String queryTemplate = Query.fetchLatestSampleEntries()
-        queryTemplate += "WHERE sample_status = ?"
+        queryTemplate += " WHERE sample_status = ?"
         Connection connection = connectionProvider.connect()
         List<String> sampleCodes = new ArrayList<>()
         String sqlRegex = "${projectCode}%"
