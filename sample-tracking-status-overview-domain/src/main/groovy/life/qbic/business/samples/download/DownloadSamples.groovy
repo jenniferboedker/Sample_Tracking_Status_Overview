@@ -35,7 +35,7 @@ class DownloadSamples implements DownloadSamplesInput {
    */
   @Override
   void fetchSampleCodesWithData(String projectCode) {
-    sampleCodes = new ArrayList<>();
+    sampleCodes = new ArrayList<>()
     try {
       for(Status status : statusesWithData) {
         sampleCodes.addAll(dataSource.fetchSampleCodesFor(projectCode, status))
