@@ -47,7 +47,7 @@ class ProjectOverviewViewModel {
     }
 
     private void addProject(Project project) {
-        projectOverviews.add(new ProjectSummary(project))
+        projectOverviews.add(ProjectSummary.of(project))
     }
 
     private void removeProject(Project project) {

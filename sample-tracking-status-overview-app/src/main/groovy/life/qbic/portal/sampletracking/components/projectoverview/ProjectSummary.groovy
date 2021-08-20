@@ -19,20 +19,18 @@ class ProjectSummary {
     int samplesQcFailed
     int sampleDataAvailable
 
-    ProjectSummary(Project project, int samplesReceived, int samplesQCFailed, int samplesDataAvailable) {
-        this.code = project.projectId.projectCode.toString()
-        this.title = project.projectTitle
-        this.samplesReceived = samplesReceived
-        this.samplesQcFailed = samplesQCFailed
-        this.sampleDataAvailable = samplesDataAvailable
-    }
-
-    ProjectSummary(Project project) {
-        this.code = project.projectId.projectCode.toString()
-        this.title = project.projectTitle
+    ProjectSummary(String code, String title) {
+        this.code = code
+        this.title = title
         this.samplesReceived = 0
         this.samplesQcFailed = 0
         this.sampleDataAvailable = 0
+    }
+
+    static ProjectSummary of(Project project) {
+        String code = project.projectId.projectCode.toString()
+        String title = project.projectTitle
+        return new ProjectSummary(code, title)
     }
 
     String getCode() {
