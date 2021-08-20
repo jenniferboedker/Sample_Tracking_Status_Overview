@@ -35,6 +35,29 @@ class SamplesDbConnector implements CountSamplesDataSource {
         this.connectionProvider = connectionProvider
     }
 
+    /**
+     * {@inheritDoc}
+     * @since 1.0.0
+     */
+    @Override
+    List<String> fetchSampleCodesFor(String projectCode, Status status) {
+        String queryTemplate = Query.fetchLatestSampleEntries()
+        queryTemplate += " WHERE sample_status = ?"
+        Connection connection = connectionProvider.connect()
+        List<String> sampleCodes = new ArrayList<>()
+        String sqlRegex = "${projectCode}%"
+        connection.withCloseable {
+            PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
+            preparedStatement.setString(1, sqlRegex)
+            preparedStatement.setString(2, status.toString())
+            ResultSet resultSet = preparedStatement.executeQuery()
+            while (resultSet.next()) {
+                String sampleCode = resultSet.getString("sample_id")
+                sampleCodes.add(sampleCode)
+            }
+        }
+        return sampleCodes
+    }
 
     /**
      * {@inheritDoc}
@@ -47,7 +70,7 @@ class SamplesDbConnector implements CountSamplesDataSource {
         String queryTemplate = Query.fetchLatestSampleEntries()
         Connection connection = connectionProvider.connect()
         List<Status> statuses = new ArrayList<>()
-        String sqlRegex = "$projectCode%"
+        String sqlRegex = "${projectCode}%"
         connection.withCloseable {
             PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
             preparedStatement.setString(1, sqlRegex)
@@ -73,7 +96,7 @@ class SamplesDbConnector implements CountSamplesDataSource {
     private class Query {
         /**
          * Generates a query with one wildcard ? that can be filled with a sql match to
-         * filter by sample_id.
+         * filter by sample_id. Does not return "ENTITY" samples.
          * <p>The returned query provides all rows for which the arrival_time matches the
          * latest arrival_time recorded for this sample_id.</p>
          * @return a query template
@@ -108,7 +131,7 @@ class SamplesDbConnector implements CountSamplesDataSource {
             final String latestEntriesQuery = "SELECT samples_locations.* FROM samples_locations " +
                     "INNER JOIN ($latestEditQuery) AS latest_arrivals " +
                     "ON latest_arrivals.sample_id = samples_locations.sample_id " +
-                    "AND latest_arrivals.arrival_time = samples_locations.arrival_time;"
+                    "AND latest_arrivals.arrival_time = samples_locations.arrival_time"
 
             return latestEntriesQuery
         }
