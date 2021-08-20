@@ -13,8 +13,8 @@ import life.qbic.datamodel.dtos.projectmanagement.Project
  */
 @EqualsAndHashCode
 class ProjectSummary {
-    String code
-    String title
+    private String code
+    private String title
     int samplesReceived
     int samplesQcFailed
     int sampleDataAvailable
@@ -35,4 +35,11 @@ class ProjectSummary {
         this.sampleDataAvailable = 0
     }
 
+    String getCode() {
+        return code
+    }
+
+    String getTitle() {
+        return title
+    }
 }
