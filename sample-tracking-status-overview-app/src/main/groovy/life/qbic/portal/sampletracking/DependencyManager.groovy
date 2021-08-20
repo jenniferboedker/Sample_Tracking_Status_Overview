@@ -144,6 +144,7 @@ class DependencyManager {
         projectCodes.each {
             countSamples.countReceivedSamples(it)
             countSamples.countQcFailedSamples(it)
+            //todo count available data
         }
     }
 
