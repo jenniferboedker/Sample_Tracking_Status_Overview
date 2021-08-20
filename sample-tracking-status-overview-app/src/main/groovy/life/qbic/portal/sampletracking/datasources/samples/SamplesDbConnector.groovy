@@ -3,7 +3,7 @@ package life.qbic.portal.sampletracking.datasources.samples
 import groovy.util.logging.Log4j2
 import life.qbic.business.DataSourceException
 import life.qbic.business.samples.count.CountSamplesDataSource
-import life.qbic.business.samples.download.CountSamplesDataSource
+import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
 
