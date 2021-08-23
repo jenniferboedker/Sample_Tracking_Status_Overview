@@ -71,4 +71,10 @@ class ProjectOverviewViewModel {
         }
         projectOverview.samplesQcFailed = sampleCount
     }
+
+    //FIXME remove test method
+    def updateCount(String project, int count) {
+        updateSamplesReceived(project, count)
+    }
+    // end of fixme
 }

@@ -2,22 +2,26 @@ package life.qbic.portal.sampletracking.components.download
 
 
 import com.vaadin.ui.Button
+import groovy.transform.EqualsAndHashCode
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary
 
+import java.util.function.Consumer
+
 /**
- * <b><short description></b>
+ * <b>A component providing users with the ability to start a project download</b>
  *
- * <p><detailed description></p>
- *
- * @since <version tag>
+ * @since 1.0.0
  */
+@EqualsAndHashCode(includeFields = true, callSuper = true)
 class DownloadProjectComponent extends Button {
+    private  Consumer<String> download
     private String projectCode
     private int downloadableSamplesCount
 
-    private DownloadProjectComponent(String projectCode, int downloadableSamplesCount) {
+    private DownloadProjectComponent(String projectCode, int downloadableSamplesCount, Consumer<String> download) {
         this.projectCode = projectCode
         this.downloadableSamplesCount = downloadableSamplesCount
+        this.download = download
         generateCaption()
         setupListener()
     }
@@ -35,13 +39,13 @@ class DownloadProjectComponent extends Button {
 
     private void setupListener() {
         this.addClickListener({
-            println("Clicked download button for $projectCode")
+            download.accept(projectCode)
         })
     }
 
-    static DownloadProjectComponent from(ProjectSummary projectSummary) {
+    static DownloadProjectComponent from(ProjectSummary projectSummary, Consumer<String> downloadProject) {
         //TODO replace samples received with samples available
-        DownloadProjectComponent component = new DownloadProjectComponent(projectSummary.code, projectSummary.samplesReceived)
+        DownloadProjectComponent component = new DownloadProjectComponent(projectSummary.code, projectSummary.samplesReceived, downloadProject)
         return component
     }
 }
