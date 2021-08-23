@@ -70,7 +70,7 @@ class ProjectOverviewView extends VerticalLayout {
         setupDataProvider()
         projectGrid.addComponentColumn({ projectSummary ->
             getDownloadComponent(projectSummary)
-        })
+        }).setCaption("Download Data").setId("DownloadData")
         //specify size of grid and layout
         projectGrid.setWidthFull()
         projectGrid.getColumn("ProjectTitle")
