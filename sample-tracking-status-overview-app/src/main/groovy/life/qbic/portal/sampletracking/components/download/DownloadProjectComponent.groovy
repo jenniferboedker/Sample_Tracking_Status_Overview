@@ -14,7 +14,7 @@ import java.util.function.Consumer
  */
 @EqualsAndHashCode(includeFields = true, callSuper = true)
 class DownloadProjectComponent extends Button {
-    private  Consumer<String> download
+    private Consumer<String> download
     private String projectCode
     private int downloadableSamplesCount
 
