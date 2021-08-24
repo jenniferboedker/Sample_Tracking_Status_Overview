@@ -48,9 +48,11 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
         projectGrid.addSelectionListener({
             if (it instanceof SingleSelectionEvent<ProjectSummary>) {
-                viewModel.selectedProjectCode = it.getSelectedItem()
-                        .map({it.code}).orElse("")
+                viewModel.selectedProject = it.getSelectedItem().orElse(null)
             }
+        })
+        viewModel.addPropertyChangeListener("selectedProjectCode", {
+            projectGrid.select(viewModel.selectedProject)
         })
     }
 
@@ -83,8 +85,9 @@ class ProjectOverviewView extends VerticalLayout{
     private AbstractComponent setupProjectSpecificButtons() {
         MenuBar buttonBar = new MenuBar()
         buttonBar.addItem("Download Project", {
-            assert viewModel.selectedProjectCode
-            downloadProjectController.downloadProject(viewModel.selectedProjectCode)
+            assert viewModel.selectedProject
+            downloadProjectController.downloadProject(Optional.of(viewModel.selectedProject)
+                    .map({it.code}).get())
         })
         return buttonBar
     }

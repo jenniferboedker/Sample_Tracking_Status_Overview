@@ -26,6 +26,7 @@ logs/
 
 # compiled Vaadin widgetsets
 **/VAADIN/widgetsets
+**/styles.css
 
 # From docs
 **/__pycache__

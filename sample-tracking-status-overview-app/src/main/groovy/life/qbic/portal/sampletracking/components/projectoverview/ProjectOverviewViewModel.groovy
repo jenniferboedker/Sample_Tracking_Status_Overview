@@ -20,7 +20,7 @@ class ProjectOverviewViewModel {
     private final ResourceService<Project> projectResourceService
     private final ResourceService<StatusCount> statusCountService
 
-    @Bindable String selectedProjectCode
+    @Bindable ProjectSummary selectedProject
     @Bindable String generatedManifest
 
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService){
