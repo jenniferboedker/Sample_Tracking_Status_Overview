@@ -12,7 +12,7 @@ class ComposeManifest implements DownloadSamplesOutput{
     private final ComposeManifestOutput output
 
     /**
-     * @param output
+     * @param output the output receiving the printed manifest
      * @since 1.0.0
      */
     ComposeManifest(ComposeManifestOutput output) {
