@@ -7,7 +7,7 @@ import spock.lang.Specification
  *
  * @since 1.0.0
  */
-class DownloadManifestSpec extends Specification {
+class DownloadManifestFormatterSpec extends Specification {
     /**
      * @since 1.0.0
      */
@@ -16,7 +16,7 @@ class DownloadManifestSpec extends Specification {
         def sampleCodes = ["This", "Is", "A", "Test"]
         DownloadManifest downloadManifest = DownloadManifest.from(sampleCodes)
         then:
-        downloadManifest.print() == expectedResult
+        DownloadManifestFormatter.format(downloadManifest) == expectedResult
         where:
         expectedResult =
                 """\

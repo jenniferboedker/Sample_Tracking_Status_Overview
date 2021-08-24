@@ -1,4 +1,6 @@
 package life.qbic.business.samples.download
+
+
 /**
  * <b>A download manifest for download using our postman-cli</b>
  *
@@ -18,11 +20,6 @@ class DownloadManifest {
         sampleCodes = new LinkedHashSet<>()
     }
 
-    private static String printSampleRow(String sampleCode) {
-        return "${sampleCode}\n"
-    }
-
-
     /**
      * Creates a download manifest from the provided sample codes
      * @param sampleCodes a list of sample codes that are contained in this manifest
@@ -31,22 +28,37 @@ class DownloadManifest {
      */
     static DownloadManifest from(Collection<String> sampleCodes) {
         DownloadManifest downloadManifest = new DownloadManifest()
-        downloadManifest.sampleCodes.addAll(sampleCodes.unique())
+        Collection<String> uniqueSampleCodes = sampleCodes.unique()
+        downloadManifest.sampleCodes.addAll(uniqueSampleCodes)
         return downloadManifest
     }
 
     /**
-     * Print the download Manifest
-     * @return a multi-line String print of the download manifest
+     * list all sample codes associated directly to this manifest
+     * @return a list of sample codes
      * @since 1.0.0
      */
-    String print() {
-        sampleCodes.collect {printSampleRow(it)}.sum()
+    List<String> listSampleCodes() {
+        // we do not use `getSampleCodes` since this would lead to errors in the `from`
+        // method caused by groovy using the getter instead of the field
+        return this.sampleCodes.toList()
     }
 
+    /**
+     * <p>We need this to ensure that Groovy accesses the field internally correctly.</p>
+     * <p><b>PLEASE NOTE:</b> Implementing this method as a public getter with a new set as a return
+     * value breaks internal functionality due to Groovy calling the getter instead of accessing the
+     *  field directly.</p>
+     * @return the {@link #sampleCodes} field (the same instance)
+     */
+    private Set<String> getSampleCodes() {
+        return sampleCodes
+    }
 
     @Override
     String toString() {
-        return print()
+        return "DownloadManifest{" +
+                "sampleCodes=" + sampleCodes +
+                '}'
     }
 }

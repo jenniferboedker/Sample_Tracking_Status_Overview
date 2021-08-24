@@ -30,6 +30,7 @@ class ComposeManifest implements DownloadSamplesOutput{
             output.failedExecution("There is no sample code provided for download.")
         }
         DownloadManifest downloadManifest = DownloadManifest.from(sampleCodes)
-        output.readManifest(downloadManifest.print())
+        String printableManifest = DownloadManifestFormatter.format(downloadManifest)
+        output.readManifest(printableManifest)
     }
 }
