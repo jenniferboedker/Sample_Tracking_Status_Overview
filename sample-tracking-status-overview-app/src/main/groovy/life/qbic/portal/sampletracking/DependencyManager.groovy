@@ -46,6 +46,7 @@ class DependencyManager {
 
     private LoadProjectsDataSource loadProjectsDataSource
     private CountSamplesDataSource countSamplesDataSource
+    private DownloadSamplesDataSource downloadSamplesDataSource
 
     private ResourceService<Project> projectResourceService
     private ResourceService<StatusCount> statusCountService
@@ -86,6 +87,7 @@ class DependencyManager {
         DatabaseSession.init(user, password, host, port, sqlDatabase)
         SamplesDbConnector samplesDbConnector = new SamplesDbConnector(DatabaseSession.getInstance())
         countSamplesDataSource = samplesDbConnector
+        downloadSamplesDataSource = samplesDbConnector
 
         Credentials openBisCredentials = new Credentials(
                 user: configurationManager.getDataSourceUser(),
@@ -145,6 +147,19 @@ class DependencyManager {
             countSamples.countReceivedSamples(it)
             countSamples.countQcFailedSamples(it)
         }
+    }
+    
+    /**
+     * Triggers the download manifest loading when called
+     */
+    private void activateDownloadManifestService() {
+      ComposeManifestOutput manifestPresenter = new DownloadManifestPresenter(randomviewmodel todo)
+        DownloadSamplesOutput output = new ComposeManifest(manifestPresenter)
+        DownloadSamples countSamples = new DownloadSamples(downloadSamplesDataSource, output)
+        
+        DownloadSamples downloadSamples = new DownloadSamples(dataSource, output)
+        DownloadSamplesController downloadController = new DownloadSamplesCrontroller(downloadSamples)
+        //downloadSamples.requestSampleCodesFor(projectCode)
     }
 
         /**
