@@ -3,13 +3,14 @@ package life.qbic.business.samples.download
 import spock.lang.Specification
 
 /**
- * <b><short description></b>
+ * <p>Tests the creation of download manifests</p>
  *
- * <p><detailed description></p>
- *
- * @since <version tag>
+ * @since 1.0.0
  */
 class DownloadManifestSpec extends Specification {
+    /**
+     * @since 1.0.0
+     */
     def "When sample codes are provided, a DownloadManifest print contains each on a single line"() {
         when:
         def sampleCodes = ["This", "Is", "A", "Test"]
