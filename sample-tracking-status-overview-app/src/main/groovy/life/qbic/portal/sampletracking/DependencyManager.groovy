@@ -8,6 +8,11 @@ import life.qbic.business.project.load.LoadProjectsOutput
 import life.qbic.business.samples.count.CountSamples
 import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.business.samples.count.CountSamplesOutput
+import life.qbic.business.samples.download.DownloadSamplesDataSource
+import life.qbic.business.samples.download.DownloadSamples
+import life.qbic.business.samples.download.DownloadSamplesOutput
+import life.qbic.business.samples.download.ComposeManifest
+import life.qbic.business.samples.download.ComposeManifestOutput
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
@@ -17,6 +22,8 @@ import life.qbic.portal.sampletracking.components.projectoverview.CountSamplesPr
 import life.qbic.portal.sampletracking.components.projectoverview.LoadProjectsPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
+import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.download.ManifestPresenter
 import life.qbic.portal.sampletracking.datasources.Credentials
 import life.qbic.portal.sampletracking.datasources.OpenBisConnector
 import life.qbic.portal.sampletracking.datasources.database.DatabaseSession
@@ -120,8 +127,18 @@ class DependencyManager {
      */
     private ProjectOverviewView createProjectOverviewView() {
         ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService)
-        ProjectOverviewView view =  new ProjectOverviewView(viewModel)
+        
+        DownloadProjectController downloadController = setupDownloadProjectUsecase(viewModel)
+        ProjectOverviewView view =  new ProjectOverviewView(viewModel, downloadController)
         return view
+    }
+    
+    private DownloadProjectController setupDownloadProjectUsecase(ProjectOverviewViewModel viewModel) {
+        ComposeManifestOutput manifestPresenter = new ManifestPresenter(viewModel)
+        DownloadSamplesOutput output = new ComposeManifest(manifestPresenter)
+        DownloadSamples downloadSamples = new DownloadSamples(downloadSamplesDataSource, output)
+        
+        return new DownloadProjectController(downloadSamples)
     }
 
     /**
@@ -154,12 +171,7 @@ class DependencyManager {
      */
     /*
     private void activateDownloadManifestService() {
-      ComposeManifestOutput manifestPresenter = new ManifestPresenter(ProjectOverviewViewModel model)
-        DownloadSamplesOutput output = new ComposeManifest(manifestPresenter)
-        DownloadSamples countSamples = new DownloadSamples(downloadSamplesDataSource, output)
-        
-        DownloadSamples downloadSamples = new DownloadSamples(dataSource, output)
-        DownloadProjectController downloadController = new DownloadProjectCrontroller(downloadSamples)        
+      
         
         
         //output -> model

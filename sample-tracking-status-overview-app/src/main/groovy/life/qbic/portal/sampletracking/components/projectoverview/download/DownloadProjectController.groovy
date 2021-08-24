@@ -14,7 +14,7 @@ class DownloadProjectController {
   
     DownloadSamplesInput downloadSamples
 
-    DownloadProjectCrontroller(DownloadSamplesInput downloadSamples) {
+    DownloadProjectController(DownloadSamplesInput downloadSamples) {
         this.downloadSamples = downloadSamples
     }
     
