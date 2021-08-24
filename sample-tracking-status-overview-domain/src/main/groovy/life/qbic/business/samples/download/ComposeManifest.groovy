@@ -28,6 +28,7 @@ class ComposeManifest implements DownloadSamplesOutput{
     void foundDownloadableSamples(String projectCode, List<String> sampleCodes) {
         if (sampleCodes.empty) {
             output.failedExecution("There is no sample code provided for download.")
+            return
         }
         DownloadManifest downloadManifest = DownloadManifest.from(sampleCodes)
         String printableManifest = DownloadManifestFormatter.format(downloadManifest)
