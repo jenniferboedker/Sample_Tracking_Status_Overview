@@ -43,4 +43,10 @@ class DownloadManifest {
     String print() {
         sampleCodes.collect {printSampleRow(it)}.sum()
     }
+
+
+    @Override
+    String toString() {
+        return print()
+    }
 }
