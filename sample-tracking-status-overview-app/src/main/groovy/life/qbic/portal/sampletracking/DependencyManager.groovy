@@ -153,13 +153,25 @@ class DependencyManager {
      * Triggers the download manifest loading when called
      */
     private void activateDownloadManifestService() {
-      ComposeManifestOutput manifestPresenter = new DownloadManifestPresenter(randomviewmodel todo)
+      ComposeManifestOutput manifestPresenter = new ManifestPresenter(ProjectOverviewViewModel model)
         DownloadSamplesOutput output = new ComposeManifest(manifestPresenter)
         DownloadSamples countSamples = new DownloadSamples(downloadSamplesDataSource, output)
         
         DownloadSamples downloadSamples = new DownloadSamples(dataSource, output)
-        DownloadSamplesController downloadController = new DownloadSamplesCrontroller(downloadSamples)
-        //downloadSamples.requestSampleCodesFor(projectCode)
+        DownloadProjectController downloadController = new DownloadProjectCrontroller(downloadSamples)        
+        
+        
+        //output -> model
+        //CreateAffiliationOutput createAffiliationPresenter = new CreateAffiliationPresenter(sharedViewModel, createAffiliationViewModel)
+        //use case -> datasource? output
+        //CreateAffiliation createAffiliation = new CreateAffiliation(createAffiliationPresenter, dataSource)
+        //controller -> use case
+        //CreateAffiliationController createAffiliationController = new CreateAffiliationController(createAffiliation)
+        //View -> Controller, Model
+        //return new CreateAffiliationView(sharedViewModel, createAffiliationViewModel, createAffiliationController)
+        
+        //model -> presenter -> use case -> controller -> view
+        //model -> (presenter -> use case2) -> use case -> controller -> view
     }
 
         /**

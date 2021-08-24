@@ -8,12 +8,18 @@ package life.qbic.portal.sampletracking.components.projectoverview.download
  * @since <version tag>
  */
 class DownloadProjectController {
+  
+    DownloadSamples downloadSamples
 
+    DownloadProjectCrontroller(DownloadSamples downloadSamples) {
+        this.downloadSamples = downloadSamples
+    }
+    
     /**
      * Triggers the download use case
      * @param projectCode
      */
     void downloadProject(String projectCode) {
-        //TODO implement
+        downloadSamples.requestSampleCodesFor(projectCode)
     }
 }
