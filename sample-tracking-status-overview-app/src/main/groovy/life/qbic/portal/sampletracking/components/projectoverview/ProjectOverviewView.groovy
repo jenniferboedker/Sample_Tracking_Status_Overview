@@ -23,6 +23,7 @@ class ProjectOverviewView extends VerticalLayout{
 
     private Label titleLabel
     private Grid<ProjectSummary> projectGrid
+    private TextArea manifestArea
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
@@ -38,8 +39,10 @@ class ProjectOverviewView extends VerticalLayout{
         titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
+        manifestArea = setupManifestContent()
         this.addComponent(setupProjectSpecificButtons())
         this.addComponents(titleLabel, projectGrid)
+        this.addComponent(manifestArea)
     }
 
     private void setupProjects(){
@@ -48,12 +51,23 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
         projectGrid.addSelectionListener({
             if (it instanceof SingleSelectionEvent<ProjectSummary>) {
-                viewModel.selectedProject = it.getSelectedItem().orElse(null)
+                clearProjectSelection()
+                it.getSelectedItem().ifPresent(this::selectProject)
             }
         })
         viewModel.addPropertyChangeListener("selectedProjectCode", {
             projectGrid.select(viewModel.selectedProject)
         })
+    }
+
+    private void selectProject(ProjectSummary projectSummary) {
+        viewModel.selectedProject = projectSummary
+        manifestArea.setVisible(true)
+    }
+
+    private void clearProjectSelection() {
+        viewModel.selectedProject = null
+        manifestArea.setVisible(false)
     }
 
     private void fillProjectsGrid() {
@@ -82,12 +96,22 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.setDataProvider(dataProvider)
     }
 
+    private TextArea setupManifestContent() {
+        TextArea textArea = new TextArea("Download Manifest")
+        textArea.setReadOnly(true)
+        textArea.setVisible(false)
+        viewModel.addPropertyChangeListener("generatedManifest", {
+            textArea.setValue(Optional.ofNullable(it.newValue).orElse("") as String)
+        })
+        return textArea
+    }
+
     private AbstractComponent setupProjectSpecificButtons() {
         MenuBar buttonBar = new MenuBar()
         buttonBar.addItem("Download Project", {
-            assert viewModel.selectedProject
-            downloadProjectController.downloadProject(Optional.of(viewModel.selectedProject)
-                    .map({it.code}).get())
+            String projectCode = Optional.ofNullable(viewModel.selectedProject)
+                    .map({it.code}).get()
+            downloadProjectController.downloadProject(projectCode)
         })
         return buttonBar
     }

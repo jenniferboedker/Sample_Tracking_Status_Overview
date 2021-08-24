@@ -1,6 +1,7 @@
 package life.qbic.portal.sampletracking.components.projectoverview.download
 
 import life.qbic.business.samples.download.ComposeManifestOutput
+import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 
 /**
@@ -13,8 +14,10 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectOvervie
 class ManifestPresenter implements ComposeManifestOutput {
 
     private final ProjectOverviewViewModel viewModel
+    private final NotificationService notificationService
 
-    ManifestPresenter(ProjectOverviewViewModel viewModel) {
+    ManifestPresenter(NotificationService notificationService, ProjectOverviewViewModel viewModel) {
+        this.notificationService = notificationService
         this.viewModel = viewModel
     }
 
@@ -25,6 +28,6 @@ class ManifestPresenter implements ComposeManifestOutput {
 
     @Override
     void failedExecution(String reason) {
-        //TODO implement
+        notificationService.publishFailure("Could not create download manifest. Reason: $reason")
     }
 }
