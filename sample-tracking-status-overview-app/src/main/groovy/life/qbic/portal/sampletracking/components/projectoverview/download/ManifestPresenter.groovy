@@ -20,7 +20,7 @@ class ManifestPresenter implements ComposeManifestOutput {
 
     @Override
     void readManifest(String printedManifest) {
-        //TODO implement
+        viewModel.generatedManifest = Optional.ofNullable(printedManifest).orElse("")
     }
 
     @Override

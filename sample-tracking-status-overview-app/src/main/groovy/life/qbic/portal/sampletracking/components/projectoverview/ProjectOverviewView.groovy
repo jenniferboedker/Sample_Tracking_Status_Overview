@@ -1,14 +1,14 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import com.vaadin.data.provider.ListDataProvider
+import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.shared.ui.grid.HeightMode
-import com.vaadin.ui.Grid
-import com.vaadin.ui.Label
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
+import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 
 /**
- * <h1>This class generates the layout for the ProductOverview use case</h1>
+ * <b>This class generates the layout for the ProductOverview use case</b>
  *
  * <p>This view will be the entry point for the user and provides an overview of her projects. And the projects overall status.
  * From here, the user can navigate to the StatusOverview.</p>
@@ -18,29 +18,43 @@ import com.vaadin.ui.themes.ValoTheme
 */
 class ProjectOverviewView extends VerticalLayout{
 
+    private final ProjectOverviewViewModel viewModel
+    private final DownloadProjectController downloadProjectController
+
     private Label titleLabel
-    private ProjectOverviewViewModel viewModel
     private Grid<ProjectSummary> projectGrid
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
 
-    ProjectOverviewView(ProjectOverviewViewModel viewModel){
+    ProjectOverviewView(ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController){
         this.viewModel = viewModel
+        this.downloadProjectController = downloadProjectController
 
         initLayout()
-        fillGrid()
     }
 
     private void initLayout(){
         titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
-        projectGrid = new Grid<>()
-
+        setupProjects()
+        this.addComponent(setupProjectSpecificButtons())
         this.addComponents(titleLabel, projectGrid)
     }
 
-    private void fillGrid(){
+    private void setupProjects(){
+        projectGrid = new Grid<>()
+        fillProjectsGrid()
+        projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
+        projectGrid.addSelectionListener({
+            if (it instanceof SingleSelectionEvent<ProjectSummary>) {
+                viewModel.selectedProjectCode = it.getSelectedItem()
+                        .map({it.code}).orElse("")
+            }
+        })
+    }
+
+    private void fillProjectsGrid() {
         projectGrid.addColumn({ it.code})
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(MAX_CODE_COLUMN_WIDTH)
         projectGrid.addColumn({ it.title })
@@ -64,5 +78,14 @@ class ProjectOverviewView extends VerticalLayout{
     private void setupDataProvider() {
         def dataProvider = new ListDataProvider(viewModel.projectOverviews)
         projectGrid.setDataProvider(dataProvider)
+    }
+
+    private AbstractComponent setupProjectSpecificButtons() {
+        MenuBar buttonBar = new MenuBar()
+        buttonBar.addItem("Download Project", {
+            assert viewModel.selectedProjectCode
+            downloadProjectController.downloadProject(viewModel.selectedProjectCode)
+        })
+        return buttonBar
     }
 }

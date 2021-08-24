@@ -1,5 +1,8 @@
 package life.qbic.portal.sampletracking.components.projectoverview.download
 
+
+import life.qbic.business.samples.download.DownloadSamplesInput
+
 /**
  * <b><short description></b>
  *
@@ -9,9 +12,9 @@ package life.qbic.portal.sampletracking.components.projectoverview.download
  */
 class DownloadProjectController {
   
-    DownloadSamples downloadSamples
+    DownloadSamplesInput downloadSamples
 
-    DownloadProjectCrontroller(DownloadSamples downloadSamples) {
+    DownloadProjectCrontroller(DownloadSamplesInput downloadSamples) {
         this.downloadSamples = downloadSamples
     }
     

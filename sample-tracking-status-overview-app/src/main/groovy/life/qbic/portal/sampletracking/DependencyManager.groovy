@@ -148,10 +148,11 @@ class DependencyManager {
             countSamples.countQcFailedSamples(it)
         }
     }
-    
+
     /**
      * Triggers the download manifest loading when called
      */
+    /*
     private void activateDownloadManifestService() {
       ComposeManifestOutput manifestPresenter = new ManifestPresenter(ProjectOverviewViewModel model)
         DownloadSamplesOutput output = new ComposeManifest(manifestPresenter)
@@ -173,7 +174,7 @@ class DependencyManager {
         //model -> presenter -> use case -> controller -> view
         //model -> (presenter -> use case2) -> use case -> controller -> view
     }
-
+*/
         /**
      * Returns the global notification center
      * @return a notification center that handles app notifications
