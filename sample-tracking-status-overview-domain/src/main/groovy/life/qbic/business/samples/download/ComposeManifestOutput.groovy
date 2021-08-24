@@ -1,11 +1,9 @@
 package life.qbic.business.samples.download
 
 /**
- * <b><short description></b>
+ * <p>The output for the {@link ComposeManifest} use case</p>
  *
- * <p><detailed description></p>
- *
- * @since <version tag>
+ * @since 1.0.0
  */
 interface ComposeManifestOutput {
 
