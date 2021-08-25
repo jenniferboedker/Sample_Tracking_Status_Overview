@@ -5,11 +5,12 @@ import life.qbic.portal.sampletracking.communication.notification.NotificationSe
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 
 /**
- * <b><short description></b>
+ * <b>Presents a download manifest to the viewModel containing identifiers that point to associated data</b>
  *
- * <p><detailed description></p>
+ * <p>Is called from a use case with a manifest String containing identifiers (e.g. of samples) that have associated data.
+ * This manifest is added to the view model in order to further use it, e.g. present it to the user.</p>
  *
- * @since <version tag>
+ * @since 1.0.0
  */
 class ManifestPresenter implements ComposeManifestOutput {
 

@@ -4,11 +4,12 @@ package life.qbic.portal.sampletracking.components.projectoverview.download
 import life.qbic.business.samples.download.DownloadSamplesInput
 
 /**
- * <b><short description></b>
+ * <b>Controller allowing the view to call the download project use case</b>
  *
- * <p><detailed description></p>
+ * <p>Used via the view to start the download project use case with the currently selected project code.
+ * Starting point where sample codes for this project with associated data are fed into the rest of the use case.</p>
  *
- * @since <version tag>
+ * @since 1.0.0
  */
 class DownloadProjectController {
   
