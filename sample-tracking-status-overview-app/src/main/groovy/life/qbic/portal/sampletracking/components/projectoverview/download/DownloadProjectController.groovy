@@ -23,6 +23,8 @@ class DownloadProjectController {
      * @param projectCode
      */
     void downloadProject(String projectCode) {
-        downloadSamples.requestSampleCodesFor(projectCode)
+        Optional.ofNullable(projectCode).ifPresent({
+            downloadSamples.requestSampleCodesFor(projectCode)
+        })
     }
 }

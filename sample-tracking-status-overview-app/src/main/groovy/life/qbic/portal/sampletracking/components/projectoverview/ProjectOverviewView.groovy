@@ -107,6 +107,7 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private AbstractComponent setupProjectSpecificButtons() {
+
         MenuBar buttonBar = new MenuBar()
         buttonBar.addItem("Download Project", {
             String projectCode = Optional.ofNullable(viewModel.selectedProject)
