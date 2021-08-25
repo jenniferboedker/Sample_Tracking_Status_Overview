@@ -40,9 +40,7 @@ class ProjectOverviewView extends VerticalLayout{
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
         manifestArea = setupManifestContent()
-        this.addComponent(setupProjectSpecificButtons())
-        this.addComponents(titleLabel, projectGrid)
-        this.addComponent(manifestArea)
+        this.addComponents(titleLabel,setupProjectSpecificButtons(), projectGrid,manifestArea)
     }
 
     private void setupProjects(){
