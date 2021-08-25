@@ -110,9 +110,9 @@ class ProjectOverviewView extends VerticalLayout{
 
         MenuBar buttonBar = new MenuBar()
         buttonBar.addItem("Download Project", {
-            String projectCode = Optional.ofNullable(viewModel.selectedProject)
-                    .map({it.code}).get()
-            downloadProjectController.downloadProject(projectCode)
+            Optional.ofNullable(viewModel.selectedProject).ifPresent({
+                downloadProjectController.downloadProject(it.code)
+            })
         })
         return buttonBar
     }
