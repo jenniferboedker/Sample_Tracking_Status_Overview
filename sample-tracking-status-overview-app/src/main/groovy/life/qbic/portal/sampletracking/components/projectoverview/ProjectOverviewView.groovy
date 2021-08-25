@@ -1,9 +1,12 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import com.vaadin.data.provider.ListDataProvider
+import com.vaadin.icons.VaadinIcons
+import com.vaadin.server.ExternalResource
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Label
+import com.vaadin.ui.Link
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 
@@ -35,9 +38,19 @@ class ProjectOverviewView extends VerticalLayout{
     private void initLayout(){
         titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
+        Link postmanLink = generateLink()
+
         projectGrid = new Grid<>()
 
-        this.addComponents(titleLabel, projectGrid)
+        this.addComponents(titleLabel,postmanLink, projectGrid)
+    }
+
+    private static Link generateLink(){
+        Link link = new Link("Download your data with qpostman", new ExternalResource("https://github.com/qbicsoftware/postman-cli#provide-a-file-with-several-qbic-ids"))
+        link.setIcon(VaadinIcons.BOOK)
+        link.setTargetName("_blank")
+
+        return link
     }
 
     private void fillGrid(){
