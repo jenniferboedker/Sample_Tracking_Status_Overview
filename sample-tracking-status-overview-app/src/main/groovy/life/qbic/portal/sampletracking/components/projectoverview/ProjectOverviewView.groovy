@@ -109,7 +109,7 @@ class ProjectOverviewView extends VerticalLayout{
     private AbstractComponent setupProjectSpecificButtons() {
 
         MenuBar buttonBar = new MenuBar()
-        buttonBar.addItem("Download Project", {
+        buttonBar.addItem("Get Available Data", {
             Optional.ofNullable(viewModel.selectedProject).ifPresent({
                 downloadProjectController.downloadProject(it.code)
             })
