@@ -162,27 +162,6 @@ class DependencyManager {
         }
     }
 
-    /**
-     * Triggers the download manifest loading when called
-     */
-    /*
-    private void activateDownloadManifestService() {
-      
-        
-        
-        //output -> model
-        //CreateAffiliationOutput createAffiliationPresenter = new CreateAffiliationPresenter(sharedViewModel, createAffiliationViewModel)
-        //use case -> datasource? output
-        //CreateAffiliation createAffiliation = new CreateAffiliation(createAffiliationPresenter, dataSource)
-        //controller -> use case
-        //CreateAffiliationController createAffiliationController = new CreateAffiliationController(createAffiliation)
-        //View -> Controller, Model
-        //return new CreateAffiliationView(sharedViewModel, createAffiliationViewModel, createAffiliationController)
-        
-        //model -> presenter -> use case -> controller -> view
-        //model -> (presenter -> use case2) -> use case -> controller -> view
-    }
-*/
         /**
      * Returns the global notification center
      * @return a notification center that handles app notifications
