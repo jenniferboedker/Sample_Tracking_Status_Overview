@@ -4,10 +4,13 @@ import ch.ethz.sis.openbis.generic.asapi.v3.IApplicationServerApi
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.project.fetchoptions.ProjectFetchOptions
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.project.search.ProjectSearchCriteria
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.fetchoptions.SampleFetchOptions
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.search.SampleSearchCriteria
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils
 import groovy.util.logging.Log4j2
 import life.qbic.business.DataSourceException
 import life.qbic.business.project.load.LoadProjectsDataSource
+import life.qbic.business.samples.info.GetSamplesInfoDataSource
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.datamodel.dtos.projectmanagement.ProjectCode
@@ -22,7 +25,7 @@ import life.qbic.datamodel.dtos.projectmanagement.ProjectSpace
  * @since 1.0.0
  */
 @Log4j2
-class OpenBisConnector implements LoadProjectsDataSource{
+class OpenBisConnector implements LoadProjectsDataSource, GetSamplesInfoDataSource {
 
     private final String sessionToken
 
@@ -34,6 +37,42 @@ class OpenBisConnector implements LoadProjectsDataSource{
         this.api = HttpInvokerUtils.createServiceStub(IApplicationServerApi.class, openBisUrl + "/rmi-application-server-v3", TIMEOUT)
         this.sessionToken = api.loginAs(credentials.user, credentials.password, portalUser.authProviderId)
     }
+    
+    /**
+     * @inheritDocs
+     */
+    @Override
+    Map<String, String> fetchSampleNamesFor(List<String> sampleCodes) throws DataSourceException {
+      Map<String, String> codesToNames = new HashMap<>()
+      try {
+          SampleFetchOptions fetchOptions = new SampleFetchOptions()
+          fetchOptions.withProperties()
+          
+          SampleSearchCriteria sc = new SampleSearchCriteria();
+          sc.withOrOperator();
+          
+          for (def code : sampleCodes) {
+            sc.withCode().thatEquals(code);
+          }
+          
+          SearchResult<ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample> samples =
+                  api.searchSamples(sessionToken, sc, fetchOptions)
+          for (def sample : samples.getObjects()) {
+              try {
+                  def sampleCode = sample.code
+                  def properties = sample.properties
+                  def name = properties.get("Q_SECONDARY_NAME")
+                  codesToNames.put(sampleCode, name)
+              } catch (IllegalArgumentException e) {
+                  log.error(e.message)
+              }
+          }
+      } catch (Exception unexpected) {
+          throw new DataSourceException("Could not fetch names for sample codes.", unexpected)
+      }
+      return codesToNames
+    }
+    
 
     /**
      * @inheritDocs

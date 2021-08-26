@@ -4,7 +4,7 @@ import life.qbic.business.DataSourceException
 import life.qbic.datamodel.samples.Status
 
 /**
- * <b>Provides sample information of samples of a current status</b>
+ * <b>Fetches sample information for provided sample codes</b>
  *
  * <p>This interface is used by {@link x}</p>
  *
@@ -13,12 +13,11 @@ import life.qbic.datamodel.samples.Status
 interface GetSamplesInfoDataSource {
 
     /**
-     * Given a project code and a status, returns a map of sample codes with that current sample status and the samples' names
-     * @param projectCode the code of a project
-     * @param status the sample status of the wanted samples
+     * Given a list of sample codes, returns a maping between sample codes and the samples' names
+     * @param List sampleCodes the codes of a number of samples
      * @return Map with sample codes as keys and sample names as values
      * @since 1.0.0
      */
-    Map<String, String> fetchSampleInfosFor(String projectCode, Status status) throws DataSourceException
+    Map<String, String> fetchSampleNamesFor(List<String> sampleCodes) throws DataSourceException
 
 }
