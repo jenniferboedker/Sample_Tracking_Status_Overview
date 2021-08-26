@@ -126,7 +126,7 @@ class ProjectOverviewView extends VerticalLayout{
         return buttonBar
     }
 
-    private void tryToDownloadManifest() {
+    private void tryToDownloadManifest() throws IllegalArgumentException{
         String projectCode = null
         Optional.ofNullable(viewModel.selectedProject).ifPresent({
             projectCode = it.getCode()
