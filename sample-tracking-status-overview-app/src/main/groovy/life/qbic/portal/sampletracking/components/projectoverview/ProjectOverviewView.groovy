@@ -113,15 +113,27 @@ class ProjectOverviewView extends VerticalLayout{
         Button downloadManifestAction = new Button("Download Manifest", VaadinIcons.DOWNLOAD)
         downloadManifestAction.addClickListener({
             try {
-                String projectCode = null
-                Optional.ofNullable(viewModel.selectedProject).ifPresent({
-                    projectCode = it.getCode()
-                })
-                downloadProjectController.downloadProject(projectCode)
+                tryToDownloadManifest()
             } catch (IllegalArgumentException illegalArgument) {
                 notificationService.publishFailure("Manifest Download failed due to: ${illegalArgument.getMessage()}")
             }
         })
+        viewModel.addPropertyChangeListener("generatedManifest", { enableIfDownloadIsAvailable(downloadManifestAction) })
+        viewModel.addPropertyChangeListener("selectedProject", { enableIfDownloadIsAvailable(downloadManifestAction) })
+        enableIfDownloadIsAvailable(downloadManifestAction)
+        buttonBar.addComponent(downloadManifestAction)
         return buttonBar
+    }
+
+    private void tryToDownloadManifest() {
+        String projectCode = null
+        Optional.ofNullable(viewModel.selectedProject).ifPresent({
+            projectCode = it.getCode()
+        })
+        downloadProjectController.downloadProject(projectCode)
+    }
+
+    private boolean enableIfDownloadIsAvailable(Component component) {
+        component.enabled = viewModel.selectedProject && viewModel.generatedManifest
     }
 }
