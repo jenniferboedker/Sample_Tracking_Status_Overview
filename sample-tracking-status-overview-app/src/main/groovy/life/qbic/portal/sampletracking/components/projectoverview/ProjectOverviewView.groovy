@@ -64,12 +64,11 @@ class ProjectOverviewView extends VerticalLayout{
 
     private void selectProject(ProjectSummary projectSummary) {
         viewModel.selectedProject = projectSummary
-        manifestArea.setVisible(true)
     }
 
     private void clearProjectSelection() {
         viewModel.selectedProject = null
-        manifestArea.setVisible(false)
+        viewModel.generatedManifest = null
     }
 
     private void fillProjectsGrid() {
@@ -101,15 +100,17 @@ class ProjectOverviewView extends VerticalLayout{
     private TextArea setupManifestContent() {
         TextArea textArea = new TextArea("Download Manifest")
         textArea.setReadOnly(true)
-        textArea.setVisible(false)
+        setVisibleIfDownloadIsAvailable(textArea)
         viewModel.addPropertyChangeListener("generatedManifest", {
             textArea.setValue(Optional.ofNullable(it.newValue).orElse("") as String)
+            setVisibleIfDownloadIsAvailable(textArea)
         })
         return textArea
     }
 
     private AbstractComponent setupProjectSpecificButtons() {
         VerticalLayout buttonBar = new VerticalLayout()
+        buttonBar.setMargin(false)
         Button downloadManifestAction = new Button("Download Manifest", VaadinIcons.DOWNLOAD)
         downloadManifestAction.addClickListener({
             try {
@@ -133,7 +134,12 @@ class ProjectOverviewView extends VerticalLayout{
         downloadProjectController.downloadProject(projectCode)
     }
 
-    private boolean enableIfDownloadIsPossible(Component component) {
+    private void enableIfDownloadIsPossible(Component component) {
         component.enabled = viewModel.selectedProject
     }
+
+    private void setVisibleIfDownloadIsAvailable(Component component) {
+        component.visible = viewModel.generatedManifest
+    }
+
 }
