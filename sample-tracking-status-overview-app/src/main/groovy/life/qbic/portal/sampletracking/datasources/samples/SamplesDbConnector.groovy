@@ -21,7 +21,7 @@ import java.sql.ResultSet
  * @since 1.0.0
  */
 @Log4j2
-class SamplesDbConnector implements CountSamplesDataSource {
+class SamplesDbConnector implements CountSamplesDataSource, GetSamplesInfoDataSource {
     private final ConnectionProvider connectionProvider
 
     /**
@@ -34,7 +34,42 @@ class SamplesDbConnector implements CountSamplesDataSource {
     SamplesDbConnector(ConnectionProvider connectionProvider) {
         this.connectionProvider = connectionProvider
     }
-
+    
+    /**
+     * {@inheritDoc}
+     * <p><b><i>PLEASE NOTE: In case multiple statuses were entered at the same time,
+     * this method adds all statuses to the returned list!</i></b></p>
+     * @since 1.0.0
+     */
+    @Override
+    //TODO
+    Map<String, String> fetchSampleInfosFor(String projectCode, Status status) throws DataSourceException {
+      String queryTemplate = Query.fetchLatestSampleEntries()
+      Connection connection = connectionProvider.connect()
+      List<Status> statuses = new ArrayList<>()
+      String sqlRegex = "$projectCode%"
+      connection.withCloseable {
+          PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
+          preparedStatement.setString(1, sqlRegex)
+          ResultSet resultSet = preparedStatement.executeQuery()
+          while (resultSet.next()) {
+              String sampleCode = resultSet.getString("sample_id")
+              String sampleStatusString = resultSet.getString("sample_status")
+              String arrivalTime = resultSet.getString("arrival_time")
+              Status sampleStatus
+              try {
+                  sampleStatus = Status.valueOf(sampleStatusString)
+              } catch(IllegalArgumentException statusNotFound) {
+                  // The status in the database is invalid. This should never be the case!
+                  log.error("Could not parse status $sampleStatusString for $sampleCode at $arrivalTime", statusNotFound)
+                  throw new DataSourceException("Retrieval of sample statuses failed for sample $sampleCode")
+              }
+              statuses.add(sampleStatus)
+          }
+      }
+      return statuses
+    }
+    //TODO end
 
     /**
      * {@inheritDoc}
