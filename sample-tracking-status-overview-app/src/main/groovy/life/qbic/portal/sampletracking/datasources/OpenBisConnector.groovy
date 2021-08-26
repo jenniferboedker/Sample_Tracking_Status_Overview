@@ -48,15 +48,15 @@ class OpenBisConnector implements LoadProjectsDataSource, GetSamplesInfoDataSour
           SampleFetchOptions fetchOptions = new SampleFetchOptions()
           fetchOptions.withProperties()
           
-          SampleSearchCriteria sc = new SampleSearchCriteria();
-          sc.withOrOperator();
+          SampleSearchCriteria searchCriteria = new SampleSearchCriteria();
+          searchCriteria.withOrOperator();
           
           for (def code : sampleCodes) {
-            sc.withCode().thatEquals(code);
+            searchCriteria.withCode().thatEquals(code);
           }
           
           SearchResult<ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample> samples =
-                  api.searchSamples(sessionToken, sc, fetchOptions)
+                  api.searchSamples(sessionToken, searchCriteria, fetchOptions)
           for (def sample : samples.getObjects()) {
               try {
                   def sampleCode = sample.code
