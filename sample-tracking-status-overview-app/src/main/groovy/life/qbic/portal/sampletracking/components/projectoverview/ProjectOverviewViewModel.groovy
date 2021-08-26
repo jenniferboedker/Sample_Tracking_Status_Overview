@@ -75,4 +75,9 @@ class ProjectOverviewViewModel {
         }
         projectOverview.samplesQcFailed = sampleCount
     }
+
+    InputStream getManifestInputStream() {
+        InputStream result =  new ByteArrayInputStream(generatedManifest.getBytes())
+        return result
+    }
 }

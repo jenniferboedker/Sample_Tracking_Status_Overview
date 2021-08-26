@@ -24,7 +24,8 @@ class ManifestPresenter implements ComposeManifestOutput {
 
     @Override
     void readManifest(String printedManifest) {
-        viewModel.generatedManifest = Optional.ofNullable(printedManifest).orElse("")
+        String newValue = Optional.ofNullable(printedManifest).orElse("")
+        viewModel.setGeneratedManifest(newValue)
     }
 
     @Override
