@@ -2,9 +2,11 @@ package life.qbic.portal.sampletracking.components.projectoverview
 
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
+import com.vaadin.icons.VaadinIcons
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
+import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 
 /**
@@ -20,6 +22,7 @@ class ProjectOverviewView extends VerticalLayout{
 
     private final ProjectOverviewViewModel viewModel
     private final DownloadProjectController downloadProjectController
+    private final NotificationService notificationService
 
     private Label titleLabel
     private Grid<ProjectSummary> projectGrid
@@ -28,7 +31,8 @@ class ProjectOverviewView extends VerticalLayout{
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
 
-    ProjectOverviewView(ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController){
+    ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController){
+        this.notificationService = notificationService
         this.viewModel = viewModel
         this.downloadProjectController = downloadProjectController
 
@@ -107,12 +111,18 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private AbstractComponent setupProjectSpecificButtons() {
-
-        MenuBar buttonBar = new MenuBar()
-        buttonBar.addItem("Download Project", {
-            Optional.ofNullable(viewModel.selectedProject).ifPresent({
-                downloadProjectController.downloadProject(it.code)
-            })
+        VerticalLayout buttonBar = new VerticalLayout()
+        Button downloadManifestAction = new Button("Download Manifest", VaadinIcons.DOWNLOAD)
+        downloadManifestAction.addClickListener({
+            try {
+                String projectCode = null
+                Optional.ofNullable(viewModel.selectedProject).ifPresent({
+                    projectCode = it.getCode()
+                })
+                downloadProjectController.downloadProject(projectCode)
+            } catch (IllegalArgumentException illegalArgument) {
+                notificationService.publishFailure("Manifest Download failed due to: ${illegalArgument.getMessage()}")
+            }
         })
         return buttonBar
     }
