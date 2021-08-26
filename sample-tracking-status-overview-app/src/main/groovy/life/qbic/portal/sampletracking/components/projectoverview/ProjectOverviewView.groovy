@@ -1,14 +1,16 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import com.vaadin.data.provider.ListDataProvider
+import com.vaadin.event.selection.SingleSelectionEvent
+import com.vaadin.icons.VaadinIcons
 import com.vaadin.shared.ui.grid.HeightMode
-import com.vaadin.ui.Grid
-import com.vaadin.ui.Label
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
+import life.qbic.portal.sampletracking.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 
 /**
- * <h1>This class generates the layout for the ProductOverview use case</h1>
+ * <b>This class generates the layout for the ProductOverview use case</b>
  *
  * <p>This view will be the entry point for the user and provides an overview of her projects. And the projects overall status.
  * From here, the user can navigate to the StatusOverview.</p>
@@ -18,29 +20,58 @@ import com.vaadin.ui.themes.ValoTheme
 */
 class ProjectOverviewView extends VerticalLayout{
 
+    private final ProjectOverviewViewModel viewModel
+    private final DownloadProjectController downloadProjectController
+    private final NotificationService notificationService
+
     private Label titleLabel
-    private ProjectOverviewViewModel viewModel
     private Grid<ProjectSummary> projectGrid
+    private TextArea manifestArea
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
 
-    ProjectOverviewView(ProjectOverviewViewModel viewModel){
+    ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController){
+        this.notificationService = notificationService
         this.viewModel = viewModel
+        this.downloadProjectController = downloadProjectController
 
         initLayout()
-        fillGrid()
     }
 
     private void initLayout(){
         titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
-        projectGrid = new Grid<>()
-
-        this.addComponents(titleLabel, projectGrid)
+        setupProjects()
+        manifestArea = setupManifestContent()
+        this.addComponents(titleLabel,setupProjectSpecificButtons(), projectGrid,manifestArea)
     }
 
-    private void fillGrid(){
+    private void setupProjects(){
+        projectGrid = new Grid<>()
+        fillProjectsGrid()
+        projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
+        projectGrid.addSelectionListener({
+            if (it instanceof SingleSelectionEvent<ProjectSummary>) {
+                clearProjectSelection()
+                it.getSelectedItem().ifPresent(this::selectProject)
+            }
+        })
+        viewModel.addPropertyChangeListener("selectedProjectCode", {
+            projectGrid.select(viewModel.selectedProject)
+        })
+    }
+
+    private void selectProject(ProjectSummary projectSummary) {
+        viewModel.selectedProject = projectSummary
+    }
+
+    private void clearProjectSelection() {
+        viewModel.selectedProject = null
+        viewModel.generatedManifest = null
+    }
+
+    private void fillProjectsGrid() {
         projectGrid.addColumn({ it.code})
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(MAX_CODE_COLUMN_WIDTH)
         projectGrid.addColumn({ it.title })
@@ -65,4 +96,50 @@ class ProjectOverviewView extends VerticalLayout{
         def dataProvider = new ListDataProvider(viewModel.projectOverviews)
         projectGrid.setDataProvider(dataProvider)
     }
+
+    private TextArea setupManifestContent() {
+        TextArea textArea = new TextArea("Download Manifest")
+        textArea.setReadOnly(true)
+        setVisibleIfDownloadIsAvailable(textArea)
+        viewModel.addPropertyChangeListener("generatedManifest", {
+            textArea.setValue(Optional.ofNullable(it.newValue).orElse("") as String)
+            setVisibleIfDownloadIsAvailable(textArea)
+        })
+        return textArea
+    }
+
+    private AbstractComponent setupProjectSpecificButtons() {
+        VerticalLayout buttonBar = new VerticalLayout()
+        buttonBar.setMargin(false)
+        Button downloadManifestAction = new Button("Download Manifest", VaadinIcons.DOWNLOAD)
+        downloadManifestAction.addClickListener({
+            try {
+                tryToDownloadManifest()
+            } catch (IllegalArgumentException illegalArgument) {
+                notificationService.publishFailure("Manifest Download failed due to: ${illegalArgument.getMessage()}")
+            }
+        })
+        viewModel.addPropertyChangeListener("generatedManifest", { enableIfDownloadIsPossible(downloadManifestAction) })
+        viewModel.addPropertyChangeListener("selectedProject", { enableIfDownloadIsPossible(downloadManifestAction) })
+        enableIfDownloadIsPossible(downloadManifestAction)
+        buttonBar.addComponent(downloadManifestAction)
+        return buttonBar
+    }
+
+    private void tryToDownloadManifest() throws IllegalArgumentException{
+        String projectCode = null
+        Optional.ofNullable(viewModel.selectedProject).ifPresent({
+            projectCode = it.getCode()
+        })
+        downloadProjectController.downloadProject(projectCode)
+    }
+
+    private void enableIfDownloadIsPossible(Component component) {
+        component.enabled = viewModel.selectedProject
+    }
+
+    private void setVisibleIfDownloadIsAvailable(Component component) {
+        component.visible = viewModel.generatedManifest
+    }
+
 }
