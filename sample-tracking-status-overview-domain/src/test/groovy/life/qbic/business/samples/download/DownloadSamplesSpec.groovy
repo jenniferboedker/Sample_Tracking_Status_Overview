@@ -40,22 +40,6 @@ class DownloadSamplesSpec extends Specification {
         1 * output.foundDownloadableSamples(projectCode, codes)
         0 * output.failedExecution(_ as String)
     }
-    
-    def "unsuccessful execution of the use case lead to failure notifications"() {
-        given:
-        String projectCode = "QABCD"
-        DownloadSamplesDataSource dataSource = Stub()
-        dataSource.fetchSampleCodesFor(projectCode, Status.DATA_AVAILABLE) >> {
-            throw new RuntimeException("Testing runtime exceptions")
-        }
-        DownloadSamplesOutput output = Mock()
-        DownloadSamples downloadSamples = new DownloadSamples(dataSource, output)
-        when:"the use case is run"
-        downloadSamples.requestSampleCodesFor(projectCode)
-        then:"a failure message is send"
-        1 * output.failedExecution(_)
-        0 * output.foundDownloadableSamples(_)
-    }
 
     def "a DataSourceException leads to a failure notification and no sample codes being loaded"() {
         given:
