@@ -118,9 +118,9 @@ class ProjectOverviewView extends VerticalLayout{
                 notificationService.publishFailure("Manifest Download failed due to: ${illegalArgument.getMessage()}")
             }
         })
-        viewModel.addPropertyChangeListener("generatedManifest", { enableIfDownloadIsAvailable(downloadManifestAction) })
-        viewModel.addPropertyChangeListener("selectedProject", { enableIfDownloadIsAvailable(downloadManifestAction) })
-        enableIfDownloadIsAvailable(downloadManifestAction)
+        viewModel.addPropertyChangeListener("generatedManifest", { enableIfDownloadIsPossible(downloadManifestAction) })
+        viewModel.addPropertyChangeListener("selectedProject", { enableIfDownloadIsPossible(downloadManifestAction) })
+        enableIfDownloadIsPossible(downloadManifestAction)
         buttonBar.addComponent(downloadManifestAction)
         return buttonBar
     }
@@ -133,7 +133,7 @@ class ProjectOverviewView extends VerticalLayout{
         downloadProjectController.downloadProject(projectCode)
     }
 
-    private boolean enableIfDownloadIsAvailable(Component component) {
-        component.enabled = viewModel.selectedProject && viewModel.generatedManifest
+    private boolean enableIfDownloadIsPossible(Component component) {
+        component.enabled = viewModel.selectedProject
     }
 }
