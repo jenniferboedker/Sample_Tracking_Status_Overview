@@ -14,10 +14,10 @@ interface CountSamplesDataSource {
 
     /**
      * Returns all current sample statuses of a project
+     * @param projectCode the code of a project
      * @return List of Statuses for samples of a project
      * @since 1.0.0
      * @throws DataSourceException in case of a technical error with the data source
      */
     List<Status> fetchSampleStatusesForProject(String projectCode) throws DataSourceException
-
 }

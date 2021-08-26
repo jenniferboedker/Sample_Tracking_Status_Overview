@@ -3,6 +3,7 @@ package life.qbic.portal.sampletracking.datasources.samples
 import groovy.util.logging.Log4j2
 import life.qbic.business.DataSourceException
 import life.qbic.business.samples.count.CountSamplesDataSource
+import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
 
@@ -21,7 +22,8 @@ import java.sql.ResultSet
  * @since 1.0.0
  */
 @Log4j2
-class SamplesDbConnector implements CountSamplesDataSource, GetSamplesInfoDataSource {
+class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataSource {
+
     private final ConnectionProvider connectionProvider
 
     /**
@@ -34,42 +36,30 @@ class SamplesDbConnector implements CountSamplesDataSource, GetSamplesInfoDataSo
     SamplesDbConnector(ConnectionProvider connectionProvider) {
         this.connectionProvider = connectionProvider
     }
-    
+
     /**
      * {@inheritDoc}
-     * <p><b><i>PLEASE NOTE: In case multiple statuses were entered at the same time,
-     * this method adds all statuses to the returned list!</i></b></p>
      * @since 1.0.0
      */
     @Override
-    //TODO
-    Map<String, String> fetchSampleInfosFor(String projectCode, Status status) throws DataSourceException {
-      String queryTemplate = Query.fetchLatestSampleEntries()
-      Connection connection = connectionProvider.connect()
-      List<Status> statuses = new ArrayList<>()
-      String sqlRegex = "$projectCode%"
-      connection.withCloseable {
-          PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
-          preparedStatement.setString(1, sqlRegex)
-          ResultSet resultSet = preparedStatement.executeQuery()
-          while (resultSet.next()) {
-              String sampleCode = resultSet.getString("sample_id")
-              String sampleStatusString = resultSet.getString("sample_status")
-              String arrivalTime = resultSet.getString("arrival_time")
-              Status sampleStatus
-              try {
-                  sampleStatus = Status.valueOf(sampleStatusString)
-              } catch(IllegalArgumentException statusNotFound) {
-                  // The status in the database is invalid. This should never be the case!
-                  log.error("Could not parse status $sampleStatusString for $sampleCode at $arrivalTime", statusNotFound)
-                  throw new DataSourceException("Retrieval of sample statuses failed for sample $sampleCode")
-              }
-              statuses.add(sampleStatus)
-          }
-      }
-      return statuses
+    List<String> fetchSampleCodesFor(String projectCode, Status status) {
+        String queryTemplate = Query.fetchLatestSampleEntries()
+        queryTemplate += " WHERE sample_status = ?"
+        Connection connection = connectionProvider.connect()
+        List<String> sampleCodes = new ArrayList<>()
+        String sqlRegex = "${projectCode}%"
+        connection.withCloseable {
+            PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
+            preparedStatement.setString(1, sqlRegex)
+            preparedStatement.setString(2, status.toString())
+            ResultSet resultSet = preparedStatement.executeQuery()
+            while (resultSet.next()) {
+                String sampleCode = resultSet.getString("sample_id")
+                sampleCodes.add(sampleCode)
+            }
+        }
+        return sampleCodes
     }
-    //TODO end
 
     /**
      * {@inheritDoc}
@@ -82,7 +72,7 @@ class SamplesDbConnector implements CountSamplesDataSource, GetSamplesInfoDataSo
         String queryTemplate = Query.fetchLatestSampleEntries()
         Connection connection = connectionProvider.connect()
         List<Status> statuses = new ArrayList<>()
-        String sqlRegex = "$projectCode%"
+        String sqlRegex = "${projectCode}%"
         connection.withCloseable {
             PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
             preparedStatement.setString(1, sqlRegex)
@@ -108,7 +98,7 @@ class SamplesDbConnector implements CountSamplesDataSource, GetSamplesInfoDataSo
     private class Query {
         /**
          * Generates a query with one wildcard ? that can be filled with a sql match to
-         * filter by sample_id.
+         * filter by sample_id. Does not return "ENTITY" samples.
          * <p>The returned query provides all rows for which the arrival_time matches the
          * latest arrival_time recorded for this sample_id.</p>
          * @return a query template
@@ -143,7 +133,7 @@ class SamplesDbConnector implements CountSamplesDataSource, GetSamplesInfoDataSo
             final String latestEntriesQuery = "SELECT samples_locations.* FROM samples_locations " +
                     "INNER JOIN ($latestEditQuery) AS latest_arrivals " +
                     "ON latest_arrivals.sample_id = samples_locations.sample_id " +
-                    "AND latest_arrivals.arrival_time = samples_locations.arrival_time;"
+                    "AND latest_arrivals.arrival_time = samples_locations.arrival_time"
 
             return latestEntriesQuery
         }
