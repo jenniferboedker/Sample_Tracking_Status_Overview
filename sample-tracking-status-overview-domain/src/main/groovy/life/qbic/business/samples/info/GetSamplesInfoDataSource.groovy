@@ -6,7 +6,7 @@ import life.qbic.datamodel.samples.Status
 /**
  * <b>Fetches sample information for provided sample codes</b>
  *
- * <p>This interface is used by {@link x}</p>
+ * <p>This interface is implemented by {@link OpenBisConnector}</p>
  *
  * @since 1.0.0
  */
