@@ -125,7 +125,7 @@ class DependencyManager {
         ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService)
         
         DownloadProjectController downloadController = setupDownloadProjectUsecase(viewModel)
-        ProjectOverviewView view =  new ProjectOverviewView(viewModel, downloadController)
+        ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController)
         return view
     }
     
