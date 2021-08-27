@@ -1,7 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview.download
 
 import life.qbic.business.OutputException
-import life.qbic.business.samples.download.ComposeManifestOutput
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 

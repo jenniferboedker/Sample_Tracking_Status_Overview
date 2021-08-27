@@ -1,6 +1,7 @@
-package life.qbic.business.samples.download
+package life.qbic.portal.sampletracking.components.projectoverview.download
 
 import life.qbic.business.OutputException
+import life.qbic.business.samples.download.DownloadSamplesOutput
 
 /**
  * <b>Compose a download manifest based on the output of {@link DownloadSamplesOutput}</b>

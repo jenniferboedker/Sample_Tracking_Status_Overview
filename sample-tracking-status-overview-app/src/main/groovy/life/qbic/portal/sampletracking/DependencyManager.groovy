@@ -8,7 +8,9 @@ import life.qbic.business.project.load.LoadProjectsOutput
 import life.qbic.business.samples.count.CountSamples
 import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.business.samples.count.CountSamplesOutput
-import life.qbic.business.samples.download.*
+import life.qbic.business.samples.download.DownloadSamples
+import life.qbic.business.samples.download.DownloadSamplesDataSource
+import life.qbic.business.samples.download.DownloadSamplesOutput
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
@@ -18,6 +20,8 @@ import life.qbic.portal.sampletracking.components.projectoverview.CountSamplesPr
 import life.qbic.portal.sampletracking.components.projectoverview.LoadProjectsPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
+import life.qbic.portal.sampletracking.components.projectoverview.download.ComposeManifest
+import life.qbic.portal.sampletracking.components.projectoverview.download.ComposeManifestOutput
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.download.ManifestPresenter
 import life.qbic.portal.sampletracking.datasources.Credentials

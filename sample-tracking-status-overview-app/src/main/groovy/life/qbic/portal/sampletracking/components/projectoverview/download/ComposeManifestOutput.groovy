@@ -1,4 +1,4 @@
-package life.qbic.business.samples.download
+package life.qbic.portal.sampletracking.components.projectoverview.download
 
 /**
  * <p>The output for the {@link ComposeManifest} use case</p>
