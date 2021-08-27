@@ -31,4 +31,12 @@ interface CountSamplesOutput {
      * @since 1.0.0
      */
     void countedFailedQcSamples(String projectCode, int allSamples, int failedQcSamples)
+
+    /**
+     * To be called after successfully counting samples with available data for the provided code.
+     * @param number of all samples and samples that have available data
+     * @param projectCode the code of the project samples were counted for
+     * @since 1.0.0
+     */
+    void countedAvailableSampleData(String projectCode, int allSamples, int availableData)
 }
