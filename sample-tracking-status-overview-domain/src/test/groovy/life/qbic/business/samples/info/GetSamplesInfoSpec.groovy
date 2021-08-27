@@ -33,7 +33,7 @@ class GetSamplesInfoSpec extends Specification {
     }
 
     
-    def "unsuccessful execution of the use case lead to failure notifications"() {
+    def "unsuccessful execution of the use case leads to failure notification"() {
         
         given:
         DownloadSamplesDataSource sampleDataSource = Stub()
