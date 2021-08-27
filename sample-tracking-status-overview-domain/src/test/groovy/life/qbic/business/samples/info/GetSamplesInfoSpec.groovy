@@ -12,7 +12,7 @@ import spock.lang.Specification
  */
 class GetSamplesInfoSpec extends Specification {
   
-    def "successful execution of the use case forwards a map"() {
+    def "successful execution of the use case forwards the map of found samples"() {
         
         given:
         DownloadSamplesDataSource sampleDataSource = Stub()
