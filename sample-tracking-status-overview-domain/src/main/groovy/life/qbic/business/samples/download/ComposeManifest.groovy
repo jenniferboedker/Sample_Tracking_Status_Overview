@@ -1,5 +1,7 @@
 package life.qbic.business.samples.download
 
+import life.qbic.business.OutputException
+
 /**
  * <b>Compose a download manifest based on the output of {@link DownloadSamplesOutput}</b>
  *
@@ -26,12 +28,16 @@ class ComposeManifest implements DownloadSamplesOutput{
 
     @Override
     void foundDownloadableSamples(String projectCode, List<String> sampleCodes) {
-        if (sampleCodes.empty) {
-            output.failedExecution("There are no downloadable samples for ${projectCode}.")
-            return
+        try {
+            if (sampleCodes.empty) {
+                output.failedExecution("There are no downloadable samples for ${projectCode}.")
+                return
+            }
+            DownloadManifest downloadManifest = DownloadManifest.from(sampleCodes)
+            String printableManifest = DownloadManifestFormatter.format(downloadManifest)
+            output.readManifest(printableManifest)
+        } catch (Exception ignored) {
+            throw new OutputException("Could not generate manifest for samples: ${sampleCodes.toListString()}")
         }
-        DownloadManifest downloadManifest = DownloadManifest.from(sampleCodes)
-        String printableManifest = DownloadManifestFormatter.format(downloadManifest)
-        output.readManifest(printableManifest)
     }
 }

@@ -3,9 +3,12 @@ package life.qbic.portal.sampletracking.components.projectoverview
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
+import com.vaadin.server.FileDownloader
+import com.vaadin.server.StreamResource
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
+import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 
@@ -26,10 +29,10 @@ class ProjectOverviewView extends VerticalLayout{
 
     private Label titleLabel
     private Grid<ProjectSummary> projectGrid
-    private TextArea manifestArea
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
+    private FileDownloader fileDownloader
 
     ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController){
         this.notificationService = notificationService
@@ -43,8 +46,7 @@ class ProjectOverviewView extends VerticalLayout{
         titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
-        manifestArea = setupManifestContent()
-        this.addComponents(titleLabel,setupProjectSpecificButtons(), projectGrid,manifestArea)
+        this.addComponents(titleLabel,setupProjectSpecificButtons(), projectGrid)
     }
 
     private void setupProjects(){
@@ -57,13 +59,28 @@ class ProjectOverviewView extends VerticalLayout{
                 it.getSelectedItem().ifPresent(this::selectProject)
             }
         })
-        viewModel.addPropertyChangeListener("selectedProjectCode", {
-            projectGrid.select(viewModel.selectedProject)
+        viewModel.addPropertyChangeListener("selectedProject", {
+            Optional<ProjectSummary> modelSelection = Optional.ofNullable(viewModel.selectedProject)
+            Optional<ProjectSummary> viewSelection = projectGrid.getSelectionModel().getFirstSelectedItem()
+            modelSelection.ifPresent({
+                if (viewSelection.isPresent()) {
+                    if (viewSelection.get() == modelSelection.get()) {
+                        // do nothing
+                    } else {
+                        projectGrid.getSelectionModel().deselectAll()
+                        projectGrid.select(modelSelection.get())
+                    }
+                } else {
+                    projectGrid.select(modelSelection.get())
+                }
+            })
+
         })
     }
 
     private void selectProject(ProjectSummary projectSummary) {
         viewModel.selectedProject = projectSummary
+        tryToDownloadManifest()
     }
 
     private void clearProjectSelection() {
@@ -101,49 +118,50 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.setDataProvider(dataProvider)
     }
 
-    private TextArea setupManifestContent() {
-        TextArea textArea = new TextArea("Download Manifest")
-        textArea.setReadOnly(true)
-        setVisibleIfDownloadIsAvailable(textArea)
-        viewModel.addPropertyChangeListener("generatedManifest", {
-            textArea.setValue(Optional.ofNullable(it.newValue).orElse("") as String)
-            setVisibleIfDownloadIsAvailable(textArea)
-        })
-        return textArea
-    }
-
     private AbstractComponent setupProjectSpecificButtons() {
         VerticalLayout buttonBar = new VerticalLayout()
         buttonBar.setMargin(false)
         Button downloadManifestAction = new Button("Download Manifest", VaadinIcons.DOWNLOAD)
-        downloadManifestAction.addClickListener({
-            try {
-                tryToDownloadManifest()
-            } catch (IllegalArgumentException illegalArgument) {
-                notificationService.publishFailure("Manifest Download failed due to: ${illegalArgument.getMessage()}")
+        viewModel.addPropertyChangeListener("generatedManifest", {
+            if (isDownloadAvailable()) {
+                this.fileDownloader = new FileDownloader(new StreamResource({viewModel.getManifestInputStream()}, "manifest.txt"))
+                this.fileDownloader.extend(downloadManifestAction)
+            } else {
+                if (this.fileDownloader) {
+                    if (downloadManifestAction.extensions.contains(fileDownloader)) {
+                        downloadManifestAction.removeExtension(this.fileDownloader)
+                    }
+                }
             }
         })
-        viewModel.addPropertyChangeListener("generatedManifest", { enableIfDownloadIsPossible(downloadManifestAction) })
-        viewModel.addPropertyChangeListener("selectedProject", { enableIfDownloadIsPossible(downloadManifestAction) })
-        enableIfDownloadIsPossible(downloadManifestAction)
+        enableWhenDownloadIsAvailable(downloadManifestAction)
         buttonBar.addComponent(downloadManifestAction)
         return buttonBar
     }
 
-    private void tryToDownloadManifest() throws IllegalArgumentException{
-        String projectCode = null
-        Optional.ofNullable(viewModel.selectedProject).ifPresent({
-            projectCode = it.getCode()
-        })
-        downloadProjectController.downloadProject(projectCode)
+    private void tryToDownloadManifest() {
+        try {
+            Optional.ofNullable(viewModel.selectedProject).filter({it.sampleDataAvailable > 0 }).ifPresent({
+                String projectCode = it.getCode()
+                downloadProjectController.downloadProject(projectCode)
+            })
+        } catch (IllegalArgumentException illegalArgument) {
+            notificationService.publishFailure("Manifest Download failed due to: ${illegalArgument.getMessage()}")
+        } catch (Exception ignored) {
+            notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+        }
     }
 
-    private void enableIfDownloadIsPossible(Component component) {
-        component.enabled = viewModel.selectedProject
+    private void enableWhenDownloadIsAvailable(Component component) {
+        component.enabled = isDownloadAvailable()
+        viewModel.addPropertyChangeListener("generatedManifest") {
+            component.enabled = isDownloadAvailable()
+        }
     }
 
-    private void setVisibleIfDownloadIsAvailable(Component component) {
-        component.visible = viewModel.generatedManifest
+    private boolean isDownloadAvailable() {
+        boolean isAvailable = viewModel.generatedManifest as boolean
+        return isAvailable
     }
 
 }

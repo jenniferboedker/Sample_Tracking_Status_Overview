@@ -84,4 +84,9 @@ class ProjectOverviewViewModel {
         }
         return projectOverview
     }
+
+    InputStream getManifestInputStream() {
+        InputStream result =  new ByteArrayInputStream(generatedManifest.getBytes())
+        return result
+    }
 }

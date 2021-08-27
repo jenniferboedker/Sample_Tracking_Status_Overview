@@ -1,5 +1,7 @@
 package life.qbic.business.samples.download
 
+import life.qbic.business.OutputException
+
 /**
  * <b>Output interface for the {@link DownloadSamples} feature</b>
  *
@@ -14,7 +16,7 @@ interface DownloadSamplesOutput {
      * @param reason the reason why the samples retrieval failed
      * @since 1.0.0
      */
-    void failedExecution(String reason)
+    void failedExecution(String reason) throws OutputException
 
     /**
      * To be called after successfully fetching sample codes with data for the provided code.
@@ -22,6 +24,6 @@ interface DownloadSamplesOutput {
      * @param sampleCodes list of sample codes with available data
      * @since 1.0.0
      */
-    void foundDownloadableSamples(String projectCode, List<String> sampleCodes)
+    void foundDownloadableSamples(String projectCode, List<String> sampleCodes) throws OutputException
 
 }

@@ -1,6 +1,7 @@
 package life.qbic.business.samples.download
 
 import life.qbic.business.DataSourceException
+import life.qbic.business.OutputException
 import life.qbic.datamodel.samples.Status
 
 /**
@@ -38,13 +39,20 @@ class DownloadSamples implements DownloadSamplesInput {
     sampleCodes = new ArrayList<>()
     try {
       for(Status status : statusesWithData) {
-        sampleCodes.addAll(dataSource.fetchSampleCodesFor(projectCode, status))
+        List<String> sampleCodesForStatus = dataSource.fetchSampleCodesFor(projectCode, status)
+        // in groovy the addAll cannot be resolved correctly for some reason.
+        // Therefore it is handled this way. The Runtime is confused which addAll method to take
+        // and might throw a RuntimeException here for Collection#addAll, Iterator#addAll,
+        // List#addAll and ArrayList#addAll
+        sampleCodesForStatus.each {sampleCodes.add(it)}
       }
       output.foundDownloadableSamples(projectCode, sampleCodes)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
-    } catch (Exception e) {
-      output.failedExecution("Could not fetch sample codes with available data.")
+    } catch (OutputException ignored) {
+      throw new RuntimeException("Could not forward results for ${projectCode}")
+    } catch (Exception ignored) {
+      throw new RuntimeException("Could not request sample codes for project ${projectCode}")
     }
   }
 }
