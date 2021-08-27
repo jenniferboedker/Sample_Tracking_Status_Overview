@@ -12,15 +12,20 @@ import spock.lang.Specification
  */
 class GetSamplesInfoSpec extends Specification {
   
-    def "successful execution of the use case lead to success notifications"() {
+    def "successful execution of the use case forwards a map"() {
         
         given:
         DownloadSamplesDataSource sampleDataSource = Stub()
         GetSamplesInfoDataSource infoDataSource = Stub()
         String projectCode = "QABCD"
         List<String> codes = ["QABCD001AB", "QABCD002AC", "QABCD005AX", "QABCD019A2"]
-        sampleDataSource.fetchSampleCodesFor(projectCode, Status.SAMPLE_QC_FAIL) >> { new ArrayList<String>() }
-        infoDataSource.fetchSampleNamesFor(codes) >> { new HashMap<String,String>() }
+        Map<String, String> mapWithNames = new HashMap<>()
+        mapWithNames.put("QABCD001AB", "one")
+        mapWithNames.put("QABCD002AC", "two")
+        mapWithNames.put("QABCD005AX", "green")
+        mapWithNames.put("QABCD019A2", "blue")
+        sampleDataSource.fetchSampleCodesFor(projectCode, Status.SAMPLE_QC_FAIL) >> { codes }
+        infoDataSource.fetchSampleNamesFor(codes) >> { mapWithNames }
         GetSamplesInfoOutput output = Mock()
         GetSamplesInfo getInfos = new GetSamplesInfo(sampleDataSource, infoDataSource, output)
         
@@ -28,7 +33,7 @@ class GetSamplesInfoSpec extends Specification {
         getInfos.requestSampleInfosFor(projectCode, Status.SAMPLE_QC_FAIL)
         
         then:"a successful message is send"
-        1 * output.samplesWithNames(projectCode, Status.SAMPLE_QC_FAIL, _ as Map<String, String>)
+        1 * output.samplesWithNames(projectCode, Status.SAMPLE_QC_FAIL, mapWithNames)
         0 * output.failedExecution(_ as String)
     }
 
