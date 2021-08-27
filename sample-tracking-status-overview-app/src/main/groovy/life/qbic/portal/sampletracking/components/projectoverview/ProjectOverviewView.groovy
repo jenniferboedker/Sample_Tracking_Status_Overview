@@ -2,12 +2,12 @@ package life.qbic.portal.sampletracking.components.projectoverview
 
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.icons.VaadinIcons
-import com.vaadin.server.ExternalResource
+import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
+import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.Label
-import com.vaadin.ui.Link
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 
@@ -25,7 +25,7 @@ class ProjectOverviewView extends VerticalLayout{
     private Label titleLabel
     private ProjectOverviewViewModel viewModel
     private Grid<ProjectSummary> projectGrid
-    Button square
+    Button postmanLink
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
@@ -34,31 +34,35 @@ class ProjectOverviewView extends VerticalLayout{
         this.viewModel = viewModel
 
         initLayout()
+        setupButton()
         fillGrid()
+        setupListeners()
     }
 
     private void initLayout(){
         titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
-        Link postmanLink = generateLink()
 
         projectGrid = new Grid<>()
 
-        square = new Button()
-        square.setIcon(VaadinIcons.QUESTION_CIRCLE)
-        square.setStyleName(ValoTheme.BUTTON_ICON_ONLY + " " + ValoTheme.BUTTON_SMALL + " square")
-        square.addClickListener({
-            square.setDescription("this is a test")
-        })
-        this.addComponents(titleLabel,square, projectGrid)
+        HorizontalLayout buttonLayout = new HorizontalLayout()
+        postmanLink = new Button()
+        buttonLayout.addComponent(buttonLayout)
+        //todo add download button next to postman link
+        this.addComponents(titleLabel,buttonLayout, projectGrid)
     }
 
-    private static Link generateLink(){
-        Link link = new Link("Download your data with qpostman", new ExternalResource("https://github.com/qbicsoftware/postman-cli#provide-a-file-with-several-qbic-ids"))
-        link.setIcon(VaadinIcons.BOOK)
-        link.setTargetName("_blank")
+    private void setupButton(){
+        postmanLink.setIcon(VaadinIcons.QUESTION_CIRCLE)
+        postmanLink.setStyleName(ValoTheme.BUTTON_ICON_ONLY + " " + ValoTheme.BUTTON_SMALL + " square")
+        postmanLink.setDescription("A manifest is a text file passed to download clients to download selected files of interest. <br>" +
+                "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a> to download the project data", ContentMode.HTML)
+    }
 
-        return link
+    private void setupListeners(){
+        postmanLink.addClickListener({
+            getUI().getPage().open("https://github.com/qbicsoftware/postman-cli#provide-a-file-with-several-qbic-ids","_blank")
+        })
     }
 
     private void fillGrid(){
