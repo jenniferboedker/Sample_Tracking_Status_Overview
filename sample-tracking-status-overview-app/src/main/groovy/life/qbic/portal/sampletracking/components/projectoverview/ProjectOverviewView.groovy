@@ -59,8 +59,12 @@ class ProjectOverviewView extends VerticalLayout{
                 it.getSelectedItem().ifPresent(this::selectProject)
             }
         })
-        viewModel.addPropertyChangeListener("selectedProjectCode", {
-            projectGrid.select(viewModel.selectedProject)
+        viewModel.addPropertyChangeListener("selectedProject", {
+            if (viewModel.selectedProject) {
+                projectGrid.select(viewModel.selectedProject)
+            } else {
+                projectGrid.deselectAll()
+            }
         })
     }
 
