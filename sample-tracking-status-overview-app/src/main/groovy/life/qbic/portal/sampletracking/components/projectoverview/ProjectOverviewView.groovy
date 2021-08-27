@@ -59,6 +59,7 @@ class ProjectOverviewView extends VerticalLayout{
                 it.getSelectedItem().ifPresent(this::selectProject)
             }
         })
+        //todo here a recursion is created!
         viewModel.addPropertyChangeListener("selectedProject", {
             if (viewModel.selectedProject) {
                 projectGrid.select(viewModel.selectedProject)
