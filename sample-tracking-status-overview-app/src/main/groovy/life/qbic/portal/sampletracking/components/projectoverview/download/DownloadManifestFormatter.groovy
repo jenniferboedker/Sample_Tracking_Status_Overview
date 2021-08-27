@@ -18,6 +18,7 @@ class DownloadManifestFormatter {
         return result
     }
 
+
     private static String formatSampleRow(String sampleCode) {
         return "${sampleCode}\n"
     }
