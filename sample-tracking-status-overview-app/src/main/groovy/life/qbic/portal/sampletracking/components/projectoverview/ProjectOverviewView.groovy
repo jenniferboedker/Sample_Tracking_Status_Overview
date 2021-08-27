@@ -59,9 +59,18 @@ class ProjectOverviewView extends VerticalLayout{
                 it.getSelectedItem().ifPresent(this::selectProject)
             }
         })
-        //todo here a recursion is created!
         viewModel.addPropertyChangeListener("selectedProject", {
-            if (viewModel.selectedProject) {
+            Optional<ProjectSummary> modelSelection = Optional.ofNullable(viewModel.selectedProject)
+            Optional<ProjectSummary> viewSelection = projectGrid.getSelectionModel().getFirstSelectedItem()
+            boolean viewModelHoldsSelection = modelSelection.isPresent()
+            boolean viewSelectionEqualsModelSelection
+            if (viewSelection.isPresent() && modelSelection.isPresent()) {
+                viewSelectionEqualsModelSelection = viewSelection.get() == modelSelection.get()
+            } else {
+                viewSelectionEqualsModelSelection = false
+            }
+
+            if (viewModelHoldsSelection && !viewSelectionEqualsModelSelection) {
                 projectGrid.select(viewModel.selectedProject)
             } else {
                 projectGrid.deselectAll()
@@ -132,7 +141,7 @@ class ProjectOverviewView extends VerticalLayout{
 
     private void tryToDownloadManifest() {
         try {
-            Optional.ofNullable(viewModel.selectedProject).ifPresent({
+            Optional.ofNullable(viewModel.selectedProject).filter({it.sampleDataAvailable > 0 }).ifPresent({
                 String projectCode = it.getCode()
                 downloadProjectController.downloadProject(projectCode)
             })
