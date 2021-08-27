@@ -23,6 +23,7 @@ import java.sql.ResultSet
  */
 @Log4j2
 class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataSource {
+
     private final ConnectionProvider connectionProvider
 
     /**
