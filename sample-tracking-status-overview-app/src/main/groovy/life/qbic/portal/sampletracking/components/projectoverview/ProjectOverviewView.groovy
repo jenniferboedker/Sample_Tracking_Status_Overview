@@ -62,19 +62,19 @@ class ProjectOverviewView extends VerticalLayout{
         viewModel.addPropertyChangeListener("selectedProject", {
             Optional<ProjectSummary> modelSelection = Optional.ofNullable(viewModel.selectedProject)
             Optional<ProjectSummary> viewSelection = projectGrid.getSelectionModel().getFirstSelectedItem()
-            boolean viewModelHoldsSelection = modelSelection.isPresent()
-            boolean viewSelectionEqualsModelSelection
-            if (viewSelection.isPresent() && modelSelection.isPresent()) {
-                viewSelectionEqualsModelSelection = viewSelection.get() == modelSelection.get()
-            } else {
-                viewSelectionEqualsModelSelection = false
-            }
+            modelSelection.ifPresent({
+                if (viewSelection.isPresent()) {
+                    if (viewSelection.get() == modelSelection.get()) {
+                        // do nothing
+                    } else {
+                        projectGrid.getSelectionModel().deselectAll()
+                        projectGrid.select(modelSelection.get())
+                    }
+                } else {
+                    projectGrid.select(modelSelection.get())
+                }
+            })
 
-            if (viewModelHoldsSelection && !viewSelectionEqualsModelSelection) {
-                projectGrid.select(viewModel.selectedProject)
-            } else {
-                projectGrid.deselectAll()
-            }
         })
     }
 
