@@ -5,9 +5,9 @@ import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.datamodel.samples.Status
 
 /**
- * <b>Download samples</b>
+ * <b>Get information of samples</b>
  *
- * <p>This use case returns samples of a project that have available data attached.</p>
+ * <p>This use case returns codes and respective names of samples with a requested status of a project.</p>
  *
  * @since 1.0.0
  */
@@ -19,7 +19,8 @@ class GetSamplesInfo implements GetSamplesInfoInput {
 
   /**
    * Default constructor for this use case
-   * @param dataSource the data source to be used
+   * @param samplesDataSource the data source used to fetch sample codes with a certain status
+   * @param infoDataSource the data source used to add metadata (e.g. name) to those sample codes
    * @param output the output to where results are published
    * @since 1.0.0
    */
@@ -30,7 +31,7 @@ class GetSamplesInfo implements GetSamplesInfoInput {
   }
 
   /**
-   * This method calls the output interface with the codes of the samples in a project that have data attached.
+   * This method calls the output interface with the codes and names of the samples in a project that have a provided status.
    * In case of failure the output interface failure method is called.
    * @since 1.0.0
    */
