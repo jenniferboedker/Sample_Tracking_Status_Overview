@@ -16,7 +16,7 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
     StatusCountResourceService() {
         this.addTopic(Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
         this.addTopic(Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
-
+        this.addTopic(Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
     }
 
     /**
@@ -34,6 +34,10 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
                 break
             case Status.SAMPLE_QC_FAIL:
                 publish(statusCount, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
+                content.add(statusCount)
+                break
+            case Status.DATA_AVAILABLE:
+                publish(statusCount, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
                 content.add(statusCount)
                 break
             default:
@@ -57,6 +61,10 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
                 break
             case Status.SAMPLE_QC_FAIL:
                 publish(statusCount, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
+                content.remove(statusCount)
+                break
+            case Status.DATA_AVAILABLE:
+                publish(statusCount, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
                 content.remove(statusCount)
                 break
             default:
