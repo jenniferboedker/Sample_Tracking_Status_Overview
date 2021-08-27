@@ -137,11 +137,10 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private void tryToDownloadManifest() throws IllegalArgumentException{
-        String projectCode = null
         Optional.ofNullable(viewModel.selectedProject).ifPresent({
-            projectCode = it.getCode()
+            String projectCode = it.getCode()
+            downloadProjectController.downloadProject(projectCode)
         })
-        downloadProjectController.downloadProject(projectCode)
     }
 
     private void enableWhenDownloadIsAvailable(Component component) {
