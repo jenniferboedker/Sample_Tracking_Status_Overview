@@ -4,6 +4,7 @@ import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.ExternalResource
 import com.vaadin.shared.ui.grid.HeightMode
+import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Label
 import com.vaadin.ui.Link
@@ -24,6 +25,7 @@ class ProjectOverviewView extends VerticalLayout{
     private Label titleLabel
     private ProjectOverviewViewModel viewModel
     private Grid<ProjectSummary> projectGrid
+    Button square
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
@@ -42,7 +44,13 @@ class ProjectOverviewView extends VerticalLayout{
 
         projectGrid = new Grid<>()
 
-        this.addComponents(titleLabel,postmanLink, projectGrid)
+        square = new Button()
+        square.setIcon(VaadinIcons.QUESTION_CIRCLE)
+        square.setStyleName(ValoTheme.BUTTON_ICON_ONLY + " " + ValoTheme.BUTTON_SMALL + " square")
+        square.addClickListener({
+            square.setDescription("this is a test")
+        })
+        this.addComponents(titleLabel,square, projectGrid)
     }
 
     private static Link generateLink(){
