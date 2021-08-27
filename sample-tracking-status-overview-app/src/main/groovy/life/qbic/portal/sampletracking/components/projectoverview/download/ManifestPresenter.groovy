@@ -33,7 +33,7 @@ class ManifestPresenter implements DownloadSamplesOutput {
     }
 
     private void sendFailure(String message) {
-        notificationService.publishFailure("Could not create download manifest. Reason: $reason")
+        notificationService.publishFailure(message)
     }
 
     /**
