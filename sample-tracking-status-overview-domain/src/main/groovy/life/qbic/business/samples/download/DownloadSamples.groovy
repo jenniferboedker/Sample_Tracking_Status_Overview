@@ -1,6 +1,7 @@
 package life.qbic.business.samples.download
 
 import life.qbic.business.DataSourceException
+import life.qbic.business.OutputException
 import life.qbic.datamodel.samples.Status
 
 /**
@@ -43,6 +44,10 @@ class DownloadSamples implements DownloadSamplesInput {
       output.foundDownloadableSamples(projectCode, sampleCodes)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
+    } catch (OutputException ignored) {
+      throw new RuntimeException("Could not forward results for ${projectCode}")
+    } catch (Exception ignored) {
+      throw new RuntimeException("Could not request sample codes for project ${projectCode}")
     }
   }
 }

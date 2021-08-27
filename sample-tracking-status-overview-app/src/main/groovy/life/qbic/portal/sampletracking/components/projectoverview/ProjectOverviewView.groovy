@@ -8,6 +8,7 @@ import com.vaadin.server.StreamResource
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
+import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 
@@ -65,11 +66,7 @@ class ProjectOverviewView extends VerticalLayout{
 
     private void selectProject(ProjectSummary projectSummary) {
         viewModel.selectedProject = projectSummary
-        try {
-            tryToDownloadManifest()
-        } catch (IllegalArgumentException illegalArgument) {
-            notificationService.publishFailure("Manifest Download failed due to: ${illegalArgument.getMessage()}")
-        }
+        tryToDownloadManifest()
     }
 
     private void clearProjectSelection() {
@@ -124,11 +121,17 @@ class ProjectOverviewView extends VerticalLayout{
         return buttonBar
     }
 
-    private void tryToDownloadManifest() throws IllegalArgumentException{
-        Optional.ofNullable(viewModel.selectedProject).ifPresent({
-            String projectCode = it.getCode()
-            downloadProjectController.downloadProject(projectCode)
-        })
+    private void tryToDownloadManifest() {
+        try {
+            Optional.ofNullable(viewModel.selectedProject).ifPresent({
+                String projectCode = it.getCode()
+                downloadProjectController.downloadProject(projectCode)
+            })
+        } catch (IllegalArgumentException illegalArgument) {
+            notificationService.publishFailure("Manifest Download failed due to: ${illegalArgument.getMessage()}")
+        } catch (Exception ignored) {
+            notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+        }
     }
 
     private void enableWhenDownloadIsAvailable(Component component) {
