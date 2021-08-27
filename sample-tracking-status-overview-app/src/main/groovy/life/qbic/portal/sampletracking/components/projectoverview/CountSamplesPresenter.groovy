@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
+import life.qbic.business.OutputException
 import life.qbic.business.samples.count.CountSamplesOutput
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
@@ -28,7 +29,11 @@ class CountSamplesPresenter implements CountSamplesOutput {
      */
     @Override
     void failedExecution(String reason) {
-        notificationService.publishFailure("Failed to count samples: $reason")
+        try {
+            notificationService.publishFailure("Failed to count samples: $reason")
+        } catch (Exception e) {
+            throw new OutputException(e.getMessage())
+        }
     }
 
     /**
@@ -38,13 +43,21 @@ class CountSamplesPresenter implements CountSamplesOutput {
      */
     @Override
     void countedReceivedSamples(String projectCode, int allSamples, int receivedSamples) {
-        StatusCount statusCount = new StatusCount(projectCode, Status.SAMPLE_RECEIVED, receivedSamples)
-        statusCountResourceService.addToResource(statusCount)
+        try {
+            StatusCount statusCount = new StatusCount(projectCode, Status.SAMPLE_RECEIVED, receivedSamples)
+            statusCountResourceService.addToResource(statusCount)
+        } catch (Exception e) {
+            throw new OutputException(e.getMessage())
+        }
     }
 
     @Override
     void countedFailedQcSamples(String projectCode, int allSamples, int receivedSamples) {
-        StatusCount statusCount = new StatusCount(projectCode, Status.SAMPLE_QC_FAIL, receivedSamples)
-        statusCountResourceService.addToResource(statusCount)
+        try {
+            StatusCount statusCount = new StatusCount(projectCode, Status.SAMPLE_QC_FAIL, receivedSamples)
+            statusCountResourceService.addToResource(statusCount)
+        } catch (Exception e) {
+            throw new OutputException(e.getMessage())
+        }
     }
 }
