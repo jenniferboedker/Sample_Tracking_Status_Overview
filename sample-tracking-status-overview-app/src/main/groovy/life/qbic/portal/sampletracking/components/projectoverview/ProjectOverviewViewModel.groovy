@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
+import groovy.beans.Bindable
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
@@ -18,6 +19,9 @@ class ProjectOverviewViewModel {
     ObservableList projectOverviews = new ObservableList(new ArrayList<ProjectSummary>())
     private final ResourceService<Project> projectResourceService
     private final ResourceService<StatusCount> statusCountService
+
+    @Bindable ProjectSummary selectedProject
+    @Bindable String generatedManifest
 
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService){
         this.projectResourceService = projectResourceService
