@@ -20,8 +20,6 @@ import life.qbic.portal.sampletracking.components.projectoverview.CountSamplesPr
 import life.qbic.portal.sampletracking.components.projectoverview.LoadProjectsPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
-import life.qbic.portal.sampletracking.components.projectoverview.download.ComposeManifest
-import life.qbic.portal.sampletracking.components.projectoverview.download.ComposeManifestOutput
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.download.ManifestPresenter
 import life.qbic.portal.sampletracking.datasources.Credentials
@@ -134,8 +132,7 @@ class DependencyManager {
     }
     
     private DownloadProjectController setupDownloadProjectUsecase(ProjectOverviewViewModel viewModel) {
-        ComposeManifestOutput manifestPresenter = new ManifestPresenter(notificationService, viewModel)
-        DownloadSamplesOutput output = new ComposeManifest(manifestPresenter)
+        DownloadSamplesOutput output = new ManifestPresenter(notificationService, viewModel)
         DownloadSamples downloadSamples = new DownloadSamples(downloadSamplesDataSource, output)
         
         return new DownloadProjectController(downloadSamples)

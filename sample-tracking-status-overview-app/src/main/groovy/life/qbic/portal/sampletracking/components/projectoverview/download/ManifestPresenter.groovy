@@ -1,6 +1,7 @@
 package life.qbic.portal.sampletracking.components.projectoverview.download
 
 import life.qbic.business.OutputException
+import life.qbic.business.samples.download.DownloadSamplesOutput
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 
@@ -12,7 +13,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectOvervie
  *
  * @since 1.0.0
  */
-class ManifestPresenter implements ComposeManifestOutput {
+class ManifestPresenter implements DownloadSamplesOutput {
 
     private final ProjectOverviewViewModel viewModel
     private final NotificationService notificationService
@@ -23,21 +24,36 @@ class ManifestPresenter implements ComposeManifestOutput {
     }
 
     @Override
-    void readManifest(String printedManifest) {
+    void failedExecution(String reason) {
         try {
-            String newValue = Optional.ofNullable(printedManifest).orElse("")
-            viewModel.setGeneratedManifest(newValue)
+            sendFailure("Could not create download manifest. Reason: $reason")
         } catch (Exception e) {
             throw new OutputException(e.getMessage())
         }
     }
 
+    private void sendFailure(String message) {
+        notificationService.publishFailure("Could not create download manifest. Reason: $reason")
+    }
+
+    /**
+     * To be called after successfully fetching sample codes with data for the provided code.
+     * @param projectCode the code of the project samples were counted for
+     * @param sampleCodes list of sample codes with available data
+     * @since 1.0.0
+     */
     @Override
-    void failedExecution(String reason) {
+    void foundDownloadableSamples(String projectCode, List<String> sampleCodes) throws OutputException {
         try {
-            notificationService.publishFailure("Could not create download manifest. Reason: $reason")
-        } catch (Exception e) {
-            throw new OutputException(e.getMessage())
+            if (sampleCodes.empty) {
+                sendFailure("There are no downloadable samples for ${projectCode}.")
+                return
+            }
+            DownloadManifest downloadManifest = DownloadManifest.from(sampleCodes)
+            String printableManifest = DownloadManifestFormatter.format(downloadManifest)
+            viewModel.generatedManifest = Optional.ofNullable(printableManifest).orElse("")
+        } catch (Exception ignored) {
+            throw new OutputException("Could not generate manifest for samples: ${sampleCodes.toListString()}")
         }
     }
 }
