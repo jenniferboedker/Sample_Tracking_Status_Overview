@@ -5,7 +5,7 @@ import life.qbic.datamodel.samples.Status
 /**
  * <b>Input interface for the {@link GetSamplesInfo} feature</b>
  *
- * <p>Provides methods to trigger the fetching of sample codes and names of samples with provided status for one project</p>>
+ * <p>Provides methods to trigger the fetching of sample codes and names of samples with provided status for one project</p>
  *
  * @since 1.0.0
  */

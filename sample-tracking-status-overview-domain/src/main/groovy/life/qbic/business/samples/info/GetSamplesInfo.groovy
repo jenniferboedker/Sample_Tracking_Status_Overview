@@ -39,9 +39,7 @@ class GetSamplesInfo implements GetSamplesInfoInput {
   void requestSampleInfosFor(String projectCode, Status status) {
     try {
         def sampleCodes = samplesDataSource.fetchSampleCodesFor(projectCode, status)
-        println "first succeeded"
         def sampleCodesToNames = infoDataSource.fetchSampleNamesFor(sampleCodes)
-        println "second succeeded"
         
       output.samplesWithNames(projectCode, status, sampleCodesToNames)
     } catch (DataSourceException dataSourceException) {
