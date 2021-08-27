@@ -62,7 +62,7 @@ class DownloadSamplesSpec extends Specification {
         String projectCode = "QABCD"
         DownloadSamplesDataSource dataSource = Mock()
         DownloadSamplesOutput output = Stub()
-        //output.failedExecution(_ as String) >> { throw  new OutputException("Output failure does not work")}
+        output.failedExecution(_ as String) >> { throw  new OutputException("Output failure does not work")}
         output.foundDownloadableSamples(_ as String, _ as List<String>) >> { throw  new OutputException("Output success does not work")}
         output.failedExecution(_ as String) >> {}
         DownloadSamples downloadSamples = new DownloadSamples(dataSource, output)
