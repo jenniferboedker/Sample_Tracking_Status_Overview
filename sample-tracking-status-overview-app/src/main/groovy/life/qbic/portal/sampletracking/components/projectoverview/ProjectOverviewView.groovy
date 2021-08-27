@@ -28,7 +28,6 @@ class ProjectOverviewView extends VerticalLayout{
 
     private Label titleLabel
     private Grid<ProjectSummary> projectGrid
-    private TextArea manifestArea
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
@@ -46,8 +45,7 @@ class ProjectOverviewView extends VerticalLayout{
         titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
-        manifestArea = setupManifestContent()
-        this.addComponents(titleLabel,setupProjectSpecificButtons(), projectGrid,manifestArea)
+        this.addComponents(titleLabel,setupProjectSpecificButtons(), projectGrid)
     }
 
     private void setupProjects(){
@@ -105,16 +103,6 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.setDataProvider(dataProvider)
     }
 
-    private TextArea setupManifestContent() {
-        TextArea textArea = new TextArea("Download Manifest")
-        textArea.setReadOnly(true)
-        setVisibleWhenDownloadIsAvailable(textArea)
-        viewModel.addPropertyChangeListener("generatedManifest", {
-            textArea.setValue(Optional.ofNullable(it.newValue).orElse("") as String)
-        })
-        return textArea
-    }
-
     private AbstractComponent setupProjectSpecificButtons() {
         VerticalLayout buttonBar = new VerticalLayout()
         buttonBar.setMargin(false)
@@ -147,13 +135,6 @@ class ProjectOverviewView extends VerticalLayout{
         component.enabled = isDownloadAvailable()
         viewModel.addPropertyChangeListener("generatedManifest") {
             component.enabled = isDownloadAvailable()
-        }
-    }
-
-    private void setVisibleWhenDownloadIsAvailable(Component component) {
-        component.visible = isDownloadAvailable()
-        viewModel.addPropertyChangeListener("generatedManifest") {
-            component.visible = isDownloadAvailable()
         }
     }
 
