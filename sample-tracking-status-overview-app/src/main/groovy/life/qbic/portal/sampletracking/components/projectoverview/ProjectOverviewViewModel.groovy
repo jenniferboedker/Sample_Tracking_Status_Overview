@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
+import groovy.beans.Bindable
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
@@ -19,6 +20,9 @@ class ProjectOverviewViewModel {
     private final ResourceService<Project> projectResourceService
     private final ResourceService<StatusCount> statusCountService
 
+    @Bindable ProjectSummary selectedProject
+    @Bindable String generatedManifest
+
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService){
         this.projectResourceService = projectResourceService
         this.statusCountService = statusCountService
@@ -33,6 +37,7 @@ class ProjectOverviewViewModel {
         }
         statusCountService.iterator().each { StatusCount statusCount ->
             updateSamplesReceived(statusCount.projectCode, statusCount.count)
+            updateSamplesFailedQc(statusCount.projectCode, statusCount.count)
         }
     }
 
@@ -41,11 +46,12 @@ class ProjectOverviewViewModel {
         this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
 
         this.statusCountService.subscribe({updateSamplesReceived(it.projectCode, it.count)}, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
+        this.statusCountService.subscribe({updateSamplesFailedQc(it.projectCode, it.count)}, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
+        this.statusCountService.subscribe({updateDataAvailable(it.projectCode, it.count)}, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
     }
 
     private void addProject(Project project) {
-        ProjectSummary.Builder builder = new ProjectSummary.Builder(project)
-        projectOverviews.add(builder.build())
+        projectOverviews.add(ProjectSummary.of(project))
     }
 
     private void removeProject(Project project) {
@@ -56,9 +62,31 @@ class ProjectOverviewViewModel {
     }
 
     private void updateSamplesReceived(String projectCode, int sampleCount) {
+        getProjectSummary(projectCode).samplesReceived = sampleCount
+    }
+
+    private void updateDataAvailable(String projectCode, int sampleCount) {
+        getProjectSummary(projectCode).sampleDataAvailable = sampleCount
+    }
+
+    private void updateSamplesFailedQc(String projectCode, int sampleCount) {
+        getProjectSummary(projectCode).samplesQcFailed = sampleCount
+    }
+
+    /**
+     * Returns the project summary for a given project code based on the projects listed in the overview
+     * @param projectCode The project code specifies a project
+     * @return The project summary for the respective code
+     */
+    private ProjectSummary getProjectSummary(String projectCode){
         ProjectSummary projectOverview = projectOverviews.collect {it as ProjectSummary}.find { it ->
             (it as ProjectSummary).code == projectCode
         }
-        projectOverview.samplesReceived = sampleCount
+        return projectOverview
+    }
+
+    InputStream getManifestInputStream() {
+        InputStream result =  new ByteArrayInputStream(generatedManifest.getBytes())
+        return result
     }
 }

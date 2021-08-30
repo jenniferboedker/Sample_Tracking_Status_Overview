@@ -6,7 +6,7 @@ import life.qbic.datamodel.samples.Status
 /**
  * <b>Count samples</b>
  *
- * <p>This use case counts samples of a project and the subset of samples that have been received at the lab.</p>
+ * <p>This use case counts samples of a project and the subset of samples that have a specific status.</p>
  *
  * @since 1.0.0
  */
@@ -17,6 +17,7 @@ class CountSamples implements CountSamplesInput{
   private final List<Status> statusesInOrder = [Status.METADATA_REGISTERED, Status.SAMPLE_RECEIVED,
     Status.SAMPLE_QC_FAIL, Status.SAMPLE_QC_PASS,
     Status.LIBRARY_PREP_FINISHED, Status.DATA_AVAILABLE]
+  private List<Status> sampleStatuses
 
   /**
    * Default constructor for this use case
@@ -38,22 +39,48 @@ class CountSamples implements CountSamplesInput{
   @Override
   void countReceivedSamples(String projectCode) {
     try {
-      List sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      int receivedAmount = countReceivedSamplesFromStatus(sampleStatuses)
+      sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
+      // counts samples that have AT LEAST this status (or a later one)
+      int receivedAmount = countSamplesFromStatus(Status.SAMPLE_RECEIVED)
       output.countedReceivedSamples(projectCode, sampleStatuses.size(), receivedAmount)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       output.failedExecution("Could not count received samples.")
     }
   }
 
-  private int countReceivedSamplesFromStatus(List<Status> sampleStatuses) {
-    int receivedIndex = statusesInOrder.indexOf(Status.SAMPLE_RECEIVED)
-    // statuses that are not considered in the ordered list return -1, meaning the sample is not counted
-    return sampleStatuses.findAll {statusesInOrder.indexOf(it) >= receivedIndex}.size()
+  /**
+   * This method calls the output interface with the number of all samples in a project as
+   * well as the subset of samples which had a failed quality control
+   * In case of failure the output interface failure method is called.
+   * @since 1.0.0
+   */
+  @Override
+  void countQcFailedSamples(String projectCode) {
+    try {
+      sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
+      int receivedAmount = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
+      output.countedFailedQcSamples(projectCode, sampleStatuses.size(), receivedAmount)
+    }catch (Exception ignored) {
+      output.failedExecution("Could not count failed qc samples.")
+    }
   }
 
+  @Override
+  void countAvailableDataSamples(String projectCode) {
+    try {
+      sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
+      int availableData = countSamplesFromStatus(Status.DATA_AVAILABLE)
+      output.countedAvailableSampleData(projectCode, sampleStatuses.size(), availableData)
+    } catch (Exception e) {
+      output.failedExecution(e.getMessage())
+    }
+  }
 
-
+  private int countSamplesFromStatus(Status status) {
+    int receivedIndex = statusesInOrder.indexOf(status)
+    // statuses that are not considered in the ordered list return -1, meaning the sample is not counted
+    return sampleStatuses.findAll { statusesInOrder.indexOf(it) >= receivedIndex }.size()
+  }
 }

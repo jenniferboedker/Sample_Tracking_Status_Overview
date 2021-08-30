@@ -5,6 +5,24 @@ Changelog
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
+0.3.0 (2021-08-30)
+------------------
+
+**Added**
+
+* Count of available sample data is shown (`#58 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/58>`_)
+
+* Count of samples that failed QC is shown (`#51 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/51>`_)
+
+* Download of available samples is possible as a manifest file (`#54 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/54>`_)
+
+**Fixed**
+
+**Dependencies**
+
+**Deprecated**
+
+
 0.2.1 (2021-07-20)
 ------------------
 

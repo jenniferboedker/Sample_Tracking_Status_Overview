@@ -104,4 +104,70 @@ class CountSamplesSpec extends Specification {
         1 * output.failedExecution(_)
         0 * output.countedReceivedSamples(_)
     }
+
+    def "successful execution of counting failed qc samples lead to success notifications"() {
+        given:
+        CountSamplesDataSource dataSource = Stub()
+        String projectCode = "QABCD"
+        dataSource.fetchSampleStatusesForProject(projectCode) >> { new ArrayList<Status>() }
+        CountSamplesOutput output = Mock()
+        CountSamples countSamples = new CountSamples(dataSource, output)
+        when:"the use case is run"
+        countSamples.countQcFailedSamples(projectCode)
+        then:"a successful message is send"
+        1 * output.countedFailedQcSamples(projectCode, 0, 0)
+        0 * output.failedExecution(_ as String)
+    }
+
+    def "amount of samples failing QC is correctly returned"() {
+        given:
+        CountSamplesDataSource dataSource = Stub()
+        List<Status> statuses = [Status.SAMPLE_QC_FAIL, Status.DATA_AVAILABLE, Status.SAMPLE_QC_FAIL]
+        String projectCode = "QABCD"
+        dataSource.fetchSampleStatusesForProject(projectCode) >> { statuses }
+        CountSamplesOutput output = Mock()
+        CountSamples countSamples = new CountSamples(dataSource, output)
+        when:"the use case is run"
+        countSamples.countQcFailedSamples(projectCode)
+        then:"the correct amounts of samples are returned"
+        1 * output.countedFailedQcSamples(projectCode, 3, 2)
+        0 * output.failedExecution(_ as String)
+    }
+
+
+    def "unsuccessful execution of counting failed qc samples leads to failure notifications"() {
+        given:
+        String projectCode = "QABCD"
+        CountSamplesDataSource dataSource = Stub()
+        dataSource.fetchSampleStatusesForProject(projectCode) >> {
+            throw new RuntimeException("Testing runtime exceptions")
+        }
+        CountSamplesOutput output = Mock()
+        CountSamples countSamples = new CountSamples(dataSource, output)
+        when:"the use case is run"
+        countSamples.countQcFailedSamples(projectCode)
+        then:"a failure message is send"
+        1 * output.failedExecution(_)
+        0 * output.countedFailedQcSamples(_)
+    }
+def "countFailedQcSamples does not count samples with status #status"() {
+        given: "a project code"
+        String projectCode = "QABCD"
+        and: "a datasource stub returning one sample of the status"
+        CountSamplesDataSource dataSource = Stub()
+        dataSource.fetchSampleStatusesForProject(projectCode) >> {
+            return [status] * 5
+        }
+        CountSamplesOutput output = Mock()
+        when:
+        CountSamples countSamples = new CountSamples(dataSource, output)
+        countSamples.countQcFailedSamples(projectCode)
+        then:
+        0 * output.failedExecution(_)
+        1 * output.countedFailedQcSamples(projectCode, totalNumber, 0)
+        where: "one sample is returned every time with each sample status once"
+        status << Status.values() - Status.SAMPLE_QC_FAIL
+        and: "the only the failedQC status is counted since it is an endpoint"
+        totalNumber = 5
+    }
 }
