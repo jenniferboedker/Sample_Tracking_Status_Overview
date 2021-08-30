@@ -1,4 +1,4 @@
-package life.qbic.business.samples.download
+package life.qbic.portal.sampletracking.components.projectoverview.download
 
 /**
  * <b>Formatter for DownloadManifest</b>
@@ -17,6 +17,7 @@ class DownloadManifestFormatter {
         String result = downloadManifest.listSampleCodes().collect {formatSampleRow(it)}.sum("")
         return result
     }
+
 
     private static String formatSampleRow(String sampleCode) {
         return "${sampleCode}\n"

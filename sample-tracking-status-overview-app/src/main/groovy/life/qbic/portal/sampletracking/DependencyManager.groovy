@@ -8,7 +8,9 @@ import life.qbic.business.project.load.LoadProjectsOutput
 import life.qbic.business.samples.count.CountSamples
 import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.business.samples.count.CountSamplesOutput
-import life.qbic.business.samples.download.*
+import life.qbic.business.samples.download.DownloadSamples
+import life.qbic.business.samples.download.DownloadSamplesDataSource
+import life.qbic.business.samples.download.DownloadSamplesOutput
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
@@ -130,8 +132,7 @@ class DependencyManager {
     }
     
     private DownloadProjectController setupDownloadProjectUsecase(ProjectOverviewViewModel viewModel) {
-        ComposeManifestOutput manifestPresenter = new ManifestPresenter(notificationService, viewModel)
-        DownloadSamplesOutput output = new ComposeManifest(manifestPresenter)
+        DownloadSamplesOutput output = new ManifestPresenter(notificationService, viewModel)
         DownloadSamples downloadSamples = new DownloadSamples(downloadSamplesDataSource, output)
         
         return new DownloadProjectController(downloadSamples)
