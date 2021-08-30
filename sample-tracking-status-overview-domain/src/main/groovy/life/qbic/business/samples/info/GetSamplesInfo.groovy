@@ -44,8 +44,6 @@ class GetSamplesInfo implements GetSamplesInfoInput {
       output.samplesWithNames(projectCode, status, sampleCodesToNames)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
-    } catch (Exception e) {
-      output.failedExecution("Could not fetch sample codes with available data.")
-    }
+    } 
   }
 }
