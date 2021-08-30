@@ -55,8 +55,8 @@ class ProjectOverviewView extends VerticalLayout{
         Button button = new Button()
         button.setIcon(VaadinIcons.QUESTION_CIRCLE)
         button.setStyleName(ValoTheme.BUTTON_ICON_ONLY + " " + ValoTheme.BUTTON_SMALL + " square")
-        button.setDescription("A manifest is a text file passed to download clients to download selected files of interest. <br>" +
-                "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a> to download the project data", ContentMode.HTML)
+        button.setDescription("A manifest is a text file used by a client application (e.g. <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a>) to download selected files of interest. <br>" +
+                "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a> to download the data.", ContentMode.HTML)
 
         button.addClickListener({
             getUI().getPage().open(
