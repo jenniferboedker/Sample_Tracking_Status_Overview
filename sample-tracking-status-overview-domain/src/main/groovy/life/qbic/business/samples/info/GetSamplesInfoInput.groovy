@@ -12,9 +12,9 @@ import life.qbic.datamodel.samples.Status
 interface GetSamplesInfoInput {
 
     /**
-     * This method calls the output interface with the codes and names of samples in the project
-     * that have a certain status
-     * In case of failure the output interface failure method is called.
+     * <p>This method calls the output interface with the codes and names of samples in the project
+     * that have a certain status</p>
+     * <p>In case of failure the output interface failure method is called.</p>
      *
      * @param projectCode a code specifying the samples that should be considered
      * @param status a kind of sample status matching a category in the sample tracking database
