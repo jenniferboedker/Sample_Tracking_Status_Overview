@@ -1,6 +1,7 @@
 package life.qbic.business.samples.download
 
 import life.qbic.business.DataSourceException
+import life.qbic.business.OutputException
 import life.qbic.datamodel.samples.Status
 import spock.lang.Specification
 
@@ -40,8 +41,8 @@ class DownloadSamplesSpec extends Specification {
         1 * output.foundDownloadableSamples(projectCode, codes)
         0 * output.failedExecution(_ as String)
     }
-    
-    def "unsuccessful execution of the use case lead to failure notifications"() {
+
+    def "unsuccessful execution of the use case lead to runtime exception"() {
         given:
         String projectCode = "QABCD"
         DownloadSamplesDataSource dataSource = Stub()
@@ -53,8 +54,22 @@ class DownloadSamplesSpec extends Specification {
         when:"the use case is run"
         downloadSamples.requestSampleCodesFor(projectCode)
         then:"a failure message is send"
-        1 * output.failedExecution(_)
-        0 * output.foundDownloadableSamples(_)
+        thrown(RuntimeException)
+    }
+
+    def "output failure leads to runtime exception being thrown"() {
+        given:
+        String projectCode = "QABCD"
+        DownloadSamplesDataSource dataSource = Mock()
+        DownloadSamplesOutput output = Stub()
+        output.failedExecution(_ as String) >> { throw  new OutputException("Output failure does not work")}
+        output.foundDownloadableSamples(_ as String, _ as List<String>) >> { throw  new OutputException("Output success does not work")}
+        output.failedExecution(_ as String) >> {}
+        DownloadSamples downloadSamples = new DownloadSamples(dataSource, output)
+        when:"the use case is run"
+        downloadSamples.requestSampleCodesFor(projectCode)
+        then:"a runtime exception is thrown"
+        thrown(RuntimeException)
     }
 
     def "a DataSourceException leads to a failure notification and no sample codes being loaded"() {

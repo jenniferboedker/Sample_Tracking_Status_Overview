@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview.download
 
+import life.qbic.business.OutputException
 import life.qbic.business.samples.download.ComposeManifestOutput
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
@@ -24,11 +25,20 @@ class ManifestPresenter implements ComposeManifestOutput {
 
     @Override
     void readManifest(String printedManifest) {
-        viewModel.generatedManifest = Optional.ofNullable(printedManifest).orElse("")
+        try {
+            String newValue = Optional.ofNullable(printedManifest).orElse("")
+            viewModel.setGeneratedManifest(newValue)
+        } catch (Exception e) {
+            throw new OutputException(e.getMessage())
+        }
     }
 
     @Override
     void failedExecution(String reason) {
-        notificationService.publishFailure("Could not create download manifest. Reason: $reason")
+        try {
+            notificationService.publishFailure("Could not create download manifest. Reason: $reason")
+        } catch (Exception e) {
+            throw new OutputException(e.getMessage())
+        }
     }
 }
