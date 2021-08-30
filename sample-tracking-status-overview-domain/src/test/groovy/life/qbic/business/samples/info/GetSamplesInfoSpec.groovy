@@ -38,7 +38,7 @@ class GetSamplesInfoSpec extends Specification {
     }
 
     
-    def "unsuccessful execution of the use case leads to failure notification"() {
+    def "unsuccessful execution of the use case does not lead to failure notification, but forwards the exception"() {
         
         given:
         DownloadSamplesDataSource sampleDataSource = Stub()
@@ -54,11 +54,13 @@ class GetSamplesInfoSpec extends Specification {
         when:"the use case is run"
         getInfos.requestSampleInfosFor(projectCode, Status.SAMPLE_QC_FAIL)
         
-        then:"a failure message is send"
-        1 * output.failedExecution(_)
+        then:"exception is not caught"
+        0 * output.failedExecution(_)
         0 * output.samplesWithNames(_)
+        RuntimeException ex = thrown()
+        ex.message == "Testing runtime exceptions"
     }
-
+    
     def "a DataSourceException leads to a failure notification and no sample codes being loaded"() {
         
         given:
@@ -66,7 +68,7 @@ class GetSamplesInfoSpec extends Specification {
         GetSamplesInfoDataSource infoDataSource = Stub()
         String projectCode = "QABCD"
         sampleDataSource.fetchSampleCodesFor(projectCode, Status.SAMPLE_QC_FAIL) >> { new ArrayList<String>() }
-        infoDataSource.fetchSampleNamesFor(_) >> { 
+        infoDataSource.fetchSampleNamesFor(_) >> {
             throw new DataSourceException("Testing data source exception")
         }
         GetSamplesInfoOutput output = Mock()
@@ -76,7 +78,7 @@ class GetSamplesInfoSpec extends Specification {
         getInfos.requestSampleInfosFor(projectCode, Status.SAMPLE_QC_FAIL)
         
         then:"a failure message is send"
-        1 * output.failedExecution(_)   
+        1 * output.failedExecution(_)
         0 * output.samplesWithNames(_)
     }
 
