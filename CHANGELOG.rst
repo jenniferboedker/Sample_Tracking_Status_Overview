@@ -10,7 +10,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
-* Download of available samples is possible as a manifest file (`#54 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/54/conflicts>`_)
+* Download of available samples is possible as a manifest file (`#54 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/54>`_)
 
 * Count of available sample data is shown (`#58 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/58>`_)
 
