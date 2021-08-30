@@ -45,7 +45,7 @@ class CountSamples implements CountSamplesInput{
       output.countedReceivedSamples(projectCode, sampleStatuses.size(), receivedAmount)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       output.failedExecution("Could not count received samples.")
     }
   }
@@ -62,7 +62,7 @@ class CountSamples implements CountSamplesInput{
       sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
       int receivedAmount = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
       output.countedFailedQcSamples(projectCode, sampleStatuses.size(), receivedAmount)
-    }catch (Exception e) {
+    }catch (Exception ignored) {
       output.failedExecution("Could not count failed qc samples.")
     }
   }

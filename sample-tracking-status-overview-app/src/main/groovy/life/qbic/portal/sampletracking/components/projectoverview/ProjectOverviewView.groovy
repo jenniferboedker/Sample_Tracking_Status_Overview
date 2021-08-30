@@ -5,6 +5,7 @@ import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
+import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
@@ -46,7 +47,41 @@ class ProjectOverviewView extends VerticalLayout{
         titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
-        this.addComponents(titleLabel,setupProjectSpecificButtons(), projectGrid)
+        Component component = setupProjectSpecificButtons()
+        this.addComponents(titleLabel,component, projectGrid)
+    }
+
+    private Button setUpLinkButton(){
+        Button button = new Button()
+        button.setIcon(VaadinIcons.QUESTION_CIRCLE)
+        button.setStyleName(ValoTheme.BUTTON_ICON_ONLY + " " + ValoTheme.BUTTON_SMALL + " square")
+        button.setDescription("A manifest is a text file used by a client application (e.g. <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a>) to download selected files of interest. <br>" +
+                "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a> to download the data.", ContentMode.HTML)
+
+        button.addClickListener({
+            getUI().getPage().open(
+                    "https://github.com/qbicsoftware/postman-cli#provide-a-file-with-several-qbic-ids",
+                    "_blank")
+        })
+        return button
+    }
+
+    private Button setupDownloadButton() {
+        Button downloadManifestAction = new Button("Download Manifest", VaadinIcons.DOWNLOAD)
+        viewModel.addPropertyChangeListener("generatedManifest", {
+            if (isDownloadAvailable()) {
+                this.fileDownloader = new FileDownloader(new StreamResource({viewModel.getManifestInputStream()}, "manifest.txt"))
+                this.fileDownloader.extend(downloadManifestAction)
+            } else {
+                if (this.fileDownloader) {
+                    if (downloadManifestAction.extensions.contains(fileDownloader)) {
+                        downloadManifestAction.removeExtension(this.fileDownloader)
+                    }
+                }
+            }
+        })
+        enableWhenDownloadIsAvailable(downloadManifestAction)
+        return downloadManifestAction
     }
 
     private void setupProjects(){
@@ -119,23 +154,12 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private AbstractComponent setupProjectSpecificButtons() {
-        VerticalLayout buttonBar = new VerticalLayout()
+        HorizontalLayout buttonBar = new HorizontalLayout()
         buttonBar.setMargin(false)
-        Button downloadManifestAction = new Button("Download Manifest", VaadinIcons.DOWNLOAD)
-        viewModel.addPropertyChangeListener("generatedManifest", {
-            if (isDownloadAvailable()) {
-                this.fileDownloader = new FileDownloader(new StreamResource({viewModel.getManifestInputStream()}, "manifest.txt"))
-                this.fileDownloader.extend(downloadManifestAction)
-            } else {
-                if (this.fileDownloader) {
-                    if (downloadManifestAction.extensions.contains(fileDownloader)) {
-                        downloadManifestAction.removeExtension(this.fileDownloader)
-                    }
-                }
-            }
-        })
-        enableWhenDownloadIsAvailable(downloadManifestAction)
-        buttonBar.addComponent(downloadManifestAction)
+        Button postmanLink = setUpLinkButton()
+        Button downloadManifestAction = setupDownloadButton()
+        buttonBar.addComponents(downloadManifestAction, postmanLink)
+        buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
         return buttonBar
     }
 

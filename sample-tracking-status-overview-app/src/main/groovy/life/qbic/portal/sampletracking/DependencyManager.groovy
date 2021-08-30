@@ -160,7 +160,7 @@ class DependencyManager {
         projectCodes.each {
             countSamples.countReceivedSamples(it)
             countSamples.countQcFailedSamples(it)
-            countSamples.countAvailableDataSamples(it)        
+            countSamples.countAvailableDataSamples(it)
         }
     }
 
