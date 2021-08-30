@@ -1,7 +1,6 @@
 package life.qbic.business.samples.info
 
 import life.qbic.business.DataSourceException
-import life.qbic.datamodel.samples.Status
 
 /**
  * <b>Fetches sample information for provided sample codes</b>
