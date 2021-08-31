@@ -5,12 +5,14 @@ Changelog
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
-0.3.0-SNAPSHOT (2021-08-25)
+0.3.0-SNAPSHOT (2021-08-18)
 ---------------------------
 
 **Added**
 
-* Download of available samples
+* Download of available samples is possible as a manifest file (`#54 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/54>`_)
+
+* Count of available sample data is shown (`#58 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/58>`_)
 
 **Fixed**
 
