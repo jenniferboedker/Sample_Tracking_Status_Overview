@@ -78,6 +78,17 @@ class CountSamples implements CountSamplesInput{
     }
   }
 
+  @Override
+  void countLibraryPrepFinishedSamples(String projectCode) {
+    try {
+      sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
+      int availableData = countSamplesFromStatus(Status.LIBRARY_PREP_FINISHED)
+      output.countedAvailableSampleData(projectCode, sampleStatuses.size(), availableData)
+    } catch (Exception e) {
+      output.failedExecution(e.getMessage())
+    }
+  }
+
   private int countSamplesFromStatus(Status status) {
     int receivedIndex = statusesInOrder.indexOf(status)
     // statuses that are not considered in the ordered list return -1, meaning the sample is not counted

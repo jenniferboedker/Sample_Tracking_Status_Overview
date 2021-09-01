@@ -66,4 +66,15 @@ class CountSamplesPresenter implements CountSamplesOutput {
         StatusCount statusCount = new StatusCount(projectCode, Status.DATA_AVAILABLE, availableData)
         statusCountResourceService.addToResource(statusCount)
     }
+
+    /**
+     * To be called after successfully counting samples with finished library prep for the provided code.
+     * @param number of all samples and samples that have available data
+     * @param projectCode the code of the project samples were counted for
+     * @since 1.0.0
+     */
+    @Override
+    void countedLibraryPrepFinishedSamples(String projectCode, int allSamples, int availableData) {
+
+    }
 }
