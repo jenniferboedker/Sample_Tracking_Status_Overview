@@ -58,7 +58,7 @@ class FailedQCSamplesView extends VerticalLayout {
     }
 
     private static class ViewModel {
-        List<Sample> samples
+        List<Sample> samples = new ArrayList<>()
     }
 
     private static class Presenter implements GetSamplesInfoOutput {
@@ -85,6 +85,8 @@ class FailedQCSamplesView extends VerticalLayout {
         void samplesWithNames(String projectCode, Status status, Map<String, String> sampleCodesToNames) {
             if (status == Status.SAMPLE_QC_FAIL) {
                 List<Sample> samples = parseSamples(sampleCodesToNames)
+                viewModel.samples.clear()
+                viewModel.samples.addAll(samples)
             } else {
                 //there is not behaviour defined so do nothing
             }
@@ -95,6 +97,7 @@ class FailedQCSamplesView extends VerticalLayout {
                     .map({
                         return new Sample(it.key, it.value)
                     }).collect()
+            return Optional.ofNullable(samples).orElse([])
         }
     }
 }

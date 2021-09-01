@@ -11,6 +11,7 @@ import life.qbic.business.samples.count.CountSamplesOutput
 import life.qbic.business.samples.download.DownloadSamples
 import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.business.samples.download.DownloadSamplesOutput
+import life.qbic.business.samples.info.GetSamplesInfoDataSource
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
@@ -51,6 +52,7 @@ class DependencyManager {
 
     private LoadProjectsDataSource loadProjectsDataSource
     private CountSamplesDataSource countSamplesDataSource
+    private GetSamplesInfoDataSource getSamplesInfoDataSource
     private DownloadSamplesDataSource downloadSamplesDataSource
 
     private ResourceService<Project> projectResourceService
@@ -100,6 +102,8 @@ class DependencyManager {
         )
         OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
         loadProjectsDataSource = openBisConnector
+        getSamplesInfoDataSource = openBisConnector
+
     }
 
     /**
