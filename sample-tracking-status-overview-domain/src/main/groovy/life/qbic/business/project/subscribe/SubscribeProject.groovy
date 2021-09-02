@@ -5,12 +5,12 @@ import life.qbic.datamodel.identifiers.SampleCodeFunctions
 import java.util.function.Consumer
 
 /**
-  * <b><short description></b>
-  *
-  * <p><detailed description></p>
-  *
-  * @since <version tag>
-  */
+ * <b><short description></b>
+ *
+ * <p><detailed description></p>
+ *
+ * @since <version tag>
+ */
 class SubscribeProject implements SubscribeProjectInput {
     /**
      * Subscribes a user with the authentication id to a specific project
@@ -28,6 +28,7 @@ class SubscribeProject implements SubscribeProjectInput {
             throw new IllegalArgumentException(validationException.getMessage())
         }
         Subscriber subscriber = new Subscriber(firstName, lastName, email)
+
     }
 
     private static class InputValidator {
@@ -37,20 +38,21 @@ class SubscribeProject implements SubscribeProjectInput {
             validateProjectCode.accept(projectCode)
         }
         private static Consumer<Subscriber> validateFirstName = { Subscriber subscriber ->
-            if (! subscriber.firstName) throw new ValidationException("Please provide a first name.")
+            if (!subscriber.firstName) throw new ValidationException("Please provide a first name.")
         }
         private static Consumer<Subscriber> validateLastName = { Subscriber subscriber ->
-            if (! subscriber.lastName) throw new ValidationException("Please provide a first name.")
+            if (!subscriber.lastName) throw new ValidationException("Please provide a first name.")
         }
         private static Consumer<Subscriber> validateEmail = { Subscriber subscriber ->
-            if (! subscriber.eMail) throw new ValidationException("Please provide a first name.")
+            if (!subscriber.eMail) throw new ValidationException("Please provide a first name.")
         }
         private static Consumer<String> validateProjectCode = { String projectCode ->
-            ValidationException validationException = new ValidationException("Please provide a valid QBiC barcode.")
-            if (! projectCode) {
+            ValidationException validationException = new ValidationException(
+                    "Please provide a valid QBiC barcode.")
+            if (!projectCode) {
                 throw validationException
             }
-            if (! SampleCodeFunctions.isQbicBarcode(projectCode)) {
+            if (!SampleCodeFunctions.isQbicBarcode(projectCode)) {
                 throw validationException
             }
         }
