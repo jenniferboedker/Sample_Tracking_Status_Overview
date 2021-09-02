@@ -74,7 +74,7 @@ class CountSamplesPresenter implements CountSamplesOutput {
      * @since 1.0.0
      */
     @Override
-    void countedLibraryPrepFinishedSamples(String projectCode, int allSamples, int availableData) {
+    void countedLibraryPrepFinishedSamples(String projectCode, int allSamples, int libraryPrepFinished) {
 
     }
 }
