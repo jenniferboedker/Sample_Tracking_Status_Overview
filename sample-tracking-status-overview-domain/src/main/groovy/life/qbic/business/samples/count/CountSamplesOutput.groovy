@@ -48,5 +48,5 @@ interface CountSamplesOutput {
      * @param projectCode the code of the project samples were counted for
      * @since 1.0.0
      */
-    void countedLibraryPrepFinishedSamples(String projectCode, int allSamples, int availableData)
+    void countedLibraryPrepFinishedSamples(String projectCode, int allSamples, int libraryPrepFinished)
 }

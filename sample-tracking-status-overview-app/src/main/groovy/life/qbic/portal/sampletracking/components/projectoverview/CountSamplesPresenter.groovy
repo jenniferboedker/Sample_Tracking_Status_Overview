@@ -74,8 +74,8 @@ class CountSamplesPresenter implements CountSamplesOutput {
      * @since 1.0.0
      */
     @Override
-    void countedLibraryPrepFinishedSamples(String projectCode, int allSamples, int availableData) {
-        StatusCount statusCount = new StatusCount(projectCode, Status.LIBRARY_PREP_FINISHED, availableData)
+    void countedLibraryPrepFinishedSamples(String projectCode, int allSamples, int libraryPrepFinished) {
+        StatusCount statusCount = new StatusCount(projectCode, Status.LIBRARY_PREP_FINISHED, libraryPrepFinished)
         statusCountResourceService.addToResource(statusCount)
     }
 }

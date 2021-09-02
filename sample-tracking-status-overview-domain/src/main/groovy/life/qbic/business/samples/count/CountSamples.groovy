@@ -82,8 +82,8 @@ class CountSamples implements CountSamplesInput{
   void countLibraryPrepFinishedSamples(String projectCode) {
     try {
       sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      int availableData = countSamplesFromStatus(Status.LIBRARY_PREP_FINISHED)
-      output.countedAvailableSampleData(projectCode, sampleStatuses.size(), availableData)
+      int libraryPrepFinished = countSamplesFromStatus(Status.LIBRARY_PREP_FINISHED)
+      output.countedLibraryPrepFinishedSamples(projectCode, sampleStatuses.size(), libraryPrepFinished)
     } catch (Exception e) {
       output.failedExecution(e.getMessage())
     }
