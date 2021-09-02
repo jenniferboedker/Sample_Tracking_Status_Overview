@@ -4,9 +4,7 @@ import life.qbic.business.samples.info.GetSamplesInfoInput
 import life.qbic.datamodel.samples.Status
 
 /**
- * <b><short description></b>
- *
- * <p><detailed description></p>
+ * <b>Controls the dataflow into the GetSamplesInfo use case.</b>
  *
  * @since 1.0.0
  */

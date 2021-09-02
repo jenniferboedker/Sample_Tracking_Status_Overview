@@ -9,6 +9,7 @@ import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
+import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
@@ -78,6 +79,15 @@ class ProjectOverviewView extends VerticalLayout{
     private Button setupShowDetails(){
         Button detailsButton = new Button("Show Details")
         detailsButton.setIcon(VaadinIcons.INFO_CIRCLE)
+        detailsButton.setEnabled(false)
+
+        projectGrid.addSelectionListener({
+            if(viewModel.selectedProject && viewModel.selectedProject.samplesQcFailed > 0){
+                detailsButton.setEnabled(true)
+            }else{
+                detailsButton.setEnabled(false)
+            }
+        })
 
         detailsButton.addClickListener({
             if(viewModel.selectedProject){
@@ -147,7 +157,7 @@ class ProjectOverviewView extends VerticalLayout{
                     projectGrid.select(modelSelection.get())
                 }
             })
-            //
+            //for each selected
             failedQCSamplesView.setVisible(false)
         })
     }

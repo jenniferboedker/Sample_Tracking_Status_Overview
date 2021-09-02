@@ -108,7 +108,6 @@ class DependencyManager {
         OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
         loadProjectsDataSource = openBisConnector
         getSamplesInfoDataSource = openBisConnector
-
     }
 
     /**
@@ -137,7 +136,7 @@ class DependencyManager {
         
         DownloadProjectController downloadController = setupDownloadProjectUseCase(viewModel)
 
-        FailedQCSamplesView failedQCSamplesView = new FailedQCSamplesView()
+        FailedQCSamplesView failedQCSamplesView = new FailedQCSamplesView(notificationService)
         ProjectOverviewController projectOverviewController = setupFailedQCUseCase(failedQCSamplesView.getPresenter())
 
         ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController, failedQCSamplesView, projectOverviewController)

@@ -6,6 +6,8 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.VerticalLayout
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
+import life.qbic.portal.sampletracking.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.components.NotificationHandler
 
 /**
  * <b>Shows the failed QC samples </b>
@@ -18,9 +20,9 @@ class FailedQCSamplesView extends VerticalLayout {
 
     private Grid<Sample> samplesGrid
 
-    FailedQCSamplesView() {
+    FailedQCSamplesView(NotificationService notificationService) {
         this.viewModel = new ViewModel()
-        this.presenter = new Presenter(viewModel)
+        this.presenter = new Presenter(viewModel, notificationService)
         initLayout()
     }
 
@@ -62,14 +64,17 @@ class FailedQCSamplesView extends VerticalLayout {
     private static class Presenter implements GetSamplesInfoOutput {
 
         private final ViewModel viewModel
+        private final NotificationService notificationService
 
-        Presenter(ViewModel viewModel) {
+
+        Presenter(ViewModel viewModel, NotificationService notificationService) {
             this.viewModel = viewModel
+            this.notificationService = notificationService
         }
 
         @Override
         void failedExecution(String reason) {
-
+            notificationService.publishFailure(reason)
         }
 
         /**
