@@ -1,5 +1,6 @@
 package life.qbic.business.project.subscribe
 
+import life.qbic.business.DataSourceException
 import life.qbic.datamodel.identifiers.SampleCodeFunctions
 
 import java.util.function.Consumer
@@ -12,6 +13,15 @@ import java.util.function.Consumer
  * @since <version tag>
  */
 class SubscribeProject implements SubscribeProjectInput {
+
+    private final SubscriptionDataSource dataSource
+    private final SubscribeProjectOutput output
+
+    SubscribeProject(SubscriptionDataSource dataSource, SubscribeProjectOutput output) {
+        this.dataSource = dataSource
+        this.output = output
+    }
+
     /**
      * Subscribes a user with the authentication id to a specific project
      * @param firstName the first name of the subscriber
@@ -28,7 +38,17 @@ class SubscribeProject implements SubscribeProjectInput {
             throw new IllegalArgumentException(validationException.getMessage())
         }
         Subscriber subscriber = new Subscriber(firstName, lastName, email)
+        subscribeToProject(subscriber, projectCode)
+    }
 
+    private void subscribeToProject(Subscriber subscriber, String projectCode) {
+        try {
+            dataSource.subscribeToProject(subscriber, projectCode)
+        } catch (DataSourceException dataSourceException) {
+
+        } catch (Exception e) {
+            throw new RuntimeException("Could not subscribe ${subscriber.firstName} ${subscriber.lastName} (${subscriber.email}) to ${projectCode}.")
+        }
     }
 
     private static class InputValidator {
@@ -44,7 +64,7 @@ class SubscribeProject implements SubscribeProjectInput {
             if (!subscriber.lastName) throw new ValidationException("Please provide a first name.")
         }
         private static Consumer<Subscriber> validateEmail = { Subscriber subscriber ->
-            if (!subscriber.eMail) throw new ValidationException("Please provide a first name.")
+            if (!subscriber.email) throw new ValidationException("Please provide a first name.")
         }
         private static Consumer<String> validateProjectCode = { String projectCode ->
             ValidationException validationException = new ValidationException(

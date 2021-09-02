@@ -15,9 +15,11 @@ class SubscribeProjectSpec extends Specification {
     String validEmail = "email@addre.ss"
     String validProjectCode = "QABCD"
 
+    SubscribeProjectOutput output = Mock()
+    SubscriptionDataSource subscriptionDataSource = Mock()
+    SubscribeProject subscribeProject = new SubscribeProject(subscriptionDataSource, output)
+
     def "Subscribe fails for invalid first name: #invalidFirstName"() {
-        given:
-        SubscribeProject subscribeProject = new SubscribeProject()
         when:
         subscribeProject.subscribe(invalidFirstName, validLastName, validEmail, validProjectCode)
         then:
@@ -27,8 +29,6 @@ class SubscribeProjectSpec extends Specification {
     }
 
     def "Subscribe fails for invalid last name: #invalidLastName"() {
-        given:
-        SubscribeProject subscribeProject = new SubscribeProject()
         when:
         subscribeProject.subscribe(validFirstName, invalidLastName, validEmail, validProjectCode)
         then:
@@ -38,8 +38,6 @@ class SubscribeProjectSpec extends Specification {
     }
 
     def "Subscribe fails for invalid email address: #invalidEmail"() {
-        given:
-        SubscribeProject subscribeProject = new SubscribeProject()
         when:
         subscribeProject.subscribe(validFirstName, validLastName, invalidEmail, validProjectCode)
         then:
@@ -49,8 +47,6 @@ class SubscribeProjectSpec extends Specification {
     }
 
     def "Subscribe fails for invalid project code: #invalidProjectCode"() {
-        given:
-        SubscribeProject subscribeProject = new SubscribeProject()
         when:
         subscribeProject.subscribe(validFirstName, validLastName, validEmail, invalidProjectCode)
         then:

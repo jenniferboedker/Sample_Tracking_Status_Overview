@@ -10,12 +10,12 @@ package life.qbic.business.project.subscribe
 class Subscriber {
     final String firstName
     final String lastName
-    final String eMail
+    final String email
 
-    Subscriber(String firstName, String lastName, String eMail) {
+    Subscriber(String firstName, String lastName, String email) {
         this.firstName = firstName
         this.lastName = lastName
-        this.eMail = eMail
+        this.email = email
     }
 
 
@@ -24,7 +24,7 @@ class Subscriber {
         return "Subscriber{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", eMail='" + eMail + '\'' +
+                ", email='" + email + '\'' +
                 '}'
     }
 }
