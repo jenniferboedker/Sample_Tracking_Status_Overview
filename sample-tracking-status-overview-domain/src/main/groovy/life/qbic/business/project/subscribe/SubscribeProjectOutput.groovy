@@ -7,5 +7,12 @@ package life.qbic.business.project.subscribe
  *
  * @since <version tag>
  */
-class SubscribeProjectOutput {
+interface SubscribeProjectOutput {
+
+    /**
+     * A subscription was added for a given project
+     * @param project the project code of the subscribed project
+     * @since 1.1.0
+     */
+    void subscriptionAdded(String project)
 }
