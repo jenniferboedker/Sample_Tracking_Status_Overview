@@ -11,8 +11,11 @@ interface SubscribeProjectInput {
 
     /**
      * Subscribes a user with the authentication id to a specific project
-     * @param authId the authentication identifier for the subscribing user
+     * @param firstName the first name of the subscriber
+     * @param lastName the last name of the subscriber
+     * @param email the email address of the subscriber
      * @param projectCode the project to subscribe to
+     * @since 1.0.0
      */
-    void subscribe(String authId, String projectCode)
+    void subscribe(String firstName, String lastName, String email, String projectCode)
 }
