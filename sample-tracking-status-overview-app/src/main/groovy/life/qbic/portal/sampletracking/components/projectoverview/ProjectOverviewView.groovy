@@ -9,7 +9,6 @@ import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
-import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
@@ -33,9 +32,7 @@ class ProjectOverviewView extends VerticalLayout{
     private final FailedQCSamplesView failedQCSamplesView
     private final ProjectOverviewController projectOverviewController
 
-    private Label titleLabel
     private Grid<ProjectSummary> projectGrid
-    private HorizontalLayout buttonBar
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
@@ -53,19 +50,19 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private void initLayout(){
-        titleLabel = new Label("Project Overview")
+        Label titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
 
         setupProjects()
-        setupProjectSpecificButtons()
+        HorizontalLayout buttonBar = setupButtonLayout()
 
         failedQCSamplesView.setVisible(false)
 
         this.addComponents(titleLabel,buttonBar, projectGrid, failedQCSamplesView)
     }
 
-    private void setupProjectSpecificButtons() {
-        buttonBar = new HorizontalLayout()
+    private HorizontalLayout setupButtonLayout() {
+        HorizontalLayout buttonBar = new HorizontalLayout()
         buttonBar.setMargin(false)
 
         Button postmanLink = setUpLinkButton()
@@ -74,6 +71,8 @@ class ProjectOverviewView extends VerticalLayout{
 
         buttonBar.addComponents(showDetails, downloadManifestAction, postmanLink)
         buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
+
+        return buttonBar
     }
 
     private Button setupShowDetails(){
