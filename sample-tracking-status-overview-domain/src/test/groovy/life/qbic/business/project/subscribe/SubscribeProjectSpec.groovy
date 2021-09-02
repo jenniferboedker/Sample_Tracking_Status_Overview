@@ -17,42 +17,45 @@ class SubscribeProjectSpec extends Specification {
 
     def "Subscribe fails for invalid first name: #firstName"() {
         given:
-            SubscribeProject subscribeProject = new SubscribeProject()
+        SubscribeProject subscribeProject = new SubscribeProject()
         when:
-            subscribeProject.subscribe(firstName, validLastName, validEmail, validProjectCode)
+        subscribeProject.subscribe(firstName, validLastName, validEmail, validProjectCode)
         then:
-            thrown(IllegalArgumentException)
+        thrown(IllegalArgumentException)
         where:
         firstName << [null, ""]
     }
+
     def "Subscribe fails for invalid last name: #lastName"() {
         given:
-            SubscribeProject subscribeProject = new SubscribeProject()
+        SubscribeProject subscribeProject = new SubscribeProject()
         when:
-            subscribeProject.subscribe(validFirstName, lastName, validEmail, validProjectCode)
+        subscribeProject.subscribe(validFirstName, lastName, validEmail, validProjectCode)
         then:
-            thrown(IllegalArgumentException)
+        thrown(IllegalArgumentException)
         where:
         lastName << [null, ""]
     }
+
     def "Subscribe fails for invalid email address: #email"() {
         given:
-            SubscribeProject subscribeProject = new SubscribeProject()
+        SubscribeProject subscribeProject = new SubscribeProject()
         when:
-            subscribeProject.subscribe(validFirstName, validLastName, email, validProjectCode)
+        subscribeProject.subscribe(validFirstName, validLastName, email, validProjectCode)
         then:
-            thrown(IllegalArgumentException)
+        thrown(IllegalArgumentException)
         where:
         email << [null, ""]
     }
+
     def "Subscribe fails for invalid project code: #projectCode"() {
         given:
-            SubscribeProject subscribeProject = new SubscribeProject()
+        SubscribeProject subscribeProject = new SubscribeProject()
         when:
         subscribeProject.subscribe(validFirstName, validLastName, validEmail, projectCode)
         then:
-            thrown(IllegalArgumentException)
+        thrown(IllegalArgumentException)
         where:
-            projectCode << [null, "", "1234", "ZBCA"]
+        projectCode << [null, "", "1234", "ZBCA"]
     }
 }
