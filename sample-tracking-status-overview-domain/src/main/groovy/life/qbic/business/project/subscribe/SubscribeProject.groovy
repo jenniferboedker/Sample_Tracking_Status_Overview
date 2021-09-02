@@ -46,7 +46,13 @@ class SubscribeProject implements SubscribeProjectInput {
             if (! subscriber.eMail) throw new ValidationException("Please provide a first name.")
         }
         private static Consumer<String> validateProjectCode = { String projectCode ->
-            if (! SampleCodeFunctions.isQbicBarcode(projectCode)) throw new ValidationException("Please provide a valid QBiC barcode.")
+            ValidationException validationException = new ValidationException("Please provide a valid QBiC barcode.")
+            if (! projectCode) {
+                throw validationException
+            }
+            if (! SampleCodeFunctions.isQbicBarcode(projectCode)) {
+                throw validationException
+            }
         }
     }
 
