@@ -82,6 +82,8 @@ class ProjectOverviewView extends VerticalLayout{
         detailsButton.setEnabled(false)
 
         projectGrid.addSelectionListener({
+            failedQCSamplesView.setVisible(false)
+
             if(viewModel.selectedProject && viewModel.selectedProject.samplesQcFailed > 0){
                 detailsButton.setEnabled(true)
             }else{
