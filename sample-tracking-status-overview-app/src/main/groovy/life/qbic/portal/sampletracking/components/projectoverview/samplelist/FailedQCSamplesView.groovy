@@ -8,11 +8,9 @@ import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
 
 /**
- * <b><short description></b>
+ * <b>Shows the failed QC samples </b>
  *
- * <p><detailed description></p>
- *
- * @since <version tag>
+ * @since 1.0.0
  */
 class FailedQCSamplesView extends VerticalLayout {
     private final ViewModel viewModel
@@ -28,22 +26,22 @@ class FailedQCSamplesView extends VerticalLayout {
 
     private void initLayout() {
         this.setMargin(false)
-        samplesGrid = createSamplesGrid()
+        createSamplesGrid()
+
         this.addComponent(samplesGrid)
     }
 
-    private Grid<Sample> createSamplesGrid() {
-        //TODO implement
-        Grid<Sample> samplesGrid = new Grid<>()
+    private void createSamplesGrid() {
+
+        this.samplesGrid = new Grid<>()
         samplesGrid.setCaption("Samples that failed quality control")
         samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
         samplesGrid.addColumn(Sample::getTitle).setCaption("Sample Title").setId("SampleTitle")
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(DataProvider.ofCollection(viewModel.getSamples()))
-        samplesGrid
     }
 
-    public GetSamplesInfoOutput getPresenter() {
+    GetSamplesInfoOutput getPresenter() {
         return this.presenter
     }
 

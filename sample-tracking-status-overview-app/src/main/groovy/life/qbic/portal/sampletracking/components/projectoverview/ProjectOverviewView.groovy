@@ -12,6 +12,8 @@ import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 
 /**
  * <b>This class generates the layout for the ProductOverview use case</b>
@@ -27,18 +29,24 @@ class ProjectOverviewView extends VerticalLayout{
     private final ProjectOverviewViewModel viewModel
     private final DownloadProjectController downloadProjectController
     private final NotificationService notificationService
+    private final FailedQCSamplesView failedQCSamplesView
+    private final ProjectOverviewController projectOverviewController
 
     private Label titleLabel
     private Grid<ProjectSummary> projectGrid
+    private HorizontalLayout buttonBar
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
     private FileDownloader fileDownloader
 
-    ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController){
+    ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController
+                        , FailedQCSamplesView failedQCSamplesView, ProjectOverviewController projectOverviewController){
         this.notificationService = notificationService
         this.viewModel = viewModel
         this.downloadProjectController = downloadProjectController
+        this.failedQCSamplesView = failedQCSamplesView
+        this.projectOverviewController = projectOverviewController
 
         initLayout()
     }
@@ -46,9 +54,39 @@ class ProjectOverviewView extends VerticalLayout{
     private void initLayout(){
         titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
+
         setupProjects()
-        Component component = setupProjectSpecificButtons()
-        this.addComponents(titleLabel,component, projectGrid)
+        setupProjectSpecificButtons()
+
+        failedQCSamplesView.setVisible(false)
+
+        this.addComponents(titleLabel,buttonBar, projectGrid, failedQCSamplesView)
+    }
+
+    private void setupProjectSpecificButtons() {
+        buttonBar = new HorizontalLayout()
+        buttonBar.setMargin(false)
+
+        Button postmanLink = setUpLinkButton()
+        Button downloadManifestAction = setupDownloadButton()
+        Button showDetails = setupShowDetails()
+
+        buttonBar.addComponents(showDetails, downloadManifestAction, postmanLink)
+        buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
+    }
+
+    private Button setupShowDetails(){
+        Button detailsButton = new Button("Show Details")
+        detailsButton.setIcon(VaadinIcons.INFO_CIRCLE)
+
+        detailsButton.addClickListener({
+            if(viewModel.selectedProject){
+                projectOverviewController.getFailedQcSamples(viewModel.selectedProject.code)
+                failedQCSamplesView.setVisible(true)
+            }
+        })
+
+        return detailsButton
     }
 
     private Button setUpLinkButton(){
@@ -109,7 +147,8 @@ class ProjectOverviewView extends VerticalLayout{
                     projectGrid.select(modelSelection.get())
                 }
             })
-
+            //
+            failedQCSamplesView.setVisible(false)
         })
     }
 
@@ -153,15 +192,6 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.setDataProvider(dataProvider)
     }
 
-    private AbstractComponent setupProjectSpecificButtons() {
-        HorizontalLayout buttonBar = new HorizontalLayout()
-        buttonBar.setMargin(false)
-        Button postmanLink = setUpLinkButton()
-        Button downloadManifestAction = setupDownloadButton()
-        buttonBar.addComponents(downloadManifestAction, postmanLink)
-        buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
-        return buttonBar
-    }
 
     private void tryToDownloadManifest() {
         try {

@@ -11,7 +11,10 @@ import life.qbic.business.samples.count.CountSamplesOutput
 import life.qbic.business.samples.download.DownloadSamples
 import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.business.samples.download.DownloadSamplesOutput
+import life.qbic.business.samples.info.GetSamplesInfo
 import life.qbic.business.samples.info.GetSamplesInfoDataSource
+import life.qbic.business.samples.info.GetSamplesInfoInput
+import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
@@ -23,6 +26,8 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectOvervie
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.download.ManifestPresenter
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
 import life.qbic.portal.sampletracking.datasources.Credentials
 import life.qbic.portal.sampletracking.datasources.OpenBisConnector
 import life.qbic.portal.sampletracking.datasources.database.DatabaseSession
@@ -130,12 +135,21 @@ class DependencyManager {
     private ProjectOverviewView createProjectOverviewView() {
         ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService)
         
-        DownloadProjectController downloadController = setupDownloadProjectUsecase(viewModel)
-        ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController)
+        DownloadProjectController downloadController = setupDownloadProjectUseCase(viewModel)
+
+        FailedQCSamplesView failedQCSamplesView = new FailedQCSamplesView()
+        ProjectOverviewController projectOverviewController = setupFailedQCUseCase(failedQCSamplesView.getPresenter())
+
+        ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController, failedQCSamplesView, projectOverviewController)
         return view
     }
+
+    private ProjectOverviewController setupFailedQCUseCase(GetSamplesInfoOutput output){
+        GetSamplesInfo getSamplesInfo = new GetSamplesInfo(downloadSamplesDataSource,getSamplesInfoDataSource, output)
+        return new ProjectOverviewController(getSamplesInfo)
+    }
     
-    private DownloadProjectController setupDownloadProjectUsecase(ProjectOverviewViewModel viewModel) {
+    private DownloadProjectController setupDownloadProjectUseCase(ProjectOverviewViewModel viewModel) {
         DownloadSamplesOutput output = new ManifestPresenter(notificationService, viewModel)
         DownloadSamples downloadSamples = new DownloadSamples(downloadSamplesDataSource, output)
         
