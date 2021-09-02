@@ -15,6 +15,7 @@ interface SubscribeProjectInput {
      * @param lastName the last name of the subscriber
      * @param email the email address of the subscriber
      * @param projectCode the project to subscribe to
+     * @since 1.0.0
      */
     void subscribe(String firstName, String lastName, String email, String projectCode)
 }
