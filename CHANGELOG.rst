@@ -14,6 +14,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * Count of available sample data is shown (`#58 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/58>`_)
 
+* List failing QC samples for single projects (`#77 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/77>`_)
+
 **Fixed**
 
 **Dependencies**
