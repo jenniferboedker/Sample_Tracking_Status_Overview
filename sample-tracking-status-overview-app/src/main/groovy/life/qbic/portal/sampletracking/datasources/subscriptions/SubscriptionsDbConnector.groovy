@@ -13,11 +13,11 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 
 /**
- * <b><short description></b>
+ * <b>Provides methods to handle user's subscriptions to projects</b>
  *
- * <p><detailed description></p>
+ * <p>Connects to the subscription database in order to store or fetch user's subsriptions to project. Uses Subscriber objects and the project code</p>
  *
- * @since <version tag>
+ * @since 1.0.0
  */
 class SubscriptionsDbConnector implements SubscriptionDataSource {
   
@@ -67,8 +67,8 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
           }
     }
     
-    private int addSubscriber(Connection connection, Subscriber subscriber) {
-          subscriberId = getSubscriberId(subscriber)
+    private int getSubscriberId(Connection connection, Subscriber subscriber) {
+          subscriberId = fetchExistingSubscriberId(subscriber)
           if(subscriberId <= 0) {
             String query = "INSERT INTO subscriber (first_name, last_name, email) VALUES(?, ?, ?)"
             
@@ -96,7 +96,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
           statement.execute()
     }
 
-    private int getSubscriberId(Subscriber subscriber) {
+    private int fetchExistingSubscriberId(Subscriber subscriber) {
           String query = "SELECT id FROM subscriber WHERE first_name = ? AND last_name = ? AND email = ?"
           Connection connection = connectionProvider.connect()
 
