@@ -4,18 +4,15 @@ import life.qbic.business.DataSourceException
 import spock.lang.Specification
 
 /**
- * <b><short description></b>
+ * <b>Specification for the SubscribeProject use case</b>
  *
- * <p><detailed description></p>
- *
- * @since <version tag>
+ * @since 1.0.0
  */
 class SubscribeProjectSpec extends Specification {
-    String validFirstName = "firstname"
-    String validLastName = "lastname"
-    String validEmail = "email@addre.ss"
-    String validProjectCode = "QABCD"
-
+    final String validFirstName = "firstname"
+    final String validLastName = "lastname"
+    final String validEmail = "email@addre.ss"
+    final String validProjectCode = "QABCD"
 
     SubscribeProjectOutput output = Mock()
     SubscriptionDataSource subscriptionDataSource = Mock()
