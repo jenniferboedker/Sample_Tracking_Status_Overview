@@ -17,6 +17,7 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
         this.addTopic(Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
         this.addTopic(Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
         this.addTopic(Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
+        this.addTopic(Topic.SAMPLE_LIBRARY_PREP_FINISHED)
     }
 
     /**
@@ -38,6 +39,10 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
                 break
             case Status.DATA_AVAILABLE:
                 publish(statusCount, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
+                content.add(statusCount)
+                break
+            case Status.LIBRARY_PREP_FINISHED:
+                publish(statusCount, Topic.SAMPLE_LIBRARY_PREP_FINISHED)
                 content.add(statusCount)
                 break
             default:
@@ -65,6 +70,10 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
                 break
             case Status.DATA_AVAILABLE:
                 publish(statusCount, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
+                content.remove(statusCount)
+                break
+            case Status.LIBRARY_PREP_FINISHED:
+                publish(statusCount, Topic.SAMPLE_LIBRARY_PREP_FINISHED)
                 content.remove(statusCount)
                 break
             default:
