@@ -1,7 +1,6 @@
 package life.qbic.business.project.subscribe
 
 import life.qbic.business.DataSourceException
-import spock.lang.Shared
 import spock.lang.Specification
 
 /**
@@ -17,11 +16,9 @@ class SubscribeProjectSpec extends Specification {
     String validEmail = "email@addre.ss"
     String validProjectCode = "QABCD"
 
-    @Shared
+
     SubscribeProjectOutput output = Mock()
-    @Shared
     SubscriptionDataSource subscriptionDataSource = Mock()
-    @Shared
     SubscribeProject subscribeProject = new SubscribeProject(subscriptionDataSource, output)
 
     def "Subscribe fails for invalid first name: #invalidFirstName"() {
@@ -85,6 +82,20 @@ class SubscribeProjectSpec extends Specification {
         subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
         then:
         1 * output.subscriptionFailed(_, _, _, _)
+    }
+
+    def "Subscribe throws a RuntimeException in case of unexpected failure"() {
+        given:
+        subscriptionDataSource = Stub()
+        subscriptionDataSource.subscribeToProject(_ as Subscriber, _ as String)
+                >> { throw exception }
+        subscribeProject = new SubscribeProject(subscriptionDataSource, output)
+        when:
+        subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
+        then: "a new runtime exception is thrown"
+        thrown(RuntimeException)
+        where: "the original exception is"
+        exception << [new IllegalStateException(), new RuntimeException(), new IllegalArgumentException()]
     }
 
 
