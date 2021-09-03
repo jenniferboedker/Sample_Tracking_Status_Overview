@@ -48,7 +48,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
       
             connection.withCloseable { it ->
               try {
-                int subscriberId = addSubscriber(it, subscriber)
+                int subscriberId = getSubscriberId(it, subscriber)
                 addSubscription(it, subscriberId, projectCode)
                 connection.commit()
               } catch (Exception e) {
