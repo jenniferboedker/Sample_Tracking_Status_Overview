@@ -1,5 +1,7 @@
 package life.qbic.business.project.subscribe
 
+import life.qbic.business.DataSourceException
+import spock.lang.Shared
 import spock.lang.Specification
 
 /**
@@ -15,8 +17,11 @@ class SubscribeProjectSpec extends Specification {
     String validEmail = "email@addre.ss"
     String validProjectCode = "QABCD"
 
+    @Shared
     SubscribeProjectOutput output = Mock()
+    @Shared
     SubscriptionDataSource subscriptionDataSource = Mock()
+    @Shared
     SubscribeProject subscribeProject = new SubscribeProject(subscriptionDataSource, output)
 
     def "Subscribe fails for invalid first name: #invalidFirstName"() {
@@ -54,4 +59,33 @@ class SubscribeProjectSpec extends Specification {
         where:
         invalidProjectCode << [null, "", "1234", "ZBCA"]
     }
+
+    def "Subscribe does not throw an IllegalArgumentException for valid arguments"() {
+        when:
+        subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
+        then:
+        notThrown(IllegalArgumentException)
+    }
+
+    def "Subscribe informs output of success if no exception is thrown"() {
+        when:
+        subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
+        then:
+        1 * output.subscriptionAdded(_)
+        0 * output.subscriptionFailed(_, _, _, _)
+    }
+
+    def "Subscribe informs output in case of data source failure"() {
+        given:
+        subscriptionDataSource = Stub()
+        subscriptionDataSource.subscribeToProject(_ as Subscriber,
+                _ as String) >> { throw new DataSourceException("Some exception.") }
+        subscribeProject = new SubscribeProject(subscriptionDataSource, output)
+        when:
+        subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
+        then:
+        1 * output.subscriptionFailed(_, _, _, _)
+    }
+
+
 }

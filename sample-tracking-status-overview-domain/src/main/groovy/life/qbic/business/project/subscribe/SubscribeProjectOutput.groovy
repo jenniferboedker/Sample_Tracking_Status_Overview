@@ -15,4 +15,13 @@ interface SubscribeProjectOutput {
      * @since 1.1.0
      */
     void subscriptionAdded(String project)
+
+    /**
+     * A subscription was not possible
+     * @param firstName the first name of the subscriber
+     * @param lastName the last name of the subscriber
+     * @param email the email address of the subscriber
+     * @param projectCode the project code to subscribe to
+     */
+    void subscriptionFailed(String firstName, String lastName, String email, String projectCode)
 }

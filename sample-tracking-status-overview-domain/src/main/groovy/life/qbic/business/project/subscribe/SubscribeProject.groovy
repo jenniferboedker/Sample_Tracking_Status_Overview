@@ -1,7 +1,8 @@
 package life.qbic.business.project.subscribe
 
 import life.qbic.business.DataSourceException
-import life.qbic.datamodel.identifiers.SampleCodeFunctions
+import life.qbic.datamodel.validation.ValidationException
+import life.qbic.datamodel.validation.projectmanagement.ProjectCodeValidator
 
 import java.util.function.Consumer
 
@@ -38,49 +39,42 @@ class SubscribeProject implements SubscribeProjectInput {
             throw new IllegalArgumentException(validationException.getMessage())
         }
         Subscriber subscriber = new Subscriber(firstName, lastName, email)
-        subscribeToProject(subscriber, projectCode)
-    }
-
-    private void subscribeToProject(Subscriber subscriber, String projectCode) {
         try {
             dataSource.subscribeToProject(subscriber, projectCode)
+            output.subscriptionAdded(projectCode)
         } catch (DataSourceException dataSourceException) {
-
+            output.subscriptionFailed(subscriber.firstName,
+                    subscriber.lastName,
+                    subscriber.email,
+                    projectCode)
         } catch (Exception e) {
             throw new RuntimeException("Could not subscribe ${subscriber.firstName} ${subscriber.lastName} (${subscriber.email}) to ${projectCode}.")
         }
     }
 
     private static class InputValidator {
-        static void validate(String firstName, String lastName, String email, String projectCode) {
+        static void validate(String firstName, String lastName, String email, String projectCode) throws ValidationException {
             Subscriber subscriber = new Subscriber(firstName, lastName, email)
-            validateFirstName.andThen(validateLastName).andThen(validateEmail).accept(subscriber)
-            validateProjectCode.accept(projectCode)
+            validateSubscriber.accept(subscriber)
+            projectCodeValidator.accept(projectCode)
         }
-        private static Consumer<Subscriber> validateFirstName = { Subscriber subscriber ->
-            if (!subscriber.firstName) throw new ValidationException("Please provide a first name.")
+        private static Consumer<Subscriber> validateFirstName = {
+            Subscriber subscriber ->
+                if (!subscriber.firstName) throw new ValidationException(
+                        "Please provide a first name.")
         }
-        private static Consumer<Subscriber> validateLastName = { Subscriber subscriber ->
-            if (!subscriber.lastName) throw new ValidationException("Please provide a first name.")
+        private static Consumer<Subscriber> validateLastName = {
+            Subscriber subscriber ->
+                if (!subscriber.lastName) throw new ValidationException(
+                        "Please provide a first name.")
         }
-        private static Consumer<Subscriber> validateEmail = { Subscriber subscriber ->
-            if (!subscriber.email) throw new ValidationException("Please provide a first name.")
+        private static Consumer<Subscriber> validateEmail = {
+            Subscriber subscriber ->
+                if (!subscriber.email) throw new ValidationException("Please provide a first name.")
         }
-        private static Consumer<String> validateProjectCode = { String projectCode ->
-            ValidationException validationException = new ValidationException(
-                    "Please provide a valid QBiC barcode.")
-            if (!projectCode) {
-                throw validationException
-            }
-            if (!SampleCodeFunctions.isQbicBarcode(projectCode)) {
-                throw validationException
-            }
-        }
-    }
-
-    private static class ValidationException extends RuntimeException {
-        ValidationException(String message) {
-            super(message)
-        }
+        private static Consumer<Subscriber> validateSubscriber = validateFirstName.andThen(
+                validateLastName).andThen(validateEmail)
+        private static Consumer<String> projectCodeValidator = new ProjectCodeValidator()
     }
 }
+
