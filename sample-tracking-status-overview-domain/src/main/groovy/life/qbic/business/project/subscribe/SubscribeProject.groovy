@@ -7,11 +7,11 @@ import life.qbic.datamodel.validation.projectmanagement.ProjectCodeValidator
 import java.util.function.Consumer
 
 /**
- * <b><short description></b>
+ * <b>Subscribe to a project</b>
  *
- * <p><detailed description></p>
+ * <p>This use case allows the subscribtion of a project in the context of sample tracking.</p>
  *
- * @since <version tag>
+ * @since 1.0.0
  */
 class SubscribeProject implements SubscribeProjectInput {
 

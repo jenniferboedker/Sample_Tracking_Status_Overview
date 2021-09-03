@@ -1,11 +1,9 @@
 package life.qbic.business.project.subscribe
 
 /**
- * <b><short description></b>
+ * <p>Holds information about a subscriber</p>
  *
- * <p><detailed description></p>
- *
- * @since <version tag>
+ * @since 1.0.0
  */
 class Subscriber {
     final String firstName
