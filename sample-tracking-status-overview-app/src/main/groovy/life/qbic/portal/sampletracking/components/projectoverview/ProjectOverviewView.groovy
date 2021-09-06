@@ -12,6 +12,8 @@ import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 
 /**
  * <b>This class generates the layout for the ProductOverview use case</b>
@@ -27,28 +29,75 @@ class ProjectOverviewView extends VerticalLayout{
     private final ProjectOverviewViewModel viewModel
     private final DownloadProjectController downloadProjectController
     private final NotificationService notificationService
+    private final FailedQCSamplesView failedQCSamplesView
+    private final ProjectOverviewController projectOverviewController
 
-    private Label titleLabel
     private Grid<ProjectSummary> projectGrid
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
     private FileDownloader fileDownloader
 
-    ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController){
+    ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController
+                        , FailedQCSamplesView failedQCSamplesView, ProjectOverviewController projectOverviewController){
         this.notificationService = notificationService
         this.viewModel = viewModel
         this.downloadProjectController = downloadProjectController
+        this.failedQCSamplesView = failedQCSamplesView
+        this.projectOverviewController = projectOverviewController
 
         initLayout()
     }
 
     private void initLayout(){
-        titleLabel = new Label("Project Overview")
+        Label titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
+
         setupProjects()
-        Component component = setupProjectSpecificButtons()
-        this.addComponents(titleLabel,component, projectGrid)
+        HorizontalLayout buttonBar = setupButtonLayout()
+
+        failedQCSamplesView.setVisible(false)
+
+        this.addComponents(titleLabel,buttonBar, projectGrid, failedQCSamplesView)
+    }
+
+    private HorizontalLayout setupButtonLayout() {
+        HorizontalLayout buttonBar = new HorizontalLayout()
+        buttonBar.setMargin(false)
+
+        Button postmanLink = setUpLinkButton()
+        Button downloadManifestAction = setupDownloadButton()
+        Button showDetails = setupShowDetails()
+
+        buttonBar.addComponents(showDetails, downloadManifestAction, postmanLink)
+        buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
+
+        return buttonBar
+    }
+
+    private Button setupShowDetails(){
+        Button detailsButton = new Button("Show Details")
+        detailsButton.setIcon(VaadinIcons.INFO_CIRCLE)
+        detailsButton.setEnabled(false)
+
+        projectGrid.addSelectionListener({
+            failedQCSamplesView.setVisible(false)
+
+            if(viewModel.selectedProject && viewModel.selectedProject.samplesQcFailed > 0){
+                detailsButton.setEnabled(true)
+            }else{
+                detailsButton.setEnabled(false)
+            }
+        })
+
+        detailsButton.addClickListener({
+            if(viewModel.selectedProject){
+                projectOverviewController.getFailedQcSamples(viewModel.selectedProject.code)
+                failedQCSamplesView.setVisible(true)
+            }
+        })
+
+        return detailsButton
     }
 
     private Button setUpLinkButton(){
@@ -109,7 +158,8 @@ class ProjectOverviewView extends VerticalLayout{
                     projectGrid.select(modelSelection.get())
                 }
             })
-
+            //for each selected
+            failedQCSamplesView.setVisible(false)
         })
     }
 
@@ -157,15 +207,6 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.setDataProvider(dataProvider)
     }
 
-    private AbstractComponent setupProjectSpecificButtons() {
-        HorizontalLayout buttonBar = new HorizontalLayout()
-        buttonBar.setMargin(false)
-        Button postmanLink = setUpLinkButton()
-        Button downloadManifestAction = setupDownloadButton()
-        buttonBar.addComponents(downloadManifestAction, postmanLink)
-        buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
-        return buttonBar
-    }
 
     private void tryToDownloadManifest() {
         try {
