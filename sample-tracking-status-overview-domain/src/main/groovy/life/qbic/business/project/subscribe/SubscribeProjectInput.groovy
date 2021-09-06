@@ -1,9 +1,7 @@
 package life.qbic.business.project.subscribe
 
 /**
- * <b><short description></b>
- *
- * <p><detailed description></p>
+ * <b>Interface to access and trigger the {@link SubscribeProject} use case and add a new subscriber to a project</b>
  *
  * @since <version tag>
  */
@@ -11,11 +9,9 @@ interface SubscribeProjectInput {
 
     /**
      * Subscribes a user with the provided information to a project
-     * @param firstName the first name of the subscriber
-     * @param lastName the last name of the subscriber
-     * @param email the email address of the subscriber
+     * @param subscriber Subscriber that should be subscribed to a project
      * @param projectCode the project to subscribe to
      * @since 1.0.0
      */
-    void subscribe(String firstName, String lastName, String email, String projectCode)
+    void subscribe(Subscriber subscriber, String projectCode)
 }

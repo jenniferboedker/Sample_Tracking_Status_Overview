@@ -1,6 +1,7 @@
 package life.qbic.business.project.subscribe
 
 import life.qbic.business.DataSourceException
+import spock.lang.Shared
 import spock.lang.Specification
 
 /**
@@ -9,9 +10,9 @@ import spock.lang.Specification
  * @since 1.0.0
  */
 class SubscribeProjectSpec extends Specification {
-    final String validFirstName = "firstname"
-    final String validLastName = "lastname"
-    final String validEmail = "email@addre.ss"
+    @Shared final String validFirstName = "firstname"
+    @Shared final String validLastName = "lastname"
+    @Shared final String validEmail = "email@addre.ss"
     final String validProjectCode = "QABCD"
 
     final Subscriber validSubscriber = new Subscriber(validFirstName, validLastName, validEmail)
@@ -22,34 +23,37 @@ class SubscribeProjectSpec extends Specification {
 
     def "Subscribe fails for invalid first name: #invalidFirstName"() {
         when:
-        subscribeProject.subscribe(invalidFirstName, validLastName, validEmail, validProjectCode)
+        subscribeProject.subscribe(invalidSubscriber, validProjectCode)
         then:
         thrown(IllegalArgumentException)
         where:
         invalidFirstName << [null, ""]
+        invalidSubscriber = new Subscriber(invalidFirstName, validLastName, validEmail)
     }
 
     def "Subscribe fails for invalid last name: #invalidLastName"() {
         when:
-        subscribeProject.subscribe(validFirstName, invalidLastName, validEmail, validProjectCode)
+        subscribeProject.subscribe(invalidSubscriber, validProjectCode)
         then:
         thrown(IllegalArgumentException)
         where:
         invalidLastName << [null, ""]
+        invalidSubscriber = new Subscriber(validFirstName, invalidLastName, validEmail)
     }
 
     def "Subscribe fails for invalid email address: #invalidEmail"() {
         when:
-        subscribeProject.subscribe(validFirstName, validLastName, invalidEmail, validProjectCode)
+        subscribeProject.subscribe(invalidSubscriber, validProjectCode)
         then:
         thrown(IllegalArgumentException)
         where:
         invalidEmail << [null, ""]
+        invalidSubscriber = new Subscriber(validFirstName, validLastName, invalidEmail)
     }
 
     def "Subscribe fails for invalid project code: #invalidProjectCode"() {
         when:
-        subscribeProject.subscribe(validFirstName, validLastName, validEmail, invalidProjectCode)
+        subscribeProject.subscribe(validSubscriber, invalidProjectCode)
         then:
         thrown(IllegalArgumentException)
         where:
@@ -58,14 +62,14 @@ class SubscribeProjectSpec extends Specification {
 
     def "Subscribe does not throw an IllegalArgumentException for valid arguments"() {
         when:
-        subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
+        subscribeProject.subscribe(validSubscriber, validProjectCode)
         then:
         notThrown(IllegalArgumentException)
     }
 
     def "Subscribe informs output of success if no exception is thrown"() {
         when:
-        subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
+        subscribeProject.subscribe(validSubscriber, validProjectCode)
         then:
         1 * output.subscriptionAdded(_)
         0 * output.subscriptionFailed(validSubscriber, validProjectCode)
@@ -78,7 +82,7 @@ class SubscribeProjectSpec extends Specification {
                 _ as String) >> { throw new DataSourceException("Some exception.") }
         subscribeProject = new SubscribeProject(subscriptionDataSource, output)
         when:
-        subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
+        subscribeProject.subscribe(validSubscriber, validProjectCode)
         then:
         1 * output.subscriptionFailed(validSubscriber, validProjectCode)
     }
@@ -90,7 +94,7 @@ class SubscribeProjectSpec extends Specification {
                 >> { throw exception }
         subscribeProject = new SubscribeProject(subscriptionDataSource, output)
         when:
-        subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
+        subscribeProject.subscribe(validSubscriber, validProjectCode)
         then: "a new runtime exception is thrown"
         thrown(RuntimeException)
         where: "the original exception is"
