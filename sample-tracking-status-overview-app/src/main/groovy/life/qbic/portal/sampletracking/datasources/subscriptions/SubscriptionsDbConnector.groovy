@@ -9,8 +9,8 @@ import life.qbic.business.DataSourceException
 import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
 
 import java.sql.Connection
-import java.sql.PreparedStatement
 import java.sql.ResultSet
+import java.sql.Statement
 
 /**
  * <b>Provides methods to handle user's subscriptions to projects</b>
@@ -107,7 +107,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
             def statement = connection.prepareStatement(query)
             statement.setString(1, subscriber.firstName)
             statement.setString(2, subscriber.lastName)
-            statement.setString(3, subscriber.emailAddress)
+            statement.setString(3, subscriber.eMail)
 
             ResultSet result = statement.executeQuery()
             while (result.next()) {
