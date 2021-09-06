@@ -24,13 +24,12 @@ class SubscribeProject implements SubscribeProjectInput {
     }
 
     @Override
-    void subscribe(String firstName, String lastName, String email, String projectCode) {
+    void subscribe(Subscriber subscriber, String projectCode) {
         try {
-            InputValidator.validate(firstName, lastName, email, projectCode)
+            InputValidator.validate(subscriber, projectCode)
         } catch (ValidationException validationException) {
             throw new IllegalArgumentException(validationException.getMessage())
         }
-        Subscriber subscriber = new Subscriber(firstName, lastName, email)
         try {
             dataSource.subscribeToProject(subscriber, projectCode)
             output.subscriptionAdded(projectCode)
@@ -42,8 +41,7 @@ class SubscribeProject implements SubscribeProjectInput {
     }
 
     private static class InputValidator {
-        static void validate(String firstName, String lastName, String email, String projectCode) throws ValidationException {
-            Subscriber subscriber = new Subscriber(firstName, lastName, email)
+        static void validate(Subscriber subscriber, String projectCode) throws ValidationException {
             validateSubscriber.accept(subscriber)
             projectCodeValidator.accept(projectCode)
         }
