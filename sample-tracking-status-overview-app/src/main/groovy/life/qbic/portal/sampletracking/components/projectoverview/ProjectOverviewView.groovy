@@ -86,12 +86,11 @@ class ProjectOverviewView extends VerticalLayout{
 
     private CheckBox setupSubscriptionCheckBox() {
 
-        CheckBox subscriptionCheckBox = new CheckBox("Select Project")
-        subscriptionCheckBox.setEnabled(false)
+        CheckBox subscriptionCheckBox = new CheckBox("Subscribed")
+        subscriptionCheckBox.setVisible(false)
         enableWhenProjectIsSelected(subscriptionCheckBox)
         subscriptionCheckBox.addValueChangeListener(event -> {
             changeSubscriberStatus(viewModel.projectIsSubscribed)
-            setSubscriberComponentCaption(subscriptionCheckBox)
         })
         return subscriptionCheckBox
     }
@@ -207,21 +206,7 @@ class ProjectOverviewView extends VerticalLayout{
         viewModel.addPropertyChangeListener("selectedProject") {
             Optional<ProjectSummary> projectSelection = Optional.ofNullable(viewModel.selectedProject)
             component.enabled = projectSelection.present
-            setSubscriberComponentCaption(component)
-        }
-    }
-
-    private void setSubscriberComponentCaption(Component component) {
-
-        Optional<ProjectSummary> projectSelection = Optional.ofNullable(viewModel.selectedProject)
-        if (projectSelection.empty) {
-            component.setCaption("Select Project")
-        } else {
-            if (viewModel.projectIsSubscribed) {
-                component.setCaption("Subscribed")
-            } else {
-                component.setCaption("Unsubscribed")
-            }
+            component.visible = projectSelection.present
         }
     }
 
