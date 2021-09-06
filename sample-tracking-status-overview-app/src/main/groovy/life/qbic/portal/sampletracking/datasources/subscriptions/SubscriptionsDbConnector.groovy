@@ -104,9 +104,9 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
 
           connection.withCloseable {
             def statement = connection.prepareStatement(query)
-            statement.setString(1, person.firstName)
-            statement.setString(2, person.lastName)
-            statement.setString(3, person.emailAddress)
+            statement.setString(1, subscriber.firstName)
+            statement.setString(2, subscriber.lastName)
+            statement.setString(3, subscriber.emailAddress)
 
             ResultSet result = statement.executeQuery()
             while (result.next()) {
