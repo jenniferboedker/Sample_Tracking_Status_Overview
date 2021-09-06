@@ -64,9 +64,9 @@ class SubscribeProjectSpec extends Specification {
     def "Subscribe informs output of success if no exception is thrown"() {
         when:
         subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
+        Subscriber subscriber = new Subscriber(validFirstName, validLastName, validEmail)
         then:
         1 * output.subscriptionAdded(_)
-        Subscriber subscriber = new Subscriber(validFirstName, validLastName, validEmail)
         0 * output.subscriptionFailed(subscriber, validProjectCode)
     }
 
@@ -77,10 +77,10 @@ class SubscribeProjectSpec extends Specification {
                 _ as String) >> { throw new DataSourceException("Some exception.") }
         subscribeProject = new SubscribeProject(subscriptionDataSource, output)
         when:
+        Subscriber subscriber = new Subscriber(validFirstName, validLastName, validEmail)
         subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
         then:
-        Subscriber subscriber = new Subscriber(validFirstName, validLastName, validEmail)
-        1 * output.subscriptionFailed(subscriber, validProjectCode)
+        1 * output.subscriptionFailed(validProjectCode)
     }
 
     def "Subscribe throws a RuntimeException in case of unexpected failure"() {
