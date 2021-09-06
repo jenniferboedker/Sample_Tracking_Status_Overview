@@ -48,7 +48,7 @@ class ProjectOverviewView extends VerticalLayout{
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
         Component component = setupProjectSpecificButtons()
-        this.addComponents(titleLabel,component, projectGrid)
+        this.addComponents(titleLabel, component, projectGrid)
     }
 
     private Button setUpLinkButton(){
@@ -84,7 +84,20 @@ class ProjectOverviewView extends VerticalLayout{
         return downloadManifestAction
     }
 
-    private void setupProjects(){
+    private Button setupSubscriptionButton() {
+
+        Button subscriptionButton = new Button("Select Project")
+        subscriptionButton.setEnabled(false)
+        enableWhenProjectIsSelected(subscriptionButton)
+        subscriptionButton.addClickListener(event -> {
+            changeSubscriberStatus(viewModel.projectIsSubscribed)
+            setSubscriberComponentCaption(subscriptionButton)
+        })
+        return subscriptionButton
+    }
+
+
+    private void setupProjects() {
         projectGrid = new Grid<>()
         fillProjectsGrid()
         projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
@@ -158,7 +171,8 @@ class ProjectOverviewView extends VerticalLayout{
         buttonBar.setMargin(false)
         Button postmanLink = setUpLinkButton()
         Button downloadManifestAction = setupDownloadButton()
-        buttonBar.addComponents(downloadManifestAction, postmanLink)
+        Button subscriptionButton = setupSubscriptionButton()
+        buttonBar.addComponents(downloadManifestAction, postmanLink, subscriptionButton)
         buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
         return buttonBar
     }
@@ -188,4 +202,43 @@ class ProjectOverviewView extends VerticalLayout{
         return isAvailable
     }
 
+    private void enableWhenProjectIsSelected(Component component) {
+        viewModel.addPropertyChangeListener("selectedProject") {
+            Optional<ProjectSummary> projectSelection = Optional.ofNullable(viewModel.selectedProject)
+            component.enabled = projectSelection.present
+            setSubscriberComponentCaption(component)
+        }
+    }
+
+    private void setSubscriberComponentCaption(Component component) {
+
+        Optional<ProjectSummary> projectSelection = Optional.ofNullable(viewModel.selectedProject)
+        if (projectSelection.empty) {
+            component.setCaption("Select Project")
+        } else {
+            if (viewModel.projectIsSubscribed) {
+                component.setCaption("Subscribed")
+            } else {
+                component.setCaption("Unsubscribed")
+            }
+        }
+    }
+
+    private void changeSubscriberStatus(Boolean isSubscribed) {
+        try {
+            //ToDo This will be removed once the controller/UseCase/Presenter is in place
+            viewModel.projectIsSubscribed = !isSubscribed
+            if (isSubscribed) {
+                println("Insert SubscriptionController.unsubscribe call here")
+            } else {
+                println("Insert SubscriptionController.subscribe call her")
+            }
+        }
+        catch (IllegalArgumentException illegalArgument) {
+            notificationService.publishFailure("Change in subscription status failed due to: ${illegalArgument.getMessage()}")
+        } catch (Exception ignored) {
+            notificationService.publishFailure("Subscription status change failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+        }
+
+    }
 }
