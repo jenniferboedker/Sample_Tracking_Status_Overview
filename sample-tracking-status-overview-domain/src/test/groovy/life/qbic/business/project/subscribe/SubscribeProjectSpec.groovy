@@ -80,7 +80,7 @@ class SubscribeProjectSpec extends Specification {
         Subscriber subscriber = new Subscriber(validFirstName, validLastName, validEmail)
         subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
         then:
-        1 * output.subscriptionFailed(validProjectCode)
+        1 * output.subscriptionFailed(subscriber, validProjectCode)
     }
 
     def "Subscribe throws a RuntimeException in case of unexpected failure"() {
