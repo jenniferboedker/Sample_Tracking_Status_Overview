@@ -35,10 +35,7 @@ class SubscribeProject implements SubscribeProjectInput {
             dataSource.subscribeToProject(subscriber, projectCode)
             output.subscriptionAdded(projectCode)
         } catch (DataSourceException dataSourceException) {
-            output.subscriptionFailed(subscriber.firstName,
-                    subscriber.lastName,
-                    subscriber.email,
-                    projectCode)
+            output.subscriptionFailed(subscriber, projectCode)
         } catch (Exception e) {
             throw new RuntimeException("Could not subscribe ${subscriber.firstName} ${subscriber.lastName} (${subscriber.email}) to ${projectCode}.")
         }
