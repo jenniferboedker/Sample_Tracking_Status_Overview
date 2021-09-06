@@ -19,6 +19,7 @@ import java.sql.ResultSet
  *
  * @since 1.0.0
  */
+@Log4j2
 class SubscriptionsDbConnector implements SubscriptionDataSource {
   
   private final ConnectionProvider connectionProvider
@@ -68,7 +69,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
     }
     
     private int getSubscriberId(Connection connection, Subscriber subscriber) {
-          subscriberId = fetchExistingSubscriberId(subscriber)
+          int subscriberId = fetchExistingSubscriberId(subscriber)
           if(subscriberId <= 0) {
             String query = "INSERT INTO subscriber (first_name, last_name, email) VALUES(?, ?, ?)"
             
