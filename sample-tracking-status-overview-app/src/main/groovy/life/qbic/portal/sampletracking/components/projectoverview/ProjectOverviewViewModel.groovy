@@ -48,6 +48,7 @@ class ProjectOverviewViewModel {
         this.statusCountService.subscribe({updateSamplesReceived(it.projectCode, it.count)}, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
         this.statusCountService.subscribe({updateSamplesFailedQc(it.projectCode, it.count)}, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
         this.statusCountService.subscribe({updateDataAvailable(it.projectCode, it.count)}, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
+        this.statusCountService.subscribe({updateSamplesLibraryPrepFinished(it.projectCode, it.count)}, Topic.SAMPLE_LIBRARY_PREP_FINISHED)
     }
 
     private void addProject(Project project) {
@@ -71,6 +72,10 @@ class ProjectOverviewViewModel {
 
     private void updateSamplesFailedQc(String projectCode, int sampleCount) {
         getProjectSummary(projectCode).samplesQcFailed = sampleCount
+    }
+
+    private void updateSamplesLibraryPrepFinished(String projectCode, int sampleCount){
+        getProjectSummary(projectCode).samplesLibraryPrepFinished = sampleCount
     }
 
     /**

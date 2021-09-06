@@ -178,6 +178,7 @@ class DependencyManager {
             countSamples.countReceivedSamples(it)
             countSamples.countQcFailedSamples(it)
             countSamples.countAvailableDataSamples(it)
+            countSamples.countLibraryPrepFinishedSamples(it)
         }
     }
 
