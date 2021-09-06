@@ -9,7 +9,7 @@ import java.util.function.Consumer
 /**
  * <b>Subscribe to a project</b>
  *
- * <p>This use case allows the subscribtion of a project in the context of sample tracking.</p>
+ * <p>This use case allows the subscription of a project in the context of sample tracking.</p>
  *
  * @since 1.0.0
  */
