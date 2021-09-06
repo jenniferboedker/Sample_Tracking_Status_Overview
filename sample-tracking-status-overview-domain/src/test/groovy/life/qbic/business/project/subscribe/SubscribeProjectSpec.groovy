@@ -14,6 +14,8 @@ class SubscribeProjectSpec extends Specification {
     final String validEmail = "email@addre.ss"
     final String validProjectCode = "QABCD"
 
+    final Subscriber subscriber = new Subscriber(validFirstName, validLastName, validEmail)
+
     SubscribeProjectOutput output = Mock()
     SubscriptionDataSource subscriptionDataSource = Mock()
     SubscribeProject subscribeProject = new SubscribeProject(subscriptionDataSource, output)
@@ -64,7 +66,6 @@ class SubscribeProjectSpec extends Specification {
     def "Subscribe informs output of success if no exception is thrown"() {
         when:
         subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
-        Subscriber subscriber = new Subscriber(validFirstName, validLastName, validEmail)
         then:
         1 * output.subscriptionAdded(_)
         0 * output.subscriptionFailed(subscriber, validProjectCode)
@@ -77,7 +78,6 @@ class SubscribeProjectSpec extends Specification {
                 _ as String) >> { throw new DataSourceException("Some exception.") }
         subscribeProject = new SubscribeProject(subscriptionDataSource, output)
         when:
-        Subscriber subscriber = new Subscriber(validFirstName, validLastName, validEmail)
         subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
         then:
         1 * output.subscriptionFailed(subscriber, validProjectCode)
