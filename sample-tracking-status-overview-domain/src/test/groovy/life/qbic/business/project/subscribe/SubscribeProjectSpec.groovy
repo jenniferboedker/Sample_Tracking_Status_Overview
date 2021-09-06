@@ -14,7 +14,7 @@ class SubscribeProjectSpec extends Specification {
     final String validEmail = "email@addre.ss"
     final String validProjectCode = "QABCD"
 
-    final Subscriber subscriber = new Subscriber(validFirstName, validLastName, validEmail)
+    final Subscriber validSubscriber = new Subscriber(validFirstName, validLastName, validEmail)
 
     SubscribeProjectOutput output = Mock()
     SubscriptionDataSource subscriptionDataSource = Mock()
@@ -68,7 +68,7 @@ class SubscribeProjectSpec extends Specification {
         subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
         then:
         1 * output.subscriptionAdded(_)
-        0 * output.subscriptionFailed(subscriber, validProjectCode)
+        0 * output.subscriptionFailed(validSubscriber, validProjectCode)
     }
 
     def "Subscribe informs output in case of data source failure"() {
@@ -80,7 +80,7 @@ class SubscribeProjectSpec extends Specification {
         when:
         subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
         then:
-        1 * output.subscriptionFailed(subscriber, validProjectCode)
+        1 * output.subscriptionFailed(validSubscriber, validProjectCode)
     }
 
     def "Subscribe throws a RuntimeException in case of unexpected failure"() {
