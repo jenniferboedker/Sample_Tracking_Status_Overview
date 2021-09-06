@@ -84,16 +84,16 @@ class ProjectOverviewView extends VerticalLayout{
         return downloadManifestAction
     }
 
-    private Button setupSubscriptionButton() {
+    private CheckBox setupSubscriptionCheckBox() {
 
-        Button subscriptionButton = new Button("Select Project")
-        subscriptionButton.setEnabled(false)
-        enableWhenProjectIsSelected(subscriptionButton)
-        subscriptionButton.addClickListener(event -> {
+        CheckBox subscriptionCheckBox = new CheckBox("Select Project")
+        subscriptionCheckBox.setEnabled(false)
+        enableWhenProjectIsSelected(subscriptionCheckBox)
+        subscriptionCheckBox.addValueChangeListener(event -> {
             changeSubscriberStatus(viewModel.projectIsSubscribed)
-            setSubscriberComponentCaption(subscriptionButton)
+            setSubscriberComponentCaption(subscriptionCheckBox)
         })
-        return subscriptionButton
+        return subscriptionCheckBox
     }
 
 
@@ -171,9 +171,10 @@ class ProjectOverviewView extends VerticalLayout{
         buttonBar.setMargin(false)
         Button postmanLink = setUpLinkButton()
         Button downloadManifestAction = setupDownloadButton()
-        Button subscriptionButton = setupSubscriptionButton()
-        buttonBar.addComponents(downloadManifestAction, postmanLink, subscriptionButton)
+        CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
+        buttonBar.addComponents(downloadManifestAction, postmanLink, subscriptionCheckBox)
         buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
+        buttonBar.setComponentAlignment(subscriptionCheckBox, Alignment.MIDDLE_CENTER)
         return buttonBar
     }
 
@@ -231,7 +232,7 @@ class ProjectOverviewView extends VerticalLayout{
             if (isSubscribed) {
                 println("Insert SubscriptionController.unsubscribe call here")
             } else {
-                println("Insert SubscriptionController.subscribe call her")
+                println("Insert SubscriptionController.subscribe call here")
             }
         }
         catch (IllegalArgumentException illegalArgument) {
