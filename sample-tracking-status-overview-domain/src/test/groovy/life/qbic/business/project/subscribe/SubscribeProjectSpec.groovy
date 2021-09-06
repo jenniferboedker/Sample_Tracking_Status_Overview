@@ -66,7 +66,7 @@ class SubscribeProjectSpec extends Specification {
         subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
         then:
         1 * output.subscriptionAdded(_)
-        0 * output.subscriptionFailed(_, _, _, _)
+        0 * output.subscriptionFailed(validFirstName, validLastName, validEmail, validProjectCode)
     }
 
     def "Subscribe informs output in case of data source failure"() {
@@ -78,7 +78,7 @@ class SubscribeProjectSpec extends Specification {
         when:
         subscribeProject.subscribe(validFirstName, validLastName, validEmail, validProjectCode)
         then:
-        1 * output.subscriptionFailed(_, _, _, _)
+        1 * output.subscriptionFailed(validFirstName, validLastName, validEmail, validProjectCode)
     }
 
     def "Subscribe throws a RuntimeException in case of unexpected failure"() {
