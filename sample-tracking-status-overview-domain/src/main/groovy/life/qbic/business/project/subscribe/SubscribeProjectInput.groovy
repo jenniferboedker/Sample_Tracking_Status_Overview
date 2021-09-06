@@ -10,7 +10,7 @@ package life.qbic.business.project.subscribe
 interface SubscribeProjectInput {
 
     /**
-     * Subscribes a user with the authentication id to a specific project
+     * Subscribes a user with the provided information to a project
      * @param firstName the first name of the subscriber
      * @param lastName the last name of the subscriber
      * @param email the email address of the subscriber
