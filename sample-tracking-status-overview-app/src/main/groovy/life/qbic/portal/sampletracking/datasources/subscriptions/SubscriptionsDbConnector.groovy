@@ -88,10 +88,14 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
     }
     
     private void addSubscription(Connection connection, int subscriberId, String projectCode) {
+
+          if (projectAlreadySubscribed(subscriberId, projectCode)) {
+              throw new DataSourceException("Subscriber is already subscribed to ${projectCode}")
+          }
           String query = "INSERT INTO subscription (project_code, subscriber_id) VALUES(?, ?)"
-            
+
           def statement = connection.prepareStatement(query)
-            
+
           statement.setInt(1, subscriberId)
           statement.setString(2, projectCode)
           statement.execute()
@@ -115,5 +119,33 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
             }
           }
           return personId
+    }
+
+    private boolean projectAlreadySubscribed(int subscriberId, String projectCode) {
+        String query = "SELECT id FROM subscription WHERE project_code = ? AND subscriber_id = ? "
+        Connection connection = connectionProvider.connect()
+        boolean isAlreadySubscribed = false
+
+        try{
+            connection.withCloseable {
+                def statement = connection.prepareStatement(query)
+                statement.setString(1, projectCode)
+                statement.setString(2, subscriberId.toString())
+                ResultSet resultSet = statement.executeQuery()
+                int numberOfRows = 0
+                while(resultSet.next()) {
+                    numberOfRows++
+                }
+                if (numberOfRows > 0) {
+                    isAlreadySubscribed = true
+                }
+            }
+        }catch(Exception e){
+            log.error(e.message)
+            log.error(e.stackTrace.join("\n"))
+            connection.rollback()
+            throw new DataSourceException("Could not check if the subscriber is subscribed to project ${projectCode}")
+        }
+        return isAlreadySubscribed
     }
 }
