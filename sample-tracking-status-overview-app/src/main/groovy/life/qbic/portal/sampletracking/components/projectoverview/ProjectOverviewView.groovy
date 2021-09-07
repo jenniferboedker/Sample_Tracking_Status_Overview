@@ -89,9 +89,7 @@ class ProjectOverviewView extends VerticalLayout{
         CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
         subscriptionCheckBox.setVisible(false)
         enableWhenProjectIsSelected(subscriptionCheckBox)
-        subscriptionCheckBox.addValueChangeListener(event -> {
-            changeSubscriberStatus(viewModel.projectIsSubscribed)
-        })
+        subscriptionCheckBox.setValue(false)
         return subscriptionCheckBox
     }
 
@@ -202,31 +200,14 @@ class ProjectOverviewView extends VerticalLayout{
         return isAvailable
     }
 
-    private void enableWhenProjectIsSelected(Component component) {
+    private void enableWhenProjectIsSelected(CheckBox checkBox) {
         viewModel.addPropertyChangeListener("selectedProject") {
+            checkBox.setValue(false)
             if(viewModel.selectedProject){
-             component.setVisible(true)
+             checkBox.setVisible(true)
             }else{
-              component.setVisible(false)
+              checkBox.setVisible(false)
             }
         }
-    }
-
-    private void changeSubscriberStatus(Boolean isSubscribed) {
-        try {
-            //ToDo This will be removed once the controller/UseCase/Presenter is in place
-            viewModel.projectIsSubscribed = !isSubscribed
-            if (isSubscribed) {
-                println("Insert SubscriptionController.unsubscribe call here")
-            } else {
-                println("Insert SubscriptionController.subscribe call here")
-            }
-        }
-        catch (IllegalArgumentException illegalArgument) {
-            notificationService.publishFailure("Change in subscription status failed due to: ${illegalArgument.getMessage()}")
-        } catch (Exception ignored) {
-            notificationService.publishFailure("Subscription status change failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
-        }
-
     }
 }
