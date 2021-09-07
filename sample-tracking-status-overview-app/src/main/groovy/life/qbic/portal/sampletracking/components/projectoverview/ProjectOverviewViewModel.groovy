@@ -22,8 +22,6 @@ class ProjectOverviewViewModel {
 
     @Bindable ProjectSummary selectedProject
     @Bindable String generatedManifest
-    //ToDo this has to be set by the ResourceService
-    @Bindable Boolean projectIsSubscribed
 
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService){
         this.projectResourceService = projectResourceService
