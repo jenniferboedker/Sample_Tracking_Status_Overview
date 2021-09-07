@@ -127,7 +127,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
             connection.withCloseable {
                 def statement = connection.prepareStatement(query)
                 statement.setString(1, projectCode)
-                statement.setString(2, subscriberId.toString())
+                statement.setInt(2, subscriberId)
                 ResultSet resultSet = statement.executeQuery()
                 if(resultSet.next()){
                     isAlreadySubscribed = true}
