@@ -48,7 +48,7 @@ class ProjectOverviewView extends VerticalLayout{
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
         Component component = setupProjectSpecificButtons()
-        this.addComponents(titleLabel,component, projectGrid)
+        this.addComponents(titleLabel, component, projectGrid)
     }
 
     private Button setUpLinkButton(){
@@ -84,7 +84,17 @@ class ProjectOverviewView extends VerticalLayout{
         return downloadManifestAction
     }
 
-    private void setupProjects(){
+    private CheckBox setupSubscriptionCheckBox() {
+
+        CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
+        subscriptionCheckBox.setVisible(false)
+        enableWhenProjectIsSelected(subscriptionCheckBox)
+        subscriptionCheckBox.setValue(false)
+        return subscriptionCheckBox
+    }
+
+
+    private void setupProjects() {
         projectGrid = new Grid<>()
         fillProjectsGrid()
         projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
@@ -158,8 +168,10 @@ class ProjectOverviewView extends VerticalLayout{
         buttonBar.setMargin(false)
         Button postmanLink = setUpLinkButton()
         Button downloadManifestAction = setupDownloadButton()
-        buttonBar.addComponents(downloadManifestAction, postmanLink)
+        CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
+        buttonBar.addComponents(downloadManifestAction, postmanLink, subscriptionCheckBox)
         buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
+        buttonBar.setComponentAlignment(subscriptionCheckBox, Alignment.MIDDLE_CENTER)
         return buttonBar
     }
 
@@ -188,4 +200,14 @@ class ProjectOverviewView extends VerticalLayout{
         return isAvailable
     }
 
+    private void enableWhenProjectIsSelected(CheckBox checkBox) {
+        viewModel.addPropertyChangeListener("selectedProject") {
+            checkBox.setValue(false)
+            if(viewModel.selectedProject){
+             checkBox.setVisible(true)
+            }else{
+              checkBox.setVisible(false)
+            }
+        }
+    }
 }
