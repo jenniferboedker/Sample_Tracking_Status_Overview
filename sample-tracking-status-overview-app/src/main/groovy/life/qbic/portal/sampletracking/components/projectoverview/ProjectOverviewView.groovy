@@ -86,7 +86,7 @@ class ProjectOverviewView extends VerticalLayout{
 
     private CheckBox setupSubscriptionCheckBox() {
 
-        CheckBox subscriptionCheckBox = new CheckBox("Subscribed")
+        CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
         subscriptionCheckBox.setVisible(false)
         enableWhenProjectIsSelected(subscriptionCheckBox)
         subscriptionCheckBox.addValueChangeListener(event -> {
