@@ -125,8 +125,6 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
         String query = "SELECT id FROM subscription WHERE project_code = ? AND subscriber_id = ? "
         Connection connection = connectionProvider.connect()
         boolean isAlreadySubscribed = false
-
-        try{
             connection.withCloseable {
                 def statement = connection.prepareStatement(query)
                 statement.setString(1, projectCode)
@@ -140,12 +138,6 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
                     isAlreadySubscribed = true
                 }
             }
-        }catch(Exception e){
-            log.error(e.message)
-            log.error(e.stackTrace.join("\n"))
-            connection.rollback()
-            throw new DataSourceException("Could not check if the subscriber is subscribed to project ${projectCode}")
-        }
         return isAlreadySubscribed
     }
 }
