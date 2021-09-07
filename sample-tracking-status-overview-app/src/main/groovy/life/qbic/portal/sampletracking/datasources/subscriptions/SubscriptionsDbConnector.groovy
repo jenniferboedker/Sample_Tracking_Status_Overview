@@ -130,13 +130,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
                 statement.setString(1, projectCode)
                 statement.setString(2, subscriberId.toString())
                 ResultSet resultSet = statement.executeQuery()
-                int numberOfRows = 0
-                while(resultSet.next()) {
-                    numberOfRows++
-                }
-                if (numberOfRows > 0) {
-                    isAlreadySubscribed = true
-                }
+      if(resultSet.next()) isAlreadySubscribed = true
             }
         return isAlreadySubscribed
     }
