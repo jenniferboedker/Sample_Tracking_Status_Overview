@@ -9,9 +9,12 @@ import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
+import life.qbic.business.project.subscribe.Subscriber
+import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 
 /**
  * <b>This class generates the layout for the ProductOverview use case</b>
@@ -26,7 +29,9 @@ class ProjectOverviewView extends VerticalLayout{
 
     private final ProjectOverviewViewModel viewModel
     private final DownloadProjectController downloadProjectController
+    private final SubscribeProjectController subscribeProjectController
     private final NotificationService notificationService
+    private final PortalUser portalUser
 
     private Label titleLabel
     private Grid<ProjectSummary> projectGrid
@@ -35,11 +40,12 @@ class ProjectOverviewView extends VerticalLayout{
     final static int MAX_STATUS_COLUMN_WIDTH = 200
     private FileDownloader fileDownloader
 
-    ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController){
+    ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController, SubscribeProjectController subscribeProjectController, PortalUser portalUser){
         this.notificationService = notificationService
         this.viewModel = viewModel
         this.downloadProjectController = downloadProjectController
-
+        this.subscribeProjectController = subscribeProjectController
+        this.portalUser = portalUser
         initLayout()
     }
 
@@ -90,9 +96,14 @@ class ProjectOverviewView extends VerticalLayout{
         subscriptionCheckBox.setVisible(false)
         enableWhenProjectIsSelected(subscriptionCheckBox)
         subscriptionCheckBox.setValue(false)
+        subscriptionCheckBox.addValueChangeListener(event -> {
+            //Only Subscribe if checkbox is checked
+            if (subscriptionCheckBox.value) {
+                subscribeToProject(viewModel.selectedProject)
+            }
+        })
         return subscriptionCheckBox
     }
-
 
     private void setupProjects() {
         projectGrid = new Grid<>()
@@ -210,4 +221,12 @@ class ProjectOverviewView extends VerticalLayout{
             }
         }
     }
+
+    private void subscribeToProject(ProjectSummary project) {
+        Subscriber currentUser = new Subscriber(portalUser.firstName, portalUser.lastName, portalUser.emailAddress)
+        if(project){
+            subscribeProjectController.subscribeProject(currentUser ,project.code)
+        }
+    }
+
 }

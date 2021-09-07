@@ -5,6 +5,9 @@ import life.qbic.business.project.load.LoadProjects
 import life.qbic.business.project.load.LoadProjectsDataSource
 import life.qbic.business.project.load.LoadProjectsInput
 import life.qbic.business.project.load.LoadProjectsOutput
+import life.qbic.business.project.subscribe.SubscribeProject
+import life.qbic.business.project.subscribe.SubscribeProjectOutput
+import life.qbic.business.project.subscribe.SubscriptionDataSource
 import life.qbic.business.samples.count.CountSamples
 import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.business.samples.count.CountSamplesOutput
@@ -22,10 +25,13 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectOvervie
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.download.ManifestPresenter
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectPresenter
 import life.qbic.portal.sampletracking.datasources.Credentials
 import life.qbic.portal.sampletracking.datasources.OpenBisConnector
 import life.qbic.portal.sampletracking.datasources.database.DatabaseSession
 import life.qbic.portal.sampletracking.datasources.samples.SamplesDbConnector
+import life.qbic.portal.sampletracking.datasources.subscriptions.SubscriptionsDbConnector
 import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
 import life.qbic.portal.sampletracking.resource.status.StatusCount
@@ -52,6 +58,7 @@ class DependencyManager {
     private LoadProjectsDataSource loadProjectsDataSource
     private CountSamplesDataSource countSamplesDataSource
     private DownloadSamplesDataSource downloadSamplesDataSource
+    private SubscriptionDataSource subscriptionDataSource
 
     private ResourceService<Project> projectResourceService
     private ResourceService<StatusCount> statusCountService
@@ -100,6 +107,9 @@ class DependencyManager {
         )
         OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
         loadProjectsDataSource = openBisConnector
+
+        SubscriptionsDbConnector subscriptionsDbConnector = new SubscriptionsDbConnector(DatabaseSession.getInstance())
+        subscriptionDataSource = subscriptionsDbConnector
     }
 
     /**
@@ -127,7 +137,8 @@ class DependencyManager {
         ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService)
         
         DownloadProjectController downloadController = setupDownloadProjectUsecase(viewModel)
-        ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController)
+        SubscribeProjectController subscribeProjectController = setupSubscribeProjectUseCase(viewModel)
+        ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController, subscribeProjectController, portalUser)
         return view
     }
     
@@ -136,6 +147,13 @@ class DependencyManager {
         DownloadSamples downloadSamples = new DownloadSamples(downloadSamplesDataSource, output)
         
         return new DownloadProjectController(downloadSamples)
+    }
+
+    private SubscribeProjectController setupSubscribeProjectUseCase(ProjectOverviewViewModel viewModel) {
+        SubscribeProjectOutput output = new SubscribeProjectPresenter(notificationService, viewModel)
+        SubscribeProject subscribeProject = new SubscribeProject(subscriptionDataSource, output)
+
+        return new SubscribeProjectController(subscribeProject)
     }
 
     /**

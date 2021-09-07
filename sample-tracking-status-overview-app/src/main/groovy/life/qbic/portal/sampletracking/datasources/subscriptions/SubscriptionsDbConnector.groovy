@@ -77,7 +77,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
             
             statement.setString(1, subscriber.firstName)
             statement.setString(2, subscriber.lastName)
-            statement.setString(3, subscriber.eMail)
+            statement.setString(3, subscriber.email)
             statement.execute()
             def keys = statement.getGeneratedKeys()
             while (keys.next()) {
@@ -88,14 +88,13 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
     }
     
     private void addSubscription(Connection connection, int subscriberId, String projectCode) {
-
           if (!projectAlreadySubscribed(subscriberId, projectCode)) {
               String query = "INSERT INTO subscription (project_code, subscriber_id) VALUES(?, ?)"
 
               def statement = connection.prepareStatement(query)
 
-              statement.setInt(1, subscriberId)
-              statement.setString(2, projectCode)
+              statement.setString(1, projectCode)
+              statement.setInt(2, subscriberId)
               statement.execute()
           }
     }
@@ -110,7 +109,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
             def statement = connection.prepareStatement(query)
             statement.setString(1, subscriber.firstName)
             statement.setString(2, subscriber.lastName)
-            statement.setString(3, subscriber.eMail)
+            statement.setString(3, subscriber.email)
 
             ResultSet result = statement.executeQuery()
             while (result.next()) {
