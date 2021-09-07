@@ -204,9 +204,11 @@ class ProjectOverviewView extends VerticalLayout{
 
     private void enableWhenProjectIsSelected(Component component) {
         viewModel.addPropertyChangeListener("selectedProject") {
-            Optional<ProjectSummary> projectSelection = Optional.ofNullable(viewModel.selectedProject)
-            component.enabled = projectSelection.present
-            component.visible = projectSelection.present
+            if(viewModel.selectedProject){
+             component.setVisible(true)
+            }else{
+              component.setVisible(false)
+            }
         }
     }
 
