@@ -108,8 +108,7 @@ class DependencyManager {
         OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
         loadProjectsDataSource = openBisConnector
 
-        SubscriptionsDbConnector subscriptionsDbConnector = new SubscriptionsDbConnector(DatabaseSession.getInstance())
-        subscriptionDataSource = subscriptionsDbConnector
+        subscriptionDataSource = new SubscriptionsDbConnector(DatabaseSession.getInstance())
     }
 
     /**
