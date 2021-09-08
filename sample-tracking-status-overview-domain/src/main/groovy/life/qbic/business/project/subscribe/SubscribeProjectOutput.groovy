@@ -1,11 +1,11 @@
 package life.qbic.business.project.subscribe
 
 /**
- * <b><short description></b>
+ * <b>Output interface for the {@link life.qbic.business.project.subscribe.SubscribeProject} feature</b>
  *
- * <p><detailed description></p>
+ * <p>Publishes the project code if a subscription was successful or the subscriber and projectCode if a subscription failed</p>
  *
- * @since <version tag>
+ * @since 1.0.0
  */
 interface SubscribeProjectOutput {
 
