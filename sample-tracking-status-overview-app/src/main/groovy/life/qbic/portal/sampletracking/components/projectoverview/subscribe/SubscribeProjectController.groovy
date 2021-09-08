@@ -26,12 +26,6 @@ class SubscribeProjectController {
      * @throws IllegalArgumentException in case the project code or subscriber is not provided
      */
     void subscribeProject(Subscriber subscriber, String projectCode) throws IllegalArgumentException{
-        if (! subscriber) {
-            throw new IllegalArgumentException("No subscriber provided for subscription.")
-        }
-        else if (! projectCode) {
-            throw new IllegalArgumentException("No project selected for subscription.")
-        }
         subscribeProject.subscribe(subscriber, projectCode)
     }
 }
