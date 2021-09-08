@@ -9,8 +9,6 @@ import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
-import life.qbic.business.project.subscribe.Subscriber
-import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
@@ -31,7 +29,6 @@ class ProjectOverviewView extends VerticalLayout{
     private final DownloadProjectController downloadProjectController
     private final SubscribeProjectController subscribeProjectController
     private final NotificationService notificationService
-    private final PortalUser portalUser
 
     private Label titleLabel
     private Grid<ProjectSummary> projectGrid
@@ -40,12 +37,11 @@ class ProjectOverviewView extends VerticalLayout{
     final static int MAX_STATUS_COLUMN_WIDTH = 200
     private FileDownloader fileDownloader
 
-    ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController, SubscribeProjectController subscribeProjectController, PortalUser portalUser){
+    ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController, SubscribeProjectController subscribeProjectController){
         this.notificationService = notificationService
         this.viewModel = viewModel
         this.downloadProjectController = downloadProjectController
         this.subscribeProjectController = subscribeProjectController
-        this.portalUser = portalUser
         initLayout()
     }
 
@@ -223,10 +219,9 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private void subscribeToProject(String projectCode) {
-        if (portalUser) {
-            Subscriber currentUser = new Subscriber(portalUser.firstName, portalUser.lastName, portalUser.emailAddress)
+        if (viewModel.subscriber) {
             if (projectCode) {
-                subscribeProjectController.subscribeProject(currentUser, projectCode)
+                subscribeProjectController.subscribeProject(viewModel.subscriber, projectCode)
             }
         }
     }

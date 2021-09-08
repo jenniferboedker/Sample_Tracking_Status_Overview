@@ -7,6 +7,7 @@ import life.qbic.business.project.load.LoadProjectsInput
 import life.qbic.business.project.load.LoadProjectsOutput
 import life.qbic.business.project.subscribe.SubscribeProject
 import life.qbic.business.project.subscribe.SubscribeProjectOutput
+import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.business.project.subscribe.SubscriptionDataSource
 import life.qbic.business.samples.count.CountSamples
 import life.qbic.business.samples.count.CountSamplesDataSource
@@ -133,11 +134,11 @@ class DependencyManager {
      * @return a new ProjectOverviewView
      */
     private ProjectOverviewView createProjectOverviewView() {
-        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService)
-        
+        Subscriber currentUser = new Subscriber(portalUser.firstName, portalUser.lastName, portalUser.emailAddress)
+        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService, currentUser)
         DownloadProjectController downloadController = setupDownloadProjectUsecase(viewModel)
         SubscribeProjectController subscribeProjectController = setupSubscribeProjectUseCase()
-        ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController, subscribeProjectController, portalUser)
+        ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController, subscribeProjectController)
         return view
     }
     
@@ -151,7 +152,6 @@ class DependencyManager {
     private SubscribeProjectController setupSubscribeProjectUseCase() {
         SubscribeProjectOutput output = new SubscribeProjectPresenter(notificationService)
         SubscribeProject subscribeProject = new SubscribeProject(subscriptionDataSource, output)
-
         return new SubscribeProjectController(subscribeProject)
     }
 
