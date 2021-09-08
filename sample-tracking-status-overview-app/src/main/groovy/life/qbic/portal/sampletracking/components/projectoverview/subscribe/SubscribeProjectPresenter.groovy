@@ -41,7 +41,8 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
      */
     @Override
     void subscriptionFailed(Subscriber subscriber, String projectCode) {
-        String message = "${subscriber} could not be subscribed to project ${projectCode}"
+        String message = "An unexpected while trying to subscribe to project ${projectCode}. " +
+                    "Please contact ${Constants.QBIC_HELPDESK_EMAIL}."
         notificationService.publishFailure(message)
     }
 }
