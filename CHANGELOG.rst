@@ -18,6 +18,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Fixed**
 
+* Remove possibility of duplicate subscription of user per project (`#95 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/95>`_)
+
 **Dependencies**
 
 **Deprecated**
