@@ -222,7 +222,7 @@ class ProjectOverviewView extends VerticalLayout{
         }
     }
 
-    private void subscribeToProject(ProjectSummary project) {
+    private void subscribeToProject(String projectCode) {
         Subscriber currentUser = new Subscriber(portalUser.firstName, portalUser.lastName, portalUser.emailAddress)
         if(project){
             subscribeProjectController.subscribeProject(currentUser ,project.code)
