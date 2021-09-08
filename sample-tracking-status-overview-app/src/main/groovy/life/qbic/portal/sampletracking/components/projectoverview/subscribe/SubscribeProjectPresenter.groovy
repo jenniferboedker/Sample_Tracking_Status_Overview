@@ -3,18 +3,17 @@ package life.qbic.portal.sampletracking.components.projectoverview.subscribe
 import life.qbic.business.project.subscribe.SubscribeProjectOutput
 import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
-import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
+import life.qbic.portal.sampletracking.Constants
 /**
- * <b>Presents a download manifest to the viewModel containing identifiers that point to associated data</b>
+ * <b>Presents the notification message informing about a successful or failed subscription along with the projectCode</b>
  *
- * <p>Is called from a use case with a manifest String containing identifiers (e.g. of samples) that have associated data.
- * This manifest is added to the view model in order to further use it, e.g. present it to the user.</p>
+ * <p>Is called from a use case with the projectCode for a successful subscription or with the projectCode and Subscriber on a failed subscription
+ * This information is added to the generated notification message to inform the user about his subscription status for the specified project</p>
  *
  * @since 1.0.0
  */
 class SubscribeProjectPresenter implements SubscribeProjectOutput {
 
-    private final ProjectOverviewViewModel viewModel
     private final NotificationService notificationService
 
     SubscribeProjectPresenter(NotificationService notificationService) {
@@ -41,7 +40,7 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     @Override
     void subscriptionFailed(Subscriber subscriber, String projectCode) {
         String message = "An unexpected while trying to subscribe to project ${projectCode}. " +
-                    "Please contact ${Constants.QBIC_HELPDESK_EMAIL}."
+                    "Please contact ${Constants.CONTACT_HELPDESK}."
         notificationService.publishFailure(message)
     }
 }

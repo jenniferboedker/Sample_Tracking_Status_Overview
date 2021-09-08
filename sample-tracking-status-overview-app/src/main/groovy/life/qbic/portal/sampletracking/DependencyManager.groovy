@@ -136,7 +136,7 @@ class DependencyManager {
         ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService)
         
         DownloadProjectController downloadController = setupDownloadProjectUsecase(viewModel)
-        SubscribeProjectController subscribeProjectController = setupSubscribeProjectUseCase(viewModel)
+        SubscribeProjectController subscribeProjectController = setupSubscribeProjectUseCase()
         ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController, subscribeProjectController, portalUser)
         return view
     }
@@ -148,8 +148,8 @@ class DependencyManager {
         return new DownloadProjectController(downloadSamples)
     }
 
-    private SubscribeProjectController setupSubscribeProjectUseCase(ProjectOverviewViewModel viewModel) {
-        SubscribeProjectOutput output = new SubscribeProjectPresenter(notificationService, viewModel)
+    private SubscribeProjectController setupSubscribeProjectUseCase() {
+        SubscribeProjectOutput output = new SubscribeProjectPresenter(notificationService)
         SubscribeProject subscribeProject = new SubscribeProject(subscriptionDataSource, output)
 
         return new SubscribeProjectController(subscribeProject)
