@@ -17,9 +17,8 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     private final ProjectOverviewViewModel viewModel
     private final NotificationService notificationService
 
-    SubscribeProjectPresenter(NotificationService notificationService, ProjectOverviewViewModel viewModel) {
+    SubscribeProjectPresenter(NotificationService notificationService) {
         this.notificationService = notificationService
-        this.viewModel = viewModel
     }
 
     /**
