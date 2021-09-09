@@ -12,6 +12,7 @@ import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 
@@ -28,6 +29,7 @@ class ProjectOverviewView extends VerticalLayout{
 
     private final ProjectOverviewViewModel viewModel
     private final DownloadProjectController downloadProjectController
+    private final SubscribeProjectController subscribeProjectController
     private final NotificationService notificationService
     private final FailedQCSamplesView failedQCSamplesView
     private final ProjectOverviewController projectOverviewController
@@ -39,10 +41,11 @@ class ProjectOverviewView extends VerticalLayout{
     private FileDownloader fileDownloader
 
     ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController
-                        , FailedQCSamplesView failedQCSamplesView, ProjectOverviewController projectOverviewController){
+                        , FailedQCSamplesView failedQCSamplesView, ProjectOverviewController projectOverviewController, SubscribeProjectController subscribeProjectController){
         this.notificationService = notificationService
         this.viewModel = viewModel
         this.downloadProjectController = downloadProjectController
+        this.subscribeProjectController = subscribeProjectController
         this.failedQCSamplesView = failedQCSamplesView
         this.projectOverviewController = projectOverviewController
 
@@ -52,10 +55,8 @@ class ProjectOverviewView extends VerticalLayout{
     private void initLayout(){
         Label titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
-
         setupProjects()
         HorizontalLayout buttonBar = setupButtonLayout()
-
         failedQCSamplesView.setVisible(false)
 
         this.addComponents(titleLabel,buttonBar, projectGrid, failedQCSamplesView)
@@ -68,10 +69,10 @@ class ProjectOverviewView extends VerticalLayout{
         Button postmanLink = setUpLinkButton()
         Button downloadManifestAction = setupDownloadButton()
         Button showDetails = setupShowDetails()
-
-        buttonBar.addComponents(showDetails, downloadManifestAction, postmanLink)
+        CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
+        buttonBar.addComponents(showDetails, downloadManifestAction, postmanLink, subscriptionCheckBox)
         buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
-
+        buttonBar.setComponentAlignment(subscriptionCheckBox, Alignment.MIDDLE_CENTER)
         return buttonBar
     }
 
@@ -133,7 +134,22 @@ class ProjectOverviewView extends VerticalLayout{
         return downloadManifestAction
     }
 
-    private void setupProjects(){
+    private CheckBox setupSubscriptionCheckBox() {
+
+        CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
+        subscriptionCheckBox.setVisible(false)
+        enableWhenProjectIsSelected(subscriptionCheckBox)
+        subscriptionCheckBox.setValue(false)
+        subscriptionCheckBox.addValueChangeListener(event -> {
+            //Only Subscribe if checkbox is checked
+            if (subscriptionCheckBox.value && viewModel.selectedProject) {
+                subscribeToProject(viewModel.selectedProject.code)
+            }
+        })
+        return subscriptionCheckBox
+    }
+
+    private void setupProjects() {
         projectGrid = new Grid<>()
         fillProjectsGrid()
         projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
@@ -233,4 +249,22 @@ class ProjectOverviewView extends VerticalLayout{
         return isAvailable
     }
 
+    private void enableWhenProjectIsSelected(CheckBox checkBox) {
+        viewModel.addPropertyChangeListener("selectedProject") {
+            checkBox.setValue(false)
+            if(viewModel.selectedProject){
+             checkBox.setVisible(true)
+            }else{
+              checkBox.setVisible(false)
+            }
+        }
+    }
+
+    private void subscribeToProject(String projectCode) {
+        if (viewModel.subscriber) {
+            if (projectCode) {
+                subscribeProjectController.subscribeProject(viewModel.subscriber, projectCode)
+            }
+        }
+    }
 }

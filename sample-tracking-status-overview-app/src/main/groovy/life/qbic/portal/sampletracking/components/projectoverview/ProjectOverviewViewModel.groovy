@@ -1,6 +1,7 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import groovy.beans.Bindable
+import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
@@ -22,10 +23,12 @@ class ProjectOverviewViewModel {
 
     @Bindable ProjectSummary selectedProject
     @Bindable String generatedManifest
+    final Subscriber subscriber
 
-    ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService){
+    ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService, Subscriber subscriber){
         this.projectResourceService = projectResourceService
         this.statusCountService = statusCountService
+        this.subscriber = subscriber
         fetchProjectData()
         subscribeToResources()
     }
