@@ -1,11 +1,11 @@
 package life.qbic.business.project.subscribe
 
 /**
- * <b><short description></b>
+ * <b>Subscribes the given subscriber to the specified project</b>
  *
- * <p><detailed description></p>
+ * <p>This interface is used by {@link life.qbic.business.project.subscribe.SubscribeProject}</p>
  *
- * @since <version tag>
+ * @since 1.0.0
  */
 interface SubscriptionDataSource {
 
