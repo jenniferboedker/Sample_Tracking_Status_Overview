@@ -18,6 +18,7 @@ class ProjectSummary {
     int samplesReceived
     int samplesQcFailed
     int sampleDataAvailable
+    int samplesLibraryPrepFinished
 
     ProjectSummary(String code, String title) {
         this.code = code
@@ -25,6 +26,7 @@ class ProjectSummary {
         this.samplesReceived = 0
         this.samplesQcFailed = 0
         this.sampleDataAvailable = 0
+        this.samplesLibraryPrepFinished = 0
     }
 
     static ProjectSummary of(Project project) {

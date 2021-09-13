@@ -3,7 +3,7 @@ full_name: Jennifer Bödker
 email: jennifer.boedker@qbic.uni-tuebingen.de
 project_name: Sample Tracking Status Overview
 project_short_description: Gives a visual overview of sample statuses
-version: 0.3.0
+version: 0.4.0
 domain: portlet
 language: groovy
 project_slug: Sample_Tracking_Status_Overview

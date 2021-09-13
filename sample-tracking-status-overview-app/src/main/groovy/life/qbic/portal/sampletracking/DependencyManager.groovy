@@ -5,12 +5,20 @@ import life.qbic.business.project.load.LoadProjects
 import life.qbic.business.project.load.LoadProjectsDataSource
 import life.qbic.business.project.load.LoadProjectsInput
 import life.qbic.business.project.load.LoadProjectsOutput
+import life.qbic.business.project.subscribe.SubscribeProject
+import life.qbic.business.project.subscribe.SubscribeProjectOutput
+import life.qbic.business.project.subscribe.Subscriber
+import life.qbic.business.project.subscribe.SubscriptionDataSource
 import life.qbic.business.samples.count.CountSamples
 import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.business.samples.count.CountSamplesOutput
 import life.qbic.business.samples.download.DownloadSamples
 import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.business.samples.download.DownloadSamplesOutput
+import life.qbic.business.samples.info.GetSamplesInfo
+import life.qbic.business.samples.info.GetSamplesInfoDataSource
+import life.qbic.business.samples.info.GetSamplesInfoInput
+import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
@@ -22,10 +30,15 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectOvervie
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.download.ManifestPresenter
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectPresenter
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
 import life.qbic.portal.sampletracking.datasources.Credentials
 import life.qbic.portal.sampletracking.datasources.OpenBisConnector
 import life.qbic.portal.sampletracking.datasources.database.DatabaseSession
 import life.qbic.portal.sampletracking.datasources.samples.SamplesDbConnector
+import life.qbic.portal.sampletracking.datasources.subscriptions.SubscriptionsDbConnector
 import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
 import life.qbic.portal.sampletracking.resource.status.StatusCount
@@ -51,7 +64,9 @@ class DependencyManager {
 
     private LoadProjectsDataSource loadProjectsDataSource
     private CountSamplesDataSource countSamplesDataSource
+    private GetSamplesInfoDataSource getSamplesInfoDataSource
     private DownloadSamplesDataSource downloadSamplesDataSource
+    private SubscriptionDataSource subscriptionDataSource
 
     private ResourceService<Project> projectResourceService
     private ResourceService<StatusCount> statusCountService
@@ -100,6 +115,9 @@ class DependencyManager {
         )
         OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
         loadProjectsDataSource = openBisConnector
+
+        subscriptionDataSource = new SubscriptionsDbConnector(DatabaseSession.getInstance())
+        getSamplesInfoDataSource = openBisConnector
     }
 
     /**
@@ -124,18 +142,34 @@ class DependencyManager {
      * @return a new ProjectOverviewView
      */
     private ProjectOverviewView createProjectOverviewView() {
-        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService)
-        
-        DownloadProjectController downloadController = setupDownloadProjectUsecase(viewModel)
-        ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController)
+        Subscriber currentUser = new Subscriber(portalUser.firstName, portalUser.lastName, portalUser.emailAddress)
+        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService, currentUser)
+        SubscribeProjectController subscribeProjectController = setupSubscribeProjectUseCase()
+        DownloadProjectController downloadController = setupDownloadProjectUseCase(viewModel)
+
+        FailedQCSamplesView failedQCSamplesView = new FailedQCSamplesView(notificationService)
+        ProjectOverviewController projectOverviewController = setupFailedQCUseCase(failedQCSamplesView.getPresenter())
+
+        ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController, failedQCSamplesView, projectOverviewController, subscribeProjectController)
         return view
     }
-    
-    private DownloadProjectController setupDownloadProjectUsecase(ProjectOverviewViewModel viewModel) {
+
+    private ProjectOverviewController setupFailedQCUseCase(GetSamplesInfoOutput output){
+        GetSamplesInfo getSamplesInfo = new GetSamplesInfo(downloadSamplesDataSource,getSamplesInfoDataSource, output)
+        return new ProjectOverviewController(getSamplesInfo)
+    }
+
+    private DownloadProjectController setupDownloadProjectUseCase(ProjectOverviewViewModel viewModel) {
         DownloadSamplesOutput output = new ManifestPresenter(notificationService, viewModel)
         DownloadSamples downloadSamples = new DownloadSamples(downloadSamplesDataSource, output)
         
         return new DownloadProjectController(downloadSamples)
+    }
+
+    private SubscribeProjectController setupSubscribeProjectUseCase() {
+        SubscribeProjectOutput output = new SubscribeProjectPresenter(notificationService)
+        SubscribeProject subscribeProject = new SubscribeProject(subscriptionDataSource, output)
+        return new SubscribeProjectController(subscribeProject)
     }
 
     /**
@@ -161,6 +195,7 @@ class DependencyManager {
             countSamples.countReceivedSamples(it)
             countSamples.countQcFailedSamples(it)
             countSamples.countAvailableDataSamples(it)
+            countSamples.countLibraryPrepFinishedSamples(it)
         }
     }
 

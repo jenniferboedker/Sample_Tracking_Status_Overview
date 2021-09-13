@@ -12,6 +12,9 @@ import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 
 /**
  * <b>This class generates the layout for the ProductOverview use case</b>
@@ -26,29 +29,76 @@ class ProjectOverviewView extends VerticalLayout{
 
     private final ProjectOverviewViewModel viewModel
     private final DownloadProjectController downloadProjectController
+    private final SubscribeProjectController subscribeProjectController
     private final NotificationService notificationService
+    private final FailedQCSamplesView failedQCSamplesView
+    private final ProjectOverviewController projectOverviewController
 
-    private Label titleLabel
     private Grid<ProjectSummary> projectGrid
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
     private FileDownloader fileDownloader
 
-    ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController){
+    ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController
+                        , FailedQCSamplesView failedQCSamplesView, ProjectOverviewController projectOverviewController, SubscribeProjectController subscribeProjectController){
         this.notificationService = notificationService
         this.viewModel = viewModel
         this.downloadProjectController = downloadProjectController
+        this.subscribeProjectController = subscribeProjectController
+        this.failedQCSamplesView = failedQCSamplesView
+        this.projectOverviewController = projectOverviewController
 
         initLayout()
     }
 
     private void initLayout(){
-        titleLabel = new Label("Project Overview")
+        Label titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
-        Component component = setupProjectSpecificButtons()
-        this.addComponents(titleLabel,component, projectGrid)
+        HorizontalLayout buttonBar = setupButtonLayout()
+        failedQCSamplesView.setVisible(false)
+
+        this.addComponents(titleLabel,buttonBar, projectGrid, failedQCSamplesView)
+    }
+
+    private HorizontalLayout setupButtonLayout() {
+        HorizontalLayout buttonBar = new HorizontalLayout()
+        buttonBar.setMargin(false)
+
+        Button postmanLink = setUpLinkButton()
+        Button downloadManifestAction = setupDownloadButton()
+        Button showDetails = setupShowDetails()
+        CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
+        buttonBar.addComponents(showDetails, downloadManifestAction, postmanLink, subscriptionCheckBox)
+        buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
+        buttonBar.setComponentAlignment(subscriptionCheckBox, Alignment.MIDDLE_CENTER)
+        return buttonBar
+    }
+
+    private Button setupShowDetails(){
+        Button detailsButton = new Button("Show Details")
+        detailsButton.setIcon(VaadinIcons.INFO_CIRCLE)
+        detailsButton.setEnabled(false)
+
+        projectGrid.addSelectionListener({
+            failedQCSamplesView.setVisible(false)
+
+            if(viewModel.selectedProject && viewModel.selectedProject.samplesQcFailed > 0){
+                detailsButton.setEnabled(true)
+            }else{
+                detailsButton.setEnabled(false)
+            }
+        })
+
+        detailsButton.addClickListener({
+            if(viewModel.selectedProject){
+                projectOverviewController.getFailedQcSamples(viewModel.selectedProject.code)
+                failedQCSamplesView.setVisible(true)
+            }
+        })
+
+        return detailsButton
     }
 
     private Button setUpLinkButton(){
@@ -84,7 +134,22 @@ class ProjectOverviewView extends VerticalLayout{
         return downloadManifestAction
     }
 
-    private void setupProjects(){
+    private CheckBox setupSubscriptionCheckBox() {
+
+        CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
+        subscriptionCheckBox.setVisible(false)
+        enableWhenProjectIsSelected(subscriptionCheckBox)
+        subscriptionCheckBox.setValue(false)
+        subscriptionCheckBox.addValueChangeListener(event -> {
+            //Only Subscribe if checkbox is checked
+            if (subscriptionCheckBox.value && viewModel.selectedProject) {
+                subscribeToProject(viewModel.selectedProject.code)
+            }
+        })
+        return subscriptionCheckBox
+    }
+
+    private void setupProjects() {
         projectGrid = new Grid<>()
         fillProjectsGrid()
         projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
@@ -109,7 +174,8 @@ class ProjectOverviewView extends VerticalLayout{
                     projectGrid.select(modelSelection.get())
                 }
             })
-
+            //for each selected
+            failedQCSamplesView.setVisible(false)
         })
     }
 
@@ -132,6 +198,8 @@ class ProjectOverviewView extends VerticalLayout{
                 .setCaption("Samples Received").setId("SamplesReceived")
         projectGrid.addColumn({it.samplesQcFailed})
                 .setCaption("Samples Failed QC").setId("SamplesFailedQc")
+        projectGrid.addColumn({it.samplesLibraryPrepFinished})
+                .setCaption("Library Prep Finished").setId("LibraryPrepFinished")
         projectGrid.addColumn({it.sampleDataAvailable})
                 .setCaption("Data Available").setId("SampleDataAvailable")
         setupDataProvider()
@@ -143,6 +211,8 @@ class ProjectOverviewView extends VerticalLayout{
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.getColumn("SamplesFailedQc")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
+        projectGrid.getColumn("LibraryPrepFinished")
+                .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.getColumn("SampleDataAvailable")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.setHeightMode(HeightMode.ROW)
@@ -153,15 +223,6 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.setDataProvider(dataProvider)
     }
 
-    private AbstractComponent setupProjectSpecificButtons() {
-        HorizontalLayout buttonBar = new HorizontalLayout()
-        buttonBar.setMargin(false)
-        Button postmanLink = setUpLinkButton()
-        Button downloadManifestAction = setupDownloadButton()
-        buttonBar.addComponents(downloadManifestAction, postmanLink)
-        buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
-        return buttonBar
-    }
 
     private void tryToDownloadManifest() {
         try {
@@ -188,4 +249,22 @@ class ProjectOverviewView extends VerticalLayout{
         return isAvailable
     }
 
+    private void enableWhenProjectIsSelected(CheckBox checkBox) {
+        viewModel.addPropertyChangeListener("selectedProject") {
+            checkBox.setValue(false)
+            if(viewModel.selectedProject){
+             checkBox.setVisible(true)
+            }else{
+              checkBox.setVisible(false)
+            }
+        }
+    }
+
+    private void subscribeToProject(String projectCode) {
+        if (viewModel.subscriber) {
+            if (projectCode) {
+                subscribeProjectController.subscribeProject(viewModel.subscriber, projectCode)
+            }
+        }
+    }
 }

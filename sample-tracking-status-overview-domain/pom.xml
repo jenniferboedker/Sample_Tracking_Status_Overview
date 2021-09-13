@@ -7,7 +7,7 @@
     <parent>
         <artifactId>sample-tracking-status-overview</artifactId>
         <groupId>life.qbic</groupId>
-        <version>0.3.0</version>
+        <version>0.4.0</version> <!-- <<QUBE_FORCE_BUMP>> -->
     </parent>
     <dependencies>
         <dependency>

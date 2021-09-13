@@ -5,6 +5,26 @@ Changelog
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
+0.4.0 (2021-09-13)
+------------------
+
+**Added**
+
+* List failing QC samples for single projects (`#77 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/77>`_)
+
+* Count of samples that finished library prep is shown (`#89 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/89>`_)
+
+* Enable user to subscribe to individual projects (`#84 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/84>`_)
+
+**Fixed**
+
+* Remove possibility of duplicate subscription of user per project (`#95 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/95>`_)
+
+**Dependencies**
+
+**Deprecated**
+
+
 0.3.0 (2021-08-30)
 ------------------
 
