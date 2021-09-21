@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
+import com.vaadin.data.ValueProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
@@ -12,9 +13,11 @@ import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
-import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
-import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
+import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.RelativeCount
+import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 
 /**
  * <b>This class generates the layout for the ProductOverview use case</b>
@@ -150,7 +153,7 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private void setupProjects() {
-        projectGrid = new Grid<>()
+        projectGrid = new Grid<ProjectSummary>()
         fillProjectsGrid()
         projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
         projectGrid.addSelectionListener({
@@ -189,18 +192,46 @@ class ProjectOverviewView extends VerticalLayout{
         viewModel.generatedManifest = null
     }
 
+    private static String getStyleForColumn(ProjectSummary projectSummary, ValueProvider<ProjectSummary, RelativeCount> valueProvider) {
+        RelativeCount relativeCount = valueProvider.apply(projectSummary)
+        State state = determineCompleteness(relativeCount)
+        return state.getCssClass()
+    }
+
+    private static String getStyleForFailureColumn(ProjectSummary projectSummary, ValueProvider<ProjectSummary, RelativeCount> valueProvider) {
+        RelativeCount relativeCount = valueProvider.apply(projectSummary)
+        int count = relativeCount.getValue()
+        State state = determineFailure(count)
+        return state.getCssClass()
+    }
+
+
     private void fillProjectsGrid() {
-        projectGrid.addColumn({ it.code})
-                .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(MAX_CODE_COLUMN_WIDTH)
+
+        projectGrid.addColumn({ it.code })
+                .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
+                MAX_CODE_COLUMN_WIDTH)
         projectGrid.addColumn({ it.title })
                 .setCaption("Project Title").setId("ProjectTitle")
-        projectGrid.addColumn({it.samplesReceived})
+        ValueProvider<ProjectSummary, RelativeCount> receivedProvider = { ProjectSummary it ->
+            new RelativeCount(it.samplesReceived, 100 ) //TODO replace this
+        }
+        projectGrid.addColumn(receivedProvider).setStyleGenerator({ getStyleForColumn(it, receivedProvider) })
                 .setCaption("Samples Received").setId("SamplesReceived")
-        projectGrid.addColumn({it.samplesQcFailed})
+        ValueProvider<ProjectSummary, RelativeCount> failedQcProvider = { ProjectSummary it ->
+            new RelativeCount(it.samplesQcFailed, 100 ) //TODO replace this
+        }
+        projectGrid.addColumn(failedQcProvider).setStyleGenerator({ getStyleForFailureColumn(it, failedQcProvider) })
                 .setCaption("Samples Failed QC").setId("SamplesFailedQc")
-        projectGrid.addColumn({it.samplesLibraryPrepFinished})
+        ValueProvider<ProjectSummary, RelativeCount> libraryPrepProvider = {ProjectSummary it ->
+            new RelativeCount(it.samplesLibraryPrepFinished , 100) //TODO replace this
+        }
+        projectGrid.addColumn(libraryPrepProvider).setStyleGenerator({ getStyleForColumn(it, libraryPrepProvider) })
                 .setCaption("Library Prep Finished").setId("LibraryPrepFinished")
-        projectGrid.addColumn({it.sampleDataAvailable})
+        ValueProvider<ProjectSummary, RelativeCount> dataAvailableProvider = { ProjectSummary it ->
+            new RelativeCount(it.sampleDataAvailable , 100) //TODO replace this
+        }
+        projectGrid.addColumn(dataAvailableProvider).setStyleGenerator({ getStyleForColumn(it, dataAvailableProvider) })
                 .setCaption("Data Available").setId("SampleDataAvailable")
         setupDataProvider()
         //specify size of grid and layout
@@ -265,6 +296,38 @@ class ProjectOverviewView extends VerticalLayout{
             if (projectCode) {
                 subscribeProjectController.subscribeProject(viewModel.subscriber, projectCode)
             }
+        }
+    }
+
+    /**
+     * Determines the state of the current status. Is it in progress or did it complete already
+     * @param samplesInStatus the count for the specific status
+     * @param relativeCount
+     */
+    private static State determineCompleteness(RelativeCount relativeCount) {
+        int samplesInStatus = relativeCount.getValue()
+        int totalSamples = relativeCount.getTotal()
+        if (samplesInStatus == totalSamples) {
+            return State.COMPLETED
+        } else if (samplesInStatus < totalSamples) {
+            return State.IN_PROGRESS
+        } else {
+            //unexpected!!
+            throw new IllegalStateException("status count $samplesInStatus must not be greater total count $totalSamples")
+        }
+    }
+
+    /**
+     * Determines the state of the current status. Is it in progress or were failures observed.
+     * @param samplesInStatus the count for the specific status
+     * @param totalSamples the total number of samples
+     * @return the state of the project for the status in question
+     */
+    private static State determineFailure(int samplesInStatus) {
+        if (samplesInStatus > 0) {
+            return State.FAILED
+        } else {
+            return State.IN_PROGRESS
         }
     }
 }
