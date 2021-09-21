@@ -200,8 +200,7 @@ class ProjectOverviewView extends VerticalLayout{
 
     private static String getStyleForFailureColumn(ProjectSummary projectSummary, ValueProvider<ProjectSummary, RelativeCount> valueProvider) {
         RelativeCount relativeCount = valueProvider.apply(projectSummary)
-        int count = relativeCount.getValue()
-        State state = determineFailure(count)
+        State state = determineFailure(relativeCount)
         return state.getCssClass()
     }
 
@@ -319,12 +318,11 @@ class ProjectOverviewView extends VerticalLayout{
 
     /**
      * Determines the state of the current status. Is it in progress or were failures observed.
-     * @param samplesInStatus the count for the specific status
-     * @param totalSamples the total number of samples
+     * @param relativeCount
      * @return the state of the project for the status in question
      */
-    private static State determineFailure(int samplesInStatus) {
-        if (samplesInStatus > 0) {
+    private static State determineFailure(RelativeCount relativeCount) {
+        if (relativeCount.value > 0) {
             return State.FAILED
         } else {
             return State.IN_PROGRESS
