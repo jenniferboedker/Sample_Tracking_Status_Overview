@@ -35,7 +35,6 @@ class CountSamples implements CountSamplesInput{
     try {
       sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
       int allSamples = sampleStatuses.size()
-      // counts samples that have AT LEAST this status (or a later one)
       int receivedAmount = countSamplesFromStatus(Status.SAMPLE_RECEIVED)
       output.countedReceivedSamples(projectCode,allSamples,receivedAmount)
 
