@@ -75,7 +75,7 @@ class ProjectOverviewViewModel {
         projectOverviews.remove(projectOverview)
     }
 
-    private void updateTotalSampleCount(StatusCount statusCount){
+    private void updateTotalSampleCount(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
         summary.totalSampleCount = statusCount.totalSampleCount
     }

@@ -32,8 +32,9 @@ class StatusCountSpec extends Specification {
 
         where:
         projectCode | status | count | total
-        "TEST" | Status.SAMPLE_RECEIVED | 1 | 8
-        "TEST" | Status.DATA_AVAILABLE | 0 | 8
         "TEST_2" | Status.SAMPLE_RECEIVED | 0 | 8
+        "TEST" | Status.DATA_AVAILABLE | 0 | 8
+        "TEST" | Status.SAMPLE_RECEIVED | 99 | 8
+        "TEST" | Status.SAMPLE_RECEIVED | 0 | 99
     }
 }
