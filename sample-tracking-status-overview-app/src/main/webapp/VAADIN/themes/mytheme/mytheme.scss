@@ -39,6 +39,18 @@
   /* Include all the styles from the valo theme */
   @include valo;
 
+  .v-grid-cell.status-completed {
+    background-color: green;
+  }
+
+  .v-grid-cell.status-in-progress {
+    background-color: gray;
+  }
+
+  .v-grid-cell.status-failed {
+    background-color: red;
+  }
+
   /* Insert your theme rules here */
   .portlet-footer {
     font-size: 9pt;
