@@ -20,7 +20,7 @@ class CountSamplesSpec extends Specification {
         CountSamplesOutput output = Mock()
         CountSamples countSamples = new CountSamples(dataSource, output)
         when:"the use case is run"
-        countSamples.countReceivedSamples(projectCode)
+        countSamples.countSamplesPerStatus(projectCode)
         then:"a successful message is send"
         1 * output.countedReceivedSamples(projectCode, _ as Integer, _ as Integer)
         0 * output.failedExecution(_ as String)
@@ -35,7 +35,7 @@ class CountSamplesSpec extends Specification {
         CountSamplesOutput output = Mock()
         CountSamples countSamples = new CountSamples(dataSource, output)
         when:"the use case is run"
-        countSamples.countReceivedSamples(projectCode)
+        countSamples.countSamplesPerStatus(projectCode)
         then:"the correct amounts of samples are returned"
         1 * output.countedReceivedSamples(projectCode, 3, 2)
         0 * output.failedExecution(_ as String)
@@ -50,7 +50,7 @@ class CountSamplesSpec extends Specification {
         CountSamplesOutput output = Mock()
         CountSamples countSamples = new CountSamples(dataSource, output)
         when:"the use case is run"
-        countSamples.countReceivedSamples(projectCode)
+        countSamples.countSamplesPerStatus(projectCode)
         then:"the correct amounts of samples are returned"
         1 * output.countedReceivedSamples(projectCode, 4, 3)
         0 * output.failedExecution(_ as String)
@@ -65,7 +65,7 @@ class CountSamplesSpec extends Specification {
         CountSamplesOutput output = Mock()
         CountSamples countSamples = new CountSamples(dataSource, output)
         when:"the use case is run"
-        countSamples.countReceivedSamples(projectCode)
+        countSamples.countSamplesPerStatus(projectCode)
         then:"the correct amounts of samples are returned"
         1 * output.countedReceivedSamples(projectCode, 4, 2)
         0 * output.failedExecution(_ as String)
@@ -81,7 +81,7 @@ class CountSamplesSpec extends Specification {
         CountSamplesOutput output = Mock()
         CountSamples countSamples = new CountSamples(dataSource, output)
         when:"the use case is run"
-        countSamples.countReceivedSamples(projectCode)
+        countSamples.countSamplesPerStatus(projectCode)
         then:"a failure message is send"
         1 * output.failedExecution(_)
         0 * output.countedReceivedSamples(_)
@@ -98,7 +98,7 @@ class CountSamplesSpec extends Specification {
         CountSamples countSamples = new CountSamples(dataSource, output)
 
         when:"the use case is run"
-        countSamples.countReceivedSamples(projectCode)
+        countSamples.countSamplesPerStatus(projectCode)
 
         then:"a failure message is send"
         1 * output.failedExecution(_)
@@ -113,7 +113,7 @@ class CountSamplesSpec extends Specification {
         CountSamplesOutput output = Mock()
         CountSamples countSamples = new CountSamples(dataSource, output)
         when:"the use case is run"
-        countSamples.countQcFailedSamples(projectCode)
+        countSamples.countSamplesPerStatus(projectCode)
         then:"a successful message is send"
         1 * output.countedFailedQcSamples(projectCode, 0, 0)
         0 * output.failedExecution(_ as String)
@@ -128,7 +128,7 @@ class CountSamplesSpec extends Specification {
         CountSamplesOutput output = Mock()
         CountSamples countSamples = new CountSamples(dataSource, output)
         when:"the use case is run"
-        countSamples.countQcFailedSamples(projectCode)
+        countSamples.countSamplesPerStatus(projectCode)
         then:"the correct amounts of samples are returned"
         1 * output.countedFailedQcSamples(projectCode, 3, 2)
         0 * output.failedExecution(_ as String)
@@ -145,7 +145,7 @@ class CountSamplesSpec extends Specification {
         CountSamplesOutput output = Mock()
         CountSamples countSamples = new CountSamples(dataSource, output)
         when:"the use case is run"
-        countSamples.countQcFailedSamples(projectCode)
+        countSamples.countSamplesPerStatus(projectCode)
         then:"a failure message is send"
         1 * output.failedExecution(_)
         0 * output.countedFailedQcSamples(_)
@@ -161,7 +161,7 @@ def "countFailedQcSamples does not count samples with status #status"() {
         CountSamplesOutput output = Mock()
         when:
         CountSamples countSamples = new CountSamples(dataSource, output)
-        countSamples.countQcFailedSamples(projectCode)
+        countSamples.countSamplesPerStatus(projectCode)
         then:
         0 * output.failedExecution(_)
         1 * output.countedFailedQcSamples(projectCode, totalNumber, 0)
