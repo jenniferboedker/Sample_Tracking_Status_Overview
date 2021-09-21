@@ -134,7 +134,6 @@ class CountSamplesSpec extends Specification {
         0 * output.failedExecution(_ as String)
     }
 
-
     def "unsuccessful execution of counting failed qc samples leads to failure notifications"() {
         given:
         String projectCode = "QABCD"
@@ -150,7 +149,8 @@ class CountSamplesSpec extends Specification {
         1 * output.failedExecution(_)
         0 * output.countedFailedQcSamples(_)
     }
-def "countFailedQcSamples does not count samples with status #status"() {
+
+    def "countFailedQcSamples does not count samples with status #status"() {
         given: "a project code"
         String projectCode = "QABCD"
         and: "a datasource stub returning one sample of the status"
