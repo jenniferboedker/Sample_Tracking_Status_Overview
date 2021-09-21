@@ -30,62 +30,27 @@ class CountSamples implements CountSamplesInput{
     this.output = output
   }
 
-  /**
-   * This method calls the output interface with the number of all samples in a project as
-   * well as the subset of samples received by a lab.
-   * In case of failure the output interface failure method is called.
-   * @since 1.0.0
-   */
   @Override
-  void countReceivedSamples(String projectCode) {
+  void countSamplePerStatus(String projectCode) {
     try {
       sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
+      int allSamples = sampleStatuses.size()
       // counts samples that have AT LEAST this status (or a later one)
       int receivedAmount = countSamplesFromStatus(Status.SAMPLE_RECEIVED)
-      output.countedReceivedSamples(projectCode, sampleStatuses.size(), receivedAmount)
+      output.countedReceivedSamples(projectCode,allSamples,receivedAmount)
+
+      int failedQc = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
+      output.countedFailedQcSamples(projectCode,allSamples,failedQc)
+
+      int libraryPrepFinished = countSamplesFromStatus(Status.LIBRARY_PREP_FINISHED)
+      output.countedLibraryPrepFinishedSamples(projectCode,allSamples,libraryPrepFinished)
+
+      int availableData = countSamplesFromStatus(Status.DATA_AVAILABLE)
+      output.countedAvailableSampleData(projectCode,allSamples,availableData)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
     } catch (Exception ignored) {
       output.failedExecution("Could not count received samples.")
-    }
-  }
-
-  /**
-   * This method calls the output interface with the number of all samples in a project as
-   * well as the subset of samples which had a failed quality control
-   * In case of failure the output interface failure method is called.
-   * @since 1.0.0
-   */
-  @Override
-  void countQcFailedSamples(String projectCode) {
-    try {
-      sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      int receivedAmount = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
-      output.countedFailedQcSamples(projectCode, sampleStatuses.size(), receivedAmount)
-    }catch (Exception ignored) {
-      output.failedExecution("Could not count failed qc samples.")
-    }
-  }
-
-  @Override
-  void countAvailableDataSamples(String projectCode) {
-    try {
-      sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      int availableData = countSamplesFromStatus(Status.DATA_AVAILABLE)
-      output.countedAvailableSampleData(projectCode, sampleStatuses.size(), availableData)
-    } catch (Exception e) {
-      output.failedExecution(e.getMessage())
-    }
-  }
-
-  @Override
-  void countLibraryPrepFinishedSamples(String projectCode) {
-    try {
-      sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      int libraryPrepFinished = countSamplesFromStatus(Status.LIBRARY_PREP_FINISHED)
-      output.countedLibraryPrepFinishedSamples(projectCode, sampleStatuses.size(), libraryPrepFinished)
-    } catch (Exception e) {
-      output.failedExecution(e.getMessage())
     }
   }
 

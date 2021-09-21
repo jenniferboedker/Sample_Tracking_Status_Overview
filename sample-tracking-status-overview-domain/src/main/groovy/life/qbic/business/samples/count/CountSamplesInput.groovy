@@ -11,41 +11,12 @@ interface CountSamplesInput {
 
     /**
      * This method calls the output interface with the number of samples in the project
-     * and the number of samples that have been received in the sequencing lab.
+     * and the number of samples are within (or have passed) a specific status.
      * In case of failure the output interface failure method is called.
      *
      * @param projectCode a code specifying the samples that should be considered
      * @since 1.0.0
      */
-    void countReceivedSamples(String projectCode)
+    void countSamplePerStatus(String projectCode)
 
-    /**
-     * This method calls the output interface with the number of samples in the project
-     * and the number of samples that have failed quality control.
-     * In case of failure the output interface failure method is called.
-     *
-     * @param projectCode a code specifying the samples that should be considered
-     * @since 1.0.0
-     */
-    void countQcFailedSamples(String projectCode)
-
-    /**
-     * This method calls the output interface with the number of samples in the project
-     * and the number of samples for which data is available.
-     * In case of failure the output interface failure method is called.
-     *
-     * @param projectCode A code specifying the samples that should be considered
-     * @since 1.0.0
-     */
-    void countAvailableDataSamples(String projectCode)
-
-    /**
-     * This method calls the output interface with the number of samples in the project
-     * and the number of samples for which the library prep is finished.
-     * In case of failure the output interface failure method is called.
-     *
-     * @param projectCode A code specifying the samples that should be considered
-     * @since 1.0.0
-     */
-    void countLibraryPrepFinishedSamples(String projectCode)
 }

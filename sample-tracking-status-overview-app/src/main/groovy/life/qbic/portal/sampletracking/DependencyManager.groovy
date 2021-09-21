@@ -192,10 +192,7 @@ class DependencyManager {
             return it.projectId.projectCode.toString()
         }
         projectCodes.each {
-            countSamples.countReceivedSamples(it)
-            countSamples.countQcFailedSamples(it)
-            countSamples.countAvailableDataSamples(it)
-            countSamples.countLibraryPrepFinishedSamples(it)
+            countSamples.countSamplePerStatus(it)
         }
     }
 
