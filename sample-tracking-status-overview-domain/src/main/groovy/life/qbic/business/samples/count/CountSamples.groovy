@@ -37,9 +37,10 @@ class CountSamples implements CountSamplesInput{
   void countSamplesPerStatus(String projectCode) {
     try {
       sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
+
       totalSampleCount = sampleStatuses.size()
       this.projectCode = projectCode
-      // counts samples that have AT LEAST this status (or a later one)
+
       countReceivedSamples()
       countFailedQcSamples()
       countFinishedLibraryPrepSamples()
