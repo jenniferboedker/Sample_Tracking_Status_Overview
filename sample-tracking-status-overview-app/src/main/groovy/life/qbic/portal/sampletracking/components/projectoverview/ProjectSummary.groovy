@@ -15,6 +15,7 @@ import life.qbic.datamodel.dtos.projectmanagement.Project
 class ProjectSummary {
     final String code
     final String title
+    int totalSampleCount
     int samplesReceived
     int samplesQcFailed
     int sampleDataAvailable
@@ -27,6 +28,7 @@ class ProjectSummary {
         this.samplesQcFailed = 0
         this.sampleDataAvailable = 0
         this.samplesLibraryPrepFinished = 0
+        this.totalSampleCount = 0
     }
 
     static ProjectSummary of(Project project) {

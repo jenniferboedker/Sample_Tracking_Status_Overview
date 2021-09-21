@@ -39,8 +39,10 @@ class ProjectOverviewViewModel {
             addProject(project)
         }
         statusCountService.iterator().each { StatusCount statusCount ->
-            updateSamplesReceived(statusCount.projectCode, statusCount.count)
-            updateSamplesFailedQc(statusCount.projectCode, statusCount.count)
+            updateSamplesReceived(statusCount)
+            updateSamplesFailedQc(statusCount)
+            updateSamplesLibraryPrepFinished(statusCount)
+            updateDataAvailable(statusCount)
         }
     }
 
@@ -48,10 +50,18 @@ class ProjectOverviewViewModel {
         this.projectResourceService.subscribe({ addProject(it) }, Topic.PROJECT_ADDED)
         this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
 
-        this.statusCountService.subscribe({updateSamplesReceived(it.projectCode, it.count)}, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
-        this.statusCountService.subscribe({updateSamplesFailedQc(it.projectCode, it.count)}, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
-        this.statusCountService.subscribe({updateDataAvailable(it.projectCode, it.count)}, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
-        this.statusCountService.subscribe({updateSamplesLibraryPrepFinished(it.projectCode, it.count)}, Topic.SAMPLE_LIBRARY_PREP_FINISHED)
+        this.statusCountService.subscribe({
+            updateSamplesReceived(it)
+            updateTotalSampleCount(it)}, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
+        this.statusCountService.subscribe({
+            updateSamplesFailedQc(it)
+            updateTotalSampleCount(it)}, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
+        this.statusCountService.subscribe({
+            updateDataAvailable(it)
+            updateTotalSampleCount(it)}, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
+        this.statusCountService.subscribe({
+            updateSamplesLibraryPrepFinished(it)
+            updateTotalSampleCount(it)}, Topic.SAMPLE_LIBRARY_PREP_FINISHED)
     }
 
     private void addProject(Project project) {
@@ -65,20 +75,25 @@ class ProjectOverviewViewModel {
         projectOverviews.remove(projectOverview)
     }
 
-    private void updateSamplesReceived(String projectCode, int sampleCount) {
-        getProjectSummary(projectCode).samplesReceived = sampleCount
+    private void updateTotalSampleCount(StatusCount statusCount){
+        ProjectSummary summary = getProjectSummary(statusCount.projectCode)
+        summary.totalSampleCount = statusCount.totalSampleCount
     }
 
-    private void updateDataAvailable(String projectCode, int sampleCount) {
-        getProjectSummary(projectCode).sampleDataAvailable = sampleCount
+    private void updateSamplesReceived(StatusCount statusCount) {
+        getProjectSummary(statusCount.projectCode).samplesReceived = statusCount.count
     }
 
-    private void updateSamplesFailedQc(String projectCode, int sampleCount) {
-        getProjectSummary(projectCode).samplesQcFailed = sampleCount
+    private void updateDataAvailable(StatusCount statusCount) {
+        getProjectSummary(statusCount.projectCode).sampleDataAvailable = statusCount.count
     }
 
-    private void updateSamplesLibraryPrepFinished(String projectCode, int sampleCount){
-        getProjectSummary(projectCode).samplesLibraryPrepFinished = sampleCount
+    private void updateSamplesFailedQc(StatusCount statusCount) {
+        getProjectSummary(statusCount.projectCode).samplesQcFailed = statusCount.count
+    }
+
+    private void updateSamplesLibraryPrepFinished(StatusCount statusCount){
+        getProjectSummary(statusCount.projectCode).samplesLibraryPrepFinished = statusCount.count
     }
 
     /**
