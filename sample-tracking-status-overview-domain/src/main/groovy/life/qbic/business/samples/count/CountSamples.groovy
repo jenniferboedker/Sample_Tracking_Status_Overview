@@ -17,7 +17,10 @@ class CountSamples implements CountSamplesInput{
   private final List<Status> statusesInOrder = [Status.METADATA_REGISTERED, Status.SAMPLE_RECEIVED,
     Status.SAMPLE_QC_FAIL, Status.SAMPLE_QC_PASS,
     Status.LIBRARY_PREP_FINISHED, Status.DATA_AVAILABLE]
+
   private List<Status> sampleStatuses
+  private int totalSampleCount
+  private String projectCode
 
   /**
    * Default constructor for this use case
@@ -31,27 +34,42 @@ class CountSamples implements CountSamplesInput{
   }
 
   @Override
-  void countSamplePerStatus(String projectCode) {
+  void countSamplesPerStatus(String projectCode) {
     try {
       sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      int allSamples = sampleStatuses.size()
+      totalSampleCount = sampleStatuses.size()
+      this.projectCode = projectCode
       // counts samples that have AT LEAST this status (or a later one)
-      int receivedAmount = countSamplesFromStatus(Status.SAMPLE_RECEIVED)
-      output.countedReceivedSamples(projectCode,allSamples,receivedAmount)
+      countReceivedSamples()
+      countFailedQcSamples()
+      countFinishedLibraryPrepSamples()
+      countAvailableDataSamples()
 
-      int failedQc = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
-      output.countedFailedQcSamples(projectCode,allSamples,failedQc)
-
-      int libraryPrepFinished = countSamplesFromStatus(Status.LIBRARY_PREP_FINISHED)
-      output.countedLibraryPrepFinishedSamples(projectCode,allSamples,libraryPrepFinished)
-
-      int availableData = countSamplesFromStatus(Status.DATA_AVAILABLE)
-      output.countedAvailableSampleData(projectCode,allSamples,availableData)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
     } catch (Exception ignored) {
       output.failedExecution("Could not count received samples.")
     }
+  }
+
+  private void countReceivedSamples(){
+    int receivedAmount = countSamplesFromStatus(Status.SAMPLE_RECEIVED)
+    output.countedReceivedSamples(projectCode,totalSampleCount,receivedAmount)
+  }
+
+  private void countFailedQcSamples(){
+    int failedQc = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
+    output.countedFailedQcSamples(projectCode,totalSampleCount,failedQc)
+  }
+
+  private void countFinishedLibraryPrepSamples(){
+    int libraryPrepFinished = countSamplesFromStatus(Status.LIBRARY_PREP_FINISHED)
+    output.countedLibraryPrepFinishedSamples(projectCode,totalSampleCount,libraryPrepFinished)
+  }
+
+  private void countAvailableDataSamples(){
+    int availableData = countSamplesFromStatus(Status.DATA_AVAILABLE)
+    output.countedAvailableSampleData(projectCode,totalSampleCount,availableData)
   }
 
   private int countSamplesFromStatus(Status status) {

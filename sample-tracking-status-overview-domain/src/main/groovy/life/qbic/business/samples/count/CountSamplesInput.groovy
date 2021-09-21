@@ -17,6 +17,6 @@ interface CountSamplesInput {
      * @param projectCode a code specifying the samples that should be considered
      * @since 1.0.0
      */
-    void countSamplePerStatus(String projectCode)
+    void countSamplesPerStatus(String projectCode)
 
 }
