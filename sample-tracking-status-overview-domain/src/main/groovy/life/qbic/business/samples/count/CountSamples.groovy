@@ -17,7 +17,10 @@ class CountSamples implements CountSamplesInput{
   private final List<Status> statusesInOrder = [Status.METADATA_REGISTERED, Status.SAMPLE_RECEIVED,
     Status.SAMPLE_QC_FAIL, Status.SAMPLE_QC_PASS,
     Status.LIBRARY_PREP_FINISHED, Status.DATA_AVAILABLE]
+
   private List<Status> sampleStatuses
+  private int totalSampleCount
+  private String projectCode
 
   /**
    * Default constructor for this use case
@@ -30,19 +33,19 @@ class CountSamples implements CountSamplesInput{
     this.output = output
   }
 
-  /**
-   * This method calls the output interface with the number of all samples in a project as
-   * well as the subset of samples received by a lab.
-   * In case of failure the output interface failure method is called.
-   * @since 1.0.0
-   */
   @Override
-  void countReceivedSamples(String projectCode) {
+  void countSamplesPerStatus(String projectCode) {
     try {
       sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      // counts samples that have AT LEAST this status (or a later one)
-      int receivedAmount = countSamplesFromStatus(Status.SAMPLE_RECEIVED)
-      output.countedReceivedSamples(projectCode, sampleStatuses.size(), receivedAmount)
+
+      totalSampleCount = sampleStatuses.size()
+      this.projectCode = projectCode
+
+      countReceivedSamples()
+      countFailedQcSamples()
+      countFinishedLibraryPrepSamples()
+      countAvailableDataSamples()
+
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
     } catch (Exception ignored) {
@@ -50,43 +53,24 @@ class CountSamples implements CountSamplesInput{
     }
   }
 
-  /**
-   * This method calls the output interface with the number of all samples in a project as
-   * well as the subset of samples which had a failed quality control
-   * In case of failure the output interface failure method is called.
-   * @since 1.0.0
-   */
-  @Override
-  void countQcFailedSamples(String projectCode) {
-    try {
-      sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      int receivedAmount = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
-      output.countedFailedQcSamples(projectCode, sampleStatuses.size(), receivedAmount)
-    }catch (Exception ignored) {
-      output.failedExecution("Could not count failed qc samples.")
-    }
+  private void countReceivedSamples(){
+    int receivedAmount = countSamplesFromStatus(Status.SAMPLE_RECEIVED)
+    output.countedReceivedSamples(projectCode,totalSampleCount,receivedAmount)
   }
 
-  @Override
-  void countAvailableDataSamples(String projectCode) {
-    try {
-      sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      int availableData = countSamplesFromStatus(Status.DATA_AVAILABLE)
-      output.countedAvailableSampleData(projectCode, sampleStatuses.size(), availableData)
-    } catch (Exception e) {
-      output.failedExecution(e.getMessage())
-    }
+  private void countFailedQcSamples(){
+    int failedQc = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
+    output.countedFailedQcSamples(projectCode,totalSampleCount,failedQc)
   }
 
-  @Override
-  void countLibraryPrepFinishedSamples(String projectCode) {
-    try {
-      sampleStatuses = dataSource.fetchSampleStatusesForProject(projectCode)
-      int libraryPrepFinished = countSamplesFromStatus(Status.LIBRARY_PREP_FINISHED)
-      output.countedLibraryPrepFinishedSamples(projectCode, sampleStatuses.size(), libraryPrepFinished)
-    } catch (Exception e) {
-      output.failedExecution(e.getMessage())
-    }
+  private void countFinishedLibraryPrepSamples(){
+    int libraryPrepFinished = countSamplesFromStatus(Status.LIBRARY_PREP_FINISHED)
+    output.countedLibraryPrepFinishedSamples(projectCode,totalSampleCount,libraryPrepFinished)
+  }
+
+  private void countAvailableDataSamples(){
+    int availableData = countSamplesFromStatus(Status.DATA_AVAILABLE)
+    output.countedAvailableSampleData(projectCode,totalSampleCount,availableData)
   }
 
   private int countSamplesFromStatus(Status status) {

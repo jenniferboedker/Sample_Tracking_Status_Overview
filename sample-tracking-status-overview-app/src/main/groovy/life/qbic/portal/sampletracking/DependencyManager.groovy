@@ -17,7 +17,6 @@ import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.business.samples.download.DownloadSamplesOutput
 import life.qbic.business.samples.info.GetSamplesInfo
 import life.qbic.business.samples.info.GetSamplesInfoDataSource
-import life.qbic.business.samples.info.GetSamplesInfoInput
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.datamodel.dtos.projectmanagement.Project
@@ -192,10 +191,7 @@ class DependencyManager {
             return it.projectId.projectCode.toString()
         }
         projectCodes.each {
-            countSamples.countReceivedSamples(it)
-            countSamples.countQcFailedSamples(it)
-            countSamples.countAvailableDataSamples(it)
-            countSamples.countLibraryPrepFinishedSamples(it)
+            countSamples.countSamplesPerStatus(it)
         }
     }
 

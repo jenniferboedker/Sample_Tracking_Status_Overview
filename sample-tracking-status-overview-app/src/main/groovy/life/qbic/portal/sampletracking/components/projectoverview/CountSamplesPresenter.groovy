@@ -44,7 +44,7 @@ class CountSamplesPresenter implements CountSamplesOutput {
     @Override
     void countedReceivedSamples(String projectCode, int allSamples, int receivedSamples) {
         try {
-            StatusCount statusCount = new StatusCount(projectCode, Status.SAMPLE_RECEIVED, receivedSamples)
+            StatusCount statusCount = new StatusCount(projectCode, Status.SAMPLE_RECEIVED, receivedSamples, allSamples)
             statusCountResourceService.addToResource(statusCount)
         } catch (Exception e) {
             throw new OutputException(e.getMessage())
@@ -54,7 +54,7 @@ class CountSamplesPresenter implements CountSamplesOutput {
     @Override
     void countedFailedQcSamples(String projectCode, int allSamples, int receivedSamples) {
         try {
-            StatusCount statusCount = new StatusCount(projectCode, Status.SAMPLE_QC_FAIL, receivedSamples)
+            StatusCount statusCount = new StatusCount(projectCode, Status.SAMPLE_QC_FAIL, receivedSamples, allSamples)
             statusCountResourceService.addToResource(statusCount)
         } catch (Exception e) {
             throw new OutputException(e.getMessage())
@@ -63,7 +63,7 @@ class CountSamplesPresenter implements CountSamplesOutput {
 
     @Override
     void countedAvailableSampleData(String projectCode, int allSamples, int availableData) {
-        StatusCount statusCount = new StatusCount(projectCode, Status.DATA_AVAILABLE, availableData)
+        StatusCount statusCount = new StatusCount(projectCode, Status.DATA_AVAILABLE, availableData, allSamples)
         statusCountResourceService.addToResource(statusCount)
     }
 
@@ -75,7 +75,7 @@ class CountSamplesPresenter implements CountSamplesOutput {
      */
     @Override
     void countedLibraryPrepFinishedSamples(String projectCode, int allSamples, int libraryPrepFinished) {
-        StatusCount statusCount = new StatusCount(projectCode, Status.LIBRARY_PREP_FINISHED, libraryPrepFinished)
+        StatusCount statusCount = new StatusCount(projectCode, Status.LIBRARY_PREP_FINISHED, libraryPrepFinished, allSamples)
         statusCountResourceService.addToResource(statusCount)
     }
 }
