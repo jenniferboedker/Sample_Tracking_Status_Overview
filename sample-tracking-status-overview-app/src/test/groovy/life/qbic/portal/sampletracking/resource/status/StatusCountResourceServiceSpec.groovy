@@ -100,7 +100,8 @@ class StatusCountResourceServiceSpec extends Specification {
     static StatusCount generateRandomStatusCount(Status status) {
         Random random = new Random()
         int count = random.nextInt()
+        int total = count + count
         String projectName = "TEST_NAME"
-        return new StatusCount(projectName, status, count)
+        return new StatusCount(projectName, status, count, total)
     }
 }
