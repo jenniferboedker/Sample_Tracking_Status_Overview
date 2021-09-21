@@ -214,22 +214,22 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.addColumn({ it.title })
                 .setCaption("Project Title").setId("ProjectTitle")
         ValueProvider<ProjectSummary, RelativeCount> receivedProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesReceived, 100 ) //TODO replace this
+            new RelativeCount(it.samplesReceived, it.totalSampleCount)
         }
         projectGrid.addColumn(receivedProvider).setStyleGenerator({ getStyleForColumn(it, receivedProvider) })
                 .setCaption("Samples Received").setId("SamplesReceived")
         ValueProvider<ProjectSummary, RelativeCount> failedQcProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesQcFailed, 100 ) //TODO replace this
+            new RelativeCount(it.samplesQcFailed, it.totalSampleCount)
         }
         projectGrid.addColumn(failedQcProvider).setStyleGenerator({ getStyleForFailureColumn(it, failedQcProvider) })
                 .setCaption("Samples Failed QC").setId("SamplesFailedQc")
-        ValueProvider<ProjectSummary, RelativeCount> libraryPrepProvider = {ProjectSummary it ->
-            new RelativeCount(it.samplesLibraryPrepFinished , 100) //TODO replace this
+        ValueProvider<ProjectSummary, RelativeCount> libraryPrepProvider = { ProjectSummary it ->
+            new RelativeCount(it.samplesLibraryPrepFinished, it.totalSampleCount)
         }
         projectGrid.addColumn(libraryPrepProvider).setStyleGenerator({ getStyleForColumn(it, libraryPrepProvider) })
                 .setCaption("Library Prep Finished").setId("LibraryPrepFinished")
         ValueProvider<ProjectSummary, RelativeCount> dataAvailableProvider = { ProjectSummary it ->
-            new RelativeCount(it.sampleDataAvailable , 100) //TODO replace this
+            new RelativeCount(it.sampleDataAvailable, it.totalSampleCount)
         }
         projectGrid.addColumn(dataAvailableProvider).setStyleGenerator({ getStyleForColumn(it, dataAvailableProvider) })
                 .setCaption("Data Available").setId("SampleDataAvailable")
