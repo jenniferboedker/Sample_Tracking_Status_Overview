@@ -213,24 +213,24 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.addColumn({ it.title })
                 .setCaption("Project Title").setId("ProjectTitle")
         ValueProvider<ProjectSummary, RelativeCount> receivedProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesReceived, it.totalSampleCount)
+            new RelativeCount(it.samplesReceived, it.totalSampleCount )
         }
-        projectGrid.addColumn(receivedProvider).setStyleGenerator({ getStyleForColumn(it, receivedProvider) })
+        projectGrid.addColumn(receivedProvider)
                 .setCaption("Samples Received").setId("SamplesReceived")
         ValueProvider<ProjectSummary, RelativeCount> failedQcProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesQcFailed, it.totalSampleCount)
+            new RelativeCount(it.samplesQcFailed, it.totalSampleCount )
         }
-        projectGrid.addColumn(failedQcProvider).setStyleGenerator({ getStyleForFailureColumn(it, failedQcProvider) })
+        projectGrid.addColumn(failedQcProvider)
                 .setCaption("Samples Failed QC").setId("SamplesFailedQc")
-        ValueProvider<ProjectSummary, RelativeCount> libraryPrepProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesLibraryPrepFinished, it.totalSampleCount)
+        ValueProvider<ProjectSummary, RelativeCount> libraryPrepProvider = {ProjectSummary it ->
+            new RelativeCount(it.samplesLibraryPrepFinished , it.totalSampleCount)
         }
-        projectGrid.addColumn(libraryPrepProvider).setStyleGenerator({ getStyleForColumn(it, libraryPrepProvider) })
+        projectGrid.addColumn(libraryPrepProvider)
                 .setCaption("Library Prep Finished").setId("LibraryPrepFinished")
         ValueProvider<ProjectSummary, RelativeCount> dataAvailableProvider = { ProjectSummary it ->
-            new RelativeCount(it.sampleDataAvailable, it.totalSampleCount)
+            new RelativeCount(it.sampleDataAvailable , it.totalSampleCount)
         }
-        projectGrid.addColumn(dataAvailableProvider).setStyleGenerator({ getStyleForColumn(it, dataAvailableProvider) })
+        projectGrid.addColumn(dataAvailableProvider)
                 .setCaption("Data Available").setId("SampleDataAvailable")
         setupDataProvider()
         //specify size of grid and layout
