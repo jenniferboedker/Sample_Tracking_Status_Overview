@@ -30,7 +30,7 @@ class RelativeCount implements Comparable<RelativeCount> {
      *
      * <p>The implementor must ensure <tt>sgn(x.compareTo(y)) ==
      * -sgn(y.compareTo(x))</tt> for all <tt>x</tt> and <tt>y</tt>.  (This
-     * implies that <tt>x.compareTo(y)</tt> must throw an exception iff
+     * implies that <tt>x.compareTo(y)</tt> must throw an exception if
      * <tt>y.compareTo(x)</tt> throws an exception.)
      *
      * <p>The implementor must also ensure that the relation is transitive:
