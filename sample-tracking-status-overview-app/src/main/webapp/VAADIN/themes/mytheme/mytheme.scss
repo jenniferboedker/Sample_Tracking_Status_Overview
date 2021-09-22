@@ -40,15 +40,15 @@
   @include valo;
 
   .v-grid-cell.status-completed {
-    background-color: green;
+    background-color: #b3e2cd;
   }
 
   .v-grid-cell.status-in-progress {
-    background-color: gray;
+    background-color: #cbd5e8;
   }
 
   .v-grid-cell.status-failed {
-    background-color: red;
+    background-color: #fdcdac;
   }
 
   /* Insert your theme rules here */
