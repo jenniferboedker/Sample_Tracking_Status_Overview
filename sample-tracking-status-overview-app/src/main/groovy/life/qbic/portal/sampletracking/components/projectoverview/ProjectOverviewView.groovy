@@ -16,6 +16,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.download.Downl
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.RelativeCount
+import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 
 /**
@@ -191,6 +192,19 @@ class ProjectOverviewView extends VerticalLayout{
         viewModel.generatedManifest = null
     }
 
+    private static String getStyleForColumn(ProjectSummary projectSummary, ValueProvider<ProjectSummary, RelativeCount> valueProvider) {
+        RelativeCount relativeCount = valueProvider.apply(projectSummary)
+        State state = determineCompleteness(relativeCount)
+        return state.getCssClass()
+    }
+
+    private static String getStyleForFailureColumn(ProjectSummary projectSummary, ValueProvider<ProjectSummary, RelativeCount> valueProvider) {
+        RelativeCount relativeCount = valueProvider.apply(projectSummary)
+        State state = determineFailure(relativeCount)
+        return state.getCssClass()
+    }
+
+
     private void fillProjectsGrid() {
 
         projectGrid.addColumn({ it.code })
@@ -201,22 +215,22 @@ class ProjectOverviewView extends VerticalLayout{
         ValueProvider<ProjectSummary, RelativeCount> receivedProvider = { ProjectSummary it ->
             new RelativeCount(it.samplesReceived, it.totalSampleCount )
         }
-        projectGrid.addColumn(receivedProvider)
+        projectGrid.addColumn(receivedProvider).setStyleGenerator({getStyleForColumn(it, receivedProvider)})
                 .setCaption("Samples Received").setId("SamplesReceived")
         ValueProvider<ProjectSummary, RelativeCount> failedQcProvider = { ProjectSummary it ->
             new RelativeCount(it.samplesQcFailed, it.totalSampleCount )
         }
         projectGrid.addColumn(failedQcProvider)
-                .setCaption("Samples Failed QC").setId("SamplesFailedQc")
+                .setCaption("Samples Failed QC").setId("SamplesFailedQc").setStyleGenerator({getStyleForFailureColumn(it, failedQcProvider)})
         ValueProvider<ProjectSummary, RelativeCount> libraryPrepProvider = {ProjectSummary it ->
             new RelativeCount(it.samplesLibraryPrepFinished , it.totalSampleCount)
         }
         projectGrid.addColumn(libraryPrepProvider)
-                .setCaption("Library Prep Finished").setId("LibraryPrepFinished")
+                .setCaption("Library Prep Finished").setId("LibraryPrepFinished").setStyleGenerator({getStyleForColumn(it, libraryPrepProvider)})
         ValueProvider<ProjectSummary, RelativeCount> dataAvailableProvider = { ProjectSummary it ->
             new RelativeCount(it.sampleDataAvailable , it.totalSampleCount)
         }
-        projectGrid.addColumn(dataAvailableProvider)
+        projectGrid.addColumn(dataAvailableProvider).setStyleGenerator({getStyleForColumn(it, dataAvailableProvider)})
                 .setCaption("Data Available").setId("SampleDataAvailable")
         setupDataProvider()
         //specify size of grid and layout
@@ -281,6 +295,37 @@ class ProjectOverviewView extends VerticalLayout{
             if (projectCode) {
                 subscribeProjectController.subscribeProject(viewModel.subscriber, projectCode)
             }
+        }
+    }
+
+    /**
+     * Determines the state of the current status. Is it in progress or did it complete already
+     * @param samplesInStatus the count for the specific status
+     * @param relativeCount
+     */
+    private static State determineCompleteness(RelativeCount relativeCount) {
+        int samplesInStatus = relativeCount.getValue()
+        int totalSamples = relativeCount.getTotal()
+        if (samplesInStatus == totalSamples) {
+            return State.COMPLETED
+        } else if (samplesInStatus < totalSamples) {
+            return State.IN_PROGRESS
+        } else {
+            //unexpected!!
+            throw new IllegalStateException("status count $samplesInStatus must not be greater total count $totalSamples")
+        }
+    }
+
+    /**
+     * Determines the state of the current status. Is it in progress or were failures observed.
+     * @param relativeCount
+     * @return the state of the project for the status in question
+     */
+    private static State determineFailure(RelativeCount relativeCount) {
+        if (relativeCount.value > 0) {
+            return State.FAILED
+        } else {
+            return State.IN_PROGRESS
         }
     }
 }
