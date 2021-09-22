@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
+import com.vaadin.data.ValueProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
@@ -12,9 +13,10 @@ import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
-import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
-import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
+import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.RelativeCount
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 
 /**
  * <b>This class generates the layout for the ProductOverview use case</b>
@@ -150,7 +152,7 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private void setupProjects() {
-        projectGrid = new Grid<>()
+        projectGrid = new Grid<ProjectSummary>()
         fillProjectsGrid()
         projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
         projectGrid.addSelectionListener({
@@ -190,17 +192,31 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private void fillProjectsGrid() {
-        projectGrid.addColumn({ it.code})
-                .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(MAX_CODE_COLUMN_WIDTH)
+
+        projectGrid.addColumn({ it.code })
+                .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
+                MAX_CODE_COLUMN_WIDTH)
         projectGrid.addColumn({ it.title })
                 .setCaption("Project Title").setId("ProjectTitle")
-        projectGrid.addColumn({it.samplesReceived})
+        ValueProvider<ProjectSummary, RelativeCount> receivedProvider = { ProjectSummary it ->
+            new RelativeCount(it.samplesReceived, it.totalSampleCount )
+        }
+        projectGrid.addColumn(receivedProvider)
                 .setCaption("Samples Received").setId("SamplesReceived")
-        projectGrid.addColumn({it.samplesQcFailed})
+        ValueProvider<ProjectSummary, RelativeCount> failedQcProvider = { ProjectSummary it ->
+            new RelativeCount(it.samplesQcFailed, it.totalSampleCount )
+        }
+        projectGrid.addColumn(failedQcProvider)
                 .setCaption("Samples Failed QC").setId("SamplesFailedQc")
-        projectGrid.addColumn({it.samplesLibraryPrepFinished})
+        ValueProvider<ProjectSummary, RelativeCount> libraryPrepProvider = {ProjectSummary it ->
+            new RelativeCount(it.samplesLibraryPrepFinished , it.totalSampleCount)
+        }
+        projectGrid.addColumn(libraryPrepProvider)
                 .setCaption("Library Prep Finished").setId("LibraryPrepFinished")
-        projectGrid.addColumn({it.sampleDataAvailable})
+        ValueProvider<ProjectSummary, RelativeCount> dataAvailableProvider = { ProjectSummary it ->
+            new RelativeCount(it.sampleDataAvailable , it.totalSampleCount)
+        }
+        projectGrid.addColumn(dataAvailableProvider)
                 .setCaption("Data Available").setId("SampleDataAvailable")
         setupDataProvider()
         //specify size of grid and layout
