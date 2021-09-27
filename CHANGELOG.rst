@@ -5,6 +5,22 @@ Changelog
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
+0.5.0 (2021-09-27)
+------------------
+
+**Added**
+
+**Fixed**
+
+* Color status counts based on the number of samples that have passed it (`#69 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/69>`_)
+
+* Show total number of known samples for every status (`#65 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/65>`_)
+
+**Dependencies**
+
+**Deprecated**
+
+
 0.4.0 (2021-09-13)
 ------------------
 
