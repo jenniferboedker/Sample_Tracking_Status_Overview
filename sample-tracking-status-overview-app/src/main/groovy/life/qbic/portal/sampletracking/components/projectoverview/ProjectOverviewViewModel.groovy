@@ -14,7 +14,7 @@ import life.qbic.portal.sampletracking.resource.status.StatusCount
  *
  * @since 1.0.0
  *
-*/
+ */
 class ProjectOverviewViewModel {
 
     ObservableList projectOverviews = new ObservableList(new ArrayList<ProjectSummary>())
@@ -25,7 +25,7 @@ class ProjectOverviewViewModel {
     @Bindable String generatedManifest
     final Subscriber subscriber
 
-    ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService, Subscriber subscriber){
+    ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService, Subscriber subscriber) {
         this.projectResourceService = projectResourceService
         this.statusCountService = statusCountService
         this.subscriber = subscriber
@@ -35,12 +35,14 @@ class ProjectOverviewViewModel {
 
     private void fetchProjectData() {
         projectOverviews.clear()
-        projectResourceService.iterator().each {Project project ->
+        projectResourceService.iterator().each { Project project ->
             addProject(project)
         }
         statusCountService.iterator().each { StatusCount statusCount ->
-            updateSamplesReceived(statusCount.projectCode, statusCount.count)
-            updateSamplesFailedQc(statusCount.projectCode, statusCount.count)
+            updateSamplesReceived(statusCount)
+            updateSamplesFailedQc(statusCount)
+            updateSamplesLibraryPrepFinished(statusCount)
+            updateDataAvailable(statusCount)
         }
     }
 
@@ -48,10 +50,10 @@ class ProjectOverviewViewModel {
         this.projectResourceService.subscribe({ addProject(it) }, Topic.PROJECT_ADDED)
         this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
 
-        this.statusCountService.subscribe({updateSamplesReceived(it.projectCode, it.count)}, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
-        this.statusCountService.subscribe({updateSamplesFailedQc(it.projectCode, it.count)}, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
-        this.statusCountService.subscribe({updateDataAvailable(it.projectCode, it.count)}, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
-        this.statusCountService.subscribe({updateSamplesLibraryPrepFinished(it.projectCode, it.count)}, Topic.SAMPLE_LIBRARY_PREP_FINISHED)
+        this.statusCountService.subscribe({ updateSamplesReceived(it) }, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
+        this.statusCountService.subscribe({ updateSamplesFailedQc(it) }, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
+        this.statusCountService.subscribe({ updateDataAvailable(it) }, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
+        this.statusCountService.subscribe({ updateSamplesLibraryPrepFinished(it) }, Topic.SAMPLE_LIBRARY_PREP_FINISHED)
     }
 
     private void addProject(Project project) {
@@ -59,26 +61,39 @@ class ProjectOverviewViewModel {
     }
 
     private void removeProject(Project project) {
-        ProjectSummary projectOverview = projectOverviews.collect {it as ProjectSummary}.find { it ->
+        ProjectSummary projectOverview = projectOverviews.collect { it as ProjectSummary }.find { it ->
             (it as ProjectSummary).code == project.projectId.projectCode.toString()
         }
         projectOverviews.remove(projectOverview)
     }
 
-    private void updateSamplesReceived(String projectCode, int sampleCount) {
-        getProjectSummary(projectCode).samplesReceived = sampleCount
+
+    private void updateSamplesReceived(StatusCount statusCount) {
+        ProjectSummary summary = getProjectSummary(statusCount.projectCode)
+        summary.samplesReceived = statusCount.count
+        int totalSampleCount = statusCount.totalSampleCount
+        summary.totalSampleCount = totalSampleCount
     }
 
-    private void updateDataAvailable(String projectCode, int sampleCount) {
-        getProjectSummary(projectCode).sampleDataAvailable = sampleCount
+    private void updateDataAvailable(StatusCount statusCount) {
+        ProjectSummary summary = getProjectSummary(statusCount.projectCode)
+        summary.sampleDataAvailable = statusCount.count
+        int totalSampleCount = statusCount.totalSampleCount
+        summary.totalSampleCount = totalSampleCount
     }
 
-    private void updateSamplesFailedQc(String projectCode, int sampleCount) {
-        getProjectSummary(projectCode).samplesQcFailed = sampleCount
+    private void updateSamplesFailedQc(StatusCount statusCount) {
+        ProjectSummary summary = getProjectSummary(statusCount.projectCode)
+        summary.samplesQcFailed = statusCount.count
+        int totalSampleCount = statusCount.totalSampleCount
+        summary.totalSampleCount = totalSampleCount
     }
 
-    private void updateSamplesLibraryPrepFinished(String projectCode, int sampleCount){
-        getProjectSummary(projectCode).samplesLibraryPrepFinished = sampleCount
+    private void updateSamplesLibraryPrepFinished(StatusCount statusCount) {
+        ProjectSummary summary = getProjectSummary(statusCount.projectCode)
+        summary.samplesLibraryPrepFinished = statusCount.count
+        int totalSampleCount = statusCount.totalSampleCount
+        summary.totalSampleCount = totalSampleCount
     }
 
     /**
@@ -86,15 +101,15 @@ class ProjectOverviewViewModel {
      * @param projectCode The project code specifies a project
      * @return The project summary for the respective code
      */
-    private ProjectSummary getProjectSummary(String projectCode){
-        ProjectSummary projectOverview = projectOverviews.collect {it as ProjectSummary}.find { it ->
+    private ProjectSummary getProjectSummary(String projectCode) {
+        ProjectSummary projectOverview = projectOverviews.collect { it as ProjectSummary }.find { it ->
             (it as ProjectSummary).code == projectCode
         }
         return projectOverview
     }
 
     InputStream getManifestInputStream() {
-        InputStream result =  new ByteArrayInputStream(generatedManifest.getBytes())
+        InputStream result = new ByteArrayInputStream(generatedManifest.getBytes())
         return result
     }
 }
