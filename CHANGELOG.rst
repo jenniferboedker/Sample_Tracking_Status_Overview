@@ -14,6 +14,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * Color status counts based on the number of samples that have passed it (`#69 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/69>`_)
 
+* Show total number of known samples for every status (`#65 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/65>`_)
+
 **Dependencies**
 
 **Deprecated**
