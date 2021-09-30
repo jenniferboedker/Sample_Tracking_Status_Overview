@@ -52,6 +52,16 @@ class CountSamplesPresenter implements CountSamplesOutput {
     }
 
     @Override
+    void countedPassingQcSamples(String projectCode, int allSamples, int passedQcSamples) throws OutputException {
+        try {
+            StatusCount statusCount = new StatusCount(projectCode, Status.SAMPLE_QC_PASS, passedQcSamples, allSamples)
+            statusCountResourceService.addToResource(statusCount)
+        } catch (Exception e) {
+            throw new OutputException(e.getMessage())
+        }
+    }
+
+    @Override
     void countedFailedQcSamples(String projectCode, int allSamples, int receivedSamples) {
         try {
             StatusCount statusCount = new StatusCount(projectCode, Status.SAMPLE_QC_FAIL, receivedSamples, allSamples)
