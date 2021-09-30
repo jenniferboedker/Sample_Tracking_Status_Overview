@@ -12,15 +12,18 @@ import life.qbic.business.project.Project
  */
 class LoadProjects implements LoadProjectsInput{
     private final LoadProjectsDataSource dataSource
+    private final SubscribedProjectsDataSource subscribedProjectsDataSource
     private final LoadProjectsOutput output
 
     /**
      * Default constructor for this use case
+     * @param subscribedProjectsDataSource the data source for subscription handling
      * @param dataSource the data source to be used
      * @param output the output to where results are published
      * @since 1.0.0
      */
-    LoadProjects(LoadProjectsDataSource dataSource, LoadProjectsOutput output) {
+    LoadProjects(SubscribedProjectsDataSource subscribedProjectsDataSource, LoadProjectsDataSource dataSource, LoadProjectsOutput output) {
+        this.subscribedProjectsDataSource = subscribedProjectsDataSource
         this.dataSource = dataSource
         this.output = output
     }
@@ -45,6 +48,7 @@ class LoadProjects implements LoadProjectsInput{
 
 
     private void loadSubscriptionInformation(Iterable<Project> projects) {
-
+        // Where do I get the user from?
+        // List<String> subscribedProjectCodes = subscribedProjectsDataSource.findSubscribedProjectCodesFor()
     }
 }
