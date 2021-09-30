@@ -212,26 +212,31 @@ class ProjectOverviewView extends VerticalLayout{
                 MAX_CODE_COLUMN_WIDTH)
         projectGrid.addColumn({ it.title })
                 .setCaption("Project Title").setId("ProjectTitle")
+
         ValueProvider<ProjectSummary, RelativeCount> receivedProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesReceived, it.totalSampleCount )
+            new RelativeCount(it.samplesReceived.passingSamples, it.totalSampleCount )
         }
         projectGrid.addColumn(receivedProvider).setStyleGenerator({getStyleForColumn(it, receivedProvider)})
                 .setCaption("Samples Received").setId("SamplesReceived")
+
         ValueProvider<ProjectSummary, RelativeCount> failedQcProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesQcFailed, it.totalSampleCount )
+            new RelativeCount(it.samplesQcPassed.passingSamples, it.totalSampleCount )
         }
         projectGrid.addColumn(failedQcProvider)
-                .setCaption("Samples Failed QC").setId("SamplesFailedQc").setStyleGenerator({getStyleForFailureColumn(it, failedQcProvider)})
+                .setCaption("Samples Passed QC").setId("SamplesPassedQc").setStyleGenerator({getStyleForFailureColumn(it, failedQcProvider)})
+
         ValueProvider<ProjectSummary, RelativeCount> libraryPrepProvider = {ProjectSummary it ->
-            new RelativeCount(it.samplesLibraryPrepFinished , it.totalSampleCount)
+            new RelativeCount(it.samplesLibraryPrepFinished.passingSamples , it.totalSampleCount)
         }
         projectGrid.addColumn(libraryPrepProvider)
                 .setCaption("Library Prep Finished").setId("LibraryPrepFinished").setStyleGenerator({getStyleForColumn(it, libraryPrepProvider)})
+
         ValueProvider<ProjectSummary, RelativeCount> dataAvailableProvider = { ProjectSummary it ->
-            new RelativeCount(it.sampleDataAvailable , it.totalSampleCount)
+            new RelativeCount(it.sampleDataAvailable.passingSamples , it.totalSampleCount)
         }
         projectGrid.addColumn(dataAvailableProvider).setStyleGenerator({getStyleForColumn(it, dataAvailableProvider)})
                 .setCaption("Data Available").setId("SampleDataAvailable")
+
         setupDataProvider()
         //specify size of grid and layout
         projectGrid.setWidthFull()
@@ -239,7 +244,7 @@ class ProjectOverviewView extends VerticalLayout{
                 .setMinimumWidth(200)
         projectGrid.getColumn("SamplesReceived")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
-        projectGrid.getColumn("SamplesFailedQc")
+        projectGrid.getColumn("SamplesPassedQc")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.getColumn("LibraryPrepFinished")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
