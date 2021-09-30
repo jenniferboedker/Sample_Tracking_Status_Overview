@@ -1,6 +1,7 @@
 package life.qbic.business.project.load
 
 import life.qbic.business.DataSourceException
+import life.qbic.business.project.Project
 
 /**
  * <b>Load projects</b>
@@ -32,7 +33,8 @@ class LoadProjects implements LoadProjectsInput{
     @Override
     void loadProjects() {
         try {
-            List projects = dataSource.fetchUserProjects()
+            List<Project> projects = dataSource.fetchUserProjects()
+            loadSubscriptionInformation(projects)
             output.loadedProjects(projects)
         } catch (DataSourceException dataSourceException) {
             output.failedExecution(dataSourceException.getMessage())
@@ -42,5 +44,7 @@ class LoadProjects implements LoadProjectsInput{
     }
 
 
+    private void loadSubscriptionInformation(Iterable<Project> projects) {
 
+    }
 }
