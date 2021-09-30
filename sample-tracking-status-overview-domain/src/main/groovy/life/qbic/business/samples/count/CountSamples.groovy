@@ -50,7 +50,7 @@ class CountSamples implements CountSamplesInput{
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
     } catch (Exception ignored) {
-      output.failedExecution("Could not count received samples.")
+      output.failedExecution("Could not count samples.")
     }
   }
 
@@ -61,7 +61,7 @@ class CountSamples implements CountSamplesInput{
 
   private void countPassingQcSamples(){
     int passedQc = countSamplesFromStatus(Status.SAMPLE_QC_PASS)
-    output.countedPassingQcSamples(projectCode,totalSampleCount,passedQc)
+    output.countedPassingQcSamples(projectCode,totalSampleCount, passedQc)
   }
 
   private void countFailedQcSamples(){
