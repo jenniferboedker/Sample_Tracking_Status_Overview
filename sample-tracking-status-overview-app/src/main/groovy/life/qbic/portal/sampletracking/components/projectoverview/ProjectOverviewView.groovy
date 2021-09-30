@@ -10,6 +10,7 @@ import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
+import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
@@ -28,6 +29,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.subscribe.Subs
  * @since 1.0.0
  *
 */
+@Log4j2
 class ProjectOverviewView extends VerticalLayout{
 
     private final ProjectOverviewViewModel viewModel
@@ -87,7 +89,7 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.addSelectionListener({
             failedQCSamplesView.setVisible(false)
 
-            if(viewModel.selectedProject && viewModel.selectedProject.samplesQcFailed > 0){
+            if(viewModel.selectedProject && viewModel.selectedProject.samplesQcPassed.failingSamples > 0){
                 detailsButton.setEnabled(true)
             }else{
                 detailsButton.setEnabled(false)
@@ -261,14 +263,16 @@ class ProjectOverviewView extends VerticalLayout{
 
     private void tryToDownloadManifest() {
         try {
-            Optional.ofNullable(viewModel.selectedProject).filter({it.sampleDataAvailable > 0 }).ifPresent({
+            Optional.ofNullable(viewModel.selectedProject).filter({it.sampleDataAvailable.passingSamples > 0 }).ifPresent({
                 String projectCode = it.getCode()
                 downloadProjectController.downloadProject(projectCode)
             })
         } catch (IllegalArgumentException illegalArgument) {
-            notificationService.publishFailure("Manifest Download failed due to: ${illegalArgument.getMessage()}")
-        } catch (Exception ignored) {
             notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+            log.error "Manifest Download failed due to: ${illegalArgument.getMessage()}"
+        } catch (Exception exception) {
+            notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+            log.error "Manifest Download failed due to: ${exception.getMessage()}"
         }
     }
 
