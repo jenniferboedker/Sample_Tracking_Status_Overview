@@ -2,6 +2,7 @@ package life.qbic.portal.sampletracking.components.projectoverview
 
 import groovy.transform.EqualsAndHashCode
 import life.qbic.datamodel.dtos.projectmanagement.Project
+import java.sql.Timestamp
 
 /**
  * <b>Project Summary POJO</b>
@@ -20,6 +21,7 @@ class ProjectSummary {
     int samplesQcFailed
     int sampleDataAvailable
     int samplesLibraryPrepFinished
+    Timestamp lastChanged
 
     ProjectSummary(String code, String title) {
         this.code = code
@@ -29,6 +31,7 @@ class ProjectSummary {
         this.sampleDataAvailable = 0
         this.samplesLibraryPrepFinished = 0
         this.totalSampleCount = 0
+        this.lastChanged = new Timestamp(0) //initialized with earliest value possible
     }
 
     static ProjectSummary of(Project project) {

@@ -15,9 +15,10 @@ class LoadProjectsSpec extends Specification {
     def "successful execution of the use case lead to success notifications"() {
         given:
         LoadProjectsDataSource dataSource = Stub()
+        LastChangeDateDataSource changeDataSource = Stub()
         dataSource.fetchUserProjects() >> { new ArrayList<Project>() }
         LoadProjectsOutput output = Mock()
-        LoadProjects loadProjects = new LoadProjects(dataSource, output)
+        LoadProjects loadProjects = new LoadProjects(dataSource, changeDataSource, output)
         when:"the use case is run"
         loadProjects.loadProjects()
         then:"a successful message is send"
@@ -28,11 +29,12 @@ class LoadProjectsSpec extends Specification {
     def "unsuccessful execution of the use case lead to failure notifications"() {
         given:
         LoadProjectsDataSource dataSource = Stub()
+        LastChangeDateDataSource changeDataSource = Stub()
         dataSource.fetchUserProjects() >> {
             throw new RuntimeException("Testing runtime exceptions")
         }
         LoadProjectsOutput output = Mock()
-        LoadProjects loadProjects = new LoadProjects(dataSource, output)
+        LoadProjects loadProjects = new LoadProjects(dataSource, changeDataSource, output)
         when:"the use case is run"
         loadProjects.loadProjects()
         then:"a failure message is send"
@@ -43,11 +45,12 @@ class LoadProjectsSpec extends Specification {
     def "a DataSourceException leads to a failure notification and no projects being loaded"() {
         given:
         LoadProjectsDataSource dataSource = Stub()
+        LastChangeDateDataSource changeDataSource = Stub()
         dataSource.fetchUserProjects() >> {
             throw new DataSourceException("Testing data source exception")
         }
         LoadProjectsOutput output = Mock()
-        LoadProjects loadProjects = new LoadProjects(dataSource, output)
+        LoadProjects loadProjects = new LoadProjects(dataSource, changeDataSource, output)
 
         when:"the use case is run"
         loadProjects.loadProjects()

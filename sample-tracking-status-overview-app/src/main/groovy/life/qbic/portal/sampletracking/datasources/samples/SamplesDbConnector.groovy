@@ -4,12 +4,14 @@ import groovy.util.logging.Log4j2
 import life.qbic.business.DataSourceException
 import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.business.samples.download.DownloadSamplesDataSource
+import life.qbic.business.project.load.LastChangeDateDataSource
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
 
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Statement
+import java.sql.Timestamp
 import java.sql.ResultSet
 
 /**
@@ -23,7 +25,7 @@ import java.sql.ResultSet
  * @since 1.0.0
  */
 @Log4j2
-class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataSource {
+class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataSource, LastChangeDateDataSource {
     private final ConnectionProvider connectionProvider
 
     /**
@@ -93,6 +95,35 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
             }
         }
         return statuses
+    }
+    
+    /**
+     * {@inheritDoc}
+     * @since 1.0.0
+     */
+    @Override
+    Timestamp getLatestChange(String projectCode) throws DataSourceException {
+      Connection connection = connectionProvider.connect()
+      List<Status> statuses = new ArrayList<>()
+      String latestChangeQuery = "select MAX(UNIX_TIMESTAMP(arrival_time)) from samples_locations where sample_id LIKE ?"
+      String sqlRegex = "${projectCode}%"
+      Timestamp latest = new Timestamp(0)
+      connection.withCloseable {
+          PreparedStatement preparedStatement = it.prepareStatement(latestChangeQuery)
+          preparedStatement.setString(1, sqlRegex)
+          ResultSet resultSet = preparedStatement.executeQuery()
+          while (resultSet.next()) {
+              try {
+                long arrivalTime = resultSet.getLong(1)
+                latest = new Timestamp(arrivalTime)
+              } catch(Exception e) {
+                  // The status in the database is invalid. This should never be the case!
+                  log.error("Could not get arrival time $arrivalTime", e)
+                  throw new DataSourceException("Retrieval of latest change failed for project $projectCode")
+              }
+          }
+      }
+      return latest
     }
 
     private class Query {
