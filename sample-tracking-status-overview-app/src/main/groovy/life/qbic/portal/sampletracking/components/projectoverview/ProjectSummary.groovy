@@ -1,8 +1,8 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import groovy.transform.EqualsAndHashCode
-import life.qbic.datamodel.dtos.projectmanagement.Project
 import java.sql.Timestamp
+import life.qbic.business.project.Project
 
 /**
  * <b>Project Summary POJO</b>
@@ -35,8 +35,8 @@ class ProjectSummary {
     }
 
     static ProjectSummary of(Project project) {
-        String code = project.projectId.projectCode.toString()
-        String title = project.projectTitle
+        String code = project.code
+        String title = project.title
         return new ProjectSummary(code, title)
     }
 

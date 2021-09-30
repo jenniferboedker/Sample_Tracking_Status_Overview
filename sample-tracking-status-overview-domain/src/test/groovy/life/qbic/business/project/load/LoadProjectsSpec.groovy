@@ -1,7 +1,7 @@
 package life.qbic.business.project.load
 
 import life.qbic.business.DataSourceException
-import life.qbic.datamodel.dtos.projectmanagement.Project
+import life.qbic.business.project.Project
 import spock.lang.Specification
 
 /**
