@@ -9,6 +9,7 @@ import com.vaadin.server.StreamResource
 import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
+import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
