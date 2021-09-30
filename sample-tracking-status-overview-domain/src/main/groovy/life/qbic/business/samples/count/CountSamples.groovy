@@ -42,7 +42,6 @@ class CountSamples implements CountSamplesInput{
       this.projectCode = projectCode
 
       countReceivedSamples()
-      countPassingQcSamples()
       countFailedQcSamples()
       countFinishedLibraryPrepSamples()
       countAvailableDataSamples()
@@ -57,11 +56,6 @@ class CountSamples implements CountSamplesInput{
   private void countReceivedSamples(){
     int receivedAmount = countSamplesFromStatus(Status.SAMPLE_RECEIVED)
     output.countedReceivedSamples(projectCode,totalSampleCount,receivedAmount)
-  }
-
-  private void countPassingQcSamples(){
-    int passedQc = countSamplesFromStatus(Status.SAMPLE_QC_PASS)
-    output.countedPassingQcSamples(projectCode,totalSampleCount,passedQc)
   }
 
   private void countFailedQcSamples(){
