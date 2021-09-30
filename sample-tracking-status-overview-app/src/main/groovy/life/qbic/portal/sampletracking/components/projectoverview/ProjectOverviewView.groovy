@@ -206,7 +206,6 @@ class ProjectOverviewView extends VerticalLayout{
 
 
     private void fillProjectsGrid() {
-
         projectGrid.addColumn({ it.code })
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
                 MAX_CODE_COLUMN_WIDTH)
@@ -246,6 +245,11 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.getColumn("SampleDataAvailable")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.setHeightMode(HeightMode.ROW)
+        
+        // remove manual sorting - any sorting in the code should probably done before disabling it
+        for (Column col : projectGrid.getColumns()) {
+          col.setSortable(false);
+        }
     }
 
     private void setupDataProvider() {
