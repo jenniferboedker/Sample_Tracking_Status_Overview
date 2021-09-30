@@ -1,7 +1,7 @@
 package life.qbic.business.project.load
 
 import life.qbic.business.DataSourceException
-import life.qbic.datamodel.dtos.projectmanagement.Project
+import life.qbic.business.project.Project
 
 /**
  * <b>Load projects</b>
@@ -37,7 +37,7 @@ class LoadProjects implements LoadProjectsInput {
         try {
             List projects = loadProjectsDataSource.fetchUserProjects()
             for(Project project : projects) {
-              project.lastChange = loadLastChangeDataSource.getLatestChange(project.code)
+              project.lastChanged = loadLastChangeDataSource.getLatestChange(project.code)
             }
             output.loadedProjects(projects)
         } catch (DataSourceException dataSourceException) {
