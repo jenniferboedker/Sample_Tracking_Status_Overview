@@ -16,7 +16,7 @@ class StatusCountResourceServiceSpec extends Specification {
     StatusCountResourceService statusCountService = new StatusCountResourceService()
     Subscriber<StatusCount> subscriber1 = Mock()
 
-    @Shared def knownStatuses = [Status.SAMPLE_RECEIVED, Status.SAMPLE_QC_FAIL, Status.DATA_AVAILABLE, Status.LIBRARY_PREP_FINISHED].sort { a, b -> a.name() <=> b.name()}
+    @Shared def knownStatuses = [Status.SAMPLE_RECEIVED, Status.SAMPLE_QC_PASS, Status.SAMPLE_QC_FAIL, Status.DATA_AVAILABLE, Status.LIBRARY_PREP_FINISHED].sort { a, b -> a.name() <=> b.name()}
     @Shared def unknownStatuses = Status.values().findAll {! (it in knownStatuses)}.sort {a,b -> a.name() <=> b.name()}
 
     def "Removing and adding a count for #status informs all subscribers to #topic"() {

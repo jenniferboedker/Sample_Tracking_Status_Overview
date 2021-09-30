@@ -67,31 +67,30 @@ class ProjectOverviewViewModel {
         projectOverviews.remove(projectOverview)
     }
 
-
     private void updateSamplesReceived(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.samplesReceived = statusCount.count
+        summary.samplesReceived.passingSamples = statusCount.count
         int totalSampleCount = statusCount.totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
 
     private void updateDataAvailable(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.sampleDataAvailable = statusCount.count
+        summary.sampleDataAvailable.passingSamples = statusCount.count
         int totalSampleCount = statusCount.totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
 
     private void updateSamplesFailedQc(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.samplesQcFailed = statusCount.count
+        summary.samplesQcPassed.failingSamples = statusCount.count
         int totalSampleCount = statusCount.totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
 
     private void updateSamplesLibraryPrepFinished(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.samplesLibraryPrepFinished = statusCount.count
+        summary.samplesLibraryPrepFinished.passingSamples = statusCount.count
         int totalSampleCount = statusCount.totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }

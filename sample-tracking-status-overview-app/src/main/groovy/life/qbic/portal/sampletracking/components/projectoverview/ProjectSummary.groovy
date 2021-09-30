@@ -18,7 +18,6 @@ class ProjectSummary {
     int totalSampleCount
     SampleCount samplesReceived
     SampleCount samplesQcPassed
-    SampleCount samplesQcFailed
     SampleCount samplesLibraryPrepFinished
     SampleCount sampleDataAvailable
 
@@ -27,7 +26,6 @@ class ProjectSummary {
         this.title = title
         this.samplesReceived = new SampleCount(0,0)
         this.samplesQcPassed = new SampleCount(0,0)
-        this.samplesQcFailed = new SampleCount(0,0)
         this.samplesLibraryPrepFinished = new SampleCount(0,0)
         this.sampleDataAvailable = new SampleCount(0,0)
         this.totalSampleCount = 0
