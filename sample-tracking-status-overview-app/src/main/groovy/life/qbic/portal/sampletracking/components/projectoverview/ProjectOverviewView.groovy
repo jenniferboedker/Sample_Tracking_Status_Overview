@@ -152,15 +152,22 @@ class ProjectOverviewView extends VerticalLayout{
             if (event.oldValue == event.value) {
                 return // just to be sure
             }
-            ProjectSummary selectedProject = viewModel.selectedProject
-            if (event.value && selectedProject) {
-                if (event.value != selectedProject.hasSubscription) {
-                    //there was a change in subscription status requested by the user
-                    subscribeToProject(selectedProject.code)
-                }
+            if (event.value) {
+                subscribeIfNotSubscribed(viewModel.selectedProject)
             }
         })
         return subscriptionCheckBox
+    }
+
+    /**
+     * Determines if a subscription is requested and triggers it
+     * @param projectSummary the project summary to which a subscription might be requested
+     */
+    private void subscribeIfNotSubscribed(ProjectSummary projectSummary) {
+        Optional<ProjectSummary> selectedProject = Optional.ofNullable(projectSummary)
+        selectedProject
+                .filter({ !it.hasSubscription })
+                .ifPresent({ subscribeToProject(it.code) })
     }
 
     private void setupProjects() {
