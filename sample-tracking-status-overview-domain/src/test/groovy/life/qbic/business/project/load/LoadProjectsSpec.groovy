@@ -16,7 +16,10 @@ class LoadProjectsSpec extends Specification {
         given:
         LoadProjectsDataSource dataSource = Stub()
         LastChangeDateDataSource changeDataSource = Stub()
-        dataSource.fetchUserProjects() >> { new ArrayList<Project>() }
+        Project fetchedProject = new Project("QABCD", "AwesomeProject")
+        Timestamp expectedTimestamp = Timestamp.from(Instant.now())
+        dataSource.fetchUserProjects() >> [fetchedProject]
+        changeDataSource.getLatestChange(fetchedProject.code) >> expectedTimestamp
         LoadProjectsOutput output = Mock()
         LoadProjects loadProjects = new LoadProjects(dataSource, changeDataSource, output)
         when:"the use case is run"
