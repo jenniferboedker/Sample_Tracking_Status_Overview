@@ -1,8 +1,8 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import groovy.beans.Bindable
+import life.qbic.business.project.Project
 import life.qbic.business.project.subscribe.Subscriber
-import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.status.StatusCount
@@ -61,8 +61,9 @@ class ProjectOverviewViewModel {
     }
 
     private void removeProject(Project project) {
-        ProjectSummary projectOverview = projectOverviews.collect { it as ProjectSummary }.find { it ->
-            (it as ProjectSummary).code == project.projectId.projectCode.toString()
+        List<ProjectSummary> summaries = projectOverviews as List<ProjectSummary>
+        ProjectSummary projectOverview = summaries.find { it ->
+            it.code == project.code
         }
         projectOverviews.remove(projectOverview)
     }

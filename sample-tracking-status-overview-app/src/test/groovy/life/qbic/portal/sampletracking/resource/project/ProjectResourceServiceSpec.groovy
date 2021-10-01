@@ -1,9 +1,6 @@
 package life.qbic.portal.sampletracking.resource.project
 
-import life.qbic.datamodel.dtos.projectmanagement.Project
-import life.qbic.datamodel.dtos.projectmanagement.ProjectCode
-import life.qbic.datamodel.dtos.projectmanagement.ProjectIdentifier
-import life.qbic.datamodel.dtos.projectmanagement.ProjectSpace
+import life.qbic.business.project.Project
 import life.qbic.portal.sampletracking.communication.Subscriber
 import life.qbic.portal.sampletracking.communication.Topic
 import spock.lang.Specification
@@ -71,9 +68,6 @@ class ProjectResourceServiceSpec extends Specification {
 
 
     static Project getFakeProject(String name) {
-        ProjectSpace projectSpace = new ProjectSpace("TEST_SPACE")
-        ProjectCode projectCode = new ProjectCode("QABCD")
-        Project.Builder projectBuilder = new Project.Builder(new ProjectIdentifier(projectSpace, projectCode), "test")
-        return projectBuilder.build()
+        return new Project("QABCD", name)
     }
 }
