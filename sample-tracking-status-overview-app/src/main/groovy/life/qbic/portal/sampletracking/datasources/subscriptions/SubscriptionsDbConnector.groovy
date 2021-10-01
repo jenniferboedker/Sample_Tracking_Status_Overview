@@ -136,6 +136,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
 
     @Override
     List<String> findSubscribedProjectCodesFor(Subscriber subscriber) {
+        List<String> subscribedProjects = []
         int subscriberId = fetchExistingSubscriberId(subscriber)
         String query = "SELECT project_code FROM subscription WHERE subscriber_id = ?"
         Connection connection = connectionProvider.connect()
@@ -143,7 +144,8 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
             PreparedStatement statement = connection.prepareStatement(query)
             statement.setInt(1, subscriberId)
             ResultSet resultSet = statement.executeQuery()
-            return resultSet.collect {it.getString("project_code")}
+            subscribedProjects = resultSet.collect {it.getString("project_code")}
         }
+        return subscribedProjects
     }
 }

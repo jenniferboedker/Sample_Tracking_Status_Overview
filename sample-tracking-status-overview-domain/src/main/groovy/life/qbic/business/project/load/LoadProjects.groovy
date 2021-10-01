@@ -1,7 +1,12 @@
 package life.qbic.business.project.load
 
 import life.qbic.business.DataSourceException
+import life.qbic.business.logging.Logger
+import life.qbic.business.logging.Logging
 import life.qbic.business.project.Project
+import life.qbic.business.project.subscribe.Subscriber
+
+import java.util.function.Predicate
 
 /**
  * <b>Load projects</b>
@@ -14,6 +19,8 @@ class LoadProjects implements LoadProjectsInput{
     private final LoadProjectsDataSource dataSource
     private final SubscribedProjectsDataSource subscribedProjectsDataSource
     private final LoadProjectsOutput output
+
+    private final Logging log = Logger.getLogger(this.getClass())
 
     /**
      * Default constructor for this use case
@@ -36,8 +43,7 @@ class LoadProjects implements LoadProjectsInput{
     @Override
     void loadProjects() {
         try {
-            List<Project> projects = dataSource.fetchUserProjects()
-            loadSubscriptionInformation(projects)
+            List<Project> projects = loadUserProjects()
             output.loadedProjects(projects)
         } catch (DataSourceException dataSourceException) {
             output.failedExecution(dataSourceException.getMessage())
@@ -46,9 +52,34 @@ class LoadProjects implements LoadProjectsInput{
         }
     }
 
+    @Override
+    void loadUserProjectsWithSubscriptionsFor(Subscriber subscriber) {
+        try {
+            List<Project> projects = loadUserProjects()
+            loadSubscriptionInformationInto(projects, subscriber)
+            output.loadedProjects(projects)
+        } catch (DataSourceException dataSourceException) {
+            output.failedExecution(dataSourceException.getMessage())
+        } catch (Exception e) {
+            output.failedExecution("Could not load projects")
+            log.error("unexpected exception during project loading:", e)
+        }
+    }
 
-    private void loadSubscriptionInformation(Iterable<Project> projects) {
-        // Where do I get the user from?
-        // List<String> subscribedProjectCodes = subscribedProjectsDataSource.findSubscribedProjectCodesFor()
+    private List<Project> loadUserProjects() {
+        List<Project> projects = dataSource.fetchUserProjects()
+        return projects
+    }
+
+    /**
+     * Loads subscription information into a list of projects
+     * @param projects
+     * @param subscriber
+     */
+    private void loadSubscriptionInformationInto(Iterable<Project> projects, Subscriber subscriber) {
+        List<String> subscribedProjectCodes = subscribedProjectsDataSource.findSubscribedProjectCodesFor(
+                subscriber)
+        Predicate<Project> isSubscribed = (Project project) -> {subscribedProjectCodes.contains(project.code)}
+        projects.each {it.hasSubscription = isSubscribed.test(it)}
     }
 }
