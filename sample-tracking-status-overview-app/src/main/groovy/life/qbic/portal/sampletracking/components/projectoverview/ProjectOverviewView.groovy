@@ -263,7 +263,8 @@ class ProjectOverviewView extends VerticalLayout{
 
     private void tryToDownloadManifest() {
         try {
-            Optional.ofNullable(viewModel.selectedProject).filter({it.sampleDataAvailable.passingSamples > 0 }).ifPresent({
+            Optional<ProjectSummary> selectedSummary = Optional.ofNullable(viewModel.selectedProject)
+            selectedSummary.filter({it.sampleDataAvailable.passingSamples > 0 }).ifPresent({
                 String projectCode = it.getCode()
                 downloadProjectController.downloadProject(projectCode)
             })
