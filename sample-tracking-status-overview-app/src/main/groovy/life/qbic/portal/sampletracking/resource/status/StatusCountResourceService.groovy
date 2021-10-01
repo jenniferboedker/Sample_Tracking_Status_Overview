@@ -4,6 +4,9 @@ import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
 
+import java.util.function.Predicate
+import java.util.function.UnaryOperator
+
 /**
  * <b>A resource service holding data on sample status counts per project</b>
  *
@@ -80,5 +83,14 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
                 throw new IllegalArgumentException("Could not process status count for status: $statusCount.status")
                 break
         }
+    }
+
+    /**
+     * <p><b>This method is not implemented. This service does not do anything when you call this method.</b></p>
+     * @since 1.0.0
+     */
+    @Override
+    void replace(Predicate<StatusCount> criteria, UnaryOperator<StatusCount> operator) {
+        throw new UnsupportedOperationException("${this.class.getSimpleName()} does not support replacement.")
     }
 }

@@ -48,8 +48,12 @@ class ProjectOverviewViewModel {
     }
 
     private void subscribeToResources() {
-        this.projectResourceService.subscribe({ addProject(it) }, Topic.PROJECT_ADDED)
-        this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
+        this.projectResourceService.subscribe({
+            addProject(it)
+        }, Topic.PROJECT_ADDED)
+        this.projectResourceService.subscribe({
+            removeProject(it)
+        }, Topic.PROJECT_REMOVED)
 
         this.statusCountService.subscribe({ updateSamplesReceived(it) }, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
         this.statusCountService.subscribe({ updateSamplesFailedQc(it) }, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
@@ -58,7 +62,9 @@ class ProjectOverviewViewModel {
     }
 
     private void addProject(Project project) {
-        projectOverviews.add(ProjectSummary.of(project))
+        ProjectSummary projectSummary = ProjectSummary.of(project)
+        projectOverviews.add(projectSummary)
+        ProjectSummary summary = (projectOverviews as List<ProjectSummary>).find {it.code == projectSummary.code}
     }
 
     private void removeProject(Project project) {
@@ -104,7 +110,7 @@ class ProjectOverviewViewModel {
      * @return The project summary for the respective code
      */
     private ProjectSummary getProjectSummary(String projectCode) {
-        ProjectSummary projectOverview = projectOverviews.collect { it as ProjectSummary }.find { it ->
+        ProjectSummary projectOverview = (projectOverviews as List<ProjectSummary>).find { it ->
             (it as ProjectSummary).code == projectCode
         }
         return projectOverview

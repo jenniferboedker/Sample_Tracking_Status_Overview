@@ -201,6 +201,9 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private void selectProject(ProjectSummary projectSummary) {
+        if (! projectSummary in viewModel.projectOverviews) {
+            projectSummary = (viewModel.projectOverviews as List<ProjectSummary>).find {it.code == projectSummary.code}
+        }
         viewModel.selectedProject = projectSummary
         tryToDownloadManifest()
     }

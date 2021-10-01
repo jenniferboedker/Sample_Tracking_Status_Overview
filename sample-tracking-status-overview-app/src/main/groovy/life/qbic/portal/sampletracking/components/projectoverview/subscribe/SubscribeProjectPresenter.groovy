@@ -1,9 +1,12 @@
 package life.qbic.portal.sampletracking.components.projectoverview.subscribe
 
+import life.qbic.business.project.Project
 import life.qbic.business.project.subscribe.SubscribeProjectOutput
 import life.qbic.business.project.subscribe.Subscriber
-import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.Constants
+import life.qbic.portal.sampletracking.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.resource.ResourceService
+
 /**
  * <b>Presents the notification message informing about a successful or failed subscription along with the projectCode</b>
  *
@@ -15,8 +18,10 @@ import life.qbic.portal.sampletracking.Constants
 class SubscribeProjectPresenter implements SubscribeProjectOutput {
 
     private final NotificationService notificationService
+    private final ResourceService<Project> projectResourceService
 
-    SubscribeProjectPresenter(NotificationService notificationService) {
+    SubscribeProjectPresenter(ResourceService<Project> projectResourceService, NotificationService notificationService) {
+        this.projectResourceService = projectResourceService
         this.notificationService = notificationService
     }
 
@@ -29,6 +34,11 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     void subscriptionAdded(String project) {
         String message = "Subscription to ${project} was successful"
         notificationService.publishSuccess(message)
+        projectResourceService.replace({ it.code == project },
+                {
+                    it.hasSubscription = true
+                    return it
+                })
     }
 
     /**
