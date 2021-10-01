@@ -1,14 +1,14 @@
 package life.qbic.portal.sampletracking.datasources.subscriptions
 
 import groovy.util.logging.Log4j2
-
+import life.qbic.business.DataSourceException
+import life.qbic.business.project.load.SubscribedProjectsDataSource
 import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.business.project.subscribe.SubscriptionDataSource
-
-import life.qbic.business.DataSourceException
 import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
 
 import java.sql.Connection
+import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Statement
 
@@ -20,7 +20,7 @@ import java.sql.Statement
  * @since 1.0.0
  */
 @Log4j2
-class SubscriptionsDbConnector implements SubscriptionDataSource {
+class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProjectsDataSource {
   
   private final ConnectionProvider connectionProvider
   
@@ -132,5 +132,22 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
                     isAlreadySubscribed = true}
             }
         return isAlreadySubscribed
+    }
+
+    @Override
+    List<String> findSubscribedProjectCodesFor(Subscriber subscriber) {
+        List<String> subscribedProjects = []
+        int subscriberId = fetchExistingSubscriberId(subscriber)
+        String query = "SELECT project_code FROM subscription WHERE subscriber_id = ?"
+        Connection connection = connectionProvider.connect()
+        connection.withCloseable {
+            PreparedStatement statement = connection.prepareStatement(query)
+            statement.setInt(1, subscriberId)
+            ResultSet resultSet = statement.executeQuery()
+            while(resultSet.next()) {
+                subscribedProjects <<  resultSet.getString("project_code")
+            }
+        }
+        return subscribedProjects
     }
 }

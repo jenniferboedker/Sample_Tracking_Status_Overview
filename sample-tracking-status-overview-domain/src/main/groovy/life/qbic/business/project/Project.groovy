@@ -10,6 +10,7 @@ package life.qbic.business.project
 class Project {
     final String code
     final String title
+    boolean hasSubscription = false
 
     Project(String code, String title) {
         this.code = code
