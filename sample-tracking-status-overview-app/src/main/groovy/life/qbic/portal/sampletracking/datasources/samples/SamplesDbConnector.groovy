@@ -4,7 +4,7 @@ import groovy.util.logging.Log4j2
 import life.qbic.business.DataSourceException
 import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.business.samples.download.DownloadSamplesDataSource
-import life.qbic.business.project.load.LastChangeDateDataSource
+import life.qbic.business.project.load.LastChangedDateDataSource
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
 
@@ -25,7 +25,7 @@ import java.sql.ResultSet
  * @since 1.0.0
  */
 @Log4j2
-class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataSource, LastChangeDateDataSource {
+class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataSource, LastChangedDateDataSource {
     private final ConnectionProvider connectionProvider
 
     /**

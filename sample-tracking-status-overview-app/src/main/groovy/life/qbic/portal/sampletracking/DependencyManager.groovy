@@ -4,7 +4,7 @@ import com.vaadin.ui.VerticalLayout
 import life.qbic.business.project.Project
 import life.qbic.business.project.load.LoadProjects
 import life.qbic.business.project.load.LoadProjectsDataSource
-import life.qbic.business.project.load.LastChangeDateDataSource
+import life.qbic.business.project.load.LastChangedDateDataSource
 import life.qbic.business.project.load.LoadProjectsInput
 import life.qbic.business.project.load.LoadProjectsOutput
 import life.qbic.business.project.subscribe.SubscribeProject
@@ -63,7 +63,7 @@ class DependencyManager {
     private final NotificationHandler notificationHandler
 
     private LoadProjectsDataSource loadProjectsDataSource
-    private LastChangeDateDataSource lastChangeDataSource
+    private LastChangedDateDataSource lastChangedDataSource
     private CountSamplesDataSource countSamplesDataSource
     private GetSamplesInfoDataSource getSamplesInfoDataSource
     private DownloadSamplesDataSource downloadSamplesDataSource
@@ -116,7 +116,7 @@ class DependencyManager {
         )
         OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
         loadProjectsDataSource = openBisConnector
-        lastChangeDateDataSource = samplesDbConnector
+        lastChangedDateDataSource = samplesDbConnector
 
         subscriptionDataSource = new SubscriptionsDbConnector(DatabaseSession.getInstance())
         getSamplesInfoDataSource = openBisConnector
@@ -180,7 +180,7 @@ class DependencyManager {
      */
     private void populateProjectService() {
         LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService, notificationService)
-        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, lastChangeDateDataSource, output)
+        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, lastChangedDateDataSource, output)
         loadProjects.loadProjects()
     }
 

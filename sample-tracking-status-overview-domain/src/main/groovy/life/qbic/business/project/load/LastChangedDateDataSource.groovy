@@ -12,7 +12,7 @@ import java.sql.Timestamp
  *
  * @since 1.0.0
  */
-interface LastChangeDateDataSource {
+interface LastChangedDateDataSource {
 
     /**
      * Returns the Timestamp of the latest changed sample of a project

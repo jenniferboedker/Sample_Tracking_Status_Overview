@@ -12,7 +12,7 @@ import life.qbic.business.project.Project
  */
 class LoadProjects implements LoadProjectsInput {
     private final LoadProjectsDataSource loadProjectsDataSource
-    private final LastChangeDateDataSource loadLastChangeDataSource
+    private final LastChangedDateDataSource loadLastChangedDataSource
     private final LoadProjectsOutput output
 
     /**
@@ -21,9 +21,9 @@ class LoadProjects implements LoadProjectsInput {
      * @param output the output to where results are published
      * @since 1.0.0
      */
-    LoadProjects(LoadProjectsDataSource loadProjectsDataSource, LastChangeDateDataSource loadLastChangeDataSource, LoadProjectsOutput output) {
+    LoadProjects(LoadProjectsDataSource loadProjectsDataSource, LastChangedDateDataSource loadLastChangedDataSource, LoadProjectsOutput output) {
         this.loadProjectsDataSource = loadProjectsDataSource
-        this.loadLastChangeDataSource = loadLastChangeDataSource
+        this.loadLastChangedDataSource = loadLastChangedDataSource
         this.output = output
     }
 
@@ -36,7 +36,7 @@ class LoadProjects implements LoadProjectsInput {
     void loadProjects() {
         try {
             List projects = loadProjectsDataSource.fetchUserProjects()
-            projects.each { it.lastChanged = loadLastChangeDataSource.getLatestChange(it.code) }
+            projects.each { it.lastChanged = loadLastChangedDataSource.getLatestChange(it.code) }
             output.loadedProjects(projects)
         } catch (DataSourceException dataSourceException) {
             output.failedExecution(dataSourceException.getMessage())

@@ -3,6 +3,8 @@ package life.qbic.business.project.load
 import life.qbic.business.DataSourceException
 import life.qbic.business.project.Project
 import spock.lang.Specification
+import java.sql.Timestamp
+import java.time.Instant
 
 /**
  * <b>Tests the load project use case</b>
@@ -15,7 +17,7 @@ class LoadProjectsSpec extends Specification {
     def "successful execution of the use case lead to success notifications"() {
         given:
         LoadProjectsDataSource dataSource = Stub()
-        LastChangeDateDataSource changeDataSource = Stub()
+        LastChangedDateDataSource changeDataSource = Stub()
         Project fetchedProject = new Project("QABCD", "AwesomeProject")
         Timestamp expectedTimestamp = Timestamp.from(Instant.now())
         dataSource.fetchUserProjects() >> [fetchedProject]
@@ -33,7 +35,7 @@ class LoadProjectsSpec extends Specification {
     def "unsuccessful execution of the use case lead to failure notifications"() {
         given:
         LoadProjectsDataSource dataSource = Stub()
-        LastChangeDateDataSource changeDataSource = Stub()
+        LastChangedDateDataSource changeDataSource = Stub()
         dataSource.fetchUserProjects() >> {
             throw new RuntimeException("Testing runtime exceptions")
         }
@@ -49,7 +51,7 @@ class LoadProjectsSpec extends Specification {
     def "a DataSourceException leads to a failure notification and no projects being loaded"() {
         given:
         LoadProjectsDataSource dataSource = Stub()
-        LastChangeDateDataSource changeDataSource = Stub()
+        LastChangedDateDataSource changeDataSource = Stub()
         dataSource.fetchUserProjects() >> {
             throw new DataSourceException("Testing data source exception")
         }
