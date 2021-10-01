@@ -17,4 +17,6 @@ class SampleCount {
         passingSamples = passing
         failingSamples = failing
     }
+
+
 }
