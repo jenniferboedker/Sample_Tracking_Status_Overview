@@ -16,18 +16,18 @@ class ProjectSummary {
     final String code
     final String title
     int totalSampleCount
-    int samplesReceived
-    int samplesQcFailed
-    int sampleDataAvailable
-    int samplesLibraryPrepFinished
+    SampleCount samplesReceived
+    SampleCount samplesQc
+    SampleCount samplesLibraryPrepFinished
+    SampleCount sampleDataAvailable
 
     ProjectSummary(String code, String title) {
         this.code = code
         this.title = title
-        this.samplesReceived = 0
-        this.samplesQcFailed = 0
-        this.sampleDataAvailable = 0
-        this.samplesLibraryPrepFinished = 0
+        this.samplesReceived = new SampleCount(0,0)
+        this.samplesQc = new SampleCount(0,0)
+        this.samplesLibraryPrepFinished = new SampleCount(0,0)
+        this.sampleDataAvailable = new SampleCount(0,0)
         this.totalSampleCount = 0
     }
 

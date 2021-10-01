@@ -10,6 +10,7 @@ import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
+import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
@@ -28,6 +29,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.subscribe.Subs
  * @since 1.0.0
  *
 */
+@Log4j2
 class ProjectOverviewView extends VerticalLayout{
 
     private final ProjectOverviewViewModel viewModel
@@ -87,7 +89,7 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.addSelectionListener({
             failedQCSamplesView.setVisible(false)
 
-            if(viewModel.selectedProject && viewModel.selectedProject.samplesQcFailed > 0){
+            if(viewModel.selectedProject && viewModel.selectedProject.samplesQc.failingSamples > 0){
                 detailsButton.setEnabled(true)
             }else{
                 detailsButton.setEnabled(false)
@@ -211,35 +213,40 @@ class ProjectOverviewView extends VerticalLayout{
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
                 MAX_CODE_COLUMN_WIDTH)
         projectGrid.addColumn({ it.title })
-                .setCaption("Project Title").setId("ProjectTitle")
+                .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({it.title})
+
         ValueProvider<ProjectSummary, RelativeCount> receivedProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesReceived, it.totalSampleCount )
+            new RelativeCount(it.samplesReceived.passingSamples, it.totalSampleCount )
         }
         projectGrid.addColumn(receivedProvider).setStyleGenerator({getStyleForColumn(it, receivedProvider)})
                 .setCaption("Samples Received").setId("SamplesReceived")
+
         ValueProvider<ProjectSummary, RelativeCount> failedQcProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesQcFailed, it.totalSampleCount )
+            new RelativeCount(it.samplesQc.passingSamples, it.totalSampleCount )
         }
         projectGrid.addColumn(failedQcProvider)
-                .setCaption("Samples Failed QC").setId("SamplesFailedQc").setStyleGenerator({getStyleForFailureColumn(it, failedQcProvider)})
+                .setCaption("Samples Passed QC").setId("SamplesPassedQc").setStyleGenerator({getStyleForFailureColumn(it, failedQcProvider)})
+
         ValueProvider<ProjectSummary, RelativeCount> libraryPrepProvider = {ProjectSummary it ->
-            new RelativeCount(it.samplesLibraryPrepFinished , it.totalSampleCount)
+            new RelativeCount(it.samplesLibraryPrepFinished.passingSamples , it.totalSampleCount)
         }
         projectGrid.addColumn(libraryPrepProvider)
                 .setCaption("Library Prep Finished").setId("LibraryPrepFinished").setStyleGenerator({getStyleForColumn(it, libraryPrepProvider)})
+
         ValueProvider<ProjectSummary, RelativeCount> dataAvailableProvider = { ProjectSummary it ->
-            new RelativeCount(it.sampleDataAvailable , it.totalSampleCount)
+            new RelativeCount(it.sampleDataAvailable.passingSamples , it.totalSampleCount)
         }
         projectGrid.addColumn(dataAvailableProvider).setStyleGenerator({getStyleForColumn(it, dataAvailableProvider)})
                 .setCaption("Data Available").setId("SampleDataAvailable")
+
         setupDataProvider()
         //specify size of grid and layout
         projectGrid.setWidthFull()
         projectGrid.getColumn("ProjectTitle")
-                .setMinimumWidth(200)
+                .setMaximumWidth(800)
         projectGrid.getColumn("SamplesReceived")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
-        projectGrid.getColumn("SamplesFailedQc")
+        projectGrid.getColumn("SamplesPassedQc")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.getColumn("LibraryPrepFinished")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
@@ -255,15 +262,21 @@ class ProjectOverviewView extends VerticalLayout{
 
 
     private void tryToDownloadManifest() {
+        Optional<ProjectSummary> selectedSummary = Optional.empty()
         try {
-            Optional.ofNullable(viewModel.selectedProject).filter({it.sampleDataAvailable > 0 }).ifPresent({
+            selectedSummary = Optional.ofNullable(viewModel.selectedProject)
+            selectedSummary.filter({it.sampleDataAvailable.passingSamples > 0 }).ifPresent({
                 String projectCode = it.getCode()
                 downloadProjectController.downloadProject(projectCode)
             })
         } catch (IllegalArgumentException illegalArgument) {
-            notificationService.publishFailure("Manifest Download failed due to: ${illegalArgument.getMessage()}")
-        } catch (Exception ignored) {
+            String projectCode = selectedSummary.map(ProjectSummary::getCode).orElse("No project selected")
+            notificationService.publishFailure("Manifest Download failed for project ${projectCode}. ${Constants.CONTACT_HELPDESK}")
+            log.error "Manifest Download failed due to: ${illegalArgument.getMessage()}"
+        } catch (Exception exception) {
             notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+            log.error "An error occured whily trying to download ${selectedSummary}"
+            log.error "Manifest Download failed due to: ${exception.getMessage()}"
         }
     }
 
