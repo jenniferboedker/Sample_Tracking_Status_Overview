@@ -6,8 +6,6 @@ import life.qbic.business.logging.Logging
 import life.qbic.business.project.Project
 import life.qbic.business.project.subscribe.Subscriber
 
-import java.util.function.Predicate
-
 /**
  * <b>Load projects</b>
  *
@@ -77,9 +75,7 @@ class LoadProjects implements LoadProjectsInput{
      * @param subscriber
      */
     private void loadSubscriptionInformationInto(Iterable<Project> projects, Subscriber subscriber) {
-        List<String> subscribedProjectCodes = subscribedProjectsDataSource.findSubscribedProjectCodesFor(
-                subscriber)
-        Predicate<Project> isSubscribed = (Project project) -> {subscribedProjectCodes.contains(project.code)}
-        projects.each {it.hasSubscription = isSubscribed.test(it)}
+        List<String> subscribedProjectCodes = subscribedProjectsDataSource.findSubscribedProjectCodesFor(subscriber)
+        projects.each {it.hasSubscription = subscribedProjectCodes.contains(it.code)}
     }
 }

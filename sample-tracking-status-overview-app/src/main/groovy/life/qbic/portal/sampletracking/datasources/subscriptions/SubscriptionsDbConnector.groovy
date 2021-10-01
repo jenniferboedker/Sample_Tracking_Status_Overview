@@ -144,7 +144,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
             PreparedStatement statement = connection.prepareStatement(query)
             statement.setInt(1, subscriberId)
             ResultSet resultSet = statement.executeQuery()
-            subscribedProjects = resultSet.collect {it.getString("project_code")}
+            subscribedProjects = resultSet.collect { it.getString("project_code") }
         }
         return subscribedProjects
     }
