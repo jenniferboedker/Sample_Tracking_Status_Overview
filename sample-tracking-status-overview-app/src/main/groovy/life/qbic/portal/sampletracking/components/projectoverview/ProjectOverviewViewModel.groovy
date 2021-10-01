@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
+
 import groovy.beans.Bindable
 import life.qbic.business.project.Project
 import life.qbic.business.project.subscribe.Subscriber

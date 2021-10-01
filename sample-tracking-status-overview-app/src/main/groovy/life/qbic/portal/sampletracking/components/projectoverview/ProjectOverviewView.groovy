@@ -143,10 +143,21 @@ class ProjectOverviewView extends VerticalLayout{
         subscriptionCheckBox.setVisible(false)
         enableWhenProjectIsSelected(subscriptionCheckBox)
         subscriptionCheckBox.setValue(false)
+        viewModel.addPropertyChangeListener("selectedProject", {
+            Optional.ofNullable(it.newValue as ProjectSummary).ifPresent({
+                subscriptionCheckBox.value = it.hasSubscription
+            })
+        })
         subscriptionCheckBox.addValueChangeListener(event -> {
-            //Only Subscribe if checkbox is checked
-            if (subscriptionCheckBox.value && viewModel.selectedProject) {
-                subscribeToProject(viewModel.selectedProject.code)
+            if (event.oldValue == event.value) {
+                return // just to be sure
+            }
+            ProjectSummary selectedProject = viewModel.selectedProject
+            if (event.value && selectedProject) {
+                if (event.oldValue == selectedProject.hasSubscription) {
+                    //there was a change in subscription status requested by the user
+                    subscribeToProject(viewModel.selectedProject.code)
+                }
             }
         })
         return subscriptionCheckBox

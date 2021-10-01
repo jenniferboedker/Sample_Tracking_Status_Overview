@@ -15,15 +15,17 @@ import life.qbic.business.project.Project
 class ProjectSummary {
     final String code
     final String title
+    boolean hasSubscription = false
     int totalSampleCount
     int samplesReceived
     int samplesQcFailed
     int sampleDataAvailable
     int samplesLibraryPrepFinished
 
-    ProjectSummary(String code, String title) {
+    ProjectSummary(String code, String title, boolean hasSubscription) {
         this.code = code
         this.title = title
+        this.hasSubscription = hasSubscription
         this.samplesReceived = 0
         this.samplesQcFailed = 0
         this.sampleDataAvailable = 0
@@ -32,9 +34,7 @@ class ProjectSummary {
     }
 
     static ProjectSummary of(Project project) {
-        String code = project.code
-        String title = project.title
-        return new ProjectSummary(code, title)
+        return new ProjectSummary(project.code, project.title, project.hasSubscription)
     }
 
     String getCode() {
