@@ -148,11 +148,11 @@ class ProjectOverviewView extends VerticalLayout{
                 subscriptionCheckBox.value = it.hasSubscription
             })
         })
-        subscriptionCheckBox.addValueChangeListener(event -> {
-            if (event.oldValue == event.value) {
+        subscriptionCheckBox.addValueChangeListener(checkBoxValueChange -> {
+            if (checkBoxValueChange.oldValue == checkBoxValueChange.value) {
                 return // just to be sure
             }
-            if (event.value) {
+            if (checkBoxValueChange.value) {
                 subscribeIfNotSubscribed(viewModel.selectedProject)
             }
         })
