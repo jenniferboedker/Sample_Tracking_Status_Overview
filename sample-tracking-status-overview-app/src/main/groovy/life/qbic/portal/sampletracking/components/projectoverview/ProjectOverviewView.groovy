@@ -268,7 +268,7 @@ class ProjectOverviewView extends VerticalLayout{
                 downloadProjectController.downloadProject(projectCode)
             })
         } catch (IllegalArgumentException illegalArgument) {
-            notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+            notificationService.publishFailure("Manifest Download failed for project ${viewModel.selectedProject.getCode()}. ${Constants.CONTACT_HELPDESK}")
             log.error "Manifest Download failed due to: ${illegalArgument.getMessage()}"
         } catch (Exception exception) {
             notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
