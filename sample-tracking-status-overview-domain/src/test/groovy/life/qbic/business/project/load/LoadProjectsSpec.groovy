@@ -22,6 +22,7 @@ class LoadProjectsSpec extends Specification {
         when:"the use case is run"
         loadProjects.loadProjects()
         then:"a successful message is send"
+        fetchedProject.lastChanged == expectedTimestamp
         1 * output.loadedProjects(_ as List<Project>)
         0 * output.failedExecution(_ as String)
     }
