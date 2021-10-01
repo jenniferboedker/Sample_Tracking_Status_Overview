@@ -262,8 +262,9 @@ class ProjectOverviewView extends VerticalLayout{
 
 
     private void tryToDownloadManifest() {
+        Optional<ProjectSummary> selectedSummary = Optional.empty()
         try {
-            Optional<ProjectSummary> selectedSummary = Optional.ofNullable(viewModel.selectedProject)
+            selectedSummary = Optional.ofNullable(viewModel.selectedProject)
             selectedSummary.filter({it.sampleDataAvailable.passingSamples > 0 }).ifPresent({
                 String projectCode = it.getCode()
                 downloadProjectController.downloadProject(projectCode)
@@ -273,6 +274,7 @@ class ProjectOverviewView extends VerticalLayout{
             log.error "Manifest Download failed due to: ${illegalArgument.getMessage()}"
         } catch (Exception exception) {
             notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+            log.error "An error occured whily trying to download ${selectedSummary}"
             log.error "Manifest Download failed due to: ${exception.getMessage()}"
         }
     }
