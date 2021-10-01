@@ -154,7 +154,7 @@ class ProjectOverviewView extends VerticalLayout{
             }
             ProjectSummary selectedProject = viewModel.selectedProject
             if (event.value && selectedProject) {
-                if (event.oldValue == selectedProject.hasSubscription) {
+                if (event.value != selectedProject.hasSubscription) {
                     //there was a change in subscription status requested by the user
                     subscribeToProject(viewModel.selectedProject.code)
                 }
