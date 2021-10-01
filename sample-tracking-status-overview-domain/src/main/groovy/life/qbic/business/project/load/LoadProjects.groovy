@@ -22,6 +22,17 @@ class LoadProjects implements LoadProjectsInput{
 
     /**
      * Default constructor for this use case
+     * @param dataSource the data source to be used
+     * @param output the output to where results are published
+     * @since 1.0.0
+     */
+    LoadProjects(LoadProjectsDataSource dataSource, LoadProjectsOutput output) {
+        this.dataSource = dataSource
+        this.output = output
+    }
+
+    /**
+     * Default constructor for this use case
      * @param subscribedProjectsDataSource the data source for subscription handling
      * @param dataSource the data source to be used
      * @param output the output to where results are published
@@ -75,6 +86,10 @@ class LoadProjects implements LoadProjectsInput{
      * @param subscriber
      */
     private void loadSubscriptionInformationInto(Iterable<Project> projects, Subscriber subscriber) {
+        if (! subscribedProjectsDataSource) {
+            String message = "Tried to load subscription information without data source."
+            throw new IllegalStateException(message)
+        }
         List<String> subscribedProjectCodes = subscribedProjectsDataSource.findSubscribedProjectCodesFor(subscriber)
         projects.each {it.hasSubscription = subscribedProjectCodes.contains(it.code)}
     }
