@@ -89,7 +89,7 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.addSelectionListener({
             failedQCSamplesView.setVisible(false)
 
-            if(viewModel.selectedProject && viewModel.selectedProject.samplesQcPassed.failingSamples > 0){
+            if(viewModel.selectedProject && viewModel.selectedProject.samplesQc.failingSamples > 0){
                 detailsButton.setEnabled(true)
             }else{
                 detailsButton.setEnabled(false)
@@ -213,7 +213,7 @@ class ProjectOverviewView extends VerticalLayout{
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
                 MAX_CODE_COLUMN_WIDTH)
         projectGrid.addColumn({ it.title })
-                .setCaption("Project Title").setId("ProjectTitle")
+                .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({it.title})
 
         ValueProvider<ProjectSummary, RelativeCount> receivedProvider = { ProjectSummary it ->
             new RelativeCount(it.samplesReceived.passingSamples, it.totalSampleCount )
@@ -222,7 +222,7 @@ class ProjectOverviewView extends VerticalLayout{
                 .setCaption("Samples Received").setId("SamplesReceived")
 
         ValueProvider<ProjectSummary, RelativeCount> failedQcProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesQcPassed.passingSamples, it.totalSampleCount )
+            new RelativeCount(it.samplesQc.passingSamples, it.totalSampleCount )
         }
         projectGrid.addColumn(failedQcProvider)
                 .setCaption("Samples Passed QC").setId("SamplesPassedQc").setStyleGenerator({getStyleForFailureColumn(it, failedQcProvider)})
@@ -243,7 +243,7 @@ class ProjectOverviewView extends VerticalLayout{
         //specify size of grid and layout
         projectGrid.setWidthFull()
         projectGrid.getColumn("ProjectTitle")
-                .setMinimumWidth(200)
+                .setMaximumWidth(800)
         projectGrid.getColumn("SamplesReceived")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.getColumn("SamplesPassedQc")

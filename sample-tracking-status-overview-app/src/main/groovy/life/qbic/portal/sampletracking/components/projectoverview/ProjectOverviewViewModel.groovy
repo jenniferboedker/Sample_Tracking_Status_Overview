@@ -41,6 +41,7 @@ class ProjectOverviewViewModel {
         statusCountService.iterator().each { StatusCount statusCount ->
             updateSamplesReceived(statusCount)
             updateSamplesFailedQc(statusCount)
+
             updateSamplesLibraryPrepFinished(statusCount)
             updateDataAvailable(statusCount)
         }
@@ -51,6 +52,7 @@ class ProjectOverviewViewModel {
         this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
 
         this.statusCountService.subscribe({ updateSamplesReceived(it) }, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
+        this.statusCountService.subscribe({ updateSamplesPassedQc(it) }, Topic.SAMPLE_PASSED_QC_COUNT_UPDATE)
         this.statusCountService.subscribe({ updateSamplesFailedQc(it) }, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
         this.statusCountService.subscribe({ updateDataAvailable(it) }, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
         this.statusCountService.subscribe({ updateSamplesLibraryPrepFinished(it) }, Topic.SAMPLE_LIBRARY_PREP_FINISHED)
@@ -81,9 +83,16 @@ class ProjectOverviewViewModel {
         summary.totalSampleCount = totalSampleCount
     }
 
+    private void updateSamplesPassedQc(StatusCount statusCount) {
+        ProjectSummary summary = getProjectSummary(statusCount.projectCode)
+        summary.samplesQc.passingSamples = statusCount.count
+        int totalSampleCount = statusCount.totalSampleCount
+        summary.totalSampleCount = totalSampleCount
+    }
+
     private void updateSamplesFailedQc(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.samplesQcPassed.failingSamples = statusCount.count
+        summary.samplesQc.failingSamples = statusCount.count
         int totalSampleCount = statusCount.totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
