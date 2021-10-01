@@ -2,10 +2,7 @@ package life.qbic.portal.sampletracking
 
 import com.vaadin.ui.VerticalLayout
 import life.qbic.business.project.Project
-import life.qbic.business.project.load.LoadProjects
-import life.qbic.business.project.load.LoadProjectsDataSource
-import life.qbic.business.project.load.LoadProjectsInput
-import life.qbic.business.project.load.LoadProjectsOutput
+import life.qbic.business.project.load.*
 import life.qbic.business.project.subscribe.SubscribeProject
 import life.qbic.business.project.subscribe.SubscribeProjectOutput
 import life.qbic.business.project.subscribe.Subscriber
@@ -66,13 +63,16 @@ class DependencyManager {
     private GetSamplesInfoDataSource getSamplesInfoDataSource
     private DownloadSamplesDataSource downloadSamplesDataSource
     private SubscriptionDataSource subscriptionDataSource
+    private SubscribedProjectsDataSource subscribedProjectsDataSource
 
     private ResourceService<Project> projectResourceService
     private ResourceService<StatusCount> statusCountService
     private NotificationService notificationService
+    private Subscriber subscriptionUser
 
     DependencyManager(PortalUser user) {
         portalUser = user
+        subscriptionUser = subscriberFor(portalUser)
         // Load the app environment configuration
         configurationManager = ConfigurationManagerFactory.getInstance()
 
@@ -82,6 +82,12 @@ class DependencyManager {
         populateProjectService()
         portletView = setupPortletView()
         populateStatusCountService()
+    }
+
+    private static Subscriber subscriberFor(PortalUser portalUser) {
+        return new Subscriber(portalUser.firstName,
+                portalUser.lastName,
+                portalUser.emailAddress)
     }
 
 
@@ -114,9 +120,12 @@ class DependencyManager {
         )
         OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
         loadProjectsDataSource = openBisConnector
-
-        subscriptionDataSource = new SubscriptionsDbConnector(DatabaseSession.getInstance())
         getSamplesInfoDataSource = openBisConnector
+
+
+        SubscriptionsDbConnector subscriptionsDbConnector = new SubscriptionsDbConnector(DatabaseSession.getInstance())
+        subscriptionDataSource = subscriptionsDbConnector
+        subscribedProjectsDataSource = subscriptionsDbConnector
     }
 
     /**
@@ -141,8 +150,8 @@ class DependencyManager {
      * @return a new ProjectOverviewView
      */
     private ProjectOverviewView createProjectOverviewView() {
-        Subscriber currentUser = new Subscriber(portalUser.firstName, portalUser.lastName, portalUser.emailAddress)
-        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService, currentUser)
+        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService,
+                this.subscriptionUser)
         SubscribeProjectController subscribeProjectController = setupSubscribeProjectUseCase()
         DownloadProjectController downloadController = setupDownloadProjectUseCase(viewModel)
 
@@ -177,8 +186,8 @@ class DependencyManager {
      */
     private void populateProjectService() {
         LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService, notificationService)
-        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output)
-        loadProjects.loadProjects()
+        LoadProjectsInput loadProjects = new LoadProjects(subscribedProjectsDataSource, loadProjectsDataSource, output)
+        loadProjects.loadUserProjectsWithSubscriptionsFor(subscriptionUser)
     }
 
     /**
