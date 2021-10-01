@@ -36,9 +36,7 @@ class LoadProjects implements LoadProjectsInput {
     void loadProjects() {
         try {
             List projects = loadProjectsDataSource.fetchUserProjects()
-            for(Project project : projects) {
-              project.lastChanged = loadLastChangeDataSource.getLatestChange(project.code)
-            }
+            projects.each { it.lastChanged = loadLastChangeDataSource.getLatestChange(it.code) }
             output.loadedProjects(projects)
         } catch (DataSourceException dataSourceException) {
             output.failedExecution(dataSourceException.getMessage())
