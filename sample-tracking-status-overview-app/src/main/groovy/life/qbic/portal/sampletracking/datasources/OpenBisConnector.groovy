@@ -9,10 +9,10 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.search.SampleSearchCriter
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils
 import groovy.util.logging.Log4j2
 import life.qbic.business.DataSourceException
+import life.qbic.business.project.Project
 import life.qbic.business.project.load.LoadProjectsDataSource
 import life.qbic.business.samples.info.GetSamplesInfoDataSource
 import life.qbic.datamodel.dtos.portal.PortalUser
-import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.datamodel.dtos.projectmanagement.ProjectCode
 import life.qbic.datamodel.dtos.projectmanagement.ProjectIdentifier
 import life.qbic.datamodel.dtos.projectmanagement.ProjectSpace
@@ -48,11 +48,11 @@ class OpenBisConnector implements LoadProjectsDataSource, GetSamplesInfoDataSour
           SampleFetchOptions fetchOptions = new SampleFetchOptions()
           fetchOptions.withProperties()
           
-          SampleSearchCriteria searchCriteria = new SampleSearchCriteria();
-          searchCriteria.withOrOperator();
+          SampleSearchCriteria searchCriteria = new SampleSearchCriteria()
+          searchCriteria.withOrOperator()
           
           for (def code : sampleCodes) {
-            searchCriteria.withCode().thatEquals(code);
+            searchCriteria.withCode().thatEquals(code)
           }
           
           SearchResult<ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample> samples =
@@ -72,14 +72,26 @@ class OpenBisConnector implements LoadProjectsDataSource, GetSamplesInfoDataSour
       }
       return codesToNames
     }
-    
 
+
+    /**
+     * Maps `life.qbic.datamodel.dtos.projectmanagement.Project` to `Project`
+     * @param project
+     * @return a project for the given input arguments
+     */
+    private static final Project getProjectFrom(life.qbic.datamodel.dtos.projectmanagement.Project project) {
+        return Optional.of(project).map({
+            new Project(it.projectId.projectCode.toString(), it.projectTitle)
+        }).orElseThrow({
+            new IllegalArgumentException("Invalid project provided: $project")
+        })
+    }
     /**
      * @inheritDocs
      */
     @Override
     List<Project> fetchUserProjects() {
-        def userProjects = []
+        List<Project> userProjects = []
         try {
             ProjectFetchOptions fetchOptions = new ProjectFetchOptions()
             fetchOptions.withSpace()
@@ -89,10 +101,11 @@ class OpenBisConnector implements LoadProjectsDataSource, GetSamplesInfoDataSour
                 try {
                     def projectCode = new ProjectCode(project.code)
                     def projectSpace = new ProjectSpace(project.space.code)
-                    Project projectOverview = new Project.Builder(new ProjectIdentifier(projectSpace,
-                            projectCode),
+                    life.qbic.datamodel.dtos.projectmanagement.Project projectOverview = new life.qbic.datamodel.dtos.projectmanagement.Project.Builder(
+                            new ProjectIdentifier(projectSpace,
+                                    projectCode),
                             project.description ?: "").build()
-                    userProjects << projectOverview
+                    userProjects << getProjectFrom(projectOverview)
                 } catch (IllegalArgumentException e) {
                     // Mal-formatted project codes or spaces
                     log.error(e.message)

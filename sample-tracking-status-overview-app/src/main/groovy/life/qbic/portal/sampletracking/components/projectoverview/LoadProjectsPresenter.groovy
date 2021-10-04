@@ -1,7 +1,7 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
+import life.qbic.business.project.Project
 import life.qbic.business.project.load.LoadProjectsOutput
-import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.resource.ResourceService
 
