@@ -105,7 +105,6 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
     @Override
     Instant getLatestChange(String projectCode) throws DataSourceException {
       Connection connection = connectionProvider.connect()
-      List<Status> statuses = new ArrayList<>()
       String latestChangeQuery = "select MAX(UNIX_TIMESTAMP(arrival_time)) from samples_locations where sample_id LIKE ?"
       String sqlRegex = "${projectCode}%"
       Timestamp latest = new Timestamp(0)
