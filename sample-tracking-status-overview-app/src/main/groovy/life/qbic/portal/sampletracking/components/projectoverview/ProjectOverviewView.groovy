@@ -1,6 +1,5 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
-import com.vaadin.data.ValueProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
@@ -16,7 +15,7 @@ import life.qbic.portal.sampletracking.communication.notification.NotificationSe
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
-import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.RelativeCount
+import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 
@@ -194,8 +193,8 @@ class ProjectOverviewView extends VerticalLayout{
         viewModel.generatedManifest = null
     }
 
-    private static String getStyleForColumn(ProjectSummary projectSummary, SampleCount sampleStatusCount) {
-        State state = determineCompleteness(projectSummary.totalSampleCount, sampleStatusCount.failingSamples, sampleStatusCount.passingSamples)
+    private static String getStyleForColumn(SampleCount sampleStatusCount) {
+        State state = determineCompleteness(sampleStatusCount)
         return state.getCssClass()
     }
 
@@ -208,28 +207,16 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.addColumn({ it.title })
                 .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ProjectSummary project -> project.title})
 
-        ValueProvider<ProjectSummary, RelativeCount> receivedProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesReceived.passingSamples, it.totalSampleCount )
-        }
-        projectGrid.addColumn(receivedProvider).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project, project.samplesReceived)})
+        projectGrid.addColumn({it.samplesReceived}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesReceived)})
                 .setCaption("Samples Received").setId("SamplesReceived")
 
-        ValueProvider<ProjectSummary, RelativeCount> failedQcProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesQc.passingSamples, it.totalSampleCount )
-        }
-        projectGrid.addColumn(failedQcProvider).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project, project.samplesQc)})
+        projectGrid.addColumn({it.samplesQc}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesQc)})
                 .setCaption("Samples Passed QC").setId("SamplesPassedQc")
 
-        ValueProvider<ProjectSummary, RelativeCount> libraryPrepProvider = {ProjectSummary it ->
-            new RelativeCount(it.samplesLibraryPrepFinished.passingSamples , it.totalSampleCount)
-        }
-        projectGrid.addColumn(libraryPrepProvider).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project, project.samplesLibraryPrepFinished)})
+        projectGrid.addColumn({it.samplesLibraryPrepFinished}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesLibraryPrepFinished)})
                 .setCaption("Library Prep Finished").setId("LibraryPrepFinished")
 
-        ValueProvider<ProjectSummary, RelativeCount> dataAvailableProvider = { ProjectSummary it ->
-            new RelativeCount(it.sampleDataAvailable.passingSamples , it.totalSampleCount)
-        }
-        projectGrid.addColumn(dataAvailableProvider).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project, project.sampleDataAvailable)})
+        projectGrid.addColumn({it.sampleDataAvailable}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.sampleDataAvailable)})
                 .setCaption("Data Available").setId("SampleDataAvailable")
 
         setupDataProvider()
@@ -306,23 +293,21 @@ class ProjectOverviewView extends VerticalLayout{
 
     /**
      * Determines the state of the current status. Is it in progress or did it complete already
-     * @param totalCount The total number of samples registered
-     * @param failingSamples The number of failing samples
-     * @param passingSamples The number of passing samples
+     * @param sampleCount The total number of samples registered
      */
-    private static State determineCompleteness(int totalCount, int failingSamples, int passingSamples) {
-        if (failingSamples > 0){
+    private static State determineCompleteness(SampleCount sampleCount) {
+        if (sampleCount.failingSamples > 0){
             return State.FAILED
         }
-        else if (passingSamples == totalCount) {
+        else if (sampleCount.passingSamples == sampleCount.totalSampleCount) {
             return State.COMPLETED
         }
-        else if (passingSamples < totalCount) {
+        else if (sampleCount.passingSamples < sampleCount.totalSampleCount) {
             return State.IN_PROGRESS
         }
         else {
             //unexpected!!
-            throw new IllegalStateException("status count $passingSamples must not be greater total count $totalCount")
+            throw new IllegalStateException("status count $sampleCount.passingSamples must not be greater total count $sampleCount.totalSampleCount")
         }
     }
 }

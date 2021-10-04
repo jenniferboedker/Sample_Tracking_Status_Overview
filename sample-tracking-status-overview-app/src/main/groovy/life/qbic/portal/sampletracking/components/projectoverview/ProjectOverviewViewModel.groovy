@@ -72,35 +72,45 @@ class ProjectOverviewViewModel {
     private void updateSamplesReceived(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
         summary.samplesReceived.passingSamples = statusCount.count
+
         int totalSampleCount = statusCount.totalSampleCount
+        summary.samplesReceived.totalSampleCount = totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
 
     private void updateDataAvailable(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
         summary.sampleDataAvailable.passingSamples = statusCount.count
+
         int totalSampleCount = statusCount.totalSampleCount
+        summary.sampleDataAvailable.totalSampleCount = totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
 
     private void updateSamplesPassedQc(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
         summary.samplesQc.passingSamples = statusCount.count
+
         int totalSampleCount = statusCount.totalSampleCount
+        summary.samplesQc.totalSampleCount = totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
 
     private void updateSamplesFailedQc(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
         summary.samplesQc.failingSamples = statusCount.count
+
         int totalSampleCount = statusCount.totalSampleCount
+        summary.samplesQc.totalSampleCount = totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
 
     private void updateSamplesLibraryPrepFinished(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
         summary.samplesLibraryPrepFinished.passingSamples = statusCount.count
+
         int totalSampleCount = statusCount.totalSampleCount
+        summary.samplesLibraryPrepFinished.totalSampleCount = totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
 
