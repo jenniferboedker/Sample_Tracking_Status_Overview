@@ -123,7 +123,7 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
               }
           }
       }
-      return latest
+      return latest.toInstant()
     }
 
     private class Query {
