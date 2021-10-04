@@ -223,13 +223,13 @@ class ProjectOverviewView extends VerticalLayout{
         ValueProvider<ProjectSummary, RelativeCount> libraryPrepProvider = {ProjectSummary it ->
             new RelativeCount(it.samplesLibraryPrepFinished.passingSamples , it.totalSampleCount)
         }
-        projectGrid.addColumn(libraryPrepProvider).setStyleGenerator({ProjectSummary project ->getStyleForColumn(project, project.samplesLibraryPrepFinished)})
+        projectGrid.addColumn(libraryPrepProvider).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project, project.samplesLibraryPrepFinished)})
                 .setCaption("Library Prep Finished").setId("LibraryPrepFinished")
 
         ValueProvider<ProjectSummary, RelativeCount> dataAvailableProvider = { ProjectSummary it ->
             new RelativeCount(it.sampleDataAvailable.passingSamples , it.totalSampleCount)
         }
-        projectGrid.addColumn(dataAvailableProvider).setStyleGenerator({ProjectSummary project ->getStyleForColumn(project, project.sampleDataAvailable)})
+        projectGrid.addColumn(dataAvailableProvider).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project, project.sampleDataAvailable)})
                 .setCaption("Data Available").setId("SampleDataAvailable")
 
         setupDataProvider()
