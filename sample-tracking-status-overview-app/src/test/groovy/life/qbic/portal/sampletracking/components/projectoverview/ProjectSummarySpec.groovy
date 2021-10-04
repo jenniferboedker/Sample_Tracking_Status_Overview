@@ -22,15 +22,16 @@ class ProjectSummarySpec extends Specification {
         middle.lastChanged = new Timestamp(30000009).toInstant()
         ProjectSummary now = new ProjectSummary("QNOWY", "created just now")
         now.lastChanged = Instant.now()
-        List<ProjectSummary> summaries = [now, oldest, middle]
         
+        ObservableList projectOverviews = new ObservableList([now, oldest, middle])
+                
         when: "we sort ascendingly"
-        Collections.sort(summaries, new LastChangedComparator(SortOrder.ASCENDING))
+        Collections.sort(projectOverviews, new LastChangedComparator(SortOrder.ASCENDING))
 
         then: "the order is as expected"
-        summaries.get(0).title == "the ancient one"
-        summaries.get(1).title == "a time in between"
-        summaries.get(2).title == "created just now"
+        projectOverviews.get(0).title == "the ancient one"
+        projectOverviews.get(1).title == "a time in between"
+        projectOverviews.get(2).title == "created just now"
     }
     
     
@@ -41,14 +42,15 @@ class ProjectSummarySpec extends Specification {
         middle.lastChanged = new Timestamp(30000009).toInstant()
         ProjectSummary now = new ProjectSummary("QNOWY", "created just now")
         now.lastChanged = Instant.now()
-        List<ProjectSummary> summaries = [oldest, now, middle]
+
+        ObservableList projectOverviews = new ObservableList([now, oldest, middle])
         
         when: "we sort ascendingly"
-        Collections.sort(summaries, new LastChangedComparator(SortOrder.DESCENDING))
+        Collections.sort(projectOverviews, new LastChangedComparator(SortOrder.DESCENDING))
 
         then: "the order is as expected"
-        summaries.get(2).title == "the ancient one"
-        summaries.get(1).title == "a time in between"
-        summaries.get(0).title == "created just now"
+        projectOverviews.get(2).title == "the ancient one"
+        projectOverviews.get(1).title == "a time in between"
+        projectOverviews.get(0).title == "created just now"
     }
 }
