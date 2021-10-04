@@ -63,7 +63,7 @@ class DependencyManager {
     private final NotificationHandler notificationHandler
 
     private LoadProjectsDataSource loadProjectsDataSource
-    private LastChangedDateDataSource lastChangedDataSource
+    private LastChangedDateDataSource lastChangedDateDataSource
     private CountSamplesDataSource countSamplesDataSource
     private GetSamplesInfoDataSource getSamplesInfoDataSource
     private DownloadSamplesDataSource downloadSamplesDataSource

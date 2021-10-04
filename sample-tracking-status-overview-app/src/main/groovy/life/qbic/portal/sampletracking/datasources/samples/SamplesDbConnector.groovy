@@ -114,13 +114,13 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
           preparedStatement.setString(1, sqlRegex)
           ResultSet resultSet = preparedStatement.executeQuery()
           while (resultSet.next()) {
+            long arrivalTime = resultSet.getLong(1)
               try {
-                long arrivalTime = resultSet.getLong(1)
                 latest = new Timestamp(arrivalTime)
               } catch(Exception e) {
-                  // The status in the database is invalid. This should never be the case!
-                  log.error("Could not get arrival time $arrivalTime", e)
-                  throw new DataSourceException("Retrieval of latest change failed for project $projectCode")
+                // The status in the database is invalid. This should never be the case!
+                log.error("Could not parse arrival time $arrivalTime", e)
+                throw new DataSourceException("Retrieval of latest change failed for project $projectCode")
               }
           }
       }
