@@ -31,7 +31,7 @@ class ProjectSummary {
         this.sampleDataAvailable = 0
         this.samplesLibraryPrepFinished = 0
         this.totalSampleCount = 0
-        this.lastChanged = new Timestamp(0) //initialized with earliest value possible
+        this.lastChanged = Instant.MIN
     }
 
     static ProjectSummary of(Project project) {
