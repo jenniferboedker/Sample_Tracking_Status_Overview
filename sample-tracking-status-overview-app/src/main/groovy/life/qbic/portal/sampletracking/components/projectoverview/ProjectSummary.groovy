@@ -45,3 +45,25 @@ class ProjectSummary {
         return title
     }
 }
+
+/**
+ * Compares ProjectSummaries by the last change time as denoted by the Timestamp
+ *
+ * @since 1.0.0
+ *
+ */
+class LastChangedComparator implements Comparator<ProjectSummary> {
+  
+  private static final LastChangedComparator instance = new LastChangedComparator()
+
+  public static LastChangedComparator getInstance() {
+    return instance
+  }
+
+  private LastChangedComparator() {}
+
+  @Override
+  public int compare(ProjectSummary o1, ProjectSummary o2) {
+    return o1.lastChanged.compareTo(o2.lastChanged);
+  }
+}
