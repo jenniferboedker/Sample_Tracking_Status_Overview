@@ -41,6 +41,7 @@ class ProjectOverviewViewModel {
         statusCountService.iterator().each { StatusCount statusCount ->
             updateSamplesReceived(statusCount)
             updateSamplesFailedQc(statusCount)
+
             updateSamplesLibraryPrepFinished(statusCount)
             updateDataAvailable(statusCount)
         }
@@ -51,6 +52,7 @@ class ProjectOverviewViewModel {
         this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
 
         this.statusCountService.subscribe({ updateSamplesReceived(it) }, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
+        this.statusCountService.subscribe({ updateSamplesPassedQc(it) }, Topic.SAMPLE_PASSED_QC_COUNT_UPDATE)
         this.statusCountService.subscribe({ updateSamplesFailedQc(it) }, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
         this.statusCountService.subscribe({ updateDataAvailable(it) }, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
         this.statusCountService.subscribe({ updateSamplesLibraryPrepFinished(it) }, Topic.SAMPLE_LIBRARY_PREP_FINISHED)
@@ -68,32 +70,48 @@ class ProjectOverviewViewModel {
         projectOverviews.remove(projectOverview)
     }
 
-
     private void updateSamplesReceived(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.samplesReceived = statusCount.count
+        summary.samplesReceived.passingSamples = statusCount.count
+
         int totalSampleCount = statusCount.totalSampleCount
+        summary.samplesReceived.totalSampleCount = totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
 
     private void updateDataAvailable(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.sampleDataAvailable = statusCount.count
+        summary.sampleDataAvailable.passingSamples = statusCount.count
+
         int totalSampleCount = statusCount.totalSampleCount
+        summary.sampleDataAvailable.totalSampleCount = totalSampleCount
+        summary.totalSampleCount = totalSampleCount
+    }
+
+    private void updateSamplesPassedQc(StatusCount statusCount) {
+        ProjectSummary summary = getProjectSummary(statusCount.projectCode)
+        summary.samplesQc.passingSamples = statusCount.count
+
+        int totalSampleCount = statusCount.totalSampleCount
+        summary.samplesQc.totalSampleCount = totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
 
     private void updateSamplesFailedQc(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.samplesQcFailed = statusCount.count
+        summary.samplesQc.failingSamples = statusCount.count
+
         int totalSampleCount = statusCount.totalSampleCount
+        summary.samplesQc.totalSampleCount = totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
 
     private void updateSamplesLibraryPrepFinished(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.samplesLibraryPrepFinished = statusCount.count
+        summary.samplesLibraryPrepFinished.passingSamples = statusCount.count
+
         int totalSampleCount = statusCount.totalSampleCount
+        summary.samplesLibraryPrepFinished.totalSampleCount = totalSampleCount
         summary.totalSampleCount = totalSampleCount
     }
 

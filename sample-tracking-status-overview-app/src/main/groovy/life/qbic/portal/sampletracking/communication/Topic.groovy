@@ -13,6 +13,7 @@ enum Topic {
     NOTIFICATION_SUCCESS("Success notification"),
     NOTIFICATION_INFO("Information notification"),
     SAMPLE_RECEIVED_COUNT_UPDATE("The count of received samples was updated"),
+    SAMPLE_PASSED_QC_COUNT_UPDATE("The count of samples passing QC was updated"),
     SAMPLE_FAILED_QC_COUNT_UPDATE("The count of samples failing QC was updated"),
     SAMPLE_DATA_AVAILABLE_COUNT_UPDATE("The count of available samples data was updated"),
     SAMPLE_LIBRARY_PREP_FINISHED("The count of samples with finished library prep was updated")
