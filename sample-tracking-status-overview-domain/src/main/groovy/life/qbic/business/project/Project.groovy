@@ -1,5 +1,7 @@
 package life.qbic.business.project
 
+import java.time.Instant
+
 /**
  * <b>Represents a QBiC project</b>
  *
@@ -10,6 +12,7 @@ package life.qbic.business.project
 class Project {
     final String code
     final String title
+    Instant lastChanged
 
     Project(String code, String title) {
         this.code = code

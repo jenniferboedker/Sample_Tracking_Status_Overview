@@ -1,6 +1,7 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import groovy.transform.EqualsAndHashCode
+import java.time.Instant
 import life.qbic.business.project.Project
 
 /**
@@ -20,6 +21,7 @@ class ProjectSummary {
     int samplesQcFailed
     int sampleDataAvailable
     int samplesLibraryPrepFinished
+    Instant lastChanged
 
     ProjectSummary(String code, String title) {
         this.code = code
@@ -29,6 +31,7 @@ class ProjectSummary {
         this.sampleDataAvailable = 0
         this.samplesLibraryPrepFinished = 0
         this.totalSampleCount = 0
+        this.lastChanged = Instant.MIN
     }
 
     static ProjectSummary of(Project project) {
