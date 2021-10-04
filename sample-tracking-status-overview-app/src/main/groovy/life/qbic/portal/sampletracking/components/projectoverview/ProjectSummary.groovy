@@ -1,7 +1,7 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import groovy.transform.EqualsAndHashCode
-import java.sql.Timestamp
+import java.time.Instant
 import life.qbic.business.project.Project
 
 /**
@@ -21,7 +21,7 @@ class ProjectSummary {
     int samplesQcFailed
     int sampleDataAvailable
     int samplesLibraryPrepFinished
-    Intstant lastChanged
+    Instant lastChanged
 
     ProjectSummary(String code, String title) {
         this.code = code

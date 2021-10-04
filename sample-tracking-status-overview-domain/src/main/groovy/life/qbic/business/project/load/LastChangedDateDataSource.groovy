@@ -2,7 +2,7 @@ package life.qbic.business.project.load
 
 import life.qbic.business.DataSourceException
 import life.qbic.datamodel.dtos.projectmanagement.Project
-import java.sql.Timestamp
+import java.time.Instant
 
 
 /**

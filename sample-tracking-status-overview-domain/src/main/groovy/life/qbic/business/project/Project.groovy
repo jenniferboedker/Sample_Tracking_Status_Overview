@@ -1,6 +1,6 @@
 package life.qbic.business.project
 
-import java.sql.Timestamp
+import java.time.Instant
 
 /**
  * <b>Represents a QBiC project</b>

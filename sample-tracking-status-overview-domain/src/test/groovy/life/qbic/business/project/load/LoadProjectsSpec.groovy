@@ -3,7 +3,6 @@ package life.qbic.business.project.load
 import life.qbic.business.DataSourceException
 import life.qbic.business.project.Project
 import spock.lang.Specification
-import java.sql.Timestamp
 import java.time.Instant
 
 /**
@@ -19,7 +18,7 @@ class LoadProjectsSpec extends Specification {
         LoadProjectsDataSource dataSource = Stub()
         LastChangedDateDataSource changeDataSource = Stub()
         Project fetchedProject = new Project("QABCD", "AwesomeProject")
-        Timestamp expectedTimestamp = Timestamp.from(Instant.now())
+        Instant expectedTimestamp = Instant.now()
         dataSource.fetchUserProjects() >> [fetchedProject]
         changeDataSource.getLatestChange(fetchedProject.code) >> expectedTimestamp
         LoadProjectsOutput output = Mock()

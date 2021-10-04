@@ -13,6 +13,7 @@ import java.sql.PreparedStatement
 import java.sql.Statement
 import java.sql.Timestamp
 import java.sql.ResultSet
+import java.time.Instant
 
 /**
  * <b>Database connector to the sample tracking database</b>
@@ -102,7 +103,7 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
      * @since 1.0.0
      */
     @Override
-    Timestamp getLatestChange(String projectCode) throws DataSourceException {
+    Instant getLatestChange(String projectCode) throws DataSourceException {
       Connection connection = connectionProvider.connect()
       List<Status> statuses = new ArrayList<>()
       String latestChangeQuery = "select MAX(UNIX_TIMESTAMP(arrival_time)) from samples_locations where sample_id LIKE ?"
