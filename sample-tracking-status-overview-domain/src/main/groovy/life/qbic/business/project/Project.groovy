@@ -12,7 +12,7 @@ import java.sql.Timestamp
 class Project {
     final String code
     final String title
-    Timestamp lastChanged
+    Instant lastChanged
 
     Project(String code, String title) {
         this.code = code
