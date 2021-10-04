@@ -205,7 +205,6 @@ class ProjectOverviewView extends VerticalLayout{
         return state.getCssClass()
     }
 
-
     private void fillProjectsGrid() {
         projectGrid.addColumn({ it.code })
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
