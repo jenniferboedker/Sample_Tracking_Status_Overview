@@ -21,7 +21,7 @@ class ProjectSummary {
     int samplesQcFailed
     int sampleDataAvailable
     int samplesLibraryPrepFinished
-    Timestamp lastChanged
+    Intstant lastChanged
 
     ProjectSummary(String code, String title) {
         this.code = code
