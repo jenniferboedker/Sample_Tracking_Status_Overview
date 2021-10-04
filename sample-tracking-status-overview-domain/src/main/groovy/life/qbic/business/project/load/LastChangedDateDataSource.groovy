@@ -21,5 +21,5 @@ interface LastChangedDateDataSource {
      * @since 1.0.0
      * @throws DataSourceException in case of a technical error with the data source
      */
-    Timestamp getLatestChange(String projectCode) throws DataSourceException
+    Instant getLatestChange(String projectCode) throws DataSourceException
 }
