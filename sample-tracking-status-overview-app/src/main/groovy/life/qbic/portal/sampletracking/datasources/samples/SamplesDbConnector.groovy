@@ -11,7 +11,6 @@ import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Statement
-import java.sql.Timestamp
 import java.sql.ResultSet
 import java.time.Instant
 
@@ -107,23 +106,25 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
       Connection connection = connectionProvider.connect()
       String latestChangeQuery = "select MAX(UNIX_TIMESTAMP(arrival_time)) from samples_locations where sample_id LIKE ?"
       String sqlRegex = "${projectCode}%"
-      Timestamp latest = new Timestamp(0)
+      Instant latest = Instant.MIN
       connection.withCloseable {
           PreparedStatement preparedStatement = it.prepareStatement(latestChangeQuery)
           preparedStatement.setString(1, sqlRegex)
           ResultSet resultSet = preparedStatement.executeQuery()
           while (resultSet.next()) {
             long arrivalTime = resultSet.getLong(1)
+            if(arrivalTime > 0) {
               try {
-                latest = new Timestamp(arrivalTime)
+                latest = Instant.ofEpochSecond(arrivalTime)
               } catch(Exception e) {
                 // The status in the database is invalid. This should never be the case!
                 log.error("Could not parse arrival time $arrivalTime", e)
                 throw new DataSourceException("Retrieval of latest change failed for project $projectCode")
               }
+            }
           }
       }
-      return latest.toInstant()
+      return latest
     }
 
     private class Query {
