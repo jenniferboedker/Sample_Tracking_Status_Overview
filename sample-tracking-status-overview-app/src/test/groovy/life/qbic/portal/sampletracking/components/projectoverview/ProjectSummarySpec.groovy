@@ -34,7 +34,6 @@ class ProjectSummarySpec extends Specification {
         projectOverviews.get(2).title == "created just now"
     }
     
-    
     def "summaries can be sorted descending using the timestamp comparison"() {
         given: "A list of ProjectSummary items"
         ProjectSummary oldest = new ProjectSummary("QOLDY", "the ancient one") //oldest time is set in constructor

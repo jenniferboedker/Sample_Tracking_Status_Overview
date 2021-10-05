@@ -43,7 +43,7 @@ class ProjectOverviewViewModel {
             addProject(project)
         }
         Collections.sort(projectOverviews, new LastChangedComparator(SortOrder.DESCENDING))
-        
+
         statusCountService.iterator().each { StatusCount statusCount ->
             updateSamplesReceived(statusCount)
             updateSamplesFailedQc(statusCount)

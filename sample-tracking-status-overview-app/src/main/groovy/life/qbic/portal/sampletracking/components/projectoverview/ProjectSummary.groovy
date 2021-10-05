@@ -37,7 +37,9 @@ class ProjectSummary {
     static ProjectSummary of(Project project) {
         String code = project.code
         String title = project.title
-        return new ProjectSummary(code, title)
+        ProjectSummary summary = new ProjectSummary(code, title)
+        summary.lastChanged = project.lastChanged
+        return summary
     }
 
     String getCode() {
