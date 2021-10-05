@@ -1,11 +1,15 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import groovy.beans.Bindable
+import java.util.Collections
+
 import life.qbic.business.project.Project
 import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.status.StatusCount
+import life.qbic.portal.sampletracking.components.projectoverview.LastChangedComparator
+import life.qbic.portal.sampletracking.components.projectoverview.LastChangedComparator.SortOrder
 
 /**
  * <h1>ViewModel for the {@link ProjectOverviewView}</h1>
@@ -38,6 +42,8 @@ class ProjectOverviewViewModel {
         projectResourceService.iterator().each { Project project ->
             addProject(project)
         }
+        Collections.sort(projectOverviews, new LastChangedComparator(SortOrder.DESCENDING))
+
         statusCountService.iterator().each { StatusCount statusCount ->
             updateSamplesReceived(statusCount)
             updateSamplesFailedQc(statusCount)
