@@ -4,6 +4,19 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
+0.7.0-SNAPSHOT (2021-10-05)
+
+**Added**
+
+* Removes sorting from project grid
+* Projects are now sorted by the last change as found in the sample tracking database  (`#114 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/114>`_)
+
+**Fixed**
+
+**Dependencies**
+
+**Deprecated**
+
 
 0.6.0-SNAPSHOT (2021-09-30)
 ---------------------------
