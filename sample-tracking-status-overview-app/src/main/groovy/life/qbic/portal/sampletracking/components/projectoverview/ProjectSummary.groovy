@@ -3,7 +3,6 @@ package life.qbic.portal.sampletracking.components.projectoverview
 import groovy.transform.EqualsAndHashCode
 import java.time.Instant
 import life.qbic.business.project.Project
-import java.util.Comparator
 
 /**
  * <b>Project Summary POJO</b>
