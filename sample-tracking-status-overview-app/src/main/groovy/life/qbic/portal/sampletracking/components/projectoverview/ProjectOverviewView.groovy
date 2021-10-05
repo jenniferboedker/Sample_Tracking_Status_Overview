@@ -1,6 +1,5 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
-import com.vaadin.data.ValueProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
@@ -11,12 +10,13 @@ import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.themes.ValoTheme
+import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
-import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.RelativeCount
+import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 
@@ -29,6 +29,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.subscribe.Subs
  * @since 1.0.0
  *
 */
+@Log4j2
 class ProjectOverviewView extends VerticalLayout{
 
     private final ProjectOverviewViewModel viewModel
@@ -88,7 +89,7 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.addSelectionListener({
             failedQCSamplesView.setVisible(false)
 
-            if(viewModel.selectedProject && viewModel.selectedProject.samplesQcFailed > 0){
+            if(viewModel.selectedProject && viewModel.selectedProject.samplesQc.failingSamples > 0){
                 detailsButton.setEnabled(true)
             }else{
                 detailsButton.setEnabled(false)
@@ -193,15 +194,8 @@ class ProjectOverviewView extends VerticalLayout{
         viewModel.generatedManifest = null
     }
 
-    private static String getStyleForColumn(ProjectSummary projectSummary, ValueProvider<ProjectSummary, RelativeCount> valueProvider) {
-        RelativeCount relativeCount = valueProvider.apply(projectSummary)
-        State state = determineCompleteness(relativeCount)
-        return state.getCssClass()
-    }
-
-    private static String getStyleForFailureColumn(ProjectSummary projectSummary, ValueProvider<ProjectSummary, RelativeCount> valueProvider) {
-        RelativeCount relativeCount = valueProvider.apply(projectSummary)
-        State state = determineFailure(relativeCount)
+    private static String getStyleForColumn(SampleCount sampleStatusCount) {
+        State state = determineCompleteness(sampleStatusCount)
         return state.getCssClass()
     }
 
@@ -210,35 +204,28 @@ class ProjectOverviewView extends VerticalLayout{
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
                 MAX_CODE_COLUMN_WIDTH)
         projectGrid.addColumn({ it.title })
-                .setCaption("Project Title").setId("ProjectTitle")
-        ValueProvider<ProjectSummary, RelativeCount> receivedProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesReceived, it.totalSampleCount )
-        }
-        projectGrid.addColumn(receivedProvider).setStyleGenerator({getStyleForColumn(it, receivedProvider)})
+                .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ProjectSummary project -> project.title})
+
+        projectGrid.addColumn({it.samplesReceived}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesReceived)})
                 .setCaption("Samples Received").setId("SamplesReceived")
-        ValueProvider<ProjectSummary, RelativeCount> failedQcProvider = { ProjectSummary it ->
-            new RelativeCount(it.samplesQcFailed, it.totalSampleCount )
-        }
-        projectGrid.addColumn(failedQcProvider)
-                .setCaption("Samples Failed QC").setId("SamplesFailedQc").setStyleGenerator({getStyleForFailureColumn(it, failedQcProvider)})
-        ValueProvider<ProjectSummary, RelativeCount> libraryPrepProvider = {ProjectSummary it ->
-            new RelativeCount(it.samplesLibraryPrepFinished , it.totalSampleCount)
-        }
-        projectGrid.addColumn(libraryPrepProvider)
-                .setCaption("Library Prep Finished").setId("LibraryPrepFinished").setStyleGenerator({getStyleForColumn(it, libraryPrepProvider)})
-        ValueProvider<ProjectSummary, RelativeCount> dataAvailableProvider = { ProjectSummary it ->
-            new RelativeCount(it.sampleDataAvailable , it.totalSampleCount)
-        }
-        projectGrid.addColumn(dataAvailableProvider).setStyleGenerator({getStyleForColumn(it, dataAvailableProvider)})
+
+        projectGrid.addColumn({it.samplesQc}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesQc)})
+                .setCaption("Samples Passed QC").setId("SamplesPassedQc")
+
+        projectGrid.addColumn({it.samplesLibraryPrepFinished}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesLibraryPrepFinished)})
+                .setCaption("Library Prep Finished").setId("LibraryPrepFinished")
+
+        projectGrid.addColumn({it.sampleDataAvailable}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.sampleDataAvailable)})
                 .setCaption("Data Available").setId("SampleDataAvailable")
+
         setupDataProvider()
         //specify size of grid and layout
         projectGrid.setWidthFull()
         projectGrid.getColumn("ProjectTitle")
-                .setMinimumWidth(200)
+                .setMaximumWidth(800)
         projectGrid.getColumn("SamplesReceived")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
-        projectGrid.getColumn("SamplesFailedQc")
+        projectGrid.getColumn("SamplesPassedQc")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.getColumn("LibraryPrepFinished")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
@@ -259,15 +246,21 @@ class ProjectOverviewView extends VerticalLayout{
 
 
     private void tryToDownloadManifest() {
+        Optional<ProjectSummary> selectedSummary = Optional.empty()
         try {
-            Optional.ofNullable(viewModel.selectedProject).filter({it.sampleDataAvailable > 0 }).ifPresent({
+            selectedSummary = Optional.ofNullable(viewModel.selectedProject)
+            selectedSummary.filter({it.sampleDataAvailable.passingSamples > 0 }).ifPresent({
                 String projectCode = it.getCode()
                 downloadProjectController.downloadProject(projectCode)
             })
         } catch (IllegalArgumentException illegalArgument) {
-            notificationService.publishFailure("Manifest Download failed due to: ${illegalArgument.getMessage()}")
-        } catch (Exception ignored) {
+            String projectCode = selectedSummary.map(ProjectSummary::getCode).orElse("No project selected")
+            notificationService.publishFailure("Manifest Download failed for project ${projectCode}. ${Constants.CONTACT_HELPDESK}")
+            log.error "Manifest Download failed due to: ${illegalArgument.getMessage()}"
+        } catch (Exception exception) {
             notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+            log.error "An error occured whily trying to download ${selectedSummary}"
+            log.error "Manifest Download failed due to: ${exception.getMessage()}"
         }
     }
 
@@ -304,32 +297,21 @@ class ProjectOverviewView extends VerticalLayout{
 
     /**
      * Determines the state of the current status. Is it in progress or did it complete already
-     * @param samplesInStatus the count for the specific status
-     * @param relativeCount
+     * @param sampleCount The total number of samples registered
      */
-    private static State determineCompleteness(RelativeCount relativeCount) {
-        int samplesInStatus = relativeCount.getValue()
-        int totalSamples = relativeCount.getTotal()
-        if (samplesInStatus == totalSamples) {
-            return State.COMPLETED
-        } else if (samplesInStatus < totalSamples) {
-            return State.IN_PROGRESS
-        } else {
-            //unexpected!!
-            throw new IllegalStateException("status count $samplesInStatus must not be greater total count $totalSamples")
-        }
-    }
-
-    /**
-     * Determines the state of the current status. Is it in progress or were failures observed.
-     * @param relativeCount
-     * @return the state of the project for the status in question
-     */
-    private static State determineFailure(RelativeCount relativeCount) {
-        if (relativeCount.value > 0) {
+    private static State determineCompleteness(SampleCount sampleCount) {
+        if (sampleCount.failingSamples > 0){
             return State.FAILED
-        } else {
+        }
+        else if (sampleCount.passingSamples == sampleCount.totalSampleCount) {
+            return State.COMPLETED
+        }
+        else if (sampleCount.passingSamples < sampleCount.totalSampleCount) {
             return State.IN_PROGRESS
+        }
+        else {
+            //unexpected!!
+            throw new IllegalStateException("status count $sampleCount.passingSamples must not be greater total count $sampleCount.totalSampleCount")
         }
     }
 }

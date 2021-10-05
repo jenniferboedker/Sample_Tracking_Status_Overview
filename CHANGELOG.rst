@@ -10,6 +10,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Show passing QC samples instead of failing QC samples (`#121 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/121>`_)
+
 **Fixed**
 
 **Dependencies**
