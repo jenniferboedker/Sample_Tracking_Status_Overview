@@ -4,7 +4,7 @@ import java.time.Instant
 import java.util.Comparator
 
 /**
- * Compares ProjectSummaries by the last change time as denoted by the timestamp
+ * Compares {@link ProjectSummary} by the last change time as denoted by the timestamp
  *
  * @since 1.0.0
  *
