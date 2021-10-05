@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.resource.status
 
+import life.qbic.business.samples.count.StatusCount
 import life.qbic.datamodel.samples.Status
 import spock.lang.Specification
 

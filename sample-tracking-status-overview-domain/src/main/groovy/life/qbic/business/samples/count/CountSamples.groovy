@@ -41,36 +41,18 @@ class CountSamples implements CountSamplesInput{
       totalSampleCount = sampleStatuses.size()
       this.projectCode = projectCode
 
-      countReceivedSamples()
-      countFailedQcSamples()
-      countFinishedLibraryPrepSamples()
-      countAvailableDataSamples()
+      int received = countSamplesFromStatus(Status.SAMPLE_RECEIVED)
+      int failedQc = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
+      int libraryPrep = countSamplesFromStatus(Status.LIBRARY_PREP_FINISHED)
+      int availableData = countSamplesFromStatus(Status.DATA_AVAILABLE)
 
+      StatusCount statusCount = new StatusCount(projectCode, received, 0, failedQc, libraryPrep, availableData, totalSampleCount)
+      output.countedSamples(statusCount)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
     } catch (Exception ignored) {
       output.failedExecution("Could not count samples.")
     }
-  }
-
-  private void countReceivedSamples(){
-    int receivedAmount = countSamplesFromStatus(Status.SAMPLE_RECEIVED)
-    output.countedReceivedSamples(projectCode,totalSampleCount,receivedAmount)
-  }
-
-  private void countFailedQcSamples(){
-    int failedQc = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
-    output.countedFailedQcSamples(projectCode,totalSampleCount,failedQc)
-  }
-
-  private void countFinishedLibraryPrepSamples(){
-    int libraryPrepFinished = countSamplesFromStatus(Status.LIBRARY_PREP_FINISHED)
-    output.countedLibraryPrepFinishedSamples(projectCode,totalSampleCount,libraryPrepFinished)
-  }
-
-  private void countAvailableDataSamples(){
-    int availableData = countSamplesFromStatus(Status.DATA_AVAILABLE)
-    output.countedAvailableSampleData(projectCode,totalSampleCount,availableData)
   }
 
   private int countSamplesFromStatus(Status status) {

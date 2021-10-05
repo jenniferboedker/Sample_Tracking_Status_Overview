@@ -18,6 +18,7 @@ class ProjectResourceService extends ResourceService<Project> {
     ProjectResourceService() {
         addTopic(Topic.PROJECT_ADDED)
         addTopic(Topic.PROJECT_REMOVED)
+        addTopic(Topic.PROJECT_UPDATED)
     }
 
     /**
@@ -46,10 +47,12 @@ class ProjectResourceService extends ResourceService<Project> {
 
     @Override
     void replace(Predicate<Project> criteria, UnaryOperator<Project> operator) {
-
         List<Project> projectsBeingReplaced = content.stream().filter(criteria).collect()
         List<Project> replacements = projectsBeingReplaced.stream().map(operator).collect()
-        projectsBeingReplaced.forEach(this::removeFromResource)
-        replacements.forEach(this::addToResource)
+        content.removeAll(projectsBeingReplaced)
+        content.addAll(replacements)
+        replacements.forEach({
+            publish(it, Topic.PROJECT_UPDATED)
+        })
     }
 }
