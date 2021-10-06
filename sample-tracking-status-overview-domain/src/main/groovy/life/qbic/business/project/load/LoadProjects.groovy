@@ -1,6 +1,7 @@
 package life.qbic.business.project.load
 
 import life.qbic.business.DataSourceException
+import life.qbic.business.project.Project
 
 /**
  * <b>Load projects</b>
@@ -9,8 +10,9 @@ import life.qbic.business.DataSourceException
  *
  * @since 1.0.0
  */
-class LoadProjects implements LoadProjectsInput{
-    private final LoadProjectsDataSource dataSource
+class LoadProjects implements LoadProjectsInput {
+    private final LoadProjectsDataSource loadProjectsDataSource
+    private final LastChangedDateDataSource loadLastChangedDataSource
     private final LoadProjectsOutput output
 
     /**
@@ -19,8 +21,9 @@ class LoadProjects implements LoadProjectsInput{
      * @param output the output to where results are published
      * @since 1.0.0
      */
-    LoadProjects(LoadProjectsDataSource dataSource, LoadProjectsOutput output) {
-        this.dataSource = dataSource
+    LoadProjects(LoadProjectsDataSource loadProjectsDataSource, LastChangedDateDataSource loadLastChangedDataSource, LoadProjectsOutput output) {
+        this.loadProjectsDataSource = loadProjectsDataSource
+        this.loadLastChangedDataSource = loadLastChangedDataSource
         this.output = output
     }
 
@@ -32,7 +35,8 @@ class LoadProjects implements LoadProjectsInput{
     @Override
     void loadProjects() {
         try {
-            List projects = dataSource.fetchUserProjects()
+            List projects = loadProjectsDataSource.fetchUserProjects()
+            projects.each { it.lastChanged = loadLastChangedDataSource.getLatestChange(it.code) }
             output.loadedProjects(projects)
         } catch (DataSourceException dataSourceException) {
             output.failedExecution(dataSourceException.getMessage())
