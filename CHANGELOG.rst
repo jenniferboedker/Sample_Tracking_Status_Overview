@@ -27,6 +27,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Fixed**
 
+* Make grid take up all space of the side (`#112 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/112>`_)
+
 **Dependencies**
 
 **Deprecated**
