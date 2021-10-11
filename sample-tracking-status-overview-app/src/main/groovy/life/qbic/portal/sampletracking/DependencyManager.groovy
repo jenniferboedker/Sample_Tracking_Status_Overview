@@ -1,8 +1,10 @@
 package life.qbic.portal.sampletracking
 
 import com.vaadin.ui.VerticalLayout
+import life.qbic.business.project.Project
 import life.qbic.business.project.load.LoadProjects
 import life.qbic.business.project.load.LoadProjectsDataSource
+import life.qbic.business.project.load.LastChangedDateDataSource
 import life.qbic.business.project.load.LoadProjectsInput
 import life.qbic.business.project.load.LoadProjectsOutput
 import life.qbic.business.project.subscribe.SubscribeProject
@@ -19,7 +21,6 @@ import life.qbic.business.samples.info.GetSamplesInfo
 import life.qbic.business.samples.info.GetSamplesInfoDataSource
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.dtos.portal.PortalUser
-import life.qbic.datamodel.dtos.projectmanagement.Project
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.NotificationHandler
@@ -29,10 +30,10 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectOvervie
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.download.ManifestPresenter
-import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
-import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectPresenter
 import life.qbic.portal.sampletracking.datasources.Credentials
 import life.qbic.portal.sampletracking.datasources.OpenBisConnector
 import life.qbic.portal.sampletracking.datasources.database.DatabaseSession
@@ -62,6 +63,7 @@ class DependencyManager {
     private final NotificationHandler notificationHandler
 
     private LoadProjectsDataSource loadProjectsDataSource
+    private LastChangedDateDataSource lastChangedDateDataSource
     private CountSamplesDataSource countSamplesDataSource
     private GetSamplesInfoDataSource getSamplesInfoDataSource
     private DownloadSamplesDataSource downloadSamplesDataSource
@@ -114,6 +116,7 @@ class DependencyManager {
         )
         OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
         loadProjectsDataSource = openBisConnector
+        lastChangedDateDataSource = samplesDbConnector
 
         subscriptionDataSource = new SubscriptionsDbConnector(DatabaseSession.getInstance())
         getSamplesInfoDataSource = openBisConnector
@@ -177,7 +180,7 @@ class DependencyManager {
      */
     private void populateProjectService() {
         LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService, notificationService)
-        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output)
+        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, lastChangedDateDataSource, output)
         loadProjects.loadProjects()
     }
 
@@ -188,7 +191,7 @@ class DependencyManager {
         CountSamplesOutput output = new CountSamplesPresenter(notificationService, statusCountService)
         CountSamples countSamples = new CountSamples(countSamplesDataSource, output)
         List<String> projectCodes = projectResourceService.iterator().collect {
-            return it.projectId.projectCode.toString()
+            return it.code
         }
         projectCodes.each {
             countSamples.countSamplesPerStatus(it)

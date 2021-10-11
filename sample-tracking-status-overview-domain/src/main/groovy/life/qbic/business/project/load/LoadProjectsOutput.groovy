@@ -1,6 +1,6 @@
 package life.qbic.business.project.load
 
-import life.qbic.datamodel.dtos.projectmanagement.Project
+import life.qbic.business.project.Project
 
 /**
  * <b>Output interface for the {@link LoadProjects} feature</b>
