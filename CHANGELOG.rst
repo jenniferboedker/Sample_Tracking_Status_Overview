@@ -4,12 +4,11 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-0.7.0-SNAPSHOT (2021-10-05)
+
+0.7.0-SNAPSHOT (2021-10-11)
+---------------------------
 
 **Added**
-
-* Removes manual sorting option from project grid
-* Projects are now sorted by the last change as found in the sample tracking database  (`#114 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/114>`_)
 
 **Fixed**
 
@@ -18,12 +17,16 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 **Deprecated**
 
 
-0.6.0-SNAPSHOT (2021-09-30)
----------------------------
+0.6.0 (2021-10-11)
+------------------
 
 **Added**
 
 * Show passing QC samples instead of failing QC samples (`#121 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/121>`_)
+
+* Removes manual sorting option from project grid
+
+* Projects are now sorted by the last change as found in the sample tracking database  (`#114 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/114>`_)
 
 **Fixed**
 
