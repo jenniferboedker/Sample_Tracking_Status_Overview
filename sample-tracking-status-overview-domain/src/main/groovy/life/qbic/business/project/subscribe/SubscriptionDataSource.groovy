@@ -1,7 +1,7 @@
 package life.qbic.business.project.subscribe
 
 /**
- * <b>Subscribes the given subscriber to the specified project</b>
+ * <b>Subscribes or unsubscribes the given subscriber to/from the specified project</b>
  *
  * <p>This interface is used by {@link life.qbic.business.project.subscribe.SubscribeProject}</p>
  *
@@ -16,5 +16,13 @@ interface SubscriptionDataSource {
      * @since 1.1.0
      */
     void subscribeToProject(Subscriber subscriber, String projectCode)
+ 
+    /**
+     * Removes the subscription relation between subscriber and project in the data source.
+     * @param subscriber
+     * @param projectCode
+     * @since 1.1.0
+     */
+    void unsubscribeFromProject(Subscriber subscriber, String projectCode)
 
 }
