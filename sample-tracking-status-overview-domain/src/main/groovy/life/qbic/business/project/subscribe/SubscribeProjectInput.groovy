@@ -3,7 +3,7 @@ package life.qbic.business.project.subscribe
 /**
  * <b>Interface to access and trigger the {@link SubscribeProject} use case and add or remove a new subscriber to/from a project</b>
  *
- * @since <version tag>
+ * @since 1.0.0
  */
 interface SubscribeProjectInput {
 
