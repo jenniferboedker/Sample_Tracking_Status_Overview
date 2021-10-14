@@ -27,6 +27,14 @@ interface CountSamplesOutput {
     void countedReceivedSamples(String projectCode, int allSamples, int receivedSamples) throws OutputException
 
     /**
+     * To be called after successfully counting passed QC samples for the provided code.
+     * @param number of all samples and samples that have passed QC
+     * @param projectCode the code of the project samples were counted for
+     * @since 1.0.0
+     */
+    void countedPassingQcSamples(String projectCode, int allSamples, int passedQcSamples) throws OutputException
+
+    /**
      * To be called after successfully counting failed QC samples for the provided code.
      * @param number of all samples and samples that have failed QC
      * @param projectCode the code of the project samples were counted for
