@@ -101,5 +101,67 @@ class SubscribeProjectSpec extends Specification {
         exception << [new IllegalStateException(), new RuntimeException(), new IllegalArgumentException()]
     }
 
+    
+    // unsubscription
+    
+    def "Unsubscribe fails for invalid email address: #invalidEmail"() {
+        when:
+        subscribeProject.unsubscribe(invalidSubscriber, validProjectCode)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        invalidEmail << [null, ""]
+        invalidSubscriber = new Subscriber(validFirstName, validLastName, invalidEmail)
+    }
+
+    def "Unsubscribe fails for invalid project code: #invalidProjectCode"() {
+        when:
+        subscribeProject.unsubscribe(validSubscriber, invalidProjectCode)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        invalidProjectCode << [null, "", "1234", "ZBCA"]
+    }
+
+    def "Unsubscribe does not throw an IllegalArgumentException for valid arguments"() {
+        when:
+        subscribeProject.unsubscribe(validSubscriber, validProjectCode)
+        then:
+        notThrown(IllegalArgumentException)
+    }
+
+    def "Unsubscribe informs output of success if no exception is thrown"() {
+        when:
+        subscribeProject.unsubscribe(validSubscriber, validProjectCode)
+        then:
+        1 * output.subscriptionRemoved(_)
+        0 * output.unsubscriptionFailed(validSubscriber, validProjectCode)
+    }
+
+    def "unsubscribe informs output in case of data source failure"() {
+        given:
+        subscriptionDataSource = Stub()
+        subscriptionDataSource.unsubscribeFromProject(_ as Subscriber,
+                _ as String) >> { throw new DataSourceException("Some exception.") }
+        subscribeProject = new SubscribeProject(subscriptionDataSource, output)
+        when:
+        subscribeProject.unsubscribe(validSubscriber, validProjectCode)
+        then:
+        1 * output.unsubscriptionFailed(validSubscriber, validProjectCode)
+    }
+
+    def "Unsubscribe throws a RuntimeException in case of unexpected failure"() {
+        given:
+        subscriptionDataSource = Stub()
+        subscriptionDataSource.unsubscribeFromProject(_ as Subscriber, _ as String)
+                >> { throw exception }
+        subscribeProject = new SubscribeProject(subscriptionDataSource, output)
+        when:
+        subscribeProject.unsubscribe(validSubscriber, validProjectCode)
+        then: "a new runtime exception is thrown"
+        thrown(RuntimeException)
+        where: "the original exception is"
+        exception << [new IllegalStateException(), new RuntimeException(), new IllegalArgumentException()]
+    }
 
 }

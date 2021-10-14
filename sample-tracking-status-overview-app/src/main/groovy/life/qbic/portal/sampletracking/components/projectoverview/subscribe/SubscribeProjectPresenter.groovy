@@ -67,4 +67,25 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
                     "Please contact ${Constants.CONTACT_HELPDESK}."
         notificationService.publishFailure(message)
     }
+    
+    /**
+     * Unsubscription for a given project was successful
+     * @param project the project code of the unsubscribed project
+     * @since 1.0.0
+     */
+    @Override
+    void subscriptionRemoved(String project) {
+      //TODO
+    }
+
+    /**
+     * Unsubscription was not possible
+     * @param subscriber the subscriber that was provided
+     * @param projectCode the project the unsubscription was attempted on
+     * @since 1.0.0
+     */
+    @Override
+    void unsubscriptionFailed(Subscriber subscriber, String projectCode) {
+      //TODO
+    }
 }
