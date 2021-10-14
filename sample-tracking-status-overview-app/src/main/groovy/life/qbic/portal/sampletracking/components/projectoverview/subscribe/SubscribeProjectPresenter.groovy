@@ -47,7 +47,7 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     /**
      * Unsubscription for a given project was successful
      * @param project the project code of the unsubscribed project
-     * @since 1.1.0
+     * @since 1.0.0
      */
     @Override
     void subscriptionRemoved(String project) {
