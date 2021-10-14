@@ -35,7 +35,7 @@ interface SubscribeProjectOutput {
      * Unsubscription was not possible
      * @param subscriber the subscriber that was provided
      * @param projectCode the project the unsubscription was attempted on
-     * @since 1.1.0
+     * @since 1.0.0
      */
     void unsubscriptionFailed(Subscriber subscriber, String projectCode)
 }
