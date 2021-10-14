@@ -68,6 +68,42 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
           }
     }
     
+    /**
+     * Unsubscribes a subscriber from a project, if they were subscribed to it
+     * @param subscriber
+     * @param projectCode
+     * @since 1.0.0
+     */
+    @Override
+    void unsubscribeFromProject(Subscriber subscriber, String projectCode) {
+          try {
+            Connection connection = connectionProvider.connect()
+            connection.setAutoCommit(false)
+      
+            connection.withCloseable { it ->
+              try {
+                int subscriberId = fetchExistingSubscriberId(subscriber)
+                // action must only be taken if this subscriber exists
+                if(subscriberId > 0) {
+                  removeSubscription(it, subscriberId, projectCode)
+                  connection.commit()
+                }
+              } catch (Exception e) {
+                log.error(e.message)
+                log.error(e.stackTrace.join("\n"))
+                connection.rollback()
+                throw new DataSourceException("Could not remove subscription from {$projectCode} for: {$subscriber}")
+              } finally {
+                connection.close()
+              }
+            }
+          } catch (Exception e) {
+            log.error(e)
+            log.error(e.stackTrace.join("\n"))
+            throw new DataSourceException("Could not remove subscription from {$projectCode} for: {$subscriber}")
+          }
+    }
+    
     private int getSubscriberId(Connection connection, Subscriber subscriber) {
           int subscriberId = fetchExistingSubscriberId(subscriber)
           if(subscriberId <= 0) {
@@ -98,7 +134,18 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
               statement.execute()
           }
     }
+    
+    private void removeSubscription(Connection connection, int subscriberId, String projectCode) {
+          // we do not need to check if the subscription exists, here, as removing a non-existent row does not lead to errors
+          String query = "DELETE FROM subscription WHERE project_code = ? AND subscriber_id = ?"
 
+          def statement = connection.prepareStatement(query)
+
+          statement.setString(1, projectCode)
+          statement.setInt(2, subscriberId)
+          statement.execute()
+    }
+    
     private int fetchExistingSubscriberId(Subscriber subscriber) {
           String query = "SELECT id FROM subscriber WHERE first_name = ? AND last_name = ? AND email = ?"
           Connection connection = connectionProvider.connect()
