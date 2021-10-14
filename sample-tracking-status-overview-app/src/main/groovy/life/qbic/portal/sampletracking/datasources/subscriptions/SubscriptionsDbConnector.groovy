@@ -72,7 +72,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource {
      * Unsubscribes a subscriber from a project, if they were subscribed to it
      * @param subscriber
      * @param projectCode
-     * @since 1.1.0
+     * @since 1.0.0
      */
     @Override
     void unsubscribeFromProject(Subscriber subscriber, String projectCode) {
