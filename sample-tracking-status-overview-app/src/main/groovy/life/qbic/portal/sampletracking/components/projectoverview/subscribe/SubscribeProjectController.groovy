@@ -5,9 +5,9 @@ import life.qbic.business.project.subscribe.SubscribeProjectInput
 import life.qbic.business.project.subscribe.Subscriber
 
 /**
- * <b>Controller allowing the view to call the subscribe project use case</b>
+ * <b>Controller allowing the view to call the subscribe/unsubscribe project use case</b>
  *
- * <p>Used via the view to start the subscribe project use case with the currently selected project code and a provided subscriber. </p>
+ * <p>Used via the view to start the (un)subscribe project use case with the currently selected project code and a provided subscriber. </p>
  *
  * @since 1.0.0
  */
@@ -27,5 +27,15 @@ class SubscribeProjectController {
      */
     void subscribeProject(Subscriber subscriber, String projectCode) throws IllegalArgumentException{
         subscribeProject.subscribe(subscriber, projectCode)
+    }
+    
+    /**
+     * Triggers the unsubscribe project case. If no project code or subscriber is provided, throws an {@link IllegalArgumentException}
+     * @param projectCode the code of the selected project
+     * @param projectCode the user that will be unsubscribed from the project
+     * @throws IllegalArgumentException in case the project code or subscriber is not provided
+     */
+    void unsubscribeProject(Subscriber subscriber, String projectCode) throws IllegalArgumentException{
+        subscribeProject.unsubscribe(subscriber, projectCode)
     }
 }
