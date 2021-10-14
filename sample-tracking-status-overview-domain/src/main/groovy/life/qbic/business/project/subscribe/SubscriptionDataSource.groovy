@@ -21,7 +21,7 @@ interface SubscriptionDataSource {
      * Removes the subscription relation between subscriber and project in the data source.
      * @param subscriber
      * @param projectCode
-     * @since 1.1.0
+     * @since 1.0.0
      */
     void unsubscribeFromProject(Subscriber subscriber, String projectCode)
 
