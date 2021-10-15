@@ -56,7 +56,7 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     }
 
     /**
-     * An usubscription failed
+     * An unsubscription failed
      * @param subscriber the subscriber that was provided
      * @param projectCode the project the unsubscription was attempted on
      * @since 1.0.0
