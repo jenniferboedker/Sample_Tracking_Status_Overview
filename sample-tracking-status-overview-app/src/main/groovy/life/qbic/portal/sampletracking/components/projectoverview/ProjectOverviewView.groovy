@@ -146,9 +146,9 @@ class ProjectOverviewView extends VerticalLayout{
         enableWhenProjectIsSelected(subscriptionCheckBox)
         subscriptionCheckBox.setValue(false)
         subscriptionCheckBox.addValueChangeListener(event -> {
-            //Only Subscribe if checkbox is checked
-            if (subscriptionCheckBox.value && viewModel.selectedProject) {
-                subscribeToProject(viewModel.selectedProject.code)
+            if (viewModel.selectedProject) {
+              //Subscribe if checkbox is checked, unsubscribe otherwise
+              changeSubscriptionStatus(viewModel.selectedProject.code, subscriptionCheckBox.value)
             }
         })
         return subscriptionCheckBox
@@ -284,10 +284,14 @@ class ProjectOverviewView extends VerticalLayout{
         }
     }
 
-    private void subscribeToProject(String projectCode) {
+    private void changeSubscriptionStatus(String projectCode, boolean subscribe) {
         if (viewModel.subscriber) {
             if (projectCode) {
-                subscribeProjectController.subscribeProject(viewModel.subscriber, projectCode)
+                if(subscribe) {
+                    subscribeProjectController.subscribeProject(viewModel.subscriber, projectCode)
+                } else {
+                    subscribeProjectController.unsubscribeProject(viewModel.subscriber, projectCode)
+                }
             }
         }
     }

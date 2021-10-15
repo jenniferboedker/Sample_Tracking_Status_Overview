@@ -23,7 +23,7 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     /**
     * A subscription was added for a given project
     * @param project the project code of the subscribed project
-    * @since 1.1.0
+    * @since 1.0.0
     */
     @Override
     void subscriptionAdded(String project) {
@@ -35,7 +35,7 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
      * A subscription was not possible
      * @param subscriber the subscriber that was provided
      * @param projectCode the project the subscription was attempted on
-     * @since 1.1.0
+     * @since 1.0.0
      */
     @Override
     void subscriptionFailed(Subscriber subscriber, String projectCode) {
@@ -47,7 +47,7 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     /**
     * A subscription was removed for a given project
     * @param project the project code of the subscribed project
-    * @since 1.1.0
+    * @since 1.0.0
     */
     @Override
     void subscriptionRemoved(String project) {
@@ -56,36 +56,15 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     }
 
     /**
-     * An usubscription failed
+     * An unsubscription failed
      * @param subscriber the subscriber that was provided
      * @param projectCode the project the unsubscription was attempted on
-     * @since 1.1.0
+     * @since 1.0.0
      */
     @Override
     void unsubscriptionFailed(Subscriber subscriber, String projectCode) {
         String message = "An unexpected error occured while trying to unsubscribe from project ${projectCode}. " +
                     "Please contact ${Constants.CONTACT_HELPDESK}."
         notificationService.publishFailure(message)
-    }
-    
-    /**
-     * Unsubscription for a given project was successful
-     * @param project the project code of the unsubscribed project
-     * @since 1.0.0
-     */
-    @Override
-    void subscriptionRemoved(String project) {
-      //TODO
-    }
-
-    /**
-     * Unsubscription was not possible
-     * @param subscriber the subscriber that was provided
-     * @param projectCode the project the unsubscription was attempted on
-     * @since 1.0.0
-     */
-    @Override
-    void unsubscriptionFailed(Subscriber subscriber, String projectCode) {
-      //TODO
     }
 }
