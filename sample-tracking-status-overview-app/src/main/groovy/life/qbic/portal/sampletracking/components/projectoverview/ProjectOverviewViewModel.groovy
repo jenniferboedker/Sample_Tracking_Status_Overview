@@ -2,8 +2,10 @@ package life.qbic.portal.sampletracking.components.projectoverview
 
 
 import groovy.beans.Bindable
+import groovy.util.logging.Log4j2
 import life.qbic.business.project.Project
 import life.qbic.business.project.subscribe.Subscriber
+import life.qbic.datamodel.dtos.business.ProjectManager
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.status.StatusCount
@@ -16,6 +18,7 @@ import life.qbic.portal.sampletracking.resource.status.StatusCount
  * @since 1.0.0
  *
  */
+@Log4j2
 class ProjectOverviewViewModel {
 
     ObservableList projectOverviews = new ObservableList(new ArrayList<ProjectSummary>())
@@ -25,6 +28,7 @@ class ProjectOverviewViewModel {
     @Bindable ProjectSummary selectedProject
     @Bindable String generatedManifest
     final Subscriber subscriber
+    boolean isProjectUpdated = false
 
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService, Subscriber subscriber) {
         this.projectResourceService = projectResourceService
@@ -50,6 +54,7 @@ class ProjectOverviewViewModel {
     private void subscribeToResources() {
         this.projectResourceService.subscribe({ addProject(it) }, Topic.PROJECT_ADDED)
         this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
+        this.projectResourceService.subscribe({updateProject(it)}, Topic.PROJECT_SUBSCRIPTION_UPDATED)
 
         this.statusCountService.subscribe({ updateSamplesReceived(it) }, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
         this.statusCountService.subscribe({ updateSamplesFailedQc(it) }, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
@@ -69,6 +74,11 @@ class ProjectOverviewViewModel {
         projectOverviews.remove(projectOverview)
     }
 
+
+    private void updateProject(Project project){
+        log.info "Project ${project.code} - ${project.title} was updated, grid will be reloaded."
+        isProjectUpdated = true
+    }
 
     private void updateSamplesReceived(StatusCount statusCount) {
         ProjectSummary summary = getProjectSummary(statusCount.projectCode)

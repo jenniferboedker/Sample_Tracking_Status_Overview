@@ -6,6 +6,7 @@ import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
+import com.vaadin.shared.data.sort.SortDirection
 import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
@@ -181,20 +182,12 @@ class ProjectOverviewView extends VerticalLayout{
             }
         })
         viewModel.addPropertyChangeListener("selectedProject", {
-            Optional<ProjectSummary> modelSelection = Optional.ofNullable(viewModel.selectedProject)
-            Optional<ProjectSummary> viewSelection = projectGrid.getSelectionModel().getFirstSelectedItem()
-            modelSelection.ifPresent({
-                if (viewSelection.isPresent()) {
-                    if (viewSelection.get() == modelSelection.get()) {
-                        // do nothing
-                    } else {
-                        projectGrid.getSelectionModel().deselectAll()
-                        projectGrid.select(modelSelection.get())
-                    }
-                } else {
-                    projectGrid.select(modelSelection.get())
-                }
-            })
+            //the refresh is required so that after changes in the content data provider this changes are shown in the grid
+            //e.g. the subscription status, that the subscriber triggers changes the list and therefore the grid needs to be refreshed
+            if(viewModel.selectedProject && viewModel.isProjectUpdated){
+                projectGrid.dataProvider.refreshAll()
+                viewModel.isProjectUpdated = false
+            }
             //for each selected
             failedQCSamplesView.setVisible(false)
         })
@@ -264,6 +257,7 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.getColumn("SampleDataAvailable")
                 .setMaximumWidth(MAX_STATUS_COLUMN_WIDTH).setExpandRatio(1)
         projectGrid.setHeightMode(HeightMode.ROW)
+        projectGrid.sort("ProjectCode", SortDirection.ASCENDING)
     }
 
     private void setupDataProvider() {
@@ -299,7 +293,6 @@ class ProjectOverviewView extends VerticalLayout{
 
     private void enableWhenProjectIsSelected(CheckBox checkBox) {
         viewModel.addPropertyChangeListener("selectedProject") {
-            checkBox.setValue(false)
             if(viewModel.selectedProject){
              checkBox.setVisible(true)
             }else{

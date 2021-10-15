@@ -9,6 +9,7 @@ enum Topic {
 
     PROJECT_ADDED("A project was added"),
     PROJECT_REMOVED("A project was removed"),
+    PROJECT_SUBSCRIPTION_UPDATED("A project subscription was updated"),
     NOTIFICATION_FAILURE("Failure notification"),
     NOTIFICATION_SUCCESS("Success notification"),
     NOTIFICATION_INFO("Information notification"),
