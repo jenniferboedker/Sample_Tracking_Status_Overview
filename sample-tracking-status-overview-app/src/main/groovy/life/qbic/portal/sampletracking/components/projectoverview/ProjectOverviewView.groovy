@@ -40,6 +40,7 @@ class ProjectOverviewView extends VerticalLayout{
     private final ProjectOverviewController projectOverviewController
 
     private Grid<ProjectSummary> projectGrid
+    private CheckBox subscriptionCheckBox
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
@@ -74,7 +75,7 @@ class ProjectOverviewView extends VerticalLayout{
         Button postmanLink = setUpLinkButton()
         Button downloadManifestAction = setupDownloadButton()
         Button showDetails = setupShowDetails()
-        CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
+        setupSubscriptionCheckBox()
         buttonBar.addComponents(showDetails, downloadManifestAction, postmanLink, subscriptionCheckBox)
         buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
         buttonBar.setComponentAlignment(subscriptionCheckBox, Alignment.MIDDLE_CENTER)
@@ -139,18 +140,42 @@ class ProjectOverviewView extends VerticalLayout{
         return downloadManifestAction
     }
 
+    // this method should be called upon notification that the subscription use case finished or failed
+    // it is used to reset the checkbox to its correct value if (un)subscription failed
+    // and to reinitialize the value change listener (which needs to be turned off for the first part)
+    void finishSubscriptionUsecase(boolean success) {
+        if (!success) {
+          subscriptionCheckBox.setValue = !subscriptionCheckBox.value
+        }
+        for(Object l : subscriptionCheckBox.getListeners(ValueChangeEvent.class)) {
+          dispersionSlider.removeListener((Listener) l)
+        }
+        setupSubscriptionListener(subscriptionCheckBox)
+    }
+    
+    private void setupSubscriptionListener(subscriptionCheckBox) {
+        boolean eventEnabled = true
+    
+        subscriptionCheckBox.addValueChangeListener(event -> {
+          if (eventEnabled && viewModel.selectedProject) {
+            // disable additional calls of the listener while use case is run
+            // needed 1. if user likes to click a lot
+            // 2. if (un)subscription fails and another method needs to reset the checkbox to its correct state (the opposite of what it is)
+            eventEnabled = false
+            //Subscribe if checkbox is checked, unsubscribe otherwise
+            changeSubscriptionStatus(viewModel.selectedProject.code, subscriptionCheckBox.value)
+          }
+        })
+    }
+    
     private CheckBox setupSubscriptionCheckBox() {
 
         CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
         subscriptionCheckBox.setVisible(false)
         enableWhenProjectIsSelected(subscriptionCheckBox)
         subscriptionCheckBox.setValue(false)
-        subscriptionCheckBox.addValueChangeListener(event -> {
-            if (viewModel.selectedProject) {
-              //Subscribe if checkbox is checked, unsubscribe otherwise
-              changeSubscriptionStatus(viewModel.selectedProject.code, subscriptionCheckBox.value)
-            }
-        })
+        
+        setupSubscriptionListener(subscriptionCheckBox)
         return subscriptionCheckBox
     }
 
@@ -240,7 +265,6 @@ class ProjectOverviewView extends VerticalLayout{
         def dataProvider = new ListDataProvider(viewModel.projectOverviews)
         projectGrid.setDataProvider(dataProvider)
     }
-
 
     private void tryToDownloadManifest() {
         Optional<ProjectSummary> selectedSummary = Optional.empty()
