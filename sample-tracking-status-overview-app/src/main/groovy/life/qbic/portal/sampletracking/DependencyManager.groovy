@@ -175,8 +175,7 @@ class DependencyManager {
     }
 
     private SubscribeProjectController setupSubscribeProjectUseCase() {
-        ProjectResourceService test = projectResourceService as ProjectResourceService
-        SubscribeProjectOutput output = new SubscribeProjectPresenter(notificationService, test)
+        SubscribeProjectOutput output = new SubscribeProjectPresenter(notificationService, projectResourceService as ProjectResourceService)
         SubscribeProject subscribeProject = new SubscribeProject(subscriptionDataSource, output)
         return new SubscribeProjectController(subscribeProject)
     }
