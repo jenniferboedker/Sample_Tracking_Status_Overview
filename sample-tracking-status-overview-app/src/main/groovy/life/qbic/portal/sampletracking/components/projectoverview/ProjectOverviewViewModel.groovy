@@ -1,9 +1,11 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import groovy.beans.Bindable
+import groovy.util.logging.Log4j2
 import life.qbic.business.project.Project
 import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.business.samples.count.StatusCount
+import life.qbic.portal.sampletracking.communication.Channel
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
 
@@ -15,6 +17,7 @@ import life.qbic.portal.sampletracking.resource.ResourceService
  * @since 1.0.0
  *
  */
+@Log4j2
 class ProjectOverviewViewModel {
 
     List<ProjectSummary> projectOverviews =[]
@@ -24,13 +27,16 @@ class ProjectOverviewViewModel {
     @Bindable ProjectSummary selectedProject
     @Bindable String generatedManifest
     final Subscriber subscriber
+    final Channel<String> updatedProjectsChannel
 
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService, Subscriber subscriber) {
+        this.updatedProjectsChannel = new Channel<>()
         this.projectResourceService = projectResourceService
         this.statusCountService = statusCountService
         this.subscriber = subscriber
         fetchProjectData()
         subscribeToResources()
+        bindManifestToSelection()
     }
 
     private void fetchProjectData() {
@@ -44,19 +50,10 @@ class ProjectOverviewViewModel {
     }
 
     private void subscribeToResources() {
-        this.projectResourceService.subscribe({
-            addProject(it)
-        }, Topic.PROJECT_ADDED)
-        this.projectResourceService.subscribe({
-            removeProject(it)
-        }, Topic.PROJECT_REMOVED)
-        this.projectResourceService.subscribe({
-            updateProject(it)
-        }, Topic.PROJECT_UPDATED)
-
-        this.statusCountService.subscribe({
-            updateStatusCount(it)
-        }, Topic.SAMPLE_COUNT_UPDATE)
+        this.projectResourceService.subscribe({ addProject(it) }, Topic.PROJECT_ADDED)
+        this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
+        this.projectResourceService.subscribe({ updateProject(it) }, Topic.PROJECT_UPDATED)
+        this.statusCountService.subscribe({ updateStatusCount(it) }, Topic.SAMPLE_COUNT_UPDATE)
     }
 
     private void updateStatusCount(StatusCount statusCount) {
@@ -87,8 +84,11 @@ class ProjectOverviewViewModel {
         Optional<ProjectSummary> projectSummary = Optional.ofNullable(getProjectSummary(project.code))
         projectSummary.ifPresent({ updateProjectSummary(it, project) })
         if (!projectSummary.isPresent()) {
-            addProject(project)
+            log.error("Tried to update ${project?.code} - ${project?.title} but project was not found in project list.")
+            return
         }
+        log.info "Project ${project.code} - ${project.title} was updated, grid will be reloaded."
+        updatedProjectsChannel.publish(project.code)
     }
 
     private void removeProject(Project project) {
@@ -101,11 +101,32 @@ class ProjectOverviewViewModel {
      * @param projectCode The project code specifies a project
      * @return The project summary for the respective code
      */
-    private ProjectSummary getProjectSummary(String projectCode) {
-        ProjectSummary projectOverview = projectOverviews.find { it ->
+    protected ProjectSummary getProjectSummary(String projectCode) {
+        List<ProjectSummary> projectOverviews = projectOverviews.findAll { it ->
            it.code == projectCode
         }
-        return projectOverview
+        if (projectOverviews.size() > 1) {
+            log.error("More than one project summaries for project code $projectCode")
+            log.error(projectOverviews)
+        }
+        ProjectSummary projectSummary = projectOverviews.first()
+        return projectSummary
+    }
+
+    /**
+     * Makes sure that the manifest is reset when a selected project is removed
+     */
+    private void bindManifestToSelection() {
+        addPropertyChangeListener("selectedProject", {
+            ProjectSummary newValue = it.newValue as ProjectSummary
+            if (newValue == null) {
+                setGeneratedManifest(null)
+            } else {
+                if (newValue.sampleDataAvailable < 1) {
+                    setGeneratedManifest(null)
+                }
+            }
+        })
     }
 
     InputStream getManifestInputStream() {

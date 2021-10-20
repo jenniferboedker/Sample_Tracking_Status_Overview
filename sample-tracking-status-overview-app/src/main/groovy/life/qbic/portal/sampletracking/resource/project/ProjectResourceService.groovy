@@ -49,8 +49,6 @@ class ProjectResourceService extends ResourceService<Project> {
     void replace(Predicate<Project> criteria, UnaryOperator<Project> operator) {
         List<Project> projectsBeingReplaced = content.stream().filter(criteria).collect()
         List<Project> replacements = projectsBeingReplaced.stream().map(operator).collect()
-        content.removeAll(projectsBeingReplaced)
-        content.addAll(replacements)
         replacements.forEach({
             publish(it, Topic.PROJECT_UPDATED)
         })
