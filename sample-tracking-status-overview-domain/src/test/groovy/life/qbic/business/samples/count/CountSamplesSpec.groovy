@@ -22,37 +22,7 @@ class CountSamplesSpec extends Specification {
         when:"the use case is run"
         countSamples.countSamplesPerStatus(projectCode)
         then:"a successful message is send"
-        1 * output.countedReceivedSamples(projectCode, _ as Integer, _ as Integer)
-        0 * output.failedExecution(_ as String)
-    }
-    
-    def "amount of samples having reached received status is correctly returned"() {
-        given:
-        CountSamplesDataSource dataSource = Stub()
-        List<Status> statuses = [Status.SAMPLE_RECEIVED, Status.METADATA_REGISTERED, Status.SAMPLE_RECEIVED]
-        String projectCode = "QABCD"
-        dataSource.fetchSampleStatusesForProject(projectCode) >> { statuses }
-        CountSamplesOutput output = Mock()
-        CountSamples countSamples = new CountSamples(dataSource, output)
-        when:"the use case is run"
-        countSamples.countSamplesPerStatus(projectCode)
-        then:"the correct amounts of samples are returned"
-        1 * output.countedReceivedSamples(projectCode, 3, 2)
-        0 * output.failedExecution(_ as String)
-    }
-    
-    def "amount of samples having reached AT LEAST received status is correctly returned"() {
-        given:
-        String projectCode = "QABCD"
-        CountSamplesDataSource dataSource = Stub()
-        List<Status> statuses = [Status.DATA_AVAILABLE, Status.SAMPLE_RECEIVED, Status.METADATA_REGISTERED, Status.SAMPLE_RECEIVED]
-        dataSource.fetchSampleStatusesForProject(projectCode) >> { statuses }
-        CountSamplesOutput output = Mock()
-        CountSamples countSamples = new CountSamples(dataSource, output)
-        when:"the use case is run"
-        countSamples.countSamplesPerStatus(projectCode)
-        then:"the correct amounts of samples are returned"
-        1 * output.countedReceivedSamples(projectCode, 4, 3)
+        1 * output.countedSamples({ verifyAll(it, StatusCount) {it.projectCode == projectCode} })
         0 * output.failedExecution(_ as String)
     }
     
@@ -67,9 +37,94 @@ class CountSamplesSpec extends Specification {
         when:"the use case is run"
         countSamples.countSamplesPerStatus(projectCode)
         then:"the correct amounts of samples are returned"
-        1 * output.countedReceivedSamples(projectCode, 4, 2)
+        1 * output.countedSamples({
+            verifyAll(it, StatusCount) {
+                it.getProjectCode() == projectCode
+                it.getSamplesReceived() == 2
+                it.getSamplesInProject() == 4
+            }
+        })
         0 * output.failedExecution(_ as String)
     }
+
+    def "amount of samples having reached exactly #status status is correctly returned"() {
+        given:
+        String projectCode = "QABCD"
+        CountSamplesDataSource dataSource = Stub()
+        List<Status> statuses = [Status.DATA_AT_QBIC, status]
+        dataSource.fetchSampleStatusesForProject(projectCode) >> { statuses }
+        CountSamplesOutput output = Mock()
+        CountSamples countSamples = new CountSamples(dataSource, output)
+        when: "the use case is run"
+        countSamples.countSamplesPerStatus(projectCode)
+        then: "the correct amounts of samples are returned"
+        1 * output.countedSamples({
+            verifyAll(it, StatusCount) {
+                it.getProjectCode() == projectCode
+                countSupplier(it) == 1
+                it.getSamplesInProject() == 2
+            }
+        })
+        0 * output.failedExecution(_ as String)
+        where:
+        status << [Status.SAMPLE_RECEIVED,
+                   Status.SAMPLE_QC_FAIL,
+                   Status.SAMPLE_QC_PASS,
+                   Status.LIBRARY_PREP_FINISHED,
+                   Status.DATA_AVAILABLE]
+        countSupplier << [StatusCount::getSamplesReceived,
+                          StatusCount::getSamplesQcFail,
+                          StatusCount::getSamplesQcPass,
+                          StatusCount::getLibraryPrepFinished,
+                          StatusCount::getDataAvailable]
+    }
+
+    def "amount of samples having reached status #status or later is correctly returned"() {
+        given:
+        String projectCode = "QABCD"
+        CountSamplesDataSource dataSource = Stub()
+        List<Status> statuses = [Status.DATA_AT_QBIC] + laterStatuses
+        dataSource.fetchSampleStatusesForProject(projectCode) >> { statuses }
+        CountSamplesOutput output = Mock()
+        CountSamples countSamples = new CountSamples(dataSource, output)
+        when: "the use case is run"
+        countSamples.countSamplesPerStatus(projectCode)
+        then: "the correct amounts of samples are returned"
+        1 * output.countedSamples({
+            verifyAll(it, StatusCount) {
+                it.getProjectCode() == projectCode
+                countSupplier(it) == expectedCount
+                it.getSamplesInProject() == expectedCount + 1
+            }
+        })
+        0 * output.failedExecution(_ as String)
+        where:
+        status << [Status.SAMPLE_RECEIVED, Status.SAMPLE_QC_FAIL, Status.SAMPLE_QC_PASS, Status.LIBRARY_PREP_FINISHED, Status.DATA_AVAILABLE]
+        laterStatuses << [
+                [Status.SAMPLE_QC_FAIL, Status.SAMPLE_QC_PASS, Status.LIBRARY_PREP_FINISHED, Status.DATA_AVAILABLE], //later then SAMPLE_RECEIVED
+                [], //later than SAMPLE_QC_FAIL
+                [Status.LIBRARY_PREP_FINISHED, Status.DATA_AVAILABLE], //later than SAMPLE_QC_PASS
+                [Status.DATA_AVAILABLE], //later than LIBRARY_PREP_FINISHED
+                [] //later than DATA_AVAILABLE
+        ]
+        countSupplier << [
+                StatusCount::getSamplesReceived,
+                StatusCount::getSamplesQcFail ,
+                StatusCount::getSamplesQcPass,
+                StatusCount::getLibraryPrepFinished,
+                StatusCount::getDataAvailable
+        ]
+        expectedCount << [
+                4,
+                0,
+                2,
+                1,
+                0
+        ]
+
+
+    }
+
     
     def "unsuccessful execution of the use case lead to failure notifications"() {
         given:
@@ -84,7 +139,7 @@ class CountSamplesSpec extends Specification {
         countSamples.countSamplesPerStatus(projectCode)
         then:"a failure message is send"
         1 * output.failedExecution(_)
-        0 * output.countedReceivedSamples(_)
+        0 * output.countedSamples(_)
     }
 
     def "a DataSourceException leads to a failure notification and no samples being loaded"() {
@@ -102,72 +157,6 @@ class CountSamplesSpec extends Specification {
 
         then:"a failure message is send"
         1 * output.failedExecution(_)
-        0 * output.countedReceivedSamples(_)
-    }
-
-    def "successful execution of counting failed qc samples lead to success notifications"() {
-        given:
-        CountSamplesDataSource dataSource = Stub()
-        String projectCode = "QABCD"
-        dataSource.fetchSampleStatusesForProject(projectCode) >> { new ArrayList<Status>() }
-        CountSamplesOutput output = Mock()
-        CountSamples countSamples = new CountSamples(dataSource, output)
-        when:"the use case is run"
-        countSamples.countSamplesPerStatus(projectCode)
-        then:"a successful message is send"
-        1 * output.countedFailedQcSamples(projectCode, 0, 0)
-        0 * output.failedExecution(_ as String)
-    }
-
-    def "amount of samples failing QC is correctly returned"() {
-        given:
-        CountSamplesDataSource dataSource = Stub()
-        List<Status> statuses = [Status.SAMPLE_QC_FAIL, Status.DATA_AVAILABLE, Status.SAMPLE_QC_FAIL]
-        String projectCode = "QABCD"
-        dataSource.fetchSampleStatusesForProject(projectCode) >> { statuses }
-        CountSamplesOutput output = Mock()
-        CountSamples countSamples = new CountSamples(dataSource, output)
-        when:"the use case is run"
-        countSamples.countSamplesPerStatus(projectCode)
-        then:"the correct amounts of samples are returned"
-        1 * output.countedFailedQcSamples(projectCode, 3, 2)
-        0 * output.failedExecution(_ as String)
-    }
-
-    def "unsuccessful execution of counting failed qc samples leads to failure notifications"() {
-        given:
-        String projectCode = "QABCD"
-        CountSamplesDataSource dataSource = Stub()
-        dataSource.fetchSampleStatusesForProject(projectCode) >> {
-            throw new RuntimeException("Testing runtime exceptions")
-        }
-        CountSamplesOutput output = Mock()
-        CountSamples countSamples = new CountSamples(dataSource, output)
-        when:"the use case is run"
-        countSamples.countSamplesPerStatus(projectCode)
-        then:"a failure message is send"
-        1 * output.failedExecution(_)
-        0 * output.countedFailedQcSamples(_)
-    }
-
-    def "countFailedQcSamples does not count samples with status #status"() {
-        given: "a project code"
-        String projectCode = "QABCD"
-        and: "a datasource stub returning one sample of the status"
-        CountSamplesDataSource dataSource = Stub()
-        dataSource.fetchSampleStatusesForProject(projectCode) >> {
-            return [status] * 5
-        }
-        CountSamplesOutput output = Mock()
-        when:
-        CountSamples countSamples = new CountSamples(dataSource, output)
-        countSamples.countSamplesPerStatus(projectCode)
-        then:
-        0 * output.failedExecution(_)
-        1 * output.countedFailedQcSamples(projectCode, totalNumber, 0)
-        where: "one sample is returned every time with each sample status once"
-        status << Status.values() - Status.SAMPLE_QC_FAIL
-        and: "the only the failedQC status is counted since it is an endpoint"
-        totalNumber = 5
+        0 * output.countedSamples(_)
     }
 }

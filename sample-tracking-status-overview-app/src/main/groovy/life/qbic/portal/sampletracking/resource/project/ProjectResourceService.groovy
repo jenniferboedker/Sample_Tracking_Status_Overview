@@ -53,4 +53,5 @@ class ProjectResourceService extends ResourceService<Project> {
             publish(it, Topic.PROJECT_UPDATED)
         })
     }
+
 }

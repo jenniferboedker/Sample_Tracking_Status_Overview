@@ -43,10 +43,11 @@ class CountSamples implements CountSamplesInput{
 
       int received = countSamplesFromStatus(Status.SAMPLE_RECEIVED)
       int failedQc = sampleStatuses.findAll { it == Status.SAMPLE_QC_FAIL }.size()
+      int passedQc = countSamplesFromStatus(Status.SAMPLE_QC_PASS)
       int libraryPrep = countSamplesFromStatus(Status.LIBRARY_PREP_FINISHED)
       int availableData = countSamplesFromStatus(Status.DATA_AVAILABLE)
 
-      StatusCount statusCount = new StatusCount(projectCode, received, 0, failedQc, libraryPrep, availableData, totalSampleCount)
+      StatusCount statusCount = new StatusCount(projectCode, received, passedQc, failedQc, libraryPrep, availableData, totalSampleCount)
       output.countedSamples(statusCount)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
