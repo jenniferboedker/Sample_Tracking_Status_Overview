@@ -51,7 +51,7 @@ abstract class ResourceService<T> extends Service<T> {
 
     /**
      * <p>Replaces resource items in the resource service matching the criteria.
-     * This method is expected to publish changed items an appropriate channel.</p>
+     * This method is expected to publish changed items to the appropriate channel.</p>
      * <p><b>After execution, the old resource items must not be contained in the
      * resource content and be replaced by the result of the operator.</b></p>
      * @param criteria the criteria to filter for items to replace
