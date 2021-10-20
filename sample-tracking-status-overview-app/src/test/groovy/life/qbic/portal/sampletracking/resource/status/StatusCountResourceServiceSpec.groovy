@@ -3,7 +3,6 @@ package life.qbic.portal.sampletracking.resource.status
 import life.qbic.business.samples.count.StatusCount
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.Subscriber
-import life.qbic.portal.sampletracking.communication.Topic
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -20,37 +19,18 @@ class StatusCountResourceServiceSpec extends Specification {
     @Shared def knownStatuses = [Status.SAMPLE_RECEIVED, Status.SAMPLE_QC_FAIL, Status.DATA_AVAILABLE, Status.LIBRARY_PREP_FINISHED].sort { a, b -> a.name() <=> b.name()}
     @Shared def unknownStatuses = Status.values().findAll {! (it in knownStatuses)}.sort {a,b -> a.name() <=> b.name()}
 
-    def "Removing and adding a count for #status informs all subscribers to #topic"() {
-        given: "a status count"
-        StatusCount statusCount = generateRandomStatusCount(status)
-        when: "subscribers subscribed to the service"
-        statusCountService.subscribe(subscriber1, topic)
-        and: "the count is added and removed from the resource"
-        statusCountService.addToResource(statusCount)
-        statusCountService.removeFromResource(statusCount)
-
-        then: "all subscribers subscribed to the topic are informed"
-        2 * subscriber1.receive(statusCount)
-
-        where:
-        topic | status
-        Topic.SAMPLE_RECEIVED_COUNT_UPDATE | Status.SAMPLE_RECEIVED
-    }
-
     def "Adding of a status count adds the count to the resource"() {
         given: "a status count"
-        StatusCount statusCount = generateRandomStatusCount(status)
+        StatusCount statusCount = getFakeStatusCount()
         when: "the status count is added to the resource service"
         statusCountService.addToResource(statusCount)
         then: "the status count is added to the resource"
         statusCountService.iterator().toList().contains(statusCount)
-        where: "the status is allowed"
-        status << knownStatuses
     }
 
     def "Removing of a status count removes the count from the resource"() {
         given: "a status count from the service"
-        StatusCount statusCount = generateRandomStatusCount(status)
+        StatusCount statusCount = getFakeStatusCount()
         statusCountService.addToResource(statusCount)
         and: "the adding functionality works"
         assert statusCountService.iterator().toList().contains(statusCount)
@@ -58,51 +38,26 @@ class StatusCountResourceServiceSpec extends Specification {
         statusCountService.removeFromResource(statusCount)
         then: "the count is removed to the resource"
         ! statusCountService.iterator().toList().contains(statusCount)
-        where: "the status is allowed"
-        status << knownStatuses
     }
 
-    def "Adding of a status that is not allowed does not add it to the resource"() {
-        given: "a status count"
-        StatusCount statusCount = generateRandomStatusCount(status)
-        List originalContent = statusCountService.iterator().toList()
-        when: "the status count is added to the resource service"
+    def "Replacing a status count is unsupported"() {
+        given: "a status count from the service"
+        StatusCount statusCount = getFakeStatusCount()
+        StatusCount replacement = getFakeStatusCount()
         statusCountService.addToResource(statusCount)
-        then: "the status count is not added to the resource"
-        statusCountService.iterator().toList() == originalContent
-        and: "an illegal argument exception is thrown"
-        thrown(IllegalArgumentException)
-        where: "the status is not allowed"
-        status << unknownStatuses
-    }
-
-    def "Removing of a status that is not allowed throws an IllegalArgumentException"() {
-        given: "a status count"
-        StatusCount statusCount = generateRandomStatusCount(status)
-        List originalContent = statusCountService.iterator().toList()
-        when: "the status count is removed from the resource service"
-        statusCountService.removeFromResource(statusCount)
-        then: "the status count is not removed from the resource"
-        statusCountService.iterator().toList() == originalContent
-        and: "an illegal argument exception is thrown"
-        thrown(IllegalArgumentException)
-        where: "the status is not allowed"
-        status << unknownStatuses
+        and: "the adding functionality works"
+        assert statusCountService.iterator().toList().contains(statusCount)
+        when: "a count is replaced in the resource service"
+        statusCountService.replace({ (it == statusCount) }, {return replacement})
+        then:
+//        ! statusCountService.iterator().toList().contains(statusCount)
+//        statusCountService.iterator().toList().contains(replacement)
+        thrown(UnsupportedOperationException)
     }
 
 
-    static StatusCount generateRandomStatusCount() {
-        Random random = new Random()
-        int randomStatusOrdinal = random.nextInt(Status.values().size())
-        Status status = Status.values()[randomStatusOrdinal]
-        return generateRandomStatusCount(status)
-    }
-
-    static StatusCount generateRandomStatusCount(Status status) {
-        Random random = new Random()
-        int count = random.nextInt()
-        int total = count + count
+    static StatusCount getFakeStatusCount() {
         String projectName = "TEST_NAME"
-        return new StatusCount(projectName, status, count, total)
+        return new StatusCount(projectName, 1, 1, 1, 1,1 , 5)
     }
 }
