@@ -1,8 +1,6 @@
 package life.qbic.business.project.load
 
 import life.qbic.business.DataSourceException
-import life.qbic.business.logging.Logger
-import life.qbic.business.logging.Logging
 import life.qbic.business.project.Project
 import life.qbic.business.project.subscribe.Subscriber
 
@@ -16,32 +14,19 @@ import life.qbic.business.project.subscribe.Subscriber
 class LoadProjects implements LoadProjectsInput{
     private final LoadProjectsDataSource dataSource
     private final SubscribedProjectsDataSource subscribedProjectsDataSource
+    private final LastChangedDateDataSource loadLastChangedDataSource
     private final LoadProjectsOutput output
 
-    private final Logging log = Logger.getLogger(this.getClass())
-
     /**
      * Default constructor for this use case
      * @param dataSource the data source to be used
      * @param output the output to where results are published
      * @since 1.0.0
      */
-    LoadProjects(LoadProjectsDataSource dataSource, LoadProjectsOutput output) {
-        this.subscribedProjectsDataSource = null
+    LoadProjects(LoadProjectsDataSource dataSource, LoadProjectsOutput output, LastChangedDateDataSource loadLastChangedDataSource, SubscribedProjectsDataSource subscribedProjectsDataSource) {
         this.dataSource = dataSource
-        this.output = output
-    }
-
-    /**
-     * Default constructor for this use case
-     * @param subscribedProjectsDataSource the data source for subscription handling
-     * @param dataSource the data source to be used
-     * @param output the output to where results are published
-     * @since 1.0.0
-     */
-    LoadProjects(SubscribedProjectsDataSource subscribedProjectsDataSource, LoadProjectsDataSource dataSource, LoadProjectsOutput output) {
+        this.loadLastChangedDataSource = loadLastChangedDataSource
         this.subscribedProjectsDataSource = subscribedProjectsDataSource
-        this.dataSource = dataSource
         this.output = output
     }
 
@@ -63,16 +48,17 @@ class LoadProjects implements LoadProjectsInput{
     }
 
     @Override
-    void loadUserProjectsWithSubscriptionsFor(Subscriber subscriber) {
+    void loadUserProjectsFor(Subscriber subscriber) {
         try {
             List<Project> projects = loadUserProjects()
             loadSubscriptionInformationInto(projects, subscriber)
+            loadLastChangedInformationInto(projects)
             output.loadedProjects(projects)
         } catch (DataSourceException dataSourceException) {
             output.failedExecution(dataSourceException.getMessage())
         } catch (Exception e) {
             output.failedExecution("Could not load projects")
-            log.error("unexpected exception during project loading:", e)
+            e.printStackTrace()
         }
     }
 
@@ -87,11 +73,15 @@ class LoadProjects implements LoadProjectsInput{
      * @param subscriber
      */
     private void loadSubscriptionInformationInto(Iterable<Project> projects, Subscriber subscriber) {
-        if (! subscribedProjectsDataSource) {
+/*        if (! subscribedProjectsDataSource) {
             String message = "Tried to load subscription information without data source."
             throw new IllegalStateException(message)
-        }
+        }*/
         List<String> subscribedProjectCodes = subscribedProjectsDataSource.findSubscribedProjectCodesFor(subscriber)
         projects.each {it.hasSubscription = subscribedProjectCodes.contains(it.code)}
+    }
+
+    private void loadLastChangedInformationInto(Iterable<Project> projects) {
+        projects.each { it.lastChanged = loadLastChangedDataSource.getLatestChange(it.code) }
     }
 }

@@ -7,6 +7,7 @@ import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.business.samples.count.StatusCount
 import life.qbic.portal.sampletracking.communication.Channel
 import life.qbic.portal.sampletracking.communication.Topic
+import life.qbic.portal.sampletracking.components.projectoverview.LastChangedComparator.SortOrder
 import life.qbic.portal.sampletracking.resource.ResourceService
 
 /**
@@ -44,6 +45,8 @@ class ProjectOverviewViewModel {
         projectResourceService.iterator().each { Project project ->
             addProject(project)
         }
+        Collections.sort(projectOverviews, new LastChangedComparator(SortOrder.DESCENDING))
+
         statusCountService.iterator().each { StatusCount statusCount ->
             updateStatusCount(statusCount)
         }
@@ -53,7 +56,8 @@ class ProjectOverviewViewModel {
         this.projectResourceService.subscribe({ addProject(it) }, Topic.PROJECT_ADDED)
         this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
         this.projectResourceService.subscribe({ updateProject(it) }, Topic.PROJECT_UPDATED)
-        this.statusCountService.subscribe({ updateStatusCount(it) }, Topic.SAMPLE_COUNT_UPDATE)
+        this.statusCountService.subscribe({
+            updateStatusCount(it) }, Topic.SAMPLE_COUNT_UPDATE)
     }
 
     private void updateStatusCount(StatusCount statusCount) {
@@ -62,10 +66,19 @@ class ProjectOverviewViewModel {
     }
 
     private void updateProjectSummary(ProjectSummary projectSummary, StatusCount statusCount) {
-        projectSummary.samplesReceived = statusCount.samplesReceived
-        projectSummary.samplesQcFailed = statusCount.samplesQcFail
-        projectSummary.samplesLibraryPrepFinished = statusCount.libraryPrepFinished
-        projectSummary.sampleDataAvailable = statusCount.dataAvailable
+        projectSummary.samplesReceived.totalSampleCount = statusCount.samplesInProject
+        projectSummary.samplesReceived.passingSamples = statusCount.samplesReceived
+
+        projectSummary.samplesQc.totalSampleCount = statusCount.samplesInProject
+        projectSummary.samplesQc.failingSamples = statusCount.samplesQcFail
+        projectSummary.samplesQc.passingSamples = statusCount.samplesQcPass
+
+        projectSummary.samplesLibraryPrepFinished.totalSampleCount = statusCount.samplesInProject
+        projectSummary.samplesLibraryPrepFinished.passingSamples = statusCount.libraryPrepFinished
+
+        projectSummary.sampleDataAvailable.totalSampleCount = statusCount.samplesInProject
+        projectSummary.sampleDataAvailable.passingSamples = statusCount.dataAvailable
+
         projectSummary.totalSampleCount = statusCount.samplesInProject
         this.projectOverviews[this.projectOverviews.indexOf(projectSummary)] = projectSummary
     }
@@ -122,7 +135,7 @@ class ProjectOverviewViewModel {
             if (newValue == null) {
                 setGeneratedManifest(null)
             } else {
-                if (newValue.sampleDataAvailable < 1) {
+                if (newValue.sampleDataAvailable.passingSamples < 1) {
                     setGeneratedManifest(null)
                 }
             }

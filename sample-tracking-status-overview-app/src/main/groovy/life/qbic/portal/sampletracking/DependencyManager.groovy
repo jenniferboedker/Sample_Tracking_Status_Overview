@@ -59,6 +59,7 @@ class DependencyManager {
     private final NotificationHandler notificationHandler
 
     private LoadProjectsDataSource loadProjectsDataSource
+    private LastChangedDateDataSource lastChangedDateDataSource
     private CountSamplesDataSource countSamplesDataSource
     private GetSamplesInfoDataSource getSamplesInfoDataSource
     private DownloadSamplesDataSource downloadSamplesDataSource
@@ -120,6 +121,9 @@ class DependencyManager {
         )
         OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
         loadProjectsDataSource = openBisConnector
+        lastChangedDateDataSource = samplesDbConnector
+
+        subscriptionDataSource = new SubscriptionsDbConnector(DatabaseSession.getInstance())
         getSamplesInfoDataSource = openBisConnector
 
 
@@ -186,8 +190,8 @@ class DependencyManager {
      */
     private void populateProjectService() {
         LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService, notificationService)
-        LoadProjectsInput loadProjects = new LoadProjects(subscribedProjectsDataSource, loadProjectsDataSource, output)
-        loadProjects.loadUserProjectsWithSubscriptionsFor(subscriptionUser)
+        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output, lastChangedDateDataSource, subscribedProjectsDataSource )
+        loadProjects.loadUserProjectsFor(subscriptionUser)
     }
 
     /**

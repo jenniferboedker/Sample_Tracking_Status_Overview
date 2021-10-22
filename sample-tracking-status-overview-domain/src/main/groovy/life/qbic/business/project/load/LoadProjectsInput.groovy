@@ -25,5 +25,5 @@ interface LoadProjectsInput {
      * @param subscriber the subscriber for which subscription information is loaded is checked
      * @since 1.0.0
      */
-    void loadUserProjectsWithSubscriptionsFor(Subscriber subscriber)
+    void loadUserProjectsFor(Subscriber subscriber)
 }

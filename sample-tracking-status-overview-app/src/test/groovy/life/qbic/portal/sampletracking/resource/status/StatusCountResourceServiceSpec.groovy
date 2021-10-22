@@ -14,7 +14,7 @@ class StatusCountResourceServiceSpec extends Specification {
 
     StatusCountResourceService statusCountService = new StatusCountResourceService()
 
-    @Shared def knownStatuses = [Status.SAMPLE_RECEIVED, Status.SAMPLE_QC_FAIL, Status.DATA_AVAILABLE, Status.LIBRARY_PREP_FINISHED].sort { a, b -> a.name() <=> b.name()}
+    @Shared def knownStatuses = [Status.SAMPLE_RECEIVED, Status.SAMPLE_QC_PASS, Status.SAMPLE_QC_FAIL, Status.DATA_AVAILABLE, Status.LIBRARY_PREP_FINISHED].sort { a, b -> a.name() <=> b.name()}
 
     def "Adding of a status count adds the count to the resource"() {
         given: "a status count"
