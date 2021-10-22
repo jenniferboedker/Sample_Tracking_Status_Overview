@@ -191,7 +191,7 @@ class DependencyManager {
     private void populateProjectService() {
         LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService, notificationService)
         LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output, lastChangedDateDataSource, subscribedProjectsDataSource )
-        loadProjects.projectsWithSubscriptionInfoFor(subscriptionUser)
+        loadProjects.withSubscriptions(subscriptionUser)
     }
 
     /**

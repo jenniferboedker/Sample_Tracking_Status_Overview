@@ -65,7 +65,7 @@ class LoadProjectsSpec extends Specification {
         LoadProjects loadProjects = new LoadProjects(dataSource, output, changeDataSource, subscribedProjectsDataSource)
 
         when:"the use case is run"
-        loadProjects.projectsWithSubscriptionInfoFor(subscriber)
+        loadProjects.withSubscriptions(subscriber)
 
         then:"the timestamp in the success notification is as expected"
         1 * output.loadedProjects(_) >> { arguments ->

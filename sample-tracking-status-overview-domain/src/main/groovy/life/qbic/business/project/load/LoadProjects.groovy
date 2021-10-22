@@ -39,7 +39,6 @@ class LoadProjects implements LoadProjectsInput{
     void loadProjects() {
         try {
             List<Project> projects = loadUserProjects()
-            loadLastChangedInformationInto(projects)
             output.loadedProjects(projects)
         } catch (DataSourceException dataSourceException) {
             output.failedExecution(dataSourceException.getMessage())
@@ -49,11 +48,10 @@ class LoadProjects implements LoadProjectsInput{
     }
 
     @Override
-    void projectsWithSubscriptionInfoFor(Subscriber subscriber) {
+    void withSubscriptions(Subscriber subscriber) {
         try {
             List<Project> projects = loadUserProjects()
             loadSubscriptionInformationInto(projects, subscriber)
-            loadLastChangedInformationInto(projects)
             output.loadedProjects(projects)
         } catch (DataSourceException dataSourceException) {
             output.failedExecution(dataSourceException.getMessage())
@@ -65,6 +63,7 @@ class LoadProjects implements LoadProjectsInput{
 
     private List<Project> loadUserProjects() {
         List<Project> projects = dataSource.fetchUserProjects()
+        loadLastChangedInformationInto(projects)
         return projects
     }
 
