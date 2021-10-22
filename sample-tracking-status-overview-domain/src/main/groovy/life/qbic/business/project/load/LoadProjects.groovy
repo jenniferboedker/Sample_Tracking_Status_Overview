@@ -27,6 +27,7 @@ class LoadProjects implements LoadProjectsInput{
      * @since 1.0.0
      */
     LoadProjects(LoadProjectsDataSource dataSource, LoadProjectsOutput output) {
+        this.subscribedProjectsDataSource = null
         this.dataSource = dataSource
         this.output = output
     }

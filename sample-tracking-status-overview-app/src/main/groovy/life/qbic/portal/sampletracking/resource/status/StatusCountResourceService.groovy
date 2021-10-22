@@ -1,8 +1,11 @@
 package life.qbic.portal.sampletracking.resource.status
 
-import life.qbic.datamodel.samples.Status
+import life.qbic.business.samples.count.StatusCount
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
+
+import java.util.function.Predicate
+import java.util.function.UnaryOperator
 
 /**
  * <b>A resource service holding data on sample status counts per project</b>
@@ -14,10 +17,7 @@ import life.qbic.portal.sampletracking.resource.ResourceService
 class StatusCountResourceService extends ResourceService<StatusCount>{
 
     StatusCountResourceService() {
-        this.addTopic(Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
-        this.addTopic(Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
-        this.addTopic(Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
-        this.addTopic(Topic.SAMPLE_LIBRARY_PREP_FINISHED)
+        this.addTopic(Topic.SAMPLE_COUNT_UPDATE)
     }
 
     /**
@@ -28,27 +28,8 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
      */
     @Override
     void addToResource(StatusCount statusCount) throws IllegalArgumentException {
-        switch (statusCount.status) {
-            case Status.SAMPLE_RECEIVED:
-                publish(statusCount, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
-                content.add(statusCount)
-                break
-            case Status.SAMPLE_QC_FAIL:
-                publish(statusCount, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
-                content.add(statusCount)
-                break
-            case Status.DATA_AVAILABLE:
-                publish(statusCount, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
-                content.add(statusCount)
-                break
-            case Status.LIBRARY_PREP_FINISHED:
-                publish(statusCount, Topic.SAMPLE_LIBRARY_PREP_FINISHED)
-                content.add(statusCount)
-                break
-            default:
-                throw new IllegalArgumentException("Could not process status count for status: $statusCount.status")
-                break
-        }
+        content.add(statusCount)
+        publish(statusCount, Topic.SAMPLE_COUNT_UPDATE)
     }
 
     /**
@@ -59,26 +40,16 @@ class StatusCountResourceService extends ResourceService<StatusCount>{
      */
     @Override
     void removeFromResource(StatusCount statusCount) throws IllegalArgumentException {
-        switch (statusCount.status) {
-            case Status.SAMPLE_RECEIVED:
-                publish(statusCount, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
-                content.remove(statusCount)
-                break
-            case Status.SAMPLE_QC_FAIL:
-                publish(statusCount, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
-                content.remove(statusCount)
-                break
-            case Status.DATA_AVAILABLE:
-                publish(statusCount, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
-                content.remove(statusCount)
-                break
-            case Status.LIBRARY_PREP_FINISHED:
-                publish(statusCount, Topic.SAMPLE_LIBRARY_PREP_FINISHED)
-                content.remove(statusCount)
-                break
-            default:
-                throw new IllegalArgumentException("Could not process status count for status: $statusCount.status")
-                break
-        }
+        content.remove(statusCount)
+        publish(statusCount, Topic.SAMPLE_COUNT_UPDATE)
+    }
+
+    /**
+     * <p><b>This method is not implemented. This service does not do anything when you call this method.</b></p>
+     * @since 1.0.0
+     */
+    @Override
+    void replace(Predicate<StatusCount> criteria, UnaryOperator<StatusCount> operator) {
+        throw new UnsupportedOperationException("${this.class.getSimpleName()} does not support replacement.")
     }
 }

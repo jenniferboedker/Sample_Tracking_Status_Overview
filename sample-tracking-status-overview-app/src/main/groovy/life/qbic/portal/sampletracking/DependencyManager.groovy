@@ -10,6 +10,7 @@ import life.qbic.business.project.subscribe.SubscriptionDataSource
 import life.qbic.business.samples.count.CountSamples
 import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.business.samples.count.CountSamplesOutput
+import life.qbic.business.samples.count.StatusCount
 import life.qbic.business.samples.download.DownloadSamples
 import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.business.samples.download.DownloadSamplesOutput
@@ -37,7 +38,6 @@ import life.qbic.portal.sampletracking.datasources.samples.SamplesDbConnector
 import life.qbic.portal.sampletracking.datasources.subscriptions.SubscriptionsDbConnector
 import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
-import life.qbic.portal.sampletracking.resource.status.StatusCount
 import life.qbic.portal.sampletracking.resource.status.StatusCountResourceService
 import life.qbic.portal.utils.ConfigurationManager
 import life.qbic.portal.utils.ConfigurationManagerFactory
@@ -175,7 +175,7 @@ class DependencyManager {
     }
 
     private SubscribeProjectController setupSubscribeProjectUseCase() {
-        SubscribeProjectOutput output = new SubscribeProjectPresenter(notificationService)
+        SubscribeProjectOutput output = new SubscribeProjectPresenter(projectResourceService, notificationService)
         SubscribeProject subscribeProject = new SubscribeProject(subscriptionDataSource, output)
         return new SubscribeProjectController(subscribeProject)
     }

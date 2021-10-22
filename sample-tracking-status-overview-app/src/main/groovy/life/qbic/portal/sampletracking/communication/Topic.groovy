@@ -9,13 +9,11 @@ enum Topic {
 
     PROJECT_ADDED("A project was added"),
     PROJECT_REMOVED("A project was removed"),
+    PROJECT_UPDATED("A project was updated"),
     NOTIFICATION_FAILURE("Failure notification"),
     NOTIFICATION_SUCCESS("Success notification"),
     NOTIFICATION_INFO("Information notification"),
-    SAMPLE_RECEIVED_COUNT_UPDATE("The count of received samples was updated"),
-    SAMPLE_FAILED_QC_COUNT_UPDATE("The count of samples failing QC was updated"),
-    SAMPLE_DATA_AVAILABLE_COUNT_UPDATE("The count of available samples data was updated"),
-    SAMPLE_LIBRARY_PREP_FINISHED("The count of samples with finished library prep was updated")
+    SAMPLE_COUNT_UPDATE("The number of samples in the given statuses changed")
 
     @Override
     String toString() {
