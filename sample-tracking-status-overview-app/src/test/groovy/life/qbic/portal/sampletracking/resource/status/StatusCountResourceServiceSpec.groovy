@@ -2,7 +2,6 @@ package life.qbic.portal.sampletracking.resource.status
 
 import life.qbic.business.samples.count.StatusCount
 import life.qbic.datamodel.samples.Status
-import life.qbic.portal.sampletracking.communication.Subscriber
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -14,10 +13,8 @@ import spock.lang.Specification
 class StatusCountResourceServiceSpec extends Specification {
 
     StatusCountResourceService statusCountService = new StatusCountResourceService()
-    Subscriber<StatusCount> subscriber1 = Mock()
 
     @Shared def knownStatuses = [Status.SAMPLE_RECEIVED, Status.SAMPLE_QC_FAIL, Status.DATA_AVAILABLE, Status.LIBRARY_PREP_FINISHED].sort { a, b -> a.name() <=> b.name()}
-    @Shared def unknownStatuses = Status.values().findAll {! (it in knownStatuses)}.sort {a,b -> a.name() <=> b.name()}
 
     def "Adding of a status count adds the count to the resource"() {
         given: "a status count"
@@ -49,9 +46,7 @@ class StatusCountResourceServiceSpec extends Specification {
         assert statusCountService.iterator().toList().contains(statusCount)
         when: "a count is replaced in the resource service"
         statusCountService.replace({ (it == statusCount) }, {return replacement})
-        then:
-//        ! statusCountService.iterator().toList().contains(statusCount)
-//        statusCountService.iterator().toList().contains(replacement)
+        then: "the operation is not supported"
         thrown(UnsupportedOperationException)
     }
 
