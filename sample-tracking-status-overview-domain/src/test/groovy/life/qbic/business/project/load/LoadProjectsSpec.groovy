@@ -37,12 +37,7 @@ class LoadProjectsSpec extends Specification {
         loadProjects.loadProjects()
 
         then: "the timestamp in the success notification is as expected"
-        1 * output.loadedProjects([
-                { Project project ->
-                    assert project.code == fetchedProject.code
-                    assert project.title == fetchedProject.title
-               }
-        ])
+        1 * output.loadedProjects([fetchedProject])
         0 * output.failedExecution(_)
     }
 
@@ -63,18 +58,19 @@ class LoadProjectsSpec extends Specification {
 
         and: "subscription information"
         SubscribedProjectsDataSource subscribedProjectsDataSource = Stub()
-        subscribedProjectsDataSource.findSubscribedProjectCodesFor(_) >> [projectCode]
+        subscribedProjectsDataSource.findSubscribedProjectCodesFor(subscriber) >> [projectCode]
         boolean expectedSubscription = true
 
         and: "a use case under test"
         LoadProjects loadProjects = new LoadProjects(dataSource, output, changeDataSource, subscribedProjectsDataSource)
 
         when:"the use case is run"
-        loadProjects.loadUserProjectsFor(subscriber)
+        loadProjects.projectsWithSubscriptionInfoFor(subscriber)
 
         then:"the timestamp in the success notification is as expected"
         1 * output.loadedProjects(_) >> { arguments ->
-            final Project project = arguments.get(0)
+            final List<Project> projects = arguments.get(0)
+            Project project = projects.first()
             assert project.lastChanged == expectedTimestamp
             assert project.hasSubscription == expectedSubscription
         }
