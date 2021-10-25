@@ -1,8 +1,4 @@
 package life.qbic.portal.sampletracking.components.projectoverview
-
-import java.time.Instant
-import java.util.Comparator
-
 /**
  * Compares {@link ProjectSummary} by the last change time as denoted by the timestamp
  *
@@ -21,7 +17,7 @@ class LastChangedComparator implements Comparator<ProjectSummary> {
 
   @Override
   int compare(ProjectSummary o1, ProjectSummary o2) {
-    int compare = Math.signum(o1.lastChanged.compareTo(o2.lastChanged))
+    int compare = Integer.signum(o1.lastChanged <=> o2.lastChanged)
     
     if (sortOrder == SortOrder.ASCENDING) {
       return compare

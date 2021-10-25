@@ -1,9 +1,8 @@
 package life.qbic.business.project.load
 
 import life.qbic.business.DataSourceException
-import life.qbic.datamodel.dtos.projectmanagement.Project
-import java.time.Instant
 
+import java.time.Instant
 
 /**
  * <b>Provides information about the time of latest changes for a project</b>

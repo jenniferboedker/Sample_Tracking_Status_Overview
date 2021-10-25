@@ -4,6 +4,9 @@ import life.qbic.business.project.Project
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.resource.ResourceService
 
+import java.util.function.Predicate
+import java.util.function.UnaryOperator
+
 /**
  * <p>This resource service holds projects.</p>
  * *
@@ -15,6 +18,7 @@ class ProjectResourceService extends ResourceService<Project> {
     ProjectResourceService() {
         addTopic(Topic.PROJECT_ADDED)
         addTopic(Topic.PROJECT_REMOVED)
+        addTopic(Topic.PROJECT_UPDATED)
     }
 
     /**
@@ -39,6 +43,15 @@ class ProjectResourceService extends ResourceService<Project> {
     void removeFromResource(Project resourceItem) {
         content.remove(resourceItem)
         publish(resourceItem, Topic.PROJECT_REMOVED)
+    }
+
+    @Override
+    void replace(Predicate<Project> criteria, UnaryOperator<Project> operator) {
+        List<Project> projectsBeingReplaced = content.stream().filter(criteria).collect()
+        List<Project> replacements = projectsBeingReplaced.stream().map(operator).collect()
+        replacements.forEach({
+            publish(it, Topic.PROJECT_UPDATED)
+        })
     }
 
 }

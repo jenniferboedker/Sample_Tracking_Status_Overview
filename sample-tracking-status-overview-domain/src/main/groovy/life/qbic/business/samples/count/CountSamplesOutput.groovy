@@ -17,44 +17,9 @@ interface CountSamplesOutput {
      * @since 1.0.0
      */
     void failedExecution(String reason) throws OutputException
-
     /**
-     * To be called after successfully counting received samples for the provided code.
-     * @param number of all samples and samples that have been received by the lab
-     * @param projectCode the code of the project samples were counted for
-     * @since 1.0.0
+     * To be called after successfully counting samples for each status for the provided project code.
+     * @param statusCount the count of received statuses
      */
-    void countedReceivedSamples(String projectCode, int allSamples, int receivedSamples) throws OutputException
-
-    /**
-     * To be called after successfully counting passed QC samples for the provided code.
-     * @param number of all samples and samples that have passed QC
-     * @param projectCode the code of the project samples were counted for
-     * @since 1.0.0
-     */
-    void countedPassingQcSamples(String projectCode, int allSamples, int passedQcSamples) throws OutputException
-
-    /**
-     * To be called after successfully counting failed QC samples for the provided code.
-     * @param number of all samples and samples that have failed QC
-     * @param projectCode the code of the project samples were counted for
-     * @since 1.0.0
-     */
-    void countedFailedQcSamples(String projectCode, int allSamples, int failedQcSamples) throws OutputException
-  
-    /**
-     * To be called after successfully counting samples with available data for the provided code.
-     * @param number of all samples and samples that have available data
-     * @param projectCode the code of the project samples were counted for
-     * @since 1.0.0
-     */
-    void countedAvailableSampleData(String projectCode, int allSamples, int availableData)
-
-    /**
-     * To be called after successfully counting samples with finished library prep for the provided code.
-     * @param number of all samples and samples that have available data
-     * @param projectCode the code of the project samples were counted for
-     * @since 1.0.0
-     */
-    void countedLibraryPrepFinishedSamples(String projectCode, int allSamples, int libraryPrepFinished)
+    void countedSamples(StatusCount statusCount)
 }

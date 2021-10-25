@@ -1,5 +1,7 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
+
+import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
@@ -8,7 +10,7 @@ import com.vaadin.server.StreamResource
 import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
-import com.vaadin.ui.Grid.Column;
+import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.themes.ValoTheme
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
@@ -63,7 +65,7 @@ class ProjectOverviewView extends VerticalLayout{
         setupProjects()
         HorizontalLayout buttonBar = setupButtonLayout()
         failedQCSamplesView.setVisible(false)
-
+        bindManifestToProjectSelection()
         this.addComponents(titleLabel,buttonBar, projectGrid, failedQCSamplesView)
     }
 
@@ -145,13 +147,36 @@ class ProjectOverviewView extends VerticalLayout{
         subscriptionCheckBox.setVisible(false)
         enableWhenProjectIsSelected(subscriptionCheckBox)
         subscriptionCheckBox.setValue(false)
-        subscriptionCheckBox.addValueChangeListener(event -> {
-            //Only Subscribe if checkbox is checked
-            if (subscriptionCheckBox.value && viewModel.selectedProject) {
-                subscribeToProject(viewModel.selectedProject.code)
+        viewModel.addPropertyChangeListener("selectedProject", {
+            Optional<ProjectSummary> selectedProjectSummary = Optional.ofNullable(it.newValue as ProjectSummary)
+            selectedProjectSummary.ifPresent({
+                subscriptionCheckBox.value = it.hasSubscription
+            })
+            if (!selectedProjectSummary.isPresent()) {
+                subscriptionCheckBox.value = false
+            }
+
+        })
+        subscriptionCheckBox.addValueChangeListener(checkBoxValueChange -> {
+            if (checkBoxValueChange.oldValue == checkBoxValueChange.value) {
+                return // just to be sure a change is present
+            }
+            if (checkBoxValueChange.value) {
+                subscribeIfNotSubscribed(viewModel.selectedProject)
             }
         })
         return subscriptionCheckBox
+    }
+
+    /**
+     * Determines if a subscription is requested and triggers it
+     * @param projectSummary the project summary to which a subscription might be requested
+     */
+    private void subscribeIfNotSubscribed(ProjectSummary projectSummary) {
+        Optional<ProjectSummary> selectedProject = Optional.ofNullable(projectSummary)
+        selectedProject
+                .filter({ !it.hasSubscription })
+                .ifPresent({ subscribeToProject(it.code) })
     }
 
     private void setupProjects() {
@@ -160,38 +185,49 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
         projectGrid.addSelectionListener({
             if (it instanceof SingleSelectionEvent<ProjectSummary>) {
-                clearProjectSelection()
-                it.getSelectedItem().ifPresent(this::selectProject)
+                Optional<ProjectSummary> selectedItem = it.getSelectedItem()
+                if (!selectedItem.isPresent()) {
+                    clearProjectSelection()
+                }
+                selectedItem.ifPresent({
+                    selectProject(it)
+                })
+
             }
         })
-        viewModel.addPropertyChangeListener("selectedProject", {
-            Optional<ProjectSummary> modelSelection = Optional.ofNullable(viewModel.selectedProject)
-            Optional<ProjectSummary> viewSelection = projectGrid.getSelectionModel().getFirstSelectedItem()
-            modelSelection.ifPresent({
-                if (viewSelection.isPresent()) {
-                    if (viewSelection.get() == modelSelection.get()) {
-                        // do nothing
-                    } else {
-                        projectGrid.getSelectionModel().deselectAll()
-                        projectGrid.select(modelSelection.get())
-                    }
-                } else {
-                    projectGrid.select(modelSelection.get())
-                }
-            })
-            //for each selected
-            failedQCSamplesView.setVisible(false)
+        viewModel.updatedProjectsChannel.subscribe({updatedProjectCode ->
+            refreshDataProvider()
         })
     }
 
     private void selectProject(ProjectSummary projectSummary) {
-        viewModel.selectedProject = projectSummary
-        tryToDownloadManifest()
+        if (!(projectSummary in viewModel.projectOverviews)) {
+            selectProject(projectSummary.code)
+        } else {
+            viewModel.selectedProject = projectSummary
+        }
     }
+    private void selectProject(String projectCode) {
+        Optional<ProjectSummary> projectSummary = Optional.ofNullable(viewModel.getProjectSummary(projectCode))
+        projectSummary.ifPresent({
+            viewModel.selectedProject = it
+        })
+        if (! projectSummary.isPresent()) {
+            // we tried to select a project summary that is not in our list of project summaries
+            // this should not happen
+            throw new IllegalArgumentException("No project with code $projectCode could be selected." +
+                    " The project was not found in our list of projects.")
+        }
+    }
+
+    private void bindManifestToProjectSelection() {
+        viewModel.addPropertyChangeListener("selectedProject", { tryToDownloadManifest() })
+    }
+
+
 
     private void clearProjectSelection() {
         viewModel.selectedProject = null
-        viewModel.generatedManifest = null
     }
 
     private static String getStyleForColumn(SampleCount sampleStatusCount) {
@@ -217,10 +253,8 @@ class ProjectOverviewView extends VerticalLayout{
 
         projectGrid.addColumn({it.sampleDataAvailable}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.sampleDataAvailable)})
                 .setCaption("Data Available").setId("SampleDataAvailable")
-
-        setupDataProvider()
+        refreshDataProvider()
         //specify size of grid and layout
-
         projectGrid.setWidthFull()
         projectGrid.getColumn("ProjectTitle").setMaximumWidth(800)
         projectGrid.getColumn("SamplesReceived").setExpandRatio(1)
@@ -229,36 +263,43 @@ class ProjectOverviewView extends VerticalLayout{
         projectGrid.getColumn("SampleDataAvailable").setExpandRatio(1)
 
         projectGrid.setHeightMode(HeightMode.ROW)
-        
+
         // remove manual sorting - any sorting in the code should probably done before disabling it
         for (Column col : projectGrid.getColumns()) {
-          col.setSortable(false);
+          col.setSortable(false)
         }
     }
 
-    private void setupDataProvider() {
-        def dataProvider = new ListDataProvider(viewModel.projectOverviews)
+    private void refreshDataProvider() {
+        DataProvider dataProvider = new ListDataProvider(viewModel.projectOverviews)
         projectGrid.setDataProvider(dataProvider)
+        if( viewModel.selectedProject ) {
+            projectGrid.select(viewModel.selectedProject)
+        }
     }
 
 
     private void tryToDownloadManifest() {
         Optional<ProjectSummary> selectedSummary = Optional.empty()
         try {
-            selectedSummary = Optional.ofNullable(viewModel.selectedProject)
-            selectedSummary.filter({it.sampleDataAvailable.passingSamples > 0 }).ifPresent({
+            Optional<ProjectSummary> downloadableProject = Optional.ofNullable(viewModel.selectedProject).filter(
+                    {
+                        it.sampleDataAvailable.passingSamples > 0
+                    })
+            downloadableProject.ifPresent({
                 String projectCode = it.getCode()
                 downloadProjectController.downloadProject(projectCode)
             })
-        } catch (IllegalArgumentException illegalArgument) {
-            String projectCode = selectedSummary.map(ProjectSummary::getCode).orElse("No project selected")
-            notificationService.publishFailure("Manifest Download failed for project ${projectCode}. ${Constants.CONTACT_HELPDESK}")
-            log.error "Manifest Download failed due to: ${illegalArgument.getMessage()}"
-        } catch (Exception exception) {
-            notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
-            log.error "An error occured whily trying to download ${selectedSummary}"
-            log.error "Manifest Download failed due to: ${exception.getMessage()}"
-        }
+        } catch (IllegalArgumentException illegalArgument ) {
+                String projectCode = selectedSummary.map(ProjectSummary::getCode).orElse(
+                        "No project selected")
+                notificationService.publishFailure("Manifest Download failed for project ${projectCode}. ${Constants.CONTACT_HELPDESK}")
+                log.error "Manifest Download failed due to: ${illegalArgument.getMessage()}"
+            } catch (Exception exception ) {
+                notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+                log.error "An error occured whily trying to download ${selectedSummary}"
+                log.error "Manifest Download failed due to: ${exception.getMessage()}"
+            }
     }
 
     private void enableWhenDownloadIsAvailable(Component component) {
@@ -275,7 +316,6 @@ class ProjectOverviewView extends VerticalLayout{
 
     private void enableWhenProjectIsSelected(CheckBox checkBox) {
         viewModel.addPropertyChangeListener("selectedProject") {
-            checkBox.setValue(false)
             if(viewModel.selectedProject){
              checkBox.setVisible(true)
             }else{

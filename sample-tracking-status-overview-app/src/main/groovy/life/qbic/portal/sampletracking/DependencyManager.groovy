@@ -2,11 +2,7 @@ package life.qbic.portal.sampletracking
 
 import com.vaadin.ui.VerticalLayout
 import life.qbic.business.project.Project
-import life.qbic.business.project.load.LoadProjects
-import life.qbic.business.project.load.LoadProjectsDataSource
-import life.qbic.business.project.load.LastChangedDateDataSource
-import life.qbic.business.project.load.LoadProjectsInput
-import life.qbic.business.project.load.LoadProjectsOutput
+import life.qbic.business.project.load.*
 import life.qbic.business.project.subscribe.SubscribeProject
 import life.qbic.business.project.subscribe.SubscribeProjectOutput
 import life.qbic.business.project.subscribe.Subscriber
@@ -14,6 +10,7 @@ import life.qbic.business.project.subscribe.SubscriptionDataSource
 import life.qbic.business.samples.count.CountSamples
 import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.business.samples.count.CountSamplesOutput
+import life.qbic.business.samples.count.StatusCount
 import life.qbic.business.samples.download.DownloadSamples
 import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.business.samples.download.DownloadSamplesOutput
@@ -41,7 +38,6 @@ import life.qbic.portal.sampletracking.datasources.samples.SamplesDbConnector
 import life.qbic.portal.sampletracking.datasources.subscriptions.SubscriptionsDbConnector
 import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
-import life.qbic.portal.sampletracking.resource.status.StatusCount
 import life.qbic.portal.sampletracking.resource.status.StatusCountResourceService
 import life.qbic.portal.utils.ConfigurationManager
 import life.qbic.portal.utils.ConfigurationManagerFactory
@@ -68,13 +64,16 @@ class DependencyManager {
     private GetSamplesInfoDataSource getSamplesInfoDataSource
     private DownloadSamplesDataSource downloadSamplesDataSource
     private SubscriptionDataSource subscriptionDataSource
+    private SubscribedProjectsDataSource subscribedProjectsDataSource
 
     private ResourceService<Project> projectResourceService
     private ResourceService<StatusCount> statusCountService
     private NotificationService notificationService
+    private Subscriber subscriptionUser
 
     DependencyManager(PortalUser user) {
         portalUser = user
+        subscriptionUser = subscriberFor(portalUser)
         // Load the app environment configuration
         configurationManager = ConfigurationManagerFactory.getInstance()
 
@@ -84,6 +83,12 @@ class DependencyManager {
         populateProjectService()
         portletView = setupPortletView()
         populateStatusCountService()
+    }
+
+    private static Subscriber subscriberFor(PortalUser portalUser) {
+        return new Subscriber(portalUser.firstName,
+                portalUser.lastName,
+                portalUser.emailAddress)
     }
 
 
@@ -120,6 +125,11 @@ class DependencyManager {
 
         subscriptionDataSource = new SubscriptionsDbConnector(DatabaseSession.getInstance())
         getSamplesInfoDataSource = openBisConnector
+
+
+        SubscriptionsDbConnector subscriptionsDbConnector = new SubscriptionsDbConnector(DatabaseSession.getInstance())
+        subscriptionDataSource = subscriptionsDbConnector
+        subscribedProjectsDataSource = subscriptionsDbConnector
     }
 
     /**
@@ -144,8 +154,8 @@ class DependencyManager {
      * @return a new ProjectOverviewView
      */
     private ProjectOverviewView createProjectOverviewView() {
-        Subscriber currentUser = new Subscriber(portalUser.firstName, portalUser.lastName, portalUser.emailAddress)
-        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService, currentUser)
+        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService,
+                this.subscriptionUser)
         SubscribeProjectController subscribeProjectController = setupSubscribeProjectUseCase()
         DownloadProjectController downloadController = setupDownloadProjectUseCase(viewModel)
 
@@ -169,7 +179,7 @@ class DependencyManager {
     }
 
     private SubscribeProjectController setupSubscribeProjectUseCase() {
-        SubscribeProjectOutput output = new SubscribeProjectPresenter(notificationService)
+        SubscribeProjectOutput output = new SubscribeProjectPresenter(projectResourceService, notificationService)
         SubscribeProject subscribeProject = new SubscribeProject(subscriptionDataSource, output)
         return new SubscribeProjectController(subscribeProject)
     }
@@ -180,8 +190,8 @@ class DependencyManager {
      */
     private void populateProjectService() {
         LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService, notificationService)
-        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, lastChangedDateDataSource, output)
-        loadProjects.loadProjects()
+        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output, lastChangedDateDataSource, subscribedProjectsDataSource )
+        loadProjects.withSubscriptions(subscriptionUser)
     }
 
     /**
