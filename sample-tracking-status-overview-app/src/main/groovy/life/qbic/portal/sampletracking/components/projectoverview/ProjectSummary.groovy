@@ -1,9 +1,10 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import groovy.transform.EqualsAndHashCode
-import java.time.Instant
-import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.business.project.Project
+import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
+
+import java.time.Instant
 
 /**
  * <b>Project Summary POJO</b>
@@ -17,6 +18,7 @@ import life.qbic.business.project.Project
 class ProjectSummary {
     final String code
     final String title
+    boolean hasSubscription = false
     int totalSampleCount
     SampleCount samplesReceived
     SampleCount samplesQc
@@ -24,9 +26,10 @@ class ProjectSummary {
     SampleCount sampleDataAvailable
     Instant lastChanged
 
-    ProjectSummary(String code, String title) {
+    ProjectSummary(String code, String title, boolean hasSubscription) {
         this.code = code
         this.title = title
+        this.hasSubscription = hasSubscription
         this.samplesReceived = new SampleCount(0,0,0)
         this.samplesQc = new SampleCount(0,0,0)
         this.samplesLibraryPrepFinished = new SampleCount(0,0,0)
@@ -38,7 +41,8 @@ class ProjectSummary {
     static ProjectSummary of(Project project) {
         String code = project.code
         String title = project.title
-        ProjectSummary summary = new ProjectSummary(code, title)
+        boolean hasSubscription = project.hasSubscription
+        ProjectSummary summary = new ProjectSummary(code, title, hasSubscription)
         summary.lastChanged = project.lastChanged
         return summary
     }

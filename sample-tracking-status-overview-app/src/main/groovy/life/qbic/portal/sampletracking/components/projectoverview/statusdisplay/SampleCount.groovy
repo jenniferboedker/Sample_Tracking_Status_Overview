@@ -14,6 +14,10 @@ class SampleCount {
     int failingSamples
     int totalSampleCount
 
+    void setPassingSamples(int passingSamples) {
+        this.passingSamples = passingSamples
+    }
+
     SampleCount(int passing, int failing, int totalCount){
         this.passingSamples = passing
         this.failingSamples = failing

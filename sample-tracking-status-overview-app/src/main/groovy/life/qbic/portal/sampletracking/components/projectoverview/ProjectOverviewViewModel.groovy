@@ -1,15 +1,14 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import groovy.beans.Bindable
-import java.util.Collections
-
+import groovy.util.logging.Log4j2
 import life.qbic.business.project.Project
 import life.qbic.business.project.subscribe.Subscriber
+import life.qbic.business.samples.count.StatusCount
+import life.qbic.portal.sampletracking.communication.Channel
 import life.qbic.portal.sampletracking.communication.Topic
-import life.qbic.portal.sampletracking.resource.ResourceService
-import life.qbic.portal.sampletracking.resource.status.StatusCount
-import life.qbic.portal.sampletracking.components.projectoverview.LastChangedComparator
 import life.qbic.portal.sampletracking.components.projectoverview.LastChangedComparator.SortOrder
+import life.qbic.portal.sampletracking.resource.ResourceService
 
 /**
  * <h1>ViewModel for the {@link ProjectOverviewView}</h1>
@@ -19,22 +18,26 @@ import life.qbic.portal.sampletracking.components.projectoverview.LastChangedCom
  * @since 1.0.0
  *
  */
+@Log4j2
 class ProjectOverviewViewModel {
 
-    ObservableList projectOverviews = new ObservableList(new ArrayList<ProjectSummary>())
+    List<ProjectSummary> projectOverviews =[]
     private final ResourceService<Project> projectResourceService
     private final ResourceService<StatusCount> statusCountService
 
     @Bindable ProjectSummary selectedProject
     @Bindable String generatedManifest
     final Subscriber subscriber
+    final Channel<String> updatedProjectsChannel
 
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService, Subscriber subscriber) {
+        this.updatedProjectsChannel = new Channel<>()
         this.projectResourceService = projectResourceService
         this.statusCountService = statusCountService
         this.subscriber = subscriber
         fetchProjectData()
         subscribeToResources()
+        bindManifestToSelection()
     }
 
     private void fetchProjectData() {
@@ -45,80 +48,65 @@ class ProjectOverviewViewModel {
         Collections.sort(projectOverviews, new LastChangedComparator(SortOrder.DESCENDING))
 
         statusCountService.iterator().each { StatusCount statusCount ->
-            updateSamplesReceived(statusCount)
-            updateSamplesFailedQc(statusCount)
-
-            updateSamplesLibraryPrepFinished(statusCount)
-            updateDataAvailable(statusCount)
+            updateStatusCount(statusCount)
         }
     }
 
     private void subscribeToResources() {
         this.projectResourceService.subscribe({ addProject(it) }, Topic.PROJECT_ADDED)
         this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
+        this.projectResourceService.subscribe({ updateProject(it) }, Topic.PROJECT_UPDATED)
+        this.statusCountService.subscribe({
+            updateStatusCount(it) }, Topic.SAMPLE_COUNT_UPDATE)
+    }
 
-        this.statusCountService.subscribe({ updateSamplesReceived(it) }, Topic.SAMPLE_RECEIVED_COUNT_UPDATE)
-        this.statusCountService.subscribe({ updateSamplesPassedQc(it) }, Topic.SAMPLE_PASSED_QC_COUNT_UPDATE)
-        this.statusCountService.subscribe({ updateSamplesFailedQc(it) }, Topic.SAMPLE_FAILED_QC_COUNT_UPDATE)
-        this.statusCountService.subscribe({ updateDataAvailable(it) }, Topic.SAMPLE_DATA_AVAILABLE_COUNT_UPDATE)
-        this.statusCountService.subscribe({ updateSamplesLibraryPrepFinished(it) }, Topic.SAMPLE_LIBRARY_PREP_FINISHED)
+    private void updateStatusCount(StatusCount statusCount) {
+        ProjectSummary projectSummary = getProjectSummary(statusCount.projectCode)
+        Optional.ofNullable(projectSummary).ifPresent({ updateProjectSummary(it, statusCount) })
+    }
+
+    private void updateProjectSummary(ProjectSummary projectSummary, StatusCount statusCount) {
+        projectSummary.samplesReceived.totalSampleCount = statusCount.samplesInProject
+        projectSummary.samplesReceived.passingSamples = statusCount.samplesReceived
+
+        projectSummary.samplesQc.totalSampleCount = statusCount.samplesInProject
+        projectSummary.samplesQc.failingSamples = statusCount.samplesQcFail
+        projectSummary.samplesQc.passingSamples = statusCount.samplesQcPass
+
+        projectSummary.samplesLibraryPrepFinished.totalSampleCount = statusCount.samplesInProject
+        projectSummary.samplesLibraryPrepFinished.passingSamples = statusCount.libraryPrepFinished
+
+        projectSummary.sampleDataAvailable.totalSampleCount = statusCount.samplesInProject
+        projectSummary.sampleDataAvailable.passingSamples = statusCount.dataAvailable
+
+        projectSummary.totalSampleCount = statusCount.samplesInProject
+        this.projectOverviews[this.projectOverviews.indexOf(projectSummary)] = projectSummary
+    }
+
+    private void updateProjectSummary(ProjectSummary projectSummary, Project project) {
+        projectSummary.hasSubscription = project.hasSubscription
+        this.projectOverviews[this.projectOverviews.indexOf(projectSummary)] = projectSummary
     }
 
     private void addProject(Project project) {
-        projectOverviews.add(ProjectSummary.of(project))
+        ProjectSummary projectSummary = ProjectSummary.of(project)
+        projectOverviews.add(projectSummary)
+    }
+
+    private void updateProject(Project project) {
+        Optional<ProjectSummary> projectSummary = Optional.ofNullable(getProjectSummary(project.code))
+        projectSummary.ifPresent({ updateProjectSummary(it, project) })
+        if (!projectSummary.isPresent()) {
+            log.error("Tried to update ${project?.code} - ${project?.title} but project was not found in project list.")
+            return
+        }
+        log.info "Project ${project.code} - ${project.title} was updated, grid will be reloaded."
+        updatedProjectsChannel.publish(project.code)
     }
 
     private void removeProject(Project project) {
-        List<ProjectSummary> summaries = projectOverviews as List<ProjectSummary>
-        ProjectSummary projectOverview = summaries.find { it ->
-            it.code == project.code
-        }
+        ProjectSummary projectOverview = getProjectSummary(project.code)
         projectOverviews.remove(projectOverview)
-    }
-
-    private void updateSamplesReceived(StatusCount statusCount) {
-        ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.samplesReceived.passingSamples = statusCount.count
-
-        int totalSampleCount = statusCount.totalSampleCount
-        summary.samplesReceived.totalSampleCount = totalSampleCount
-        summary.totalSampleCount = totalSampleCount
-    }
-
-    private void updateDataAvailable(StatusCount statusCount) {
-        ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.sampleDataAvailable.passingSamples = statusCount.count
-
-        int totalSampleCount = statusCount.totalSampleCount
-        summary.sampleDataAvailable.totalSampleCount = totalSampleCount
-        summary.totalSampleCount = totalSampleCount
-    }
-
-    private void updateSamplesPassedQc(StatusCount statusCount) {
-        ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.samplesQc.passingSamples = statusCount.count
-
-        int totalSampleCount = statusCount.totalSampleCount
-        summary.samplesQc.totalSampleCount = totalSampleCount
-        summary.totalSampleCount = totalSampleCount
-    }
-
-    private void updateSamplesFailedQc(StatusCount statusCount) {
-        ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.samplesQc.failingSamples = statusCount.count
-
-        int totalSampleCount = statusCount.totalSampleCount
-        summary.samplesQc.totalSampleCount = totalSampleCount
-        summary.totalSampleCount = totalSampleCount
-    }
-
-    private void updateSamplesLibraryPrepFinished(StatusCount statusCount) {
-        ProjectSummary summary = getProjectSummary(statusCount.projectCode)
-        summary.samplesLibraryPrepFinished.passingSamples = statusCount.count
-
-        int totalSampleCount = statusCount.totalSampleCount
-        summary.samplesLibraryPrepFinished.totalSampleCount = totalSampleCount
-        summary.totalSampleCount = totalSampleCount
     }
 
     /**
@@ -126,11 +114,32 @@ class ProjectOverviewViewModel {
      * @param projectCode The project code specifies a project
      * @return The project summary for the respective code
      */
-    private ProjectSummary getProjectSummary(String projectCode) {
-        ProjectSummary projectOverview = projectOverviews.collect { it as ProjectSummary }.find { it ->
-            (it as ProjectSummary).code == projectCode
+    protected ProjectSummary getProjectSummary(String projectCode) {
+        List<ProjectSummary> projectOverviews = projectOverviews.findAll { it ->
+           it.code == projectCode
         }
-        return projectOverview
+        if (projectOverviews.size() > 1) {
+            log.error("More than one project summaries for project code $projectCode")
+            log.error(projectOverviews)
+        }
+        ProjectSummary projectSummary = projectOverviews.first()
+        return projectSummary
+    }
+
+    /**
+     * Makes sure that the manifest is reset when a selected project is removed
+     */
+    private void bindManifestToSelection() {
+        addPropertyChangeListener("selectedProject", {
+            ProjectSummary newValue = it.newValue as ProjectSummary
+            if (newValue == null) {
+                setGeneratedManifest(null)
+            } else {
+                if (newValue.sampleDataAvailable.passingSamples < 1) {
+                    setGeneratedManifest(null)
+                }
+            }
+        })
     }
 
     InputStream getManifestInputStream() {
