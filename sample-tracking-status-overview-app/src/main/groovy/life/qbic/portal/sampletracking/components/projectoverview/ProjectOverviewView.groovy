@@ -163,6 +163,8 @@ class ProjectOverviewView extends VerticalLayout{
             }
             if (checkBoxValueChange.value) {
                 subscribeIfNotSubscribed(viewModel.selectedProject)
+            } else {
+                unsubscribeIfSubscribed(viewModel.selectedProject)
             }
         })
         return subscriptionCheckBox
@@ -177,6 +179,13 @@ class ProjectOverviewView extends VerticalLayout{
         selectedProject
                 .filter({ !it.hasSubscription })
                 .ifPresent({ subscribeToProject(it.code) })
+    }
+
+    private void unsubscribeIfSubscribed(ProjectSummary projectSummary) {
+        Optional<ProjectSummary> selectedProject = Optional.ofNullable(projectSummary)
+        selectedProject
+                .filter({ it.hasSubscription })
+                .ifPresent({ unsubscribeFromProject(it.code) })
     }
 
     private void setupProjects() {
@@ -328,6 +337,14 @@ class ProjectOverviewView extends VerticalLayout{
         if (viewModel.subscriber) {
             if (projectCode) {
                 subscribeProjectController.subscribeProject(viewModel.subscriber, projectCode)
+            }
+        }
+    }
+
+    private void unsubscribeFromProject(String projectCode) {
+        if (viewModel.subscriber) {
+            if (projectCode) {
+                subscribeProjectController.unsubscribeProject(viewModel.subscriber, projectCode)
             }
         }
     }
