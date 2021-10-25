@@ -12,7 +12,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * Information on existing subscriptions is now shown when selecting a projext (`#93 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/93>`_)
 
-* Unsubscribe from project
+* Unsubscribe from project (`#129 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/129>`_)
 
 **Fixed**
 
