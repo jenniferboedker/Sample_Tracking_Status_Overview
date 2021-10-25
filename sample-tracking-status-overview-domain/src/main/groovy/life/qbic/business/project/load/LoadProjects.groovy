@@ -73,10 +73,6 @@ class LoadProjects implements LoadProjectsInput{
      * @param subscriber
      */
     private void loadSubscriptionInformationInto(Iterable<Project> projects, Subscriber subscriber) {
-/*        if (! subscribedProjectsDataSource) {
-            String message = "Tried to load subscription information without data source."
-            throw new IllegalStateException(message)
-        }*/
         List<String> subscribedProjectCodes = subscribedProjectsDataSource.findSubscribedProjectCodesFor(subscriber)
         projects.each {it.hasSubscription = subscribedProjectCodes.contains(it.code)}
     }
