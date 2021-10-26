@@ -12,6 +12,7 @@ import java.time.Instant
 class Project {
     final String code
     final String title
+    boolean hasSubscription = false
     Instant lastChanged
 
     Project(String code, String title) {

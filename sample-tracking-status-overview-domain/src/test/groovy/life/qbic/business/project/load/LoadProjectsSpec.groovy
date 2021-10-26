@@ -1,8 +1,10 @@
 package life.qbic.business.project.load
 
-import life.qbic.business.DataSourceException
+
 import life.qbic.business.project.Project
+import life.qbic.business.project.subscribe.Subscriber
 import spock.lang.Specification
+
 import java.time.Instant
 
 /**
@@ -12,56 +14,66 @@ import java.time.Instant
  */
 class LoadProjectsSpec extends Specification {
 
+    Subscriber subscriber =  new Subscriber("First", "Last", "e.ma@i.ll")
 
-    def "successful execution of the use case lead to success notifications"() {
-        given:
+    def "LoadProjects successful execution returns expected projects"() {
+        given: "a project"
+        String projectCode = "QABCD"
+        Project fetchedProject = new Project(projectCode, "AwesomeProject")
+
+        and: "a basic setup"
         LoadProjectsDataSource dataSource = Stub()
-        LastChangedDateDataSource changeDataSource = Stub()
-        Project fetchedProject = new Project("QABCD", "AwesomeProject")
-        Instant expectedTimestamp = Instant.now()
         dataSource.fetchUserProjects() >> [fetchedProject]
+        LoadProjectsOutput output = Mock()
+
+        and: "some mock data sources"
+        LastChangedDateDataSource lastChangedDateDataSource = Mock()
+        SubscribedProjectsDataSource subscriptionDataSource = Mock()
+
+        and: "a use case under test"
+        LoadProjects loadProjects = new LoadProjects(dataSource, output, lastChangedDateDataSource, subscriptionDataSource)
+
+        when:"the use case is run"
+        loadProjects.loadProjects()
+
+        then: "the timestamp in the success notification is as expected"
+        1 * output.loadedProjects([fetchedProject])
+        0 * output.failedExecution(_)
+    }
+
+    def "LoadProjectsFor successful execution returns expected projects"() {
+        given: "a project"
+        String projectCode = "QABCD"
+        Project fetchedProject = new Project(projectCode, "AwesomeProject")
+
+        and: "a basic setup"
+        LoadProjectsDataSource dataSource = Stub()
+        dataSource.fetchUserProjects() >> [fetchedProject]
+        LoadProjectsOutput output = Mock()
+
+        and: "last changes"
+        Instant expectedTimestamp = Instant.now()
+        LastChangedDateDataSource changeDataSource = Stub()
         changeDataSource.getLatestChange(fetchedProject.code) >> expectedTimestamp
-        LoadProjectsOutput output = Mock()
-        LoadProjects loadProjects = new LoadProjects(dataSource, changeDataSource, output)
-        when:"the use case is run"
-        loadProjects.loadProjects()
-        then:"a successful message is send"
-        fetchedProject.lastChanged == expectedTimestamp
-        1 * output.loadedProjects(_ as List<Project>)
-        0 * output.failedExecution(_ as String)
-    }
 
-    def "unsuccessful execution of the use case lead to failure notifications"() {
-        given:
-        LoadProjectsDataSource dataSource = Stub()
-        LastChangedDateDataSource changeDataSource = Stub()
-        dataSource.fetchUserProjects() >> {
-            throw new RuntimeException("Testing runtime exceptions")
+        and: "subscription information"
+        SubscribedProjectsDataSource subscribedProjectsDataSource = Stub()
+        subscribedProjectsDataSource.findSubscribedProjectCodesFor(subscriber) >> [projectCode]
+        boolean expectedSubscription = true
+
+        and: "a use case under test"
+        LoadProjects loadProjects = new LoadProjects(dataSource, output, changeDataSource, subscribedProjectsDataSource)
+
+        when:"the use case is run"
+        loadProjects.withSubscriptions(subscriber)
+
+        then:"the timestamp in the success notification is as expected"
+        1 * output.loadedProjects(_) >> { arguments ->
+            final List<Project> projects = arguments.get(0)
+            Project project = projects.first()
+            assert project.lastChanged == expectedTimestamp
+            assert project.hasSubscription == expectedSubscription
         }
-        LoadProjectsOutput output = Mock()
-        LoadProjects loadProjects = new LoadProjects(dataSource, changeDataSource, output)
-        when:"the use case is run"
-        loadProjects.loadProjects()
-        then:"a failure message is send"
-        1 * output.failedExecution(_)
-        0 * output.loadedProjects(_)
-    }
-
-    def "a DataSourceException leads to a failure notification and no projects being loaded"() {
-        given:
-        LoadProjectsDataSource dataSource = Stub()
-        LastChangedDateDataSource changeDataSource = Stub()
-        dataSource.fetchUserProjects() >> {
-            throw new DataSourceException("Testing data source exception")
-        }
-        LoadProjectsOutput output = Mock()
-        LoadProjects loadProjects = new LoadProjects(dataSource, changeDataSource, output)
-
-        when:"the use case is run"
-        loadProjects.loadProjects()
-
-        then:"a failure message is send"
-        1 * output.failedExecution(_)
-        0 * output.loadedProjects(_)
+        0 * output.failedExecution(_)
     }
 }

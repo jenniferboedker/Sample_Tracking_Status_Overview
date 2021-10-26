@@ -5,6 +5,24 @@ Changelog
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
+1.0.0-beta (2021-10-26)
+---------------------------
+
+**Added**
+
+* Information on existing subscriptions is now shown when selecting a project (`#93 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/93>`_)
+
+* Unsubscribe from project (`#129 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/129>`_)
+
+**Fixed**
+
+* Show correct number of passing QC numbers (`#130 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/130>`_)
+
+**Dependencies**
+
+**Deprecated**
+
+
 0.6.0 (2021-10-11)
 ------------------
 
