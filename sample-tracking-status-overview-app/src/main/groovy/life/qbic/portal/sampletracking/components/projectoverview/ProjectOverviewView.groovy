@@ -1,6 +1,5 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
-
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
@@ -145,7 +144,7 @@ class ProjectOverviewView extends VerticalLayout{
 
         CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
         subscriptionCheckBox.setVisible(false)
-        enableWhenProjectIsSelected(subscriptionCheckBox)
+        showWhenProjectIsSelected(subscriptionCheckBox)
         subscriptionCheckBox.setValue(false)
         viewModel.addPropertyChangeListener("selectedProject", {
             Optional<ProjectSummary> selectedProjectSummary = Optional.ofNullable(it.newValue as ProjectSummary)
@@ -232,8 +231,6 @@ class ProjectOverviewView extends VerticalLayout{
     private void bindManifestToProjectSelection() {
         viewModel.addPropertyChangeListener("selectedProject", { tryToDownloadManifest() })
     }
-
-
 
     private void clearProjectSelection() {
         viewModel.selectedProject = null
@@ -323,14 +320,14 @@ class ProjectOverviewView extends VerticalLayout{
         return isAvailable
     }
 
-    private void enableWhenProjectIsSelected(CheckBox checkBox) {
-        viewModel.addPropertyChangeListener("selectedProject") {
+    private void showWhenProjectIsSelected(CheckBox checkBox) {
+        viewModel.addPropertyChangeListener("selectedProject", {
             if(viewModel.selectedProject){
              checkBox.setVisible(true)
             }else{
               checkBox.setVisible(false)
             }
-        }
+        })
     }
 
     private void subscribeToProject(String projectCode) {
