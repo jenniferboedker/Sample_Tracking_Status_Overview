@@ -63,9 +63,24 @@ class ProjectOverviewView extends VerticalLayout{
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
         HorizontalLayout buttonBar = setupButtonLayout()
-        failedQCSamplesView.setVisible(false)
+        connectFailedQcSamplesView()
         bindManifestToProjectSelection()
         this.addComponents(titleLabel,buttonBar, projectGrid, failedQCSamplesView)
+    }
+
+    private void connectFailedQcSamplesView() {
+        FailedQCSamplesView samplesView = failedQCSamplesView
+        showWhenFailingSamplesExist(samplesView)
+
+        viewModel.addPropertyChangeListener("selectedProject", {
+            Optional<ProjectSummary> selectedProject = Optional.ofNullable(viewModel.selectedProject)
+            selectedProject.ifPresent({
+                loadFailedQcSamples(it)
+            })
+            if (!selectedProject.isPresent()) {
+                samplesView.reset()
+            }
+        })
     }
 
     private HorizontalLayout setupButtonLayout() {
