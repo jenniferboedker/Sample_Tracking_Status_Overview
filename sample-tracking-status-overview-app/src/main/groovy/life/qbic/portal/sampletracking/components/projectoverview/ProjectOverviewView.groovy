@@ -330,6 +330,21 @@ class ProjectOverviewView extends VerticalLayout{
         })
     }
 
+    private void showWhenFailingSamplesExist(Component component) {
+        component.setVisible(failingSamplesExist())
+        viewModel.addPropertyChangeListener("selectedProject", {
+            component.setVisible(failingSamplesExist())
+        })
+    }
+
+    private boolean failingSamplesExist() {
+        Optional<ProjectSummary> selectedProject = Optional.ofNullable(viewModel.selectedProject)
+        boolean hasFailingSamples = selectedProject
+                .map({ it.samplesQc.failingSamples > 0 })
+                .orElse(false)
+        return hasFailingSamples
+    }
+
     private void subscribeToProject(String projectCode) {
         if (viewModel.subscriber) {
             if (projectCode) {
