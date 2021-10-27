@@ -87,24 +87,26 @@ class ProjectOverviewView extends VerticalLayout{
         detailsButton.setIcon(VaadinIcons.INFO_CIRCLE)
         detailsButton.setEnabled(false)
 
-        projectGrid.addSelectionListener({
-            failedQCSamplesView.setVisible(false)
-
-            if(viewModel.selectedProject && viewModel.selectedProject.samplesQc.failingSamples > 0){
+        viewModel.addPropertyChangeListener("selectedProject", {
+            if (failingSamplesExist()) {
                 detailsButton.setEnabled(true)
-            }else{
+            } else {
                 detailsButton.setEnabled(false)
             }
         })
 
         detailsButton.addClickListener({
-            if(viewModel.selectedProject){
-                projectOverviewController.getFailedQcSamples(viewModel.selectedProject.code)
-                failedQCSamplesView.setVisible(true)
-            }
+            loadFailedQcSamples(viewModel.selectedProject)
         })
 
         return detailsButton
+    }
+
+    private void loadFailedQcSamples(ProjectSummary projectSummary) {
+        Optional<ProjectSummary> selectedProject = Optional.ofNullable(projectSummary)
+        selectedProject
+                .map({it.getCode()})
+                .ifPresent(projectOverviewController::getFailedQcSamples)
     }
 
     private Button setUpLinkButton(){
