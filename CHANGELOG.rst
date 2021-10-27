@@ -4,13 +4,23 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-
-0.7.0-SNAPSHOT (2021-10-13)
+1.0.0-SNAPSHOT (2021-10-26)
 ---------------------------
 
 **Added**
 
-* Information on existing subscriptions is now shown when selecting a projext (`#93 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/93>`_)
+**Fixed**
+
+**Dependencies**
+
+**Deprecated**
+
+1.0.0-beta (2021-10-26)
+---------------------------
+
+**Added**
+
+* Information on existing subscriptions is now shown when selecting a project (`#93 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/93>`_)
 
 * Unsubscribe from project (`#129 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/129>`_)
 
