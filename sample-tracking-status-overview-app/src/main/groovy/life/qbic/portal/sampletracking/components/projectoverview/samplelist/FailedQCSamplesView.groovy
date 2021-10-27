@@ -1,13 +1,11 @@
 package life.qbic.portal.sampletracking.components.projectoverview.samplelist
 
-
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.ui.Grid
 import com.vaadin.ui.VerticalLayout
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
-import life.qbic.portal.sampletracking.components.NotificationHandler
 
 /**
  * <b>Shows the failed QC samples </b>
@@ -31,6 +29,16 @@ class FailedQCSamplesView extends VerticalLayout {
         createSamplesGrid()
 
         this.addComponent(samplesGrid)
+    }
+
+    /**
+     * Resets the view to its initial state.
+     * @since 1.0.0
+     */
+    void reset() {
+        if (viewModel.samples.size() > 0) {
+            viewModel.samples.clear()
+        }
     }
 
     private void createSamplesGrid() {
