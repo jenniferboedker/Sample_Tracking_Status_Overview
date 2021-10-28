@@ -64,11 +64,16 @@ class ProjectOverviewView extends VerticalLayout{
         Label titleLabel = new Label("Project Overview")
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
+
         HorizontalLayout buttonBar = setupButtonLayout()
+        VerticalLayout projectLayout = new VerticalLayout(buttonBar,projectGrid)
+        projectLayout.setMargin(false)
+        HorizontalSplitPanel splitLayout = createSplitLayout(projectLayout,failedQCSamplesView)
+
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
-        HorizontalSplitPanel splitLayout = createSplitLayout()
-        this.addComponents(titleLabel,buttonBar, splitLayout)
+
+        this.addComponents(titleLabel, splitLayout)
     }
 
     private void connectFailedQcSamplesView() {
@@ -78,7 +83,7 @@ class ProjectOverviewView extends VerticalLayout{
         viewModel.addPropertyChangeListener("selectedProject", {
             Optional<ProjectSummary> selectedProject = Optional.ofNullable(viewModel.selectedProject)
             selectedProject.ifPresent({
-                loadFailedQcSamples(it)
+                if(failingSamplesExist()) loadFailedQcSamples(it)
             })
             if (!selectedProject.isPresent()) {
                 samplesView.reset()
@@ -225,10 +230,10 @@ class ProjectOverviewView extends VerticalLayout{
         }
     }
 
-    private HorizontalSplitPanel createSplitLayout(){
-        HorizontalSplitPanel splitPanel = new HorizontalSplitPanel(projectGrid,failedQCSamplesView)
+    private HorizontalSplitPanel createSplitLayout(Layout leftComponent, VerticalLayout rightComponent){
+        HorizontalSplitPanel splitPanel = new HorizontalSplitPanel(leftComponent,rightComponent)
         splitPanel.setSplitPosition(100)
-        failedQCSamplesView.setMargin(new MarginInfo(false,false,false,true))
+        rightComponent.setMargin(new MarginInfo(false,false,false,true))
 
         viewModel.addPropertyChangeListener("selectedProject", {
             Optional<ProjectSummary> selectedProjectSummary = Optional.ofNullable(it.newValue as ProjectSummary)
