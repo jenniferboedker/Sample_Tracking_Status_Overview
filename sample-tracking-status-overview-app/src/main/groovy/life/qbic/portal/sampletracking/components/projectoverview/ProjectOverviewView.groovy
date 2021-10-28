@@ -198,7 +198,6 @@ class ProjectOverviewView extends VerticalLayout{
                 selectedItem.ifPresent({
                     selectProject(it)
                 })
-
             }
         })
         viewModel.updatedProjectsChannel.subscribe({updatedProjectCode ->
@@ -228,8 +227,19 @@ class ProjectOverviewView extends VerticalLayout{
 
     private HorizontalSplitPanel createSplitLayout(){
         HorizontalSplitPanel splitPanel = new HorizontalSplitPanel(projectGrid,failedQCSamplesView)
-        splitPanel.setSplitPosition(65)
+        splitPanel.setSplitPosition(100)
         failedQCSamplesView.setMargin(new MarginInfo(false,false,false,true))
+
+        viewModel.addPropertyChangeListener("selectedProject", {
+            Optional<ProjectSummary> selectedProjectSummary = Optional.ofNullable(it.newValue as ProjectSummary)
+            selectedProjectSummary.ifPresent({
+                if(failingSamplesExist()){
+                    splitPanel.setSplitPosition(65)
+                }else{
+                    splitPanel.setSplitPosition(100)
+                }
+            })
+        })
 
         return splitPanel
     }
@@ -337,7 +347,7 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private void showWhenFailingSamplesExist(Component component) {
-        component.setVisible(failingSamplesExist())
+        component.setVisible(false)
         viewModel.addPropertyChangeListener("selectedProject", {
             component.setVisible(failingSamplesExist())
         })
