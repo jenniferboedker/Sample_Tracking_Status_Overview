@@ -1,6 +1,5 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
-
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
@@ -64,9 +63,24 @@ class ProjectOverviewView extends VerticalLayout{
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
         HorizontalLayout buttonBar = setupButtonLayout()
-        failedQCSamplesView.setVisible(false)
+        connectFailedQcSamplesView()
         bindManifestToProjectSelection()
         this.addComponents(titleLabel,buttonBar, projectGrid, failedQCSamplesView)
+    }
+
+    private void connectFailedQcSamplesView() {
+        FailedQCSamplesView samplesView = failedQCSamplesView
+        showWhenFailingSamplesExist(samplesView)
+
+        viewModel.addPropertyChangeListener("selectedProject", {
+            Optional<ProjectSummary> selectedProject = Optional.ofNullable(viewModel.selectedProject)
+            selectedProject.ifPresent({
+                loadFailedQcSamples(it)
+            })
+            if (!selectedProject.isPresent()) {
+                samplesView.reset()
+            }
+        })
     }
 
     private HorizontalLayout setupButtonLayout() {
@@ -88,24 +102,24 @@ class ProjectOverviewView extends VerticalLayout{
         detailsButton.setIcon(VaadinIcons.INFO_CIRCLE)
         detailsButton.setEnabled(false)
 
-        projectGrid.addSelectionListener({
-            failedQCSamplesView.setVisible(false)
-
-            if(viewModel.selectedProject && viewModel.selectedProject.samplesQc.failingSamples > 0){
+        viewModel.addPropertyChangeListener("selectedProject", {
+            if (failingSamplesExist()) {
                 detailsButton.setEnabled(true)
-            }else{
+            } else {
                 detailsButton.setEnabled(false)
             }
         })
 
         detailsButton.addClickListener({
-            if(viewModel.selectedProject){
-                projectOverviewController.getFailedQcSamples(viewModel.selectedProject.code)
-                failedQCSamplesView.setVisible(true)
-            }
+            loadFailedQcSamples(viewModel.selectedProject)
         })
 
         return detailsButton
+    }
+
+    private void loadFailedQcSamples(ProjectSummary projectSummary) {
+        String code = projectSummary.getCode()
+        projectOverviewController.getFailedQcSamples(code)
     }
 
     private Button setUpLinkButton(){
@@ -145,7 +159,7 @@ class ProjectOverviewView extends VerticalLayout{
 
         CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
         subscriptionCheckBox.setVisible(false)
-        enableWhenProjectIsSelected(subscriptionCheckBox)
+        showWhenProjectIsSelected(subscriptionCheckBox)
         subscriptionCheckBox.setValue(false)
         viewModel.addPropertyChangeListener("selectedProject", {
             Optional<ProjectSummary> selectedProjectSummary = Optional.ofNullable(it.newValue as ProjectSummary)
@@ -232,8 +246,6 @@ class ProjectOverviewView extends VerticalLayout{
     private void bindManifestToProjectSelection() {
         viewModel.addPropertyChangeListener("selectedProject", { tryToDownloadManifest() })
     }
-
-
 
     private void clearProjectSelection() {
         viewModel.selectedProject = null
@@ -323,14 +335,29 @@ class ProjectOverviewView extends VerticalLayout{
         return isAvailable
     }
 
-    private void enableWhenProjectIsSelected(CheckBox checkBox) {
-        viewModel.addPropertyChangeListener("selectedProject") {
+    private void showWhenProjectIsSelected(CheckBox checkBox) {
+        viewModel.addPropertyChangeListener("selectedProject", {
             if(viewModel.selectedProject){
              checkBox.setVisible(true)
             }else{
               checkBox.setVisible(false)
             }
-        }
+        })
+    }
+
+    private void showWhenFailingSamplesExist(Component component) {
+        component.setVisible(failingSamplesExist())
+        viewModel.addPropertyChangeListener("selectedProject", {
+            component.setVisible(failingSamplesExist())
+        })
+    }
+
+    private boolean failingSamplesExist() {
+        Optional<ProjectSummary> selectedProject = Optional.ofNullable(viewModel.selectedProject)
+        boolean hasFailingSamples = selectedProject
+                .map({ it.samplesQc.failingSamples > 0 })
+                .orElse(false)
+        return hasFailingSamples
     }
 
     private void subscribeToProject(String projectCode) {

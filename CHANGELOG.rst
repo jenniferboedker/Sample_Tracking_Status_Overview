@@ -24,6 +24,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * Unsubscribe from project (`#129 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/129>`_)
 
+* Samples with failed QC are shown to the user directly after selecting a project (`#138 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/138>`_)
+
 **Fixed**
 
 * Show correct number of passing QC numbers (`#130 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/130>`_)

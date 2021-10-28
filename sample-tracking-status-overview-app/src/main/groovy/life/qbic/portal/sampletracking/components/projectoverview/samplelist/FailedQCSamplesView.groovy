@@ -33,6 +33,16 @@ class FailedQCSamplesView extends VerticalLayout {
         this.addComponents(controls, samplesGrid)
     }
 
+    /**
+     * Resets the view to its initial state.
+     * @since 1.0.0
+     */
+    void reset() {
+        if (viewModel.samples.size() > 0) {
+            viewModel.samples.clear()
+        }
+    }
+
     private void createSamplesGrid() {
 
         this.samplesGrid = new Grid<>()
