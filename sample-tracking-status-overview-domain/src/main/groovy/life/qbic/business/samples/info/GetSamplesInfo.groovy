@@ -37,7 +37,8 @@ class GetSamplesInfo implements GetSamplesInfoInput {
    */
   @Override
   void requestSampleInfosFor(String projectCode, Status status) {
-    //TODO make sure the project code and status are not null
+    Objects.requireNonNull(status, "Tried to request sample infos without providing a status.")
+    Objects.requireNonNull(projectCode, "Tried to request sample infos without providing a projectCode.")
     try {
         def sampleCodes = samplesDataSource.fetchSampleCodesFor(projectCode, status)
         def sampleCodesToNames = infoDataSource.fetchSampleNamesFor(sampleCodes)
