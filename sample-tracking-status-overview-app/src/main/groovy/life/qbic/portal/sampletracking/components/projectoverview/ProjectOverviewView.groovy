@@ -43,6 +43,7 @@ class ProjectOverviewView extends VerticalLayout{
     private final ProjectOverviewController projectOverviewController
 
     private Grid<ProjectSummary> projectGrid
+    private HorizontalSplitPanel splitPanel
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
@@ -65,15 +66,37 @@ class ProjectOverviewView extends VerticalLayout{
         titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
 
-        HorizontalLayout buttonBar = setupButtonLayout()
-        VerticalLayout projectLayout = new VerticalLayout(buttonBar,projectGrid)
+        HorizontalLayout projectButtonBar = setupButtonLayout()
+        VerticalLayout projectLayout = new VerticalLayout(new Label("Select a Project"),projectButtonBar,projectGrid)
         projectLayout.setMargin(false)
-        HorizontalSplitPanel splitLayout = createSplitLayout(projectLayout,failedQCSamplesView)
+
+        HorizontalLayout failedSamplesButtonBar = setupCloseButtonLayout()
+        Label descriptionLabel = new Label("Failed QC Samples")
+        VerticalLayout failedSamplesLayout = new VerticalLayout(descriptionLabel,failedSamplesButtonBar,failedQCSamplesView)
+
+        splitPanel = createSplitLayout(projectLayout,failedSamplesLayout)
+
+        failedQCSamplesView.addListener({event ->  if (!event.component.visible) splitPanel.setSplitPosition(100)
+        event})
 
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
 
-        this.addComponents(titleLabel, splitLayout)
+        this.addComponents(titleLabel, splitPanel)
+    }
+
+    private HorizontalLayout setupCloseButtonLayout() {
+        Button closeButton = new Button("Hide", VaadinIcons.CLOSE_CIRCLE)
+        closeButton.addClickListener({
+            failedQCSamplesView.setVisible(false)
+            splitPanel.setSplitPosition(100)
+        })
+
+        HorizontalLayout buttonLayout = new HorizontalLayout()
+        buttonLayout.addComponent(closeButton)
+        buttonLayout.setComponentAlignment(closeButton, Alignment.TOP_LEFT)
+
+        return buttonLayout
     }
 
     private void connectFailedQcSamplesView() {
@@ -245,7 +268,6 @@ class ProjectOverviewView extends VerticalLayout{
                 }
             })
         })
-
         return splitPanel
     }
 

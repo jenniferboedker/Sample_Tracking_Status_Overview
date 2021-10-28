@@ -18,7 +18,6 @@ class FailedQCSamplesView extends VerticalLayout {
     private final Presenter presenter
 
     private Grid<Sample> samplesGrid
-    private HorizontalLayout controls
 
     FailedQCSamplesView(NotificationService notificationService) {
         this.viewModel = new ViewModel()
@@ -28,10 +27,8 @@ class FailedQCSamplesView extends VerticalLayout {
 
     private void initLayout() {
         this.setMargin(false)
-        this.setCaption("Samples that failed quality control")
-        createControls()
         createSamplesGrid()
-        this.addComponents(controls, samplesGrid)
+        this.addComponents(samplesGrid)
     }
 
     /**
@@ -52,21 +49,6 @@ class FailedQCSamplesView extends VerticalLayout {
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(DataProvider.ofCollection(viewModel.getSamples()))
         samplesGrid.setHeightMode(HeightMode.ROW)
-    }
-
-    private void createControls() {
-        controls = new HorizontalLayout()
-        Button closeButton = setupCloseButton()
-        this.controls.addComponent(closeButton)
-        this.controls.setComponentAlignment(closeButton, Alignment.TOP_LEFT)
-    }
-
-    private Button setupCloseButton() {
-        Button closeButton = new Button("Hide", VaadinIcons.CLOSE)
-        closeButton.addClickListener({
-            this.setVisible(false)
-        })
-        return closeButton
     }
 
     GetSamplesInfoOutput getPresenter() {
