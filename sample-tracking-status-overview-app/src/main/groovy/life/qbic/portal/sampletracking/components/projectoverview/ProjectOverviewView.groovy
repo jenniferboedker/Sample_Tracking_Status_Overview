@@ -118,10 +118,8 @@ class ProjectOverviewView extends VerticalLayout{
     }
 
     private void loadFailedQcSamples(ProjectSummary projectSummary) {
-        Optional<ProjectSummary> selectedProject = Optional.ofNullable(projectSummary)
-        selectedProject
-                .map({it.getCode()})
-                .ifPresent(projectOverviewController::getFailedQcSamples)
+        String code = projectSummary.getCode()
+        projectOverviewController.getFailedQcSamples(code)
     }
 
     private Button setUpLinkButton(){
