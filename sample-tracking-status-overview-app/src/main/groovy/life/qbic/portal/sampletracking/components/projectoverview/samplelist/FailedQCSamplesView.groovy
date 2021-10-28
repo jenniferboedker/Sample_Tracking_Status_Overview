@@ -44,7 +44,7 @@ class FailedQCSamplesView extends VerticalLayout {
     private void createSamplesGrid() {
 
         this.samplesGrid = new Grid<>()
-        samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
+        samplesGrid.addColumn(Sample::getCode).setCaption("Failed QC Sample Code").setId("SampleCode")
         samplesGrid.addColumn(Sample::getTitle).setCaption("Sample Title").setId("SampleTitle")
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(DataProvider.ofCollection(viewModel.getSamples()))

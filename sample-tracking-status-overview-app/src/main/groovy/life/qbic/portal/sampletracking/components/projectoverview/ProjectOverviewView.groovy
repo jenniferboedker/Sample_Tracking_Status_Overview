@@ -67,12 +67,11 @@ class ProjectOverviewView extends VerticalLayout{
         setupProjects()
 
         HorizontalLayout projectButtonBar = setupButtonLayout()
-        VerticalLayout projectLayout = new VerticalLayout(new Label("Select a Project"),projectButtonBar,projectGrid)
+        VerticalLayout projectLayout = new VerticalLayout(projectButtonBar,projectGrid)
         projectLayout.setMargin(false)
 
         HorizontalLayout failedSamplesButtonBar = setupCloseButtonLayout()
-        Label descriptionLabel = new Label("Failed QC Samples")
-        VerticalLayout failedSamplesLayout = new VerticalLayout(descriptionLabel,failedSamplesButtonBar,failedQCSamplesView)
+        VerticalLayout failedSamplesLayout = new VerticalLayout(failedSamplesButtonBar,failedQCSamplesView)
 
         splitPanel = createSplitLayout(projectLayout,failedSamplesLayout)
 
