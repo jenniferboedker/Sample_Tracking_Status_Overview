@@ -6,8 +6,10 @@ import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.FileDownloader
+import com.vaadin.server.Sizeable
 import com.vaadin.server.StreamResource
 import com.vaadin.shared.ui.ContentMode
+import com.vaadin.shared.ui.MarginInfo
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column
@@ -66,7 +68,8 @@ class ProjectOverviewView extends VerticalLayout{
         HorizontalLayout buttonBar = setupButtonLayout()
         failedQCSamplesView.setVisible(false)
         bindManifestToProjectSelection()
-        this.addComponents(titleLabel,buttonBar, projectGrid, failedQCSamplesView)
+        HorizontalSplitPanel splitLayout = createSplitLayout()
+        this.addComponents(titleLabel,buttonBar, splitLayout)
     }
 
     private HorizontalLayout setupButtonLayout() {
@@ -227,6 +230,15 @@ class ProjectOverviewView extends VerticalLayout{
             throw new IllegalArgumentException("No project with code $projectCode could be selected." +
                     " The project was not found in our list of projects.")
         }
+    }
+
+    private HorizontalSplitPanel createSplitLayout(){
+        HorizontalSplitPanel splitPanel = new HorizontalSplitPanel(projectGrid,failedQCSamplesView)
+        //splitPanel.setSplitPosition(65)
+        splitPanel.setMinSplitPosition(65,Unit.PERCENTAGE)
+        failedQCSamplesView.setMargin(new MarginInfo(false,false,false,true))
+
+        return splitPanel
     }
 
     private void bindManifestToProjectSelection() {
