@@ -2,6 +2,7 @@ package life.qbic.portal.sampletracking.components.projectoverview.samplelist
 
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.icons.VaadinIcons
+import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
@@ -50,6 +51,7 @@ class FailedQCSamplesView extends VerticalLayout {
         samplesGrid.addColumn(Sample::getTitle).setCaption("Sample Title").setId("SampleTitle")
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(DataProvider.ofCollection(viewModel.getSamples()))
+        samplesGrid.setHeightMode(HeightMode.ROW)
     }
 
     private void createControls() {
