@@ -92,32 +92,12 @@ class ProjectOverviewView extends VerticalLayout{
 
         Button postmanLink = setUpLinkButton()
         Button downloadManifestAction = setupDownloadButton()
-        Button showDetails = setupShowDetails()
         CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
-        buttonBar.addComponents(showDetails, downloadManifestAction, postmanLink, subscriptionCheckBox)
+
+        buttonBar.addComponents(downloadManifestAction, postmanLink, subscriptionCheckBox)
         buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
         buttonBar.setComponentAlignment(subscriptionCheckBox, Alignment.MIDDLE_CENTER)
         return buttonBar
-    }
-
-    private Button setupShowDetails(){
-        Button detailsButton = new Button("Show Details")
-        detailsButton.setIcon(VaadinIcons.INFO_CIRCLE)
-        detailsButton.setEnabled(false)
-
-        viewModel.addPropertyChangeListener("selectedProject", {
-            if (failingSamplesExist()) {
-                detailsButton.setEnabled(true)
-            } else {
-                detailsButton.setEnabled(false)
-            }
-        })
-
-        detailsButton.addClickListener({
-            loadFailedQcSamples(viewModel.selectedProject)
-        })
-
-        return detailsButton
     }
 
     private void loadFailedQcSamples(ProjectSummary projectSummary) {
@@ -248,8 +228,7 @@ class ProjectOverviewView extends VerticalLayout{
 
     private HorizontalSplitPanel createSplitLayout(){
         HorizontalSplitPanel splitPanel = new HorizontalSplitPanel(projectGrid,failedQCSamplesView)
-        //splitPanel.setSplitPosition(65)
-        splitPanel.setMinSplitPosition(65,Unit.PERCENTAGE)
+        splitPanel.setSplitPosition(65)
         failedQCSamplesView.setMargin(new MarginInfo(false,false,false,true))
 
         return splitPanel
