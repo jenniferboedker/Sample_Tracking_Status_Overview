@@ -63,8 +63,10 @@ class ProjectOverviewView extends VerticalLayout{
 
     private void initLayout(){
         Label titleLabel = new Label("Project Overview")
-        titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
+        titleLabel.addStyleName(ValoTheme.LABEL_HUGE)
         setupProjects()
+
+        Label spacerLabel = new Label("&nbsp;", ContentMode.HTML)
 
         HorizontalLayout projectButtonBar = setupButtonLayout()
         VerticalLayout projectLayout = new VerticalLayout(projectButtonBar,projectGrid)
@@ -81,7 +83,7 @@ class ProjectOverviewView extends VerticalLayout{
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
 
-        this.addComponents(titleLabel, splitPanel)
+        this.addComponents(titleLabel, spacerLabel, splitPanel)
     }
 
     private HorizontalLayout setupCloseButtonLayout() {
