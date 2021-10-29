@@ -10,7 +10,7 @@
   </modules>
   <artifactId>sample-tracking-status-overview</artifactId>
   <groupId>life.qbic</groupId>
-  <version>1.0.0-beta</version> <!-- <<QUBE_FORCE_BUMP>> -->
+  <version>1.0.1-beta</version> <!-- <<QUBE_FORCE_BUMP>> -->
   <name>Sample Tracking Status Overview</name>
   <url>http://github.com/qbicsoftware/sample-tracking-status-overview</url>
   <description>Gives a visual overview of sample statuses</description>
@@ -23,8 +23,8 @@
 
     <groovy.version>3.0.8</groovy.version>
 
-    <vaadin.version>8.13.0</vaadin.version>
-    <vaadin.plugin.version>8.13.0</vaadin.plugin.version>
+    <vaadin.version>8.14.0</vaadin.version>
+    <vaadin.plugin.version>8.14.0</vaadin.plugin.version>
   </properties>
 
   <pluginRepositories>
