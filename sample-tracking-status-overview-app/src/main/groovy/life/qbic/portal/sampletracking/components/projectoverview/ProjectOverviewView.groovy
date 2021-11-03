@@ -34,7 +34,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.visibility.Vis
  *
 */
 @Log4j2
-class ProjectOverviewView extends VerticalLayout implements VisibilityChangeListener{
+class ProjectOverviewView extends VerticalLayout {
 
     private final ProjectOverviewViewModel viewModel
     private final DownloadProjectController downloadProjectController
@@ -72,7 +72,7 @@ class ProjectOverviewView extends VerticalLayout implements VisibilityChangeList
         projectLayout.setMargin(false)
 
         splitPanel = createSplitLayout(projectLayout,failedQCSamplesView)
-        failedQCSamplesView.visibilityChangeListener.add(this)
+        failedQCSamplesView.addVisibilityChangeListener({newValue,oldValue -> visibilityChangeEvent(newValue)})
 
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
@@ -89,12 +89,10 @@ class ProjectOverviewView extends VerticalLayout implements VisibilityChangeList
             selectedProject.ifPresent({
                 if(failingSamplesExist()){
                     loadFailedQcSamples(it)
-                    failedQCSamplesView.setVisible(true)
                 }
             })
             if (!selectedProject.isPresent()) {
                 samplesView.reset()
-                failedQCSamplesView.setVisible(false)
             }
         })
     }
@@ -246,8 +244,7 @@ class ProjectOverviewView extends VerticalLayout implements VisibilityChangeList
         return splitPanel
     }
 
-    @Override
-    void visibilityChangeEvent(boolean newValue, boolean oldValue) {
+    private void visibilityChangeEvent(boolean newValue) {
         if(newValue){
             splitPanel.setSplitPosition(65)
         }else{

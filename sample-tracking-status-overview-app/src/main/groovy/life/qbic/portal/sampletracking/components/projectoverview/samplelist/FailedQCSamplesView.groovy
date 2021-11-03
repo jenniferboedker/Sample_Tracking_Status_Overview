@@ -19,7 +19,7 @@ class FailedQCSamplesView extends VerticalLayout {
     private final Presenter presenter
 
     private Grid<Sample> samplesGrid
-    final List<VisibilityChangeListener> visibilityChangeListener = []
+    private final List<VisibilityChangeListener> visibilityChangeListeners = []
 
     FailedQCSamplesView(NotificationService notificationService) {
         this.viewModel = new ViewModel()
@@ -33,6 +33,10 @@ class FailedQCSamplesView extends VerticalLayout {
         HorizontalLayout buttonLayout = setupCloseButtonLayout()
 
         this.addComponents(buttonLayout,samplesGrid)
+    }
+
+    void addVisibilityChangeListener(VisibilityChangeListener listener){
+        visibilityChangeListeners.add(listener)
     }
 
     private HorizontalLayout setupCloseButtonLayout() {
@@ -50,7 +54,7 @@ class FailedQCSamplesView extends VerticalLayout {
 
     @Override
     void setVisible(boolean visible) {
-        visibilityChangeListener.each {it.visibilityChangeEvent(visible,this.visible)}
+        visibilityChangeListeners.each {it.visibilityChangeEvent(visible,this.visible)}
         super.setVisible(visible)
     }
 
