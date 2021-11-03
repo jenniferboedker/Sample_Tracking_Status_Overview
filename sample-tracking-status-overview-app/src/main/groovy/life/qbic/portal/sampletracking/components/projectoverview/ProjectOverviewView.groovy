@@ -64,10 +64,8 @@ class ProjectOverviewView extends VerticalLayout implements VisibilityChangeList
 
     private void initLayout(){
         Label titleLabel = new Label("Project Overview")
-        titleLabel.addStyleName(ValoTheme.LABEL_HUGE)
+        titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
         setupProjects()
-
-        Label spacerLabel = new Label("&nbsp;", ContentMode.HTML)
 
         HorizontalLayout projectButtonBar = setupButtonLayout()
         VerticalLayout projectLayout = new VerticalLayout(projectButtonBar,projectGrid)
@@ -79,7 +77,7 @@ class ProjectOverviewView extends VerticalLayout implements VisibilityChangeList
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
 
-        this.addComponents(titleLabel, spacerLabel, splitPanel)
+        this.addComponents(titleLabel, splitPanel)
     }
 
     private void connectFailedQcSamplesView() {
