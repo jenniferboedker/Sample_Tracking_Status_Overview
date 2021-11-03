@@ -9,6 +9,8 @@ import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.visibility.VisibilityChangeListener
 
+import java.beans.PropertyChangeEvent
+
 /**
  * <b>Shows the failed QC samples </b>
  *
@@ -54,7 +56,7 @@ class FailedQCSamplesView extends VerticalLayout {
 
     @Override
     void setVisible(boolean visible) {
-        visibilityChangeListeners.each {it.visibilityChangeEvent(visible,this.visible)}
+        visibilityChangeListeners.each {it.visibilityChanged(new PropertyChangeEvent(FailedQCSamplesView,"visible",this.visible,visible))}
         super.setVisible(visible)
     }
 

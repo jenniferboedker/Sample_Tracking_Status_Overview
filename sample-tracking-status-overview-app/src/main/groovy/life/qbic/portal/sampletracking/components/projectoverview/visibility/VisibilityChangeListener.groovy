@@ -1,4 +1,7 @@
 package life.qbic.portal.sampletracking.components.projectoverview.visibility
+
+import java.beans.PropertyChangeEvent
+
 /**
  * <b>VisibilityChangeListener to handle changes in component visibility</b>
  *
@@ -12,5 +15,5 @@ interface VisibilityChangeListener {
      * @param newValue A boolean describing the new visibility value
      * @param oldValue A boolean describing the old visibility value
      */
-    void visibilityChangeEvent(boolean newValue, boolean oldValue)
+    void visibilityChanged(PropertyChangeEvent event)
 }

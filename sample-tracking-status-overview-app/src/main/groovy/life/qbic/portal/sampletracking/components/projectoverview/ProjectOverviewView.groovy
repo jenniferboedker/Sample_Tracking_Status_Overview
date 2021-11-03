@@ -22,7 +22,6 @@ import life.qbic.portal.sampletracking.components.projectoverview.samplelist.Pro
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
-import life.qbic.portal.sampletracking.components.projectoverview.visibility.VisibilityChangeListener
 
 /**
  * <b>This class generates the layout for the ProductOverview use case</b>
@@ -72,7 +71,7 @@ class ProjectOverviewView extends VerticalLayout {
         projectLayout.setMargin(false)
 
         splitPanel = createSplitLayout(projectLayout,failedQCSamplesView)
-        failedQCSamplesView.addVisibilityChangeListener({newValue,oldValue -> visibilityChangeEvent(newValue)})
+        failedQCSamplesView.addVisibilityChangeListener({it -> visibilityChangeEvent(it.newValue as boolean)})
 
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
@@ -355,7 +354,7 @@ class ProjectOverviewView extends VerticalLayout {
     }
 
     private void showWhenFailingSamplesExist(Component component) {
-        component.setVisible(false)
+        component.setVisible(failingSamplesExist())
         viewModel.addPropertyChangeListener("selectedProject", {
             component.setVisible(failingSamplesExist())
         })
