@@ -10,10 +10,12 @@ import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column
+import com.vaadin.ui.components.grid.HeaderRow
 import com.vaadin.ui.themes.ValoTheme
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.components.GridUtils
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
@@ -297,6 +299,7 @@ class ProjectOverviewView extends VerticalLayout{
         if( viewModel.selectedProject ) {
             projectGrid.select(viewModel.selectedProject)
         }
+        setupFilters(dataProvider)
     }
 
 
@@ -386,13 +389,21 @@ class ProjectOverviewView extends VerticalLayout{
         }
         else if (sampleCount.passingSamples == sampleCount.totalSampleCount) {
             return State.COMPLETED
-        }
-        else if (sampleCount.passingSamples < sampleCount.totalSampleCount) {
+        } else if (sampleCount.passingSamples < sampleCount.totalSampleCount) {
             return State.IN_PROGRESS
-        }
-        else {
+        } else {
             //unexpected!!
             throw new IllegalStateException("status count $sampleCount.passingSamples must not be greater total count $sampleCount.totalSampleCount")
         }
+    }
+
+    private void setupFilters(ListDataProvider<ProjectSummary> projectSummaryListDataProvider) {
+        HeaderRow customerFilterRow = projectGrid.appendHeaderRow()
+        GridUtils.setupColumnFilter(projectSummaryListDataProvider,
+                projectGrid.getColumn("ProjectCode"),
+                customerFilterRow)
+        GridUtils.setupColumnFilter(projectSummaryListDataProvider,
+                projectGrid.getColumn("ProjectTitle"),
+                customerFilterRow)
     }
 }
