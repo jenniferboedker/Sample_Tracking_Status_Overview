@@ -5,7 +5,6 @@ import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.FileDownloader
-import com.vaadin.server.Sizeable
 import com.vaadin.server.StreamResource
 import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.MarginInfo
@@ -71,7 +70,7 @@ class ProjectOverviewView extends VerticalLayout {
         projectLayout.setMargin(false)
 
         splitPanel = createSplitLayout(projectLayout,failedQCSamplesView)
-        failedQCSamplesView.addVisibilityChangeListener({it -> visibilityChangeEvent(it.newValue as boolean)})
+        failedQCSamplesView.addVisibilityChangeListener({ splitPanel.splitPosition = it.newValue ? 65 : 100 })
 
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
@@ -235,20 +234,12 @@ class ProjectOverviewView extends VerticalLayout {
         }
     }
 
-    private HorizontalSplitPanel createSplitLayout(Layout leftComponent, VerticalLayout rightComponent){
+    private static HorizontalSplitPanel createSplitLayout(Layout leftComponent, VerticalLayout rightComponent){
         HorizontalSplitPanel splitPanel = new HorizontalSplitPanel(leftComponent,rightComponent)
         splitPanel.setSplitPosition(100)
         rightComponent.setMargin(new MarginInfo(false,false,false,true))
 
         return splitPanel
-    }
-
-    private void visibilityChangeEvent(boolean newValue) {
-        if(newValue){
-            splitPanel.setSplitPosition(65)
-        }else{
-            splitPanel.setSplitPosition(100)
-        }
     }
 
     private void bindManifestToProjectSelection() {

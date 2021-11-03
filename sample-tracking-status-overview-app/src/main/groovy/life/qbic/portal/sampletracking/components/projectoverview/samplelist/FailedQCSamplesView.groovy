@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview.samplelist
 
+
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.shared.ui.grid.HeightMode
@@ -7,9 +8,8 @@ import com.vaadin.ui.*
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.components.projectoverview.visibility.VisibilityChangeEvent
 import life.qbic.portal.sampletracking.components.projectoverview.visibility.VisibilityChangeListener
-
-import java.beans.PropertyChangeEvent
 
 /**
  * <b>Shows the failed QC samples </b>
@@ -56,8 +56,16 @@ class FailedQCSamplesView extends VerticalLayout {
 
     @Override
     void setVisible(boolean visible) {
-        visibilityChangeListeners.each {it.visibilityChanged(new PropertyChangeEvent(FailedQCSamplesView,"visible",this.visible,visible))}
+        boolean currentlyVisible = isVisible()
+        if (currentlyVisible != visible) {
+            VisibilityChangeEvent changeEvent = new VisibilityChangeEvent(this, this.isVisible(), visible)
+            fireVisibilityChangeEvent(changeEvent)
+        }
         super.setVisible(visible)
+    }
+
+    private void fireVisibilityChangeEvent(VisibilityChangeEvent changeEvent) {
+        visibilityChangeListeners.forEach({ it.visibilityChanged(changeEvent) })
     }
 
     /**
