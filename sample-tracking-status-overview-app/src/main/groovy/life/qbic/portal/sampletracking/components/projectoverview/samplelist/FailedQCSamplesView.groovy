@@ -7,6 +7,7 @@ import com.vaadin.ui.*
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.components.projectoverview.visibility.VisibilityChangeListener
 
 /**
  * <b>Shows the failed QC samples </b>
@@ -18,6 +19,7 @@ class FailedQCSamplesView extends VerticalLayout {
     private final Presenter presenter
 
     private Grid<Sample> samplesGrid
+    final List<VisibilityChangeListener> visibilityChangeListener = []
 
     FailedQCSamplesView(NotificationService notificationService) {
         this.viewModel = new ViewModel()
@@ -28,7 +30,28 @@ class FailedQCSamplesView extends VerticalLayout {
     private void initLayout() {
         this.setMargin(false)
         createSamplesGrid()
-        this.addComponents(samplesGrid)
+        HorizontalLayout buttonLayout = setupCloseButtonLayout()
+
+        this.addComponents(buttonLayout,samplesGrid)
+    }
+
+    private HorizontalLayout setupCloseButtonLayout() {
+        Button closeButton = new Button("Hide", VaadinIcons.CLOSE_CIRCLE)
+        closeButton.addClickListener({
+            this.setVisible(false)
+        })
+
+        HorizontalLayout buttonLayout = new HorizontalLayout()
+        buttonLayout.addComponent(closeButton)
+        buttonLayout.setComponentAlignment(closeButton, Alignment.TOP_LEFT)
+
+        return buttonLayout
+    }
+
+    @Override
+    void setVisible(boolean visible) {
+        visibilityChangeListener.each {it.visibilityChangeEvent(visible,this.visible)}
+        super.setVisible(visible)
     }
 
     /**

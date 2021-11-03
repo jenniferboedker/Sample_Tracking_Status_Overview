@@ -22,6 +22,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.samplelist.Pro
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.visibility.VisibilityChangeListener
 
 /**
  * <b>This class generates the layout for the ProductOverview use case</b>
@@ -33,7 +34,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.subscribe.Subs
  *
 */
 @Log4j2
-class ProjectOverviewView extends VerticalLayout{
+class ProjectOverviewView extends VerticalLayout implements VisibilityChangeListener{
 
     private final ProjectOverviewViewModel viewModel
     private final DownloadProjectController downloadProjectController
@@ -72,32 +73,13 @@ class ProjectOverviewView extends VerticalLayout{
         VerticalLayout projectLayout = new VerticalLayout(projectButtonBar,projectGrid)
         projectLayout.setMargin(false)
 
-        HorizontalLayout failedSamplesButtonBar = setupCloseButtonLayout()
-        VerticalLayout failedSamplesLayout = new VerticalLayout(failedSamplesButtonBar,failedQCSamplesView)
-
-        splitPanel = createSplitLayout(projectLayout,failedSamplesLayout)
-
-        failedQCSamplesView.addListener({event ->  if (!event.component.visible) splitPanel.setSplitPosition(100)
-        event})
+        splitPanel = createSplitLayout(projectLayout,failedQCSamplesView)
+        failedQCSamplesView.visibilityChangeListener.add(this)
 
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
 
         this.addComponents(titleLabel, spacerLabel, splitPanel)
-    }
-
-    private HorizontalLayout setupCloseButtonLayout() {
-        Button closeButton = new Button("Hide", VaadinIcons.CLOSE_CIRCLE)
-        closeButton.addClickListener({
-            failedQCSamplesView.setVisible(false)
-            splitPanel.setSplitPosition(100)
-        })
-
-        HorizontalLayout buttonLayout = new HorizontalLayout()
-        buttonLayout.addComponent(closeButton)
-        buttonLayout.setComponentAlignment(closeButton, Alignment.TOP_LEFT)
-
-        return buttonLayout
     }
 
     private void connectFailedQcSamplesView() {
@@ -107,10 +89,14 @@ class ProjectOverviewView extends VerticalLayout{
         viewModel.addPropertyChangeListener("selectedProject", {
             Optional<ProjectSummary> selectedProject = Optional.ofNullable(viewModel.selectedProject)
             selectedProject.ifPresent({
-                if(failingSamplesExist()) loadFailedQcSamples(it)
+                if(failingSamplesExist()){
+                    loadFailedQcSamples(it)
+                    failedQCSamplesView.setVisible(true)
+                }
             })
             if (!selectedProject.isPresent()) {
                 samplesView.reset()
+                failedQCSamplesView.setVisible(false)
             }
         })
     }
@@ -259,17 +245,16 @@ class ProjectOverviewView extends VerticalLayout{
         splitPanel.setSplitPosition(100)
         rightComponent.setMargin(new MarginInfo(false,false,false,true))
 
-        viewModel.addPropertyChangeListener("selectedProject", {
-            Optional<ProjectSummary> selectedProjectSummary = Optional.ofNullable(it.newValue as ProjectSummary)
-            selectedProjectSummary.ifPresent({
-                if(failingSamplesExist()){
-                    splitPanel.setSplitPosition(65)
-                }else{
-                    splitPanel.setSplitPosition(100)
-                }
-            })
-        })
         return splitPanel
+    }
+
+    @Override
+    void visibilityChangeEvent(boolean newValue, boolean oldValue) {
+        if(newValue){
+            splitPanel.setSplitPosition(65)
+        }else{
+            splitPanel.setSplitPosition(100)
+        }
     }
 
     private void bindManifestToProjectSelection() {
@@ -424,4 +409,5 @@ class ProjectOverviewView extends VerticalLayout{
             throw new IllegalStateException("status count $sampleCount.passingSamples must not be greater total count $sampleCount.totalSampleCount")
         }
     }
+
 }
