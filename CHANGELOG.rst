@@ -9,6 +9,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Introduce split panel for showing failing QC samples (`#140 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/140>`_)
+
 **Fixed**
 
 **Dependencies**
