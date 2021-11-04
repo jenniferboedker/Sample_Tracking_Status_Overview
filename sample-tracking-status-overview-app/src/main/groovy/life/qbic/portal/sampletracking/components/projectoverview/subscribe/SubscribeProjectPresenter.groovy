@@ -61,7 +61,7 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     */
     @Override
     void subscriptionRemoved(String project) {
-        String message = "Unsubscribed successfully from ${project}."
+        String message = "Unsubscribed successfully from ${project}. You will no longer receive emails with updates on project ${project}."
         notificationService.publishSuccess(message)
         projectResourceService.replace({ it.code == project },
                 {
