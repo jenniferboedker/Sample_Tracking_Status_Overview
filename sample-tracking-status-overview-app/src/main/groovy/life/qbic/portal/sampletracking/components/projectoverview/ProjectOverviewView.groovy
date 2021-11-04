@@ -7,6 +7,7 @@ import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
 import com.vaadin.shared.ui.ContentMode
+import com.vaadin.shared.ui.MarginInfo
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column
@@ -31,7 +32,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.subscribe.Subs
  *
 */
 @Log4j2
-class ProjectOverviewView extends VerticalLayout{
+class ProjectOverviewView extends VerticalLayout {
 
     private final ProjectOverviewViewModel viewModel
     private final DownloadProjectController downloadProjectController
@@ -41,6 +42,7 @@ class ProjectOverviewView extends VerticalLayout{
     private final ProjectOverviewController projectOverviewController
 
     private Grid<ProjectSummary> projectGrid
+    private HorizontalSplitPanel splitPanel
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
@@ -65,11 +67,18 @@ class ProjectOverviewView extends VerticalLayout{
         Label spacerLabel = new Label("&nbsp;", ContentMode.HTML)
 
         setupProjects()
-        HorizontalLayout buttonBar = setupButtonLayout()
+
+        HorizontalLayout projectButtonBar = setupButtonLayout()
+        VerticalLayout projectLayout = new VerticalLayout(projectButtonBar,projectGrid)
+        projectLayout.setMargin(false)
+
+        splitPanel = createSplitLayout(projectLayout,failedQCSamplesView)
+        failedQCSamplesView.addVisibilityChangeListener({ splitPanel.splitPosition = it.newValue ? 65 : 100 })
+
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
 
-        this.addComponents(titleLabel,spacerLabel, buttonBar, projectGrid, failedQCSamplesView)
+        this.addComponents(titleLabel, spacerLabel, splitPanel)
     }
 
     private void connectFailedQcSamplesView() {
@@ -79,7 +88,9 @@ class ProjectOverviewView extends VerticalLayout{
         viewModel.addPropertyChangeListener("selectedProject", {
             Optional<ProjectSummary> selectedProject = Optional.ofNullable(viewModel.selectedProject)
             selectedProject.ifPresent({
-                loadFailedQcSamples(it)
+                if(failingSamplesExist()){
+                    loadFailedQcSamples(it)
+                }
             })
             if (!selectedProject.isPresent()) {
                 samplesView.reset()
@@ -93,32 +104,12 @@ class ProjectOverviewView extends VerticalLayout{
 
         Button postmanLink = setUpLinkButton()
         Button downloadManifestAction = setupDownloadButton()
-        Button showDetails = setupShowDetails()
         CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
-        buttonBar.addComponents(showDetails, downloadManifestAction, postmanLink, subscriptionCheckBox)
+
+        buttonBar.addComponents(downloadManifestAction, postmanLink, subscriptionCheckBox)
         buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
         buttonBar.setComponentAlignment(subscriptionCheckBox, Alignment.MIDDLE_CENTER)
         return buttonBar
-    }
-
-    private Button setupShowDetails(){
-        Button detailsButton = new Button("Show Details")
-        detailsButton.setIcon(VaadinIcons.INFO_CIRCLE)
-        detailsButton.setEnabled(false)
-
-        viewModel.addPropertyChangeListener("selectedProject", {
-            if (failingSamplesExist()) {
-                detailsButton.setEnabled(true)
-            } else {
-                detailsButton.setEnabled(false)
-            }
-        })
-
-        detailsButton.addClickListener({
-            loadFailedQcSamples(viewModel.selectedProject)
-        })
-
-        return detailsButton
     }
 
     private void loadFailedQcSamples(ProjectSummary projectSummary) {
@@ -219,7 +210,6 @@ class ProjectOverviewView extends VerticalLayout{
                 selectedItem.ifPresent({
                     selectProject(it)
                 })
-
             }
         })
         viewModel.updatedProjectsChannel.subscribe({updatedProjectCode ->
@@ -245,6 +235,14 @@ class ProjectOverviewView extends VerticalLayout{
             throw new IllegalArgumentException("No project with code $projectCode could be selected." +
                     " The project was not found in our list of projects.")
         }
+    }
+
+    private static HorizontalSplitPanel createSplitLayout(Layout leftComponent, VerticalLayout rightComponent){
+        HorizontalSplitPanel splitPanel = new HorizontalSplitPanel(leftComponent,rightComponent)
+        splitPanel.setSplitPosition(100)
+        rightComponent.setMargin(new MarginInfo(false,false,false,true))
+
+        return splitPanel
     }
 
     private void bindManifestToProjectSelection() {
@@ -399,4 +397,5 @@ class ProjectOverviewView extends VerticalLayout{
             throw new IllegalStateException("status count $sampleCount.passingSamples must not be greater total count $sampleCount.totalSampleCount")
         }
     }
+
 }

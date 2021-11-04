@@ -1,11 +1,15 @@
 package life.qbic.portal.sampletracking.components.projectoverview.samplelist
 
+
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.icons.VaadinIcons
+import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.components.projectoverview.visibility.VisibilityChangeEvent
+import life.qbic.portal.sampletracking.components.projectoverview.visibility.VisibilityChangeListener
 
 /**
  * <b>Shows the failed QC samples </b>
@@ -17,7 +21,7 @@ class FailedQCSamplesView extends VerticalLayout {
     private final Presenter presenter
 
     private Grid<Sample> samplesGrid
-    private HorizontalLayout controls
+    private final List<VisibilityChangeListener> visibilityChangeListeners = []
 
     FailedQCSamplesView(NotificationService notificationService) {
         this.viewModel = new ViewModel()
@@ -27,10 +31,41 @@ class FailedQCSamplesView extends VerticalLayout {
 
     private void initLayout() {
         this.setMargin(false)
-        this.setCaption("Samples that failed quality control")
-        createControls()
         createSamplesGrid()
-        this.addComponents(controls, samplesGrid)
+        HorizontalLayout buttonLayout = setupCloseButtonLayout()
+
+        this.addComponents(buttonLayout,samplesGrid)
+    }
+
+    void addVisibilityChangeListener(VisibilityChangeListener listener){
+        visibilityChangeListeners.add(listener)
+    }
+
+    private HorizontalLayout setupCloseButtonLayout() {
+        Button closeButton = new Button("Hide", VaadinIcons.CLOSE_CIRCLE)
+        closeButton.addClickListener({
+            this.setVisible(false)
+        })
+
+        HorizontalLayout buttonLayout = new HorizontalLayout()
+        buttonLayout.addComponent(closeButton)
+        buttonLayout.setComponentAlignment(closeButton, Alignment.TOP_LEFT)
+
+        return buttonLayout
+    }
+
+    @Override
+    void setVisible(boolean visible) {
+        boolean currentlyVisible = isVisible()
+        if (currentlyVisible != visible) {
+            VisibilityChangeEvent changeEvent = new VisibilityChangeEvent(this, this.isVisible(), visible)
+            fireVisibilityChangeEvent(changeEvent)
+        }
+        super.setVisible(visible)
+    }
+
+    private void fireVisibilityChangeEvent(VisibilityChangeEvent changeEvent) {
+        visibilityChangeListeners.forEach({ it.visibilityChanged(changeEvent) })
     }
 
     /**
@@ -46,25 +81,11 @@ class FailedQCSamplesView extends VerticalLayout {
     private void createSamplesGrid() {
 
         this.samplesGrid = new Grid<>()
-        samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
+        samplesGrid.addColumn(Sample::getCode).setCaption("Failed QC Sample Code").setId("SampleCode")
         samplesGrid.addColumn(Sample::getTitle).setCaption("Sample Title").setId("SampleTitle")
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(DataProvider.ofCollection(viewModel.getSamples()))
-    }
-
-    private void createControls() {
-        controls = new HorizontalLayout()
-        Button closeButton = setupCloseButton()
-        this.controls.addComponent(closeButton)
-        this.controls.setComponentAlignment(closeButton, Alignment.TOP_LEFT)
-    }
-
-    private Button setupCloseButton() {
-        Button closeButton = new Button("Hide", VaadinIcons.CLOSE)
-        closeButton.addClickListener({
-            this.setVisible(false)
-        })
-        return closeButton
+        samplesGrid.setHeightMode(HeightMode.ROW)
     }
 
     GetSamplesInfoOutput getPresenter() {
