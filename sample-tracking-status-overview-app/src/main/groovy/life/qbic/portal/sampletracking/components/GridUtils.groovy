@@ -56,13 +56,14 @@ class GridUtils {
      */
     static <T> void setupFilters(Grid<T> grid, Collection<String> columnIdentifiers) {
         HeaderRow customerFilterRow
-        if (grid.headerRowCount > 0) {
-            customerFilterRow = grid.getHeaderRow(0)
+        if (grid.headerRowCount > 1) {
+            customerFilterRow = grid.getHeaderRow(1)
         } else {
             customerFilterRow = grid.appendHeaderRow()
         }
+        ListDataProvider<Object> gridDataProvider = grid.getDataProvider() as ListDataProvider<Object>
         columnIdentifiers.forEach { String columnId ->
-            setupColumnFilter(grid.getDataProvider() as ListDataProvider<Object>,
+            setupColumnFilter(gridDataProvider,
                     grid.getColumn(columnId),
                     customerFilterRow)
         }

@@ -44,7 +44,7 @@ class ProjectOverviewView extends VerticalLayout {
 
     private Grid<ProjectSummary> projectGrid
     private HorizontalSplitPanel splitPanel
-    private final Collection<String> columnIdsWithFilters = ["ProjectCode", "ProjectTitle"]
+    private static final Collection<String> columnIdsWithFilters = ["ProjectCode", "ProjectTitle"]
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
