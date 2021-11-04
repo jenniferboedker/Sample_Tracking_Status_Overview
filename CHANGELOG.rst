@@ -9,6 +9,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Minor refactoring of the page organisation (`#141 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/141>`_)
+
 * Add filtering to the ProjectId and ProjectTitle Columns (`#142 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/142>`_)
 
 **Fixed**
