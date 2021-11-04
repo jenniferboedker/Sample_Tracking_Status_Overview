@@ -61,7 +61,7 @@ class GridUtils {
         } else {
             customerFilterRow = grid.appendHeaderRow()
         }
-        ListDataProvider<Object> gridDataProvider = grid.getDataProvider() as ListDataProvider<Object>
+        ListDataProvider<T> gridDataProvider = grid.getDataProvider() as ListDataProvider<T>
         columnIdentifiers.forEach { String columnId ->
             setupColumnFilter(gridDataProvider,
                     grid.getColumn(columnId),
