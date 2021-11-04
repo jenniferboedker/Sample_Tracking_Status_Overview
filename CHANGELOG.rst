@@ -9,7 +9,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
-* Minor refactoring of the page organisation (`#141 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/141>`_)
+* Minor refactoring of the page organisation (`#141 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/141>`_)
 
 **Fixed**
 
