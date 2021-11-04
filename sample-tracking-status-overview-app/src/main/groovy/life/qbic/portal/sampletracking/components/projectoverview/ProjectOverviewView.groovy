@@ -11,7 +11,6 @@ import com.vaadin.shared.ui.MarginInfo
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column
-import com.vaadin.ui.components.grid.HeaderRow
 import com.vaadin.ui.themes.ValoTheme
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
@@ -45,6 +44,7 @@ class ProjectOverviewView extends VerticalLayout {
 
     private Grid<ProjectSummary> projectGrid
     private HorizontalSplitPanel splitPanel
+    private final Collection<String> columnIdsWithFilters = ["ProjectCode", "ProjectTitle"]
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
@@ -301,9 +301,8 @@ class ProjectOverviewView extends VerticalLayout {
         if( viewModel.selectedProject ) {
             projectGrid.select(viewModel.selectedProject)
         }
-        setupFilters(dataProvider)
+        GridUtils.setupFilters(projectGrid, columnIdsWithFilters)
     }
-
 
     private void tryToDownloadManifest() {
         Optional<ProjectSummary> selectedSummary = Optional.empty()
@@ -386,10 +385,9 @@ class ProjectOverviewView extends VerticalLayout {
      * @param sampleCount The total number of samples registered
      */
     private static State determineCompleteness(SampleCount sampleCount) {
-        if (sampleCount.failingSamples > 0){
+        if (sampleCount.failingSamples > 0) {
             return State.FAILED
-        }
-        else if (sampleCount.passingSamples == sampleCount.totalSampleCount) {
+        } else if (sampleCount.passingSamples == sampleCount.totalSampleCount) {
             return State.COMPLETED
         } else if (sampleCount.passingSamples < sampleCount.totalSampleCount) {
             return State.IN_PROGRESS
@@ -397,15 +395,5 @@ class ProjectOverviewView extends VerticalLayout {
             //unexpected!!
             throw new IllegalStateException("status count $sampleCount.passingSamples must not be greater total count $sampleCount.totalSampleCount")
         }
-    }
-
-    private void setupFilters(ListDataProvider<ProjectSummary> projectSummaryListDataProvider) {
-        HeaderRow customerFilterRow = projectGrid.appendHeaderRow()
-        GridUtils.setupColumnFilter(projectSummaryListDataProvider,
-                projectGrid.getColumn("ProjectCode"),
-                customerFilterRow)
-        GridUtils.setupColumnFilter(projectSummaryListDataProvider,
-                projectGrid.getColumn("ProjectTitle"),
-                customerFilterRow)
     }
 }

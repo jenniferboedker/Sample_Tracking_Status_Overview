@@ -43,7 +43,28 @@ class GridUtils {
         filterTextField.addStyleName(ValoTheme.TEXTFIELD_TINY)
         filterTextField.setPlaceholder("Filter by $columnCaption")
         filterTextField.setSizeFull()
-
     }
 
+    /**
+     * Provides filter fields into the header row of the provided grid for multiple column identifiers
+     *
+     * The current implementation filters for content that contains the filter criteria in the
+     * column values and ignores the case.
+     *
+     * @param grid The vaadin grid {@link Grid} for which the filter columns should be added
+     * @param columnIdentifiers The column identifiers specifying into which column a filter should be added
+     */
+    static <T> void setupFilters(Grid<T> grid, Collection<String> columnIdentifiers) {
+        HeaderRow customerFilterRow
+        if (grid.headerRowCount > 0) {
+            customerFilterRow = grid.getHeaderRow(0)
+        } else {
+            customerFilterRow = grid.appendHeaderRow()
+        }
+        columnIdentifiers.forEach { String columnId ->
+            setupColumnFilter(grid.getDataProvider() as ListDataProvider<Object>,
+                    grid.getColumn(columnId),
+                    customerFilterRow)
+        }
+    }
 }
