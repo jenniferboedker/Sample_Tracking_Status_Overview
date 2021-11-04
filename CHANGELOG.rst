@@ -15,6 +15,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Fixed**
 
+* Improved message after subscription change (`#144 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/141>`_)
+
 **Dependencies**
 
 **Deprecated**
