@@ -32,7 +32,7 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     */
     @Override
     void subscriptionAdded(String project) {
-        String message = "Subscription to ${project} was successfull. You will receive emails informing you of updates on project ${project}."
+        String message = "Subscription to ${project} was successful. You will receive emails informing you about updates on project ${project}."
         notificationService.publishSuccess(message)
         projectResourceService.replace({ it.code == project },
                 {
