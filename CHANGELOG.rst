@@ -4,6 +4,25 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
+1.0.0-beta.3 (2021-11-08)
+---------------------------
+
+**Added**
+
+* Introduce split panel for showing failing QC samples (`#140 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/140>`_)
+
+* Minor refactoring of the page organisation (`#141 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/141>`_)
+
+* Add filtering to the ProjectId and ProjectTitle Columns (`#142 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/142>`_)
+
+**Fixed**
+
+* More informative message after subscription change (`#144 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/141>`_)
+
+**Dependencies**
+
+**Deprecated**
+
 1.0.1-beta (2021-10-28)
 ---------------------------
 
@@ -26,6 +45,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Information on existing subscriptions is now shown when selecting a project (`#93 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/93>`_)
 
 * Unsubscribe from project (`#129 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/129>`_)
+
+* Samples with failed QC are shown to the user directly after selecting a project (`#138 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/138>`_)
 
 **Fixed**
 

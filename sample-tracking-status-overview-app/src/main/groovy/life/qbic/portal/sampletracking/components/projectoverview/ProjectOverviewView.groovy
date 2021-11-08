@@ -1,6 +1,5 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
-
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
@@ -8,6 +7,7 @@ import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
 import com.vaadin.shared.ui.ContentMode
+import com.vaadin.shared.ui.MarginInfo
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column
@@ -15,6 +15,7 @@ import com.vaadin.ui.themes.ValoTheme
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.components.GridUtils
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
@@ -32,7 +33,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.subscribe.Subs
  *
 */
 @Log4j2
-class ProjectOverviewView extends VerticalLayout{
+class ProjectOverviewView extends VerticalLayout {
 
     private final ProjectOverviewViewModel viewModel
     private final DownloadProjectController downloadProjectController
@@ -42,6 +43,8 @@ class ProjectOverviewView extends VerticalLayout{
     private final ProjectOverviewController projectOverviewController
 
     private Grid<ProjectSummary> projectGrid
+    private HorizontalSplitPanel splitPanel
+    private static final Collection<String> columnIdsWithFilters = ["ProjectCode", "ProjectTitle"]
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
     final static int MAX_STATUS_COLUMN_WIDTH = 200
@@ -61,12 +64,40 @@ class ProjectOverviewView extends VerticalLayout{
 
     private void initLayout(){
         Label titleLabel = new Label("Project Overview")
-        titleLabel.addStyleName(ValoTheme.LABEL_LARGE)
+        titleLabel.addStyleName(ValoTheme.LABEL_HUGE)
+
+        Label spacerLabel = new Label("&nbsp;", ContentMode.HTML)
+
         setupProjects()
-        HorizontalLayout buttonBar = setupButtonLayout()
-        failedQCSamplesView.setVisible(false)
+
+        HorizontalLayout projectButtonBar = setupButtonLayout()
+        VerticalLayout projectLayout = new VerticalLayout(projectButtonBar,projectGrid)
+        projectLayout.setMargin(false)
+
+        splitPanel = createSplitLayout(projectLayout,failedQCSamplesView)
+        failedQCSamplesView.addVisibilityChangeListener({ splitPanel.splitPosition = it.newValue ? 65 : 100 })
+
+        connectFailedQcSamplesView()
         bindManifestToProjectSelection()
-        this.addComponents(titleLabel,buttonBar, projectGrid, failedQCSamplesView)
+
+        this.addComponents(titleLabel, spacerLabel, splitPanel)
+    }
+
+    private void connectFailedQcSamplesView() {
+        FailedQCSamplesView samplesView = failedQCSamplesView
+        showWhenFailingSamplesExist(samplesView)
+
+        viewModel.addPropertyChangeListener("selectedProject", {
+            Optional<ProjectSummary> selectedProject = Optional.ofNullable(viewModel.selectedProject)
+            selectedProject.ifPresent({
+                if(failingSamplesExist()){
+                    loadFailedQcSamples(it)
+                }
+            })
+            if (!selectedProject.isPresent()) {
+                samplesView.reset()
+            }
+        })
     }
 
     private HorizontalLayout setupButtonLayout() {
@@ -75,37 +106,17 @@ class ProjectOverviewView extends VerticalLayout{
 
         Button postmanLink = setUpLinkButton()
         Button downloadManifestAction = setupDownloadButton()
-        Button showDetails = setupShowDetails()
         CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
-        buttonBar.addComponents(showDetails, downloadManifestAction, postmanLink, subscriptionCheckBox)
+
+        buttonBar.addComponents(downloadManifestAction, postmanLink, subscriptionCheckBox)
         buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
         buttonBar.setComponentAlignment(subscriptionCheckBox, Alignment.MIDDLE_CENTER)
         return buttonBar
     }
 
-    private Button setupShowDetails(){
-        Button detailsButton = new Button("Show Details")
-        detailsButton.setIcon(VaadinIcons.INFO_CIRCLE)
-        detailsButton.setEnabled(false)
-
-        projectGrid.addSelectionListener({
-            failedQCSamplesView.setVisible(false)
-
-            if(viewModel.selectedProject && viewModel.selectedProject.samplesQc.failingSamples > 0){
-                detailsButton.setEnabled(true)
-            }else{
-                detailsButton.setEnabled(false)
-            }
-        })
-
-        detailsButton.addClickListener({
-            if(viewModel.selectedProject){
-                projectOverviewController.getFailedQcSamples(viewModel.selectedProject.code)
-                failedQCSamplesView.setVisible(true)
-            }
-        })
-
-        return detailsButton
+    private void loadFailedQcSamples(ProjectSummary projectSummary) {
+        String code = projectSummary.getCode()
+        projectOverviewController.getFailedQcSamples(code)
     }
 
     private Button setUpLinkButton(){
@@ -145,7 +156,7 @@ class ProjectOverviewView extends VerticalLayout{
 
         CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
         subscriptionCheckBox.setVisible(false)
-        enableWhenProjectIsSelected(subscriptionCheckBox)
+        showWhenProjectIsSelected(subscriptionCheckBox)
         subscriptionCheckBox.setValue(false)
         viewModel.addPropertyChangeListener("selectedProject", {
             Optional<ProjectSummary> selectedProjectSummary = Optional.ofNullable(it.newValue as ProjectSummary)
@@ -201,7 +212,6 @@ class ProjectOverviewView extends VerticalLayout{
                 selectedItem.ifPresent({
                     selectProject(it)
                 })
-
             }
         })
         viewModel.updatedProjectsChannel.subscribe({updatedProjectCode ->
@@ -229,11 +239,17 @@ class ProjectOverviewView extends VerticalLayout{
         }
     }
 
+    private static HorizontalSplitPanel createSplitLayout(Layout leftComponent, VerticalLayout rightComponent){
+        HorizontalSplitPanel splitPanel = new HorizontalSplitPanel(leftComponent,rightComponent)
+        splitPanel.setSplitPosition(100)
+        rightComponent.setMargin(new MarginInfo(false,false,false,true))
+
+        return splitPanel
+    }
+
     private void bindManifestToProjectSelection() {
         viewModel.addPropertyChangeListener("selectedProject", { tryToDownloadManifest() })
     }
-
-
 
     private void clearProjectSelection() {
         viewModel.selectedProject = null
@@ -285,8 +301,8 @@ class ProjectOverviewView extends VerticalLayout{
         if( viewModel.selectedProject ) {
             projectGrid.select(viewModel.selectedProject)
         }
+        GridUtils.setupFilters(projectGrid, columnIdsWithFilters)
     }
-
 
     private void tryToDownloadManifest() {
         Optional<ProjectSummary> selectedSummary = Optional.empty()
@@ -323,14 +339,29 @@ class ProjectOverviewView extends VerticalLayout{
         return isAvailable
     }
 
-    private void enableWhenProjectIsSelected(CheckBox checkBox) {
-        viewModel.addPropertyChangeListener("selectedProject") {
+    private void showWhenProjectIsSelected(CheckBox checkBox) {
+        viewModel.addPropertyChangeListener("selectedProject", {
             if(viewModel.selectedProject){
              checkBox.setVisible(true)
             }else{
               checkBox.setVisible(false)
             }
-        }
+        })
+    }
+
+    private void showWhenFailingSamplesExist(Component component) {
+        component.setVisible(failingSamplesExist())
+        viewModel.addPropertyChangeListener("selectedProject", {
+            component.setVisible(failingSamplesExist())
+        })
+    }
+
+    private boolean failingSamplesExist() {
+        Optional<ProjectSummary> selectedProject = Optional.ofNullable(viewModel.selectedProject)
+        boolean hasFailingSamples = selectedProject
+                .map({ it.samplesQc.failingSamples > 0 })
+                .orElse(false)
+        return hasFailingSamples
     }
 
     private void subscribeToProject(String projectCode) {
@@ -354,16 +385,13 @@ class ProjectOverviewView extends VerticalLayout{
      * @param sampleCount The total number of samples registered
      */
     private static State determineCompleteness(SampleCount sampleCount) {
-        if (sampleCount.failingSamples > 0){
+        if (sampleCount.failingSamples > 0) {
             return State.FAILED
-        }
-        else if (sampleCount.passingSamples == sampleCount.totalSampleCount) {
+        } else if (sampleCount.passingSamples == sampleCount.totalSampleCount) {
             return State.COMPLETED
-        }
-        else if (sampleCount.passingSamples < sampleCount.totalSampleCount) {
+        } else if (sampleCount.passingSamples < sampleCount.totalSampleCount) {
             return State.IN_PROGRESS
-        }
-        else {
+        } else {
             //unexpected!!
             throw new IllegalStateException("status count $sampleCount.passingSamples must not be greater total count $sampleCount.totalSampleCount")
         }
