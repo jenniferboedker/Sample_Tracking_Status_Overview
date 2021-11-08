@@ -4,7 +4,7 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-1.0.0-SNAPSHOT (2021-10-26)
+1.1.0-beta (2021-11-08)
 ---------------------------
 
 **Added**
