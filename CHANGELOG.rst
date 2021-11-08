@@ -23,6 +23,20 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Deprecated**
 
+1.0.1-beta (2021-10-28)
+---------------------------
+
+**Added**
+
+**Fixed**
+
+**Dependencies**
+
+* com.vaadin 8.13.0 -> 8.14.0 (addresses CVE-2021-37714)
+
+**Deprecated**
+
+
 1.0.0-beta (2021-10-26)
 ---------------------------
 
