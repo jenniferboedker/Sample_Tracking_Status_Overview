@@ -1,5 +1,6 @@
 package life.qbic.business.samples
 
+import life.qbic.datamodel.identifiers.SampleCodeFunctions
 import life.qbic.datamodel.samples.Status
 
 /**
@@ -24,8 +25,12 @@ class Sample {
     private Status status
 
     Sample(String code, String name, Status status){
-        this.code = code
-        this.name = name
-        this.status = status
+        if(SampleCodeFunctions.isQbicBarcode(code)){
+           this.code = code
+        }else{
+            throw new IllegalArgumentException("Sample code is not a QBiC barcode")
+        }
+        this.name = Objects.requireNonNull(name, "Sample name must not be null")
+        this.status = Objects.requireNonNull(status, "Sample status must not be null")
     }
 }
