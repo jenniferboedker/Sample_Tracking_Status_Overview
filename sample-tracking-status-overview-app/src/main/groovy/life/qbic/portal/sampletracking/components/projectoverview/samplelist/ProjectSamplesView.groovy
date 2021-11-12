@@ -48,9 +48,14 @@ class ProjectSamplesView extends VerticalLayout{
     /**
      * Bean for the Grid to be displayed
      */
-    private static class Sample {
+    public static class Sample {
         String code
         String title
+
+        Sample(String code, String title) {
+            this.code = code
+            this.title = title
+        }
     }
 
     /**
@@ -63,7 +68,7 @@ class ProjectSamplesView extends VerticalLayout{
     /**
      * Presenter filling the grid model with information
      */
-    private static class Presenter /*implements MyOutputInterface */{
+    private static class Presenter implements DummyOutput/*implements MyOutputInterface */{
         private final NotificationService notificationService
         private final ViewModel viewModel
 
@@ -71,6 +76,19 @@ class ProjectSamplesView extends VerticalLayout{
             this.notificationService = notificationService
             this.viewModel = viewModel
         }
+
+        //TODO remove
+        @Override
+        void consumeSamples(List<Sample> samples) {
+            viewModel.samples.clear()
+            viewModel.samples.addAll(samples)
+        }
+    }
+
+
+    //TODO remove
+    public static interface DummyOutput {
+        void consumeSamples(List<Sample> samples)
     }
 }
 

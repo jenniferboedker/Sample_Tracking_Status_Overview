@@ -19,6 +19,7 @@ import life.qbic.portal.sampletracking.components.GridUtils
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
@@ -80,7 +81,16 @@ class ProjectOverviewView extends VerticalLayout {
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
 
-        this.addComponents(titleLabel, spacerLabel, splitPanel)
+        //TODO remove
+        ProjectSamplesView samplesView = new ProjectSamplesView(null)
+        def samplesViewPresenter = samplesView.getPresenter()
+        samplesViewPresenter.consumeSamples([new life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectSamplesView.Sample("QABCD", "test")])
+
+        this.addComponents(titleLabel, spacerLabel, splitPanel, samplesView)
+        //TODO end remove
+        //TODO add back
+        // this.addComponents(titleLabel, spacerLabel, splitPanel)
+
     }
 
     private void connectFailedQcSamplesView() {
