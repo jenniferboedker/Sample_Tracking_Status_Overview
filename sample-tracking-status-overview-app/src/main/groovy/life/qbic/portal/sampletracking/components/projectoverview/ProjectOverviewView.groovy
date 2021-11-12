@@ -13,6 +13,7 @@ import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.themes.ValoTheme
 import groovy.util.logging.Log4j2
+import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.GridUtils
@@ -84,7 +85,8 @@ class ProjectOverviewView extends VerticalLayout {
         //TODO remove
         ProjectSamplesView samplesView = new ProjectSamplesView(null)
         def samplesViewPresenter = samplesView.getPresenter()
-        samplesViewPresenter.consumeSamples([new life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectSamplesView.Sample("QABCD", "test")])
+        samplesViewPresenter.consumeSamples([new life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectSamplesView.Sample("QABCD", "test",
+                Status.DATA_AVAILABLE)])
 
         this.addComponents(titleLabel, spacerLabel, splitPanel, samplesView)
         //TODO end remove
