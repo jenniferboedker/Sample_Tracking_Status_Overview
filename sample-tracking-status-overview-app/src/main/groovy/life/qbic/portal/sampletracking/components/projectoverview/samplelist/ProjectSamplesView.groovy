@@ -5,6 +5,7 @@ import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Grid
 import com.vaadin.ui.VerticalLayout
+import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 
 /**
@@ -38,6 +39,7 @@ class ProjectSamplesView extends VerticalLayout{
         ListDataProvider<Sample> dataProvider = ListDataProvider.ofCollection(samples)
         samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
         samplesGrid.addColumn(Sample::getTitle).setCaption("Sample Title").setId("SampleTitle")
+        samplesGrid.addColumn(Sample::getStatus).setCaption("Sample Status").setId("SampleStatus")
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(dataProvider)
         samplesGrid.setHeightMode(HeightMode.ROW)
@@ -51,10 +53,12 @@ class ProjectSamplesView extends VerticalLayout{
     public static class Sample {
         String code
         String title
+        Status status
 
-        Sample(String code, String title) {
+        Sample(String code, String title, Status status) {
             this.code = code
             this.title = title
+            this.status = status
         }
     }
 
