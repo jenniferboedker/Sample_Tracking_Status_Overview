@@ -124,28 +124,14 @@ class FailedQCSamplesView extends VerticalLayout {
 
         /**
          * To be called after successfully fetching sample codes with respective sample names for the provided project and status.
-         * @param projectCode the code of the project samples should be returned for
-         * @param status the status of the samples that should be returned
-         * @param sampleCodesToNames list of sample codes with names
+         * @param samples a collection of samples with names
          * @since 1.0.0
          */
         @Override
-        void samplesWithNames(String projectCode, Status status, Map<String, String> sampleCodesToNames) {
-            if (status == Status.SAMPLE_QC_FAIL) {
-                List<Sample> samples = parseSamples(sampleCodesToNames)
-                viewModel.samples.clear()
-                viewModel.samples.addAll(samples)
-            } else {
-                //there is not behaviour defined so do nothing
-            }
-        }
-
-        private static List<Sample> parseSamples(Map<String, String> codesToNames) {
-            List<Sample> samples = codesToNames.entrySet().stream()
-                    .map({
-                        return new Sample(it.key, it.value)
-                    }).collect()
-            return Optional.ofNullable(samples).orElse([])
+        void samplesWithNames(Collection<life.qbic.business.samples.Sample> samples) {
+            Collection<Sample> failedSamples = samples.stream().filter({it.status == Status.SAMPLE_QC_FAIL}).collect()
+            viewModel.samples.clear()
+            viewModel.samples.addAll(failedSamples)
         }
     }
 }

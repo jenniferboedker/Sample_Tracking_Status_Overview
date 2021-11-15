@@ -1,7 +1,8 @@
 package life.qbic.business.samples.info
 
-import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.business.DataSourceException
+import life.qbic.business.samples.Sample
+import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.datamodel.samples.Status
 import spock.lang.Specification
 
@@ -18,22 +19,31 @@ class GetSamplesInfoSpec extends Specification {
         DownloadSamplesDataSource sampleDataSource = Stub()
         GetSamplesInfoDataSource infoDataSource = Stub()
         String projectCode = "QABCD"
-        List<String> codes = ["QABCD001AB", "QABCD002AC", "QABCD005AX", "QABCD019A2"]
+        List<String> codes = ["QABCD001A0", "QABCD002A8", "QABCD005AW", "QABCD019A3"]
+        Status expectedStatus = Status.SAMPLE_QC_FAIL
+        Sample sampleOne = new Sample("QABCD001A0", "one", expectedStatus)
+        Sample sampleTwo = new Sample("QABCD002A8", "two", expectedStatus)
+        Sample sampleGreen = new Sample("QABCD005AW", "green", expectedStatus)
+        Sample sampleBlue = new Sample("QABCD019A3", "blue", expectedStatus)
+
         Map<String, String> mapWithNames = new HashMap<>()
-        mapWithNames.put("QABCD001AB", "one")
-        mapWithNames.put("QABCD002AC", "two")
-        mapWithNames.put("QABCD005AX", "green")
-        mapWithNames.put("QABCD019A2", "blue")
-        sampleDataSource.fetchSampleCodesFor(projectCode, Status.SAMPLE_QC_FAIL) >> { codes }
+        mapWithNames.put("QABCD001A0", "one")
+        mapWithNames.put("QABCD002A8", "two")
+        mapWithNames.put("QABCD005AW", "green")
+        mapWithNames.put("QABCD019A3", "blue")
+        sampleDataSource.fetchSampleCodesFor(projectCode, expectedStatus) >> { codes }
         infoDataSource.fetchSampleNamesFor(codes) >> { mapWithNames }
         GetSamplesInfoOutput output = Mock()
         GetSamplesInfo getInfos = new GetSamplesInfo(sampleDataSource, infoDataSource, output)
         
         when:"the use case is run"
-        getInfos.requestSampleInfosFor(projectCode, Status.SAMPLE_QC_FAIL)
+        getInfos.requestSampleInfosFor(projectCode, expectedStatus)
         
         then:"a successful message is send"
-        1 * output.samplesWithNames(projectCode, Status.SAMPLE_QC_FAIL, mapWithNames)
+        1 * output.samplesWithNames(*_) >> { arguments ->
+            final Collection<Sample> givenSamples = arguments[0]
+            assert givenSamples.containsAll([sampleOne, sampleTwo, sampleGreen, sampleBlue])
+        }
         0 * output.failedExecution(_ as String)
     }
 
