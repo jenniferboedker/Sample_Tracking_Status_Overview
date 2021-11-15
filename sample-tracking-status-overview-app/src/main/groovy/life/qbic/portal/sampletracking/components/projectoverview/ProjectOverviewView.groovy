@@ -79,8 +79,8 @@ class ProjectOverviewView extends VerticalLayout {
 
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
-
         this.addComponents(titleLabel, spacerLabel, splitPanel)
+
     }
 
     private void connectFailedQcSamplesView() {
