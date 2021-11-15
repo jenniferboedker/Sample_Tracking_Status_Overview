@@ -19,6 +19,7 @@ import life.qbic.portal.sampletracking.components.GridUtils
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
@@ -41,6 +42,7 @@ class ProjectOverviewView extends VerticalLayout {
     private final NotificationService notificationService
     private final FailedQCSamplesView failedQCSamplesView
     private final ProjectOverviewController projectOverviewController
+    private final ProjectSamplesView projectSamplesView
 
     private Grid<ProjectSummary> projectGrid
     private HorizontalSplitPanel splitPanel
@@ -51,13 +53,15 @@ class ProjectOverviewView extends VerticalLayout {
     private FileDownloader fileDownloader
 
     ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController
-                        , FailedQCSamplesView failedQCSamplesView, ProjectOverviewController projectOverviewController, SubscribeProjectController subscribeProjectController){
+                        , FailedQCSamplesView failedQCSamplesView, ProjectOverviewController projectOverviewController, SubscribeProjectController subscribeProjectController,
+                        ProjectSamplesView projectSamplesView){
         this.notificationService = notificationService
         this.viewModel = viewModel
         this.downloadProjectController = downloadProjectController
         this.subscribeProjectController = subscribeProjectController
         this.failedQCSamplesView = failedQCSamplesView
         this.projectOverviewController = projectOverviewController
+        this.projectSamplesView = projectSamplesView
 
         initLayout()
     }
@@ -79,8 +83,20 @@ class ProjectOverviewView extends VerticalLayout {
 
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
+        showSampleViewOnDoubleClick()
+
         this.addComponents(titleLabel, spacerLabel, splitPanel)
 
+    }
+
+    private void showSampleViewOnDoubleClick(){
+        projectGrid.addItemClickListener({
+            //if grid.getEditor().setEnabled(true) is enabled this will not work anymore!
+            if(it.mouseEventDetails.isDoubleClick()){
+                this.setVisible(false)
+                this.projectSamplesView.setVisible(true)
+            }
+        })
     }
 
     private void connectFailedQcSamplesView() {
