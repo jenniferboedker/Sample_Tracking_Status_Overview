@@ -1,11 +1,10 @@
 package life.qbic.portal.sampletracking.components.projectoverview.samplelist
 
-
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Grid
 import com.vaadin.ui.VerticalLayout
-import life.qbic.datamodel.samples.Status
+import life.qbic.business.samples.Sample
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 
 /**
@@ -26,7 +25,9 @@ class ProjectSamplesView extends VerticalLayout{
 
     private void initLayout() {
         this.setMargin(false)
+        this.setSizeUndefined()
         this.samplesGrid = createSamplesGrid(viewModel.samples)
+        samplesGrid.setSizeFull()
         this.addComponents(samplesGrid)
     }
 
@@ -38,28 +39,12 @@ class ProjectSamplesView extends VerticalLayout{
         Grid<Sample> samplesGrid = new Grid<>()
         ListDataProvider<Sample> dataProvider = ListDataProvider.ofCollection(samples)
         samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
-        samplesGrid.addColumn(Sample::getTitle).setCaption("Sample Title").setId("SampleTitle")
+        samplesGrid.addColumn(Sample::getName).setCaption("Sample Name").setId("SampleName")
         samplesGrid.addColumn(Sample::getStatus).setCaption("Sample Status").setId("SampleStatus")
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(dataProvider)
         samplesGrid.setHeightMode(HeightMode.ROW)
-        samplesGrid.setSizeFull()
         return samplesGrid
-    }
-
-    /**
-     * Bean for the Grid to be displayed
-     */
-    public static class Sample {
-        String code
-        String title
-        Status status
-
-        Sample(String code, String title, Status status) {
-            this.code = code
-            this.title = title
-            this.status = status
-        }
     }
 
     /**
