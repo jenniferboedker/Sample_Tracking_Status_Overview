@@ -3,11 +3,10 @@ package life.qbic.business.samples.info
 import life.qbic.datamodel.samples.Status
 
 /**
- * <b><short description></b>
+ * <b>Provides information on samples and their status</b>
  *
- * <p><detailed description></p>
  *
- * @since <version tag>
+ * @since 1.0.0
  */
 interface SampleStatusDataSource {
     Map<String, Status> fetchSampleStatusesFor(Collection<String> sampleCodes)
