@@ -4,7 +4,18 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-1.0.0-SNAPSHOT (2021-10-26)
+1.0.0-beta.4-SNAPSHOT (2021-11-09)
+---------------------------
+
+**Added**
+
+**Fixed**
+
+**Dependencies**
+
+**Deprecated**
+
+1.0.0-beta.3 (2021-11-08)
 ---------------------------
 
 **Added**
@@ -22,6 +33,20 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 **Dependencies**
 
 **Deprecated**
+
+1.0.1-beta (2021-10-28)
+---------------------------
+
+**Added**
+
+**Fixed**
+
+**Dependencies**
+
+* com.vaadin 8.13.0 -> 8.14.0 (addresses CVE-2021-37714)
+
+**Deprecated**
+
 
 1.0.0-beta (2021-10-26)
 ---------------------------
