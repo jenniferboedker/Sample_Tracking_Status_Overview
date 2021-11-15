@@ -20,7 +20,7 @@ interface GetSamplesInfoOutput {
 
     /**
      * To be called after successfully fetching sample codes with respective sample names for the provided project and status.
-     * @param samples a collection of samples with names
+     * @param samples a collection of samples with sample metadata
      * @since 1.0.0
      */
     void samplesWithNames(Collection<Sample> samples)
