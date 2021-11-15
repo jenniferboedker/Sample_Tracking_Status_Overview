@@ -1,6 +1,6 @@
 package life.qbic.business.samples
 
-import groovy.transform.CompileStatic
+
 import groovy.transform.EqualsAndHashCode
 import life.qbic.datamodel.identifiers.SampleCodeFunctions
 import life.qbic.datamodel.samples.Status
@@ -13,7 +13,6 @@ import life.qbic.datamodel.samples.Status
  * @since 1.0.0
  */
 @EqualsAndHashCode
-@CompileStatic
 class Sample {
     /**
      * Sample code uniquely defining a sample

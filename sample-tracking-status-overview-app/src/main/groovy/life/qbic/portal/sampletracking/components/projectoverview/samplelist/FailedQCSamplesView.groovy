@@ -5,6 +5,7 @@ import com.vaadin.data.provider.DataProvider
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
+import life.qbic.business.samples.Sample
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
@@ -82,7 +83,7 @@ class FailedQCSamplesView extends VerticalLayout {
 
         this.samplesGrid = new Grid<>()
         samplesGrid.addColumn(Sample::getCode).setCaption("Failed QC Sample Code").setId("SampleCode")
-        samplesGrid.addColumn(Sample::getTitle).setCaption("Sample Title").setId("SampleTitle")
+        samplesGrid.addColumn(Sample::getName).setCaption("Sample Name").setId("SampleName")
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(DataProvider.ofCollection(viewModel.getSamples()))
         samplesGrid.setHeightMode(HeightMode.ROW)
@@ -90,16 +91,6 @@ class FailedQCSamplesView extends VerticalLayout {
 
     GetSamplesInfoOutput getPresenter() {
         return this.presenter
-    }
-
-    private static class Sample {
-        final String code
-        final String title
-
-        Sample(String code, String title) {
-            this.code = code
-            this.title = title
-        }
     }
 
     private static class ViewModel {
@@ -128,7 +119,7 @@ class FailedQCSamplesView extends VerticalLayout {
          * @since 1.0.0
          */
         @Override
-        void samplesWithNames(Collection<life.qbic.business.samples.Sample> samples) {
+        void samplesWithNames(Collection<Sample> samples) {
             List<Sample> failedSamples = samples.stream().filter({it.status == Status.SAMPLE_QC_FAIL}).collect()
             viewModel.samples.clear()
             viewModel.samples.addAll(failedSamples)
