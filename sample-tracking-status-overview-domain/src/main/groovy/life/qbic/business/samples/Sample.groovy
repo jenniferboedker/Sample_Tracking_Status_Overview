@@ -1,5 +1,6 @@
 package life.qbic.business.samples
 
+import groovy.transform.EqualsAndHashCode
 import life.qbic.datamodel.identifiers.SampleCodeFunctions
 import life.qbic.datamodel.samples.Status
 
@@ -10,6 +11,7 @@ import life.qbic.datamodel.samples.Status
  *
  * @since 1.0.0
  */
+@EqualsAndHashCode
 class Sample {
     /**
      * Sample code uniquely defining a sample
@@ -32,5 +34,15 @@ class Sample {
         }
         this.name = Objects.requireNonNull(name, "Sample name must not be null")
         this.status = Objects.requireNonNull(status, "Sample status must not be null")
+    }
+
+
+    @Override
+    public String toString() {
+        return "Sample{" +
+                "code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                '}';
     }
 }
