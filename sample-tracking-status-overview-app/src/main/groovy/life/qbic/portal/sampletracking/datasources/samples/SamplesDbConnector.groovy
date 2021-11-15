@@ -63,6 +63,29 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
     }
 
     /**
+     * Given a project code, returns all sample codes with that project
+     * @param projectCode
+     * @return a list of sample codes for the given project
+     */
+    @Override
+    List<String> fetchSampleCodesFor(String projectCode) {
+        String queryTemplate = Query.fetchLatestSampleEntries()
+        Connection connection = connectionProvider.connect()
+        List<String> sampleCodes = new ArrayList<>()
+        String sqlRegex = "${projectCode}%"
+        connection.withCloseable {
+            PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
+            preparedStatement.setString(1, sqlRegex)
+            ResultSet resultSet = preparedStatement.executeQuery()
+            while (resultSet.next()) {
+                String sampleCode = resultSet.getString("sample_id")
+                sampleCodes.add(sampleCode)
+            }
+        }
+        return sampleCodes
+    }
+
+    /**
      * {@inheritDoc}
      * <p><b><i>PLEASE NOTE: In case multiple statuses were entered at the same time,
      * this method adds all statuses to the returned list!</i></b></p>

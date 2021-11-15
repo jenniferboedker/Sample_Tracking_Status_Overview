@@ -48,4 +48,25 @@ class GetSamplesInfo implements GetSamplesInfoInput {
       output.failedExecution(dataSourceException.getMessage())
     } 
   }
+
+  /**
+   * This method calls the output interface with the samples for the provided project code
+   * @param projectCode a code specifying the samples that should be considered
+   * @since 1.0.0
+   */
+  @Override
+  void requestSampleInfosFor(String projectCode) {
+    Objects.requireNonNull(projectCode, "Tried to request sample infos without providing a projectCode.")
+    try {
+      def sampleCodes = samplesDataSource.fetchSampleCodesFor(projectCode)
+      def sampleCodesToNames = infoDataSource.fetchSampleNamesFor(sampleCodes)
+
+      //TODO
+      // 1. create sample objects
+      // 2. call correct output method
+
+    } catch (DataSourceException dataSourceException) {
+      output.failedExecution(dataSourceException.getMessage())
+    }
+  }
 }

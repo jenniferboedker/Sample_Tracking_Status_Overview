@@ -1,6 +1,6 @@
 package life.qbic.business.samples.download
 
-import life.qbic.business.DataSourceException
+
 import life.qbic.datamodel.samples.Status
 
 /**
@@ -20,4 +20,11 @@ interface DownloadSamplesDataSource {
      * @since 1.0.0
      */
     List<String> fetchSampleCodesFor(String projectCode, Status status)
+
+    /**
+     * Given a project code, returns all sample codes with that project
+     * @param projectCode
+     * @return a list of sample codes for the given project
+     */
+    List<String> fetchSampleCodesFor(String projectCode)
 }
