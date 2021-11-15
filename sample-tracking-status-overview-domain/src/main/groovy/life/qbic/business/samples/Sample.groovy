@@ -42,4 +42,14 @@ class Sample {
         this.name = Objects.requireNonNull(name, "Sample name must not be null")
         this.status = Objects.requireNonNull(status, "Sample status must not be null")
     }
+
+
+    @Override
+    public String toString() {
+        return "Sample{" +
+                "code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }
