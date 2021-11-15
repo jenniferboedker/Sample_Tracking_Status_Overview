@@ -1,6 +1,7 @@
 package life.qbic.business.samples.info
 
 import life.qbic.business.DataSourceException
+import life.qbic.business.samples.Sample
 import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.datamodel.samples.Status
 
@@ -42,10 +43,19 @@ class GetSamplesInfo implements GetSamplesInfoInput {
     try {
         def sampleCodes = samplesDataSource.fetchSampleCodesFor(projectCode, status)
         def sampleCodesToNames = infoDataSource.fetchSampleNamesFor(sampleCodes)
-        
-      output.samplesWithNames(projectCode, status, sampleCodesToNames)
+
+      List<Sample> samplesWithNames = buildSamples(sampleCodesToNames, status)
+      output.samplesWithNames(samplesWithNames)
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
     } 
+  }
+
+  private static List<Sample> buildSamples(Map<String, String> codesToNames, Status status) {
+    List<Sample> samples = codesToNames.entrySet().stream()
+            .map({
+              return new Sample(it.key, it.value, status)
+            }).collect()
+    return Optional.ofNullable(samples).orElse([])
   }
 }

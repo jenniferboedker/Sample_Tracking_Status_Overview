@@ -1,5 +1,6 @@
 package life.qbic.business.samples.info
 
+import life.qbic.business.samples.Sample
 import life.qbic.datamodel.samples.Status
 
 /**
@@ -19,11 +20,9 @@ interface GetSamplesInfoOutput {
 
     /**
      * To be called after successfully fetching sample codes with respective sample names for the provided project and status.
-     * @param projectCode the code of the project samples should be returned for
-     * @param status the status of the samples that should be returned
-     * @param sampleCodesToNames list of sample codes with names
+     * @param samples a collection of samples with names
      * @since 1.0.0
      */
-    void samplesWithNames(String projectCode, Status status, Map<String, String> sampleCodesToNames)
+    void samplesWithNames(Collection<Sample> samples)
 
 }
