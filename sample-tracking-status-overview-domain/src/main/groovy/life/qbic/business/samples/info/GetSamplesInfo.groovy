@@ -16,6 +16,7 @@ class GetSamplesInfo implements GetSamplesInfoInput {
   
   private final DownloadSamplesDataSource samplesDataSource
   private final GetSamplesInfoDataSource infoDataSource
+  private final SampleStatusDataSource statusDataSource
   private final GetSamplesInfoOutput output
 
   /**
@@ -25,7 +26,8 @@ class GetSamplesInfo implements GetSamplesInfoInput {
    * @param output the output to where results are published
    * @since 1.0.0
    */
-  GetSamplesInfo(DownloadSamplesDataSource samplesDataSource, GetSamplesInfoDataSource infoDataSource, GetSamplesInfoOutput output) {
+  GetSamplesInfo(SampleStatusDataSource statusDataSource, DownloadSamplesDataSource samplesDataSource, GetSamplesInfoDataSource infoDataSource, GetSamplesInfoOutput output) {
+    this.statusDataSource = statusDataSource
     this.samplesDataSource = samplesDataSource
     this.infoDataSource = infoDataSource
     this.output = output
@@ -62,10 +64,9 @@ class GetSamplesInfo implements GetSamplesInfoInput {
     try {
       def sampleCodes = samplesDataSource.fetchSampleCodesFor(projectCode)
       def sampleCodesToNames = infoDataSource.fetchSampleNamesFor(sampleCodes)
-
-      //TODO
-      // 1. create sample objects
-      // 2. call correct output method
+      def sampleCodesToStatus = statusDataSource.fetchSampleStatusesFor(sampleCodes)
+      List<Sample> samplesWithNames = buildSamples(sampleCodesToNames, sampleCodesToStatus)
+      output.samplesWithNames(samplesWithNames)
 
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
@@ -76,6 +77,17 @@ class GetSamplesInfo implements GetSamplesInfoInput {
     List<Sample> samples = codesToNames.entrySet().stream()
             .map({
               return new Sample(it.key, it.value, status)
+            }).collect()
+    return Optional.ofNullable(samples).orElse([])
+  }
+
+  private static List<Sample> buildSamples(Map<String, String> codesToNames, Map<String, Status> codesToStatus) {
+    if (codesToNames.keySet() != codesToStatus.keySet()) {
+      throw new RuntimeException("Tried to get samples without sufficient information.")
+    }
+    List<Sample> samples = codesToNames.entrySet().stream()
+            .map({
+              return new Sample(it.key, it.value, codesToStatus.get(it.key))
             }).collect()
     return Optional.ofNullable(samples).orElse([])
   }

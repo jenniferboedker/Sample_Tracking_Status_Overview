@@ -5,6 +5,7 @@ import life.qbic.business.DataSourceException
 import life.qbic.business.project.load.LastChangedDateDataSource
 import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.business.samples.download.DownloadSamplesDataSource
+import life.qbic.business.samples.info.SampleStatusDataSource
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
 
@@ -24,7 +25,7 @@ import java.time.Instant
  * @since 1.0.0
  */
 @Log4j2
-class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataSource, LastChangedDateDataSource {
+class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataSource, LastChangedDateDataSource, SampleStatusDataSource {
     private final ConnectionProvider connectionProvider
 
     /**
@@ -118,6 +119,8 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
         }
         return statuses
     }
+
+
     
     /**
      * {@inheritDoc}
@@ -149,7 +152,41 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
       return latest
     }
 
-    private class Query {
+    @Override
+    Map<String, Status> fetchSampleStatusesFor(Collection<String> sampleCodes) {
+        Map<String, Status> sampleCodesToStatus = new HashMap<>()
+        Connection connection = connectionProvider.connect()
+        connection.withCloseable {closableConnection ->
+            PreparedStatement preparedStatement = closableConnection.prepareStatement(Query.fetchLatestSampleEntries())
+            sampleCodes.forEach({
+               sampleCodesToStatus.putAll(mapSampleCodeToStatus(it, preparedStatement))
+           })
+        }
+        return sampleCodesToStatus
+    }
+
+    private static Map<String, Status> mapSampleCodeToStatus(String sampleCode, PreparedStatement preparedStatement) {
+        preparedStatement.setString(1, sampleCode)
+        ResultSet resultSet = preparedStatement.executeQuery()
+        Map<String, Status> sampleCodeToStatus = new HashMap<>()
+        while (resultSet.next()) {
+            String fetchedSampleCode = resultSet.getString("sample_id")
+            String fetchedSampleStatusString = resultSet.getString("sample_status")
+            String arrivalTime = resultSet.getString("arrival_time")
+            Status fetchedSampleStatus
+            try {
+                fetchedSampleStatus = Status.valueOf(fetchedSampleStatusString)
+            } catch(IllegalArgumentException statusNotFound) {
+                // The status in the database is invalid. This should never be the case!
+                log.error("Could not parse status $fetchedSampleStatusString for $sampleCode at $arrivalTime", statusNotFound)
+                throw new DataSourceException("Retrieval of sample statuses failed for sample $sampleCode")
+            }
+            sampleCodeToStatus.put(fetchedSampleCode, fetchedSampleStatus)
+        }
+        return sampleCodeToStatus
+    }
+
+    private static class Query {
         /**
          * Generates a query with one wildcard ? that can be filled with a sql match to
          * filter by sample_id. Does not return "ENTITY" samples.
