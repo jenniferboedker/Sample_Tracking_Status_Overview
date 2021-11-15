@@ -13,15 +13,12 @@ import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.themes.ValoTheme
 import groovy.util.logging.Log4j2
-import life.qbic.business.samples.Sample
-import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.GridUtils
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
-import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
@@ -82,17 +79,7 @@ class ProjectOverviewView extends VerticalLayout {
 
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
-
-        //TODO remove
-        ProjectSamplesView samplesView = new ProjectSamplesView(null)
-        def samplesViewPresenter = samplesView.getPresenter()
-        samplesViewPresenter.consumeSamples([new Sample("Q00000000H", "test",
-                Status.DATA_AVAILABLE)])
-
-        this.addComponents(titleLabel, spacerLabel, splitPanel, samplesView)
-        //TODO end remove
-        //TODO add back
-        // this.addComponents(titleLabel, spacerLabel, splitPanel)
+        this.addComponents(titleLabel, spacerLabel, splitPanel)
 
     }
 

@@ -57,7 +57,7 @@ class ProjectSamplesView extends VerticalLayout{
     /**
      * Presenter filling the grid model with information
      */
-    private static class Presenter implements DummyOutput/*implements MyOutputInterface */{
+    private static class Presenter /*implements MyOutputInterface */{
         private final NotificationService notificationService
         private final ViewModel viewModel
 
@@ -65,19 +65,6 @@ class ProjectSamplesView extends VerticalLayout{
             this.notificationService = notificationService
             this.viewModel = viewModel
         }
-
-        //TODO remove
-        @Override
-        void consumeSamples(List<Sample> samples) {
-            viewModel.samples.clear()
-            viewModel.samples.addAll(samples)
-        }
-    }
-
-
-    //TODO remove
-    public static interface DummyOutput {
-        void consumeSamples(List<Sample> samples)
     }
 }
 
