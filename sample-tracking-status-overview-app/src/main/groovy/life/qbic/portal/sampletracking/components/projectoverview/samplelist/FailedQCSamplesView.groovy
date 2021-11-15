@@ -129,7 +129,7 @@ class FailedQCSamplesView extends VerticalLayout {
          */
         @Override
         void samplesWithNames(Collection<life.qbic.business.samples.Sample> samples) {
-            Collection<Sample> failedSamples = samples.stream().filter({it.status == Status.FAILED_QC}).collect()
+            Collection<Sample> failedSamples = samples.stream().filter({it.status == Status.SAMPLE_QC_FAIL}).collect()
             viewModel.samples.clear()
             viewModel.samples.addAll(failedSamples)
         }
