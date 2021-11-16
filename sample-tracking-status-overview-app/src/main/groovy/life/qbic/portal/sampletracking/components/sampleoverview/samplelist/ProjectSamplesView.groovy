@@ -1,10 +1,11 @@
-package life.qbic.portal.sampletracking.components.projectoverview.samplelist
+package life.qbic.portal.sampletracking.components.sampleoverview.samplelist
 
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Grid
 import com.vaadin.ui.VerticalLayout
 import life.qbic.business.samples.Sample
+import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 
 /**
@@ -12,7 +13,7 @@ import life.qbic.portal.sampletracking.communication.notification.NotificationSe
  *
  * @since 1.0.0
  */
-class ProjectSamplesView extends VerticalLayout{
+class ProjectSamplesView extends VerticalLayout {
     private final ViewModel viewModel
     private final Presenter presenter
     private Grid<Sample> samplesGrid
@@ -57,13 +58,24 @@ class ProjectSamplesView extends VerticalLayout{
     /**
      * Presenter filling the grid model with information
      */
-    private static class Presenter /*implements MyOutputInterface */{
+    private static class Presenter implements GetSamplesInfoOutput {
         private final NotificationService notificationService
         private final ViewModel viewModel
 
         Presenter(NotificationService notificationService, ViewModel viewModel) {
             this.notificationService = notificationService
             this.viewModel = viewModel
+        }
+
+        @Override
+        void failedExecution(String reason) {
+            notificationService.publishFailure("Could not load samples: $reason")
+        }
+
+        @Override
+        void samplesWithNames(Collection<Sample> samples) {
+            viewModel.samples.clear()
+            viewModel.samples.addAll(samples)
         }
     }
 }
