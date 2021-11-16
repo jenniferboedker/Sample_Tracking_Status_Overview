@@ -1,5 +1,6 @@
 package life.qbic.business.samples
 
+
 import groovy.transform.EqualsAndHashCode
 import life.qbic.datamodel.identifiers.SampleCodeFunctions
 import life.qbic.datamodel.samples.Status
