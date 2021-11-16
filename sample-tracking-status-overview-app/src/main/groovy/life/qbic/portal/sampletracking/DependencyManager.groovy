@@ -17,6 +17,7 @@ import life.qbic.business.samples.download.DownloadSamplesOutput
 import life.qbic.business.samples.info.GetSamplesInfo
 import life.qbic.business.samples.info.GetSamplesInfoDataSource
 import life.qbic.business.samples.info.GetSamplesInfoOutput
+import life.qbic.business.samples.info.SampleStatusDataSource
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
@@ -65,6 +66,7 @@ class DependencyManager {
     private DownloadSamplesDataSource downloadSamplesDataSource
     private SubscriptionDataSource subscriptionDataSource
     private SubscribedProjectsDataSource subscribedProjectsDataSource
+    private SampleStatusDataSource sampleStatusDataSource
 
     private ResourceService<Project> projectResourceService
     private ResourceService<StatusCount> statusCountService
@@ -114,6 +116,8 @@ class DependencyManager {
         SamplesDbConnector samplesDbConnector = new SamplesDbConnector(DatabaseSession.getInstance())
         countSamplesDataSource = samplesDbConnector
         downloadSamplesDataSource = samplesDbConnector
+        lastChangedDateDataSource = samplesDbConnector
+        sampleStatusDataSource = samplesDbConnector
 
         Credentials openBisCredentials = new Credentials(
                 user: configurationManager.getDataSourceUser(),
@@ -121,7 +125,6 @@ class DependencyManager {
         )
         OpenBisConnector openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
         loadProjectsDataSource = openBisConnector
-        lastChangedDateDataSource = samplesDbConnector
 
         subscriptionDataSource = new SubscriptionsDbConnector(DatabaseSession.getInstance())
         getSamplesInfoDataSource = openBisConnector
@@ -167,7 +170,7 @@ class DependencyManager {
     }
 
     private ProjectOverviewController setupFailedQCUseCase(GetSamplesInfoOutput output){
-        GetSamplesInfo getSamplesInfo = new GetSamplesInfo(downloadSamplesDataSource,getSamplesInfoDataSource, output)
+        GetSamplesInfo getSamplesInfo = new GetSamplesInfo(sampleStatusDataSource, downloadSamplesDataSource,getSamplesInfoDataSource, output)
         return new ProjectOverviewController(getSamplesInfo)
     }
 
