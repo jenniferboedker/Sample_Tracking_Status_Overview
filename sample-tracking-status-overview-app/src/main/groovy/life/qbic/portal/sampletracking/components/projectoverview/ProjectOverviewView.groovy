@@ -67,7 +67,6 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     }
 
     private void initLayout(){
-        this.setMargin(false)
 
         Label spacerLabel = new Label("&nbsp;", ContentMode.HTML)
 
@@ -83,6 +82,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
         this.addComponents(spacerLabel, splitPanel)
+        this.setMargin(false)
 
     }
 

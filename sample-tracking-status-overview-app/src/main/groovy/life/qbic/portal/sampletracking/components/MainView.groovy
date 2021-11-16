@@ -25,20 +25,22 @@ class MainView extends VerticalLayout {
     private final ToggleButton projectSampleToggle
 
     MainView(ProjectOverviewView projectOverviewView, SampleOverviewView sampleOverviewView) {
-        this.setMargin(false)
+        this.setMargin(true)
+        this.setSpacing(false)
 
         titleLabel.addStyleName(ValoTheme.LABEL_HUGE)
 
         this.projectOverviewView = projectOverviewView
         this.sampleOverviewView = sampleOverviewView
+
+        projectSampleToggle = setupProjectSampleToggle()
+        addToggleButtonListeners()
+
+        hotbar.addComponentAsFirst(projectSampleToggle)
         addHotbarItem(projectOverviewView.getHotbar())
         addHotbarItem(sampleOverviewView.getHotbar())
         showProjectView(true)
         showSampleView(false)
-
-        projectSampleToggle = setupProjectSampleToggle()
-        addToggleButtonListeners()
-        hotbar.addComponentAsFirst(projectSampleToggle)
 
         this.addComponents(titleLabel, hotbar, projectOverviewView, sampleOverviewView)
     }
