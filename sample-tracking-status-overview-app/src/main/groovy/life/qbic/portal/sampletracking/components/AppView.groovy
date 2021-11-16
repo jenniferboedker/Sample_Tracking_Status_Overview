@@ -10,13 +10,13 @@ import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewV
 import life.qbic.portal.sampletracking.components.toggle.ToggleButton
 
 /**
- * <b><short description></b>
+ * <b>The application view component</b>
  *
- * <p><detailed description></p>
+ * <p>This is the orchestrating root element of the view hierarchy.</p>
  *
- * @since <version tag>
+ * @since 1.0.0
  */
-class MainView extends VerticalLayout {
+class AppView extends VerticalLayout {
 
     private final ProjectOverviewView projectOverviewView
     private final SampleOverviewView sampleOverviewView
@@ -24,7 +24,7 @@ class MainView extends VerticalLayout {
     protected final Label titleLabel = new Label("Sample Status Portlet")
     private final ToggleButton projectSampleToggle
 
-    MainView(ProjectOverviewView projectOverviewView, SampleOverviewView sampleOverviewView) {
+    AppView(ProjectOverviewView projectOverviewView, SampleOverviewView sampleOverviewView) {
         this.setMargin(true)
         this.setSpacing(false)
 

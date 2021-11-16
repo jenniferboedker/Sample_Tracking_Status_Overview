@@ -21,7 +21,7 @@ import life.qbic.business.samples.info.SampleStatusDataSource
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
-import life.qbic.portal.sampletracking.components.MainView
+import life.qbic.portal.sampletracking.components.AppView
 import life.qbic.portal.sampletracking.components.NotificationHandler
 import life.qbic.portal.sampletracking.components.projectoverview.CountSamplesPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.LoadProjectsPresenter
@@ -151,7 +151,7 @@ class DependencyManager {
     private VerticalLayout setupPortletView() {
         ProjectOverviewView projectOverviewView = createProjectOverviewView()
         SampleOverviewView sampleOverviewView = createSampleOverviewView()
-        MainView mainView = new MainView(projectOverviewView, sampleOverviewView)
+        AppView mainView = new AppView(projectOverviewView, sampleOverviewView)
         return mainView
     }
 
