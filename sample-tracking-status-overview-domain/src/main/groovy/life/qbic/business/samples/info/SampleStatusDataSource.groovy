@@ -14,7 +14,7 @@ interface SampleStatusDataSource {
     /**
      * Retrieves sample statuses for a collection of provided sample codes
      * @param sampleCodes the sample codes of samples that should be checked for their sample status
-     * @return a map containing statueses for every sample code as key
+     * @return a map containing statuses for every sample code as key
      * @throws DataSourceException in case of a technical failure
      * @since 1.0.0
      */
