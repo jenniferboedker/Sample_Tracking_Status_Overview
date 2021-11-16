@@ -44,6 +44,7 @@ class ProjectOverviewView extends VerticalLayout {
     private final ProjectOverviewController projectOverviewController
     private final ProjectSamplesView projectSamplesView
 
+    private Label subTitle
     private Grid<ProjectSummary> projectGrid
     private HorizontalSplitPanel splitPanel
     private static final Collection<String> columnIdsWithFilters = ["ProjectCode", "ProjectTitle"]
@@ -85,7 +86,9 @@ class ProjectOverviewView extends VerticalLayout {
         bindManifestToProjectSelection()
         showSampleViewOnDoubleClick()
 
-        this.addComponents(titleLabel, spacerLabel, splitPanel)
+        projectSamplesView.setVisible(false)
+
+        this.addComponents(titleLabel, spacerLabel, splitPanel, projectSamplesView)
 
     }
 
@@ -93,8 +96,11 @@ class ProjectOverviewView extends VerticalLayout {
         projectGrid.addItemClickListener({
             //if grid.getEditor().setEnabled(true) is enabled this will not work anymore!
             if(it.mouseEventDetails.isDoubleClick()){
-                this.setVisible(false)
+                splitPanel.setVisible(false)
                 this.projectSamplesView.setVisible(true)
+
+                Label subTitle = new Label("<b>${viewModel.selectedProject.code}</b> - ${viewModel.selectedProject.title}", ContentMode.HTML)
+                this.addComponent(subTitle,1)
             }
         })
     }

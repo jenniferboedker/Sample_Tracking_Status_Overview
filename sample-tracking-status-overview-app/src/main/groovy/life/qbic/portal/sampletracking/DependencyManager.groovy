@@ -30,6 +30,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.download.Downl
 import life.qbic.portal.sampletracking.components.projectoverview.download.ManifestPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectPresenter
 import life.qbic.portal.sampletracking.datasources.Credentials
@@ -165,7 +166,8 @@ class DependencyManager {
         FailedQCSamplesView failedQCSamplesView = new FailedQCSamplesView(notificationService)
         ProjectOverviewController projectOverviewController = setupFailedQCUseCase(failedQCSamplesView.getPresenter())
 
-        ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController, failedQCSamplesView, projectOverviewController, subscribeProjectController)
+        ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController, failedQCSamplesView, projectOverviewController, subscribeProjectController,
+                new ProjectSamplesView(notificationService))
         return view
     }
 
