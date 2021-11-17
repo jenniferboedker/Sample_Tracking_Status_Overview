@@ -1,6 +1,6 @@
 package life.qbic.portal.sampletracking.components
 
-
+import com.vaadin.ui.Component
 import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
@@ -26,7 +26,7 @@ class AppView extends VerticalLayout {
 
     AppView(ProjectOverviewView projectOverviewView, SampleOverviewView sampleOverviewView) {
         this.setMargin(true)
-        this.setSpacing(false)
+        this.setSpacing(true)
 
         titleLabel.addStyleName(ValoTheme.LABEL_HUGE)
 
@@ -42,7 +42,7 @@ class AppView extends VerticalLayout {
         showProjectView(true)
         showSampleView(false)
 
-        this.addComponents(titleLabel, hotbar, projectOverviewView, sampleOverviewView)
+        this.addComponents(titleLabel, createSpacer(2, Unit.EM), hotbar, projectOverviewView, sampleOverviewView)
     }
 
 
@@ -76,8 +76,14 @@ class AppView extends VerticalLayout {
         projectSampleToggle.addClickListener(switchToProjectView, ToggleButton.State.TWO)
     }
 
+    private static Component createSpacer(float height, Unit unit) {
+        Label label = new Label(" ")
+        label.setHeight(height, unit)
+        return label
+    }
+
     private static ToggleButton setupProjectSampleToggle() {
-        ToggleButton toggleButton = new ToggleButton("Sample View", "Project View")
+        ToggleButton toggleButton = new ToggleButton("Show Samples", "Show Projects")
         return toggleButton
     }
 }
