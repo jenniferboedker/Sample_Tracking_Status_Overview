@@ -3,6 +3,7 @@ package life.qbic.portal.sampletracking.components.sampleoverview.samplelist
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Grid
+import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import life.qbic.business.samples.Sample
 import life.qbic.business.samples.info.GetSamplesInfoOutput
@@ -17,6 +18,8 @@ class ProjectSamplesView extends VerticalLayout {
     private final ViewModel viewModel
     private final Presenter presenter
     private Grid<Sample> samplesGrid
+    private final Label noSampleslabel = new Label("We are sorry but there are no samples for the selected project.")
+
 
     ProjectSamplesView(NotificationService notificationService) {
         this.viewModel = new ViewModel()
@@ -29,7 +32,7 @@ class ProjectSamplesView extends VerticalLayout {
         this.setSizeUndefined()
         this.samplesGrid = createSamplesGrid(viewModel.samples)
         samplesGrid.setSizeFull()
-        this.addComponents(samplesGrid)
+        this.addComponents(samplesGrid, noSampleslabel)
     }
 
     Presenter getPresenter() {

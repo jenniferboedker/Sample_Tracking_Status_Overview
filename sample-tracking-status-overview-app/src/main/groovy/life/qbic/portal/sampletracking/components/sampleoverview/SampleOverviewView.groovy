@@ -2,7 +2,6 @@ package life.qbic.portal.sampletracking.components.sampleoverview
 
 import com.vaadin.ui.Button
 import com.vaadin.ui.HorizontalLayout
-import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import life.qbic.portal.sampletracking.components.HasHotbar
 import life.qbic.portal.sampletracking.components.HasTitle
@@ -28,7 +27,8 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle {
     SampleOverviewView(ProjectSamplesController projectSamplesController, ProjectSamplesView projectSamplesView) {
         this.projectSamplesController = projectSamplesController
         this.projectSamplesView = projectSamplesView
-        this.addComponent(new Label("This is a sample view"))
+        this.addComponents(this.projectSamplesView)
+        this.setMargin(false)
     }
 
     @Override
