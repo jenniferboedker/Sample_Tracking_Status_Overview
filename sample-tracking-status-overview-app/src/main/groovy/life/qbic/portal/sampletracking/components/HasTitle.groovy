@@ -1,14 +1,16 @@
 package life.qbic.portal.sampletracking.components
 
 /**
- * <b><short description></b>
+ * <b>This class provides a title</b>
  *
- * <p><detailed description></p>
- *
- * @since <version tag>
+ * @since 1.0.0
  */
 interface HasTitle {
 
+    /**
+     * Provides a title
+     * @return a title
+     */
     String getTitle()
 
 }
