@@ -9,8 +9,8 @@ import life.qbic.business.samples.Sample
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
-import life.qbic.portal.sampletracking.components.projectoverview.visibility.VisibilityChangeEvent
-import life.qbic.portal.sampletracking.components.projectoverview.visibility.VisibilityChangeListener
+import life.qbic.portal.sampletracking.components.visibility.VisibilityChangeEvent
+import life.qbic.portal.sampletracking.components.visibility.VisibilityChangeListener
 
 /**
  * <b>Shows the failed QC samples </b>

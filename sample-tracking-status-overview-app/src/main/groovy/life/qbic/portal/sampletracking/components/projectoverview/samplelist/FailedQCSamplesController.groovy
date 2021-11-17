@@ -8,11 +8,11 @@ import life.qbic.datamodel.samples.Status
  *
  * @since 1.0.0
  */
-class ProjectOverviewController {
+class FailedQCSamplesController {
 
     private GetSamplesInfoInput getSamplesInfoInput
 
-    ProjectOverviewController(GetSamplesInfoInput samplesInfoInput){
+    FailedQCSamplesController(GetSamplesInfoInput samplesInfoInput){
         this.getSamplesInfoInput = samplesInfoInput
     }
 
