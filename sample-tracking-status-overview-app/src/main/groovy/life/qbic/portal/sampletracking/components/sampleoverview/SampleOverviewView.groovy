@@ -9,11 +9,9 @@ import life.qbic.portal.sampletracking.components.sampleoverview.samplelist.Proj
 import life.qbic.portal.sampletracking.components.sampleoverview.samplelist.ProjectSamplesView
 
 /**
- * <b><short description></b>
+ * <b>A view component showing a list of samples</b>
  *
- * <p><detailed description></p>
- *
- * @since <version tag>
+ * @since 1.0.0
  */
 class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle {
 
