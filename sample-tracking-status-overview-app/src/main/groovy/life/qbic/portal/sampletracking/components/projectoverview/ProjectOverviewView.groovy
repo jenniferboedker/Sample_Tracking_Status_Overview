@@ -16,10 +16,11 @@ import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.GridUtils
+import life.qbic.portal.sampletracking.components.HasHotbar
+import life.qbic.portal.sampletracking.components.HasTitle
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
-import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
-import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
@@ -34,49 +35,42 @@ import life.qbic.portal.sampletracking.components.projectoverview.subscribe.Subs
  *
 */
 @Log4j2
-class ProjectOverviewView extends VerticalLayout {
+class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle {
+
+    private static final String TITLE = "Project Overview"
 
     private final ProjectOverviewViewModel viewModel
     private final DownloadProjectController downloadProjectController
     private final SubscribeProjectController subscribeProjectController
     private final NotificationService notificationService
     private final FailedQCSamplesView failedQCSamplesView
-    private final ProjectOverviewController projectOverviewController
-    private final ProjectSamplesView projectSamplesView
+    private final FailedQCSamplesController failedQCSamplesController
 
-    private Label subTitle
     private Grid<ProjectSummary> projectGrid
     private HorizontalSplitPanel splitPanel
     private static final Collection<String> columnIdsWithFilters = ["ProjectCode", "ProjectTitle"]
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
-    final static int MAX_STATUS_COLUMN_WIDTH = 200
     private FileDownloader fileDownloader
+    private HorizontalLayout projectButtonBar = new HorizontalLayout()
 
     ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController
-                        , FailedQCSamplesView failedQCSamplesView, ProjectOverviewController projectOverviewController, SubscribeProjectController subscribeProjectController,
-                        ProjectSamplesView projectSamplesView){
+                        , FailedQCSamplesView failedQCSamplesView, FailedQCSamplesController failedQCSamplesController, SubscribeProjectController subscribeProjectController){
         this.notificationService = notificationService
         this.viewModel = viewModel
         this.downloadProjectController = downloadProjectController
         this.subscribeProjectController = subscribeProjectController
         this.failedQCSamplesView = failedQCSamplesView
-        this.projectOverviewController = projectOverviewController
-        this.projectSamplesView = projectSamplesView
+        this.failedQCSamplesController = failedQCSamplesController
 
         initLayout()
     }
 
     private void initLayout(){
-        Label titleLabel = new Label("Project Overview")
-        titleLabel.addStyleName(ValoTheme.LABEL_HUGE)
-
-        Label spacerLabel = new Label("&nbsp;", ContentMode.HTML)
-
         setupProjects()
 
-        HorizontalLayout projectButtonBar = setupButtonLayout()
-        VerticalLayout projectLayout = new VerticalLayout(projectButtonBar,projectGrid)
+        setupButtonLayout(projectButtonBar)
+        VerticalLayout projectLayout = new VerticalLayout(projectGrid)
         projectLayout.setMargin(false)
 
         splitPanel = createSplitLayout(projectLayout,failedQCSamplesView)
@@ -84,25 +78,9 @@ class ProjectOverviewView extends VerticalLayout {
 
         connectFailedQcSamplesView()
         bindManifestToProjectSelection()
-        showSampleViewOnDoubleClick()
+        this.addComponents(splitPanel)
+        this.setMargin(false)
 
-        projectSamplesView.setVisible(false)
-
-        this.addComponents(titleLabel, spacerLabel, splitPanel, projectSamplesView)
-
-    }
-
-    private void showSampleViewOnDoubleClick(){
-        projectGrid.addItemClickListener({
-            //if grid.getEditor().setEnabled(true) is enabled this will not work anymore!
-            if(it.mouseEventDetails.isDoubleClick()){
-                splitPanel.setVisible(false)
-                this.projectSamplesView.setVisible(true)
-
-                Label subTitle = new Label("<b>${viewModel.selectedProject.code}</b> - ${viewModel.selectedProject.title}", ContentMode.HTML)
-                this.addComponent(subTitle,1)
-            }
-        })
     }
 
     private void connectFailedQcSamplesView() {
@@ -122,8 +100,7 @@ class ProjectOverviewView extends VerticalLayout {
         })
     }
 
-    private HorizontalLayout setupButtonLayout() {
-        HorizontalLayout buttonBar = new HorizontalLayout()
+    private HorizontalLayout setupButtonLayout(HorizontalLayout buttonBar) {
         buttonBar.setMargin(false)
 
         Button postmanLink = setUpLinkButton()
@@ -138,7 +115,7 @@ class ProjectOverviewView extends VerticalLayout {
 
     private void loadFailedQcSamples(ProjectSummary projectSummary) {
         String code = projectSummary.getCode()
-        projectOverviewController.getFailedQcSamples(code)
+        failedQCSamplesController.getFailedQcSamples(code)
     }
 
     private Button setUpLinkButton(){
@@ -417,5 +394,20 @@ class ProjectOverviewView extends VerticalLayout {
             //unexpected!!
             throw new IllegalStateException("status count $sampleCount.passingSamples must not be greater total count $sampleCount.totalSampleCount")
         }
+    }
+
+    @Override
+    void setVisible(boolean visible) {
+        super.setVisible(visible)
+        getHotbar().setVisible(visible)
+    }
+
+    HorizontalLayout getHotbar() {
+        return projectButtonBar
+    }
+
+    @Override
+    String getTitle() {
+        return TITLE
     }
 }
