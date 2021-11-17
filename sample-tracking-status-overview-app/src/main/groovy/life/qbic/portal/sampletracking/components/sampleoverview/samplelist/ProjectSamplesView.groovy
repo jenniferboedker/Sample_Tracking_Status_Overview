@@ -18,8 +18,6 @@ class ProjectSamplesView extends VerticalLayout {
     private final ViewModel viewModel
     private final Presenter presenter
     private Grid<Sample> samplesGrid
-    private final Label noSampleslabel = new Label("We are sorry but there are no samples for the selected project.")
-
 
     ProjectSamplesView(NotificationService notificationService) {
         this.viewModel = new ViewModel()
@@ -29,10 +27,11 @@ class ProjectSamplesView extends VerticalLayout {
 
     private void initLayout() {
         this.setMargin(false)
-        this.setSizeUndefined()
+        this.setSizeFull()
+
         this.samplesGrid = createSamplesGrid(viewModel.samples)
         samplesGrid.setSizeFull()
-        this.addComponents(samplesGrid, noSampleslabel)
+        this.addComponents(samplesGrid)
     }
 
     Presenter getPresenter() {

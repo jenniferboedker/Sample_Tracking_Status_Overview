@@ -29,6 +29,14 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle {
         this.setMargin(false)
     }
 
+    /**
+     * Returns the {@link ProjectSamplesController} of this view
+     * @return ProjectSamplesController
+     */
+    ProjectSamplesController getController(){
+        return projectSamplesController
+    }
+
     @Override
     HorizontalLayout getHotbar() {
         return hotbar

@@ -25,6 +25,8 @@ import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 
+import java.util.function.Consumer
+
 /**
  * <b>This class generates the layout for the ProductOverview use case</b>
  *
@@ -81,6 +83,19 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         this.addComponents(splitPanel)
         this.setMargin(false)
 
+    }
+
+    /**
+     *
+     * @param consumer
+     */
+    public void onProjectDoubleClick(Consumer<ProjectSummary> consumer){
+         projectGrid.addItemClickListener({
+             //if grid.getEditor().setEnabled(true) is enabled this will not work anymore!
+             if(it.mouseEventDetails.isDoubleClick()){
+                 if(viewModel.selectedProject) consumer.accept(viewModel.selectedProject)
+             }
+         })
     }
 
     private void connectFailedQcSamplesView() {

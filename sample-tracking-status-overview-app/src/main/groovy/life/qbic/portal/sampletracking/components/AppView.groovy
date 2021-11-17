@@ -1,11 +1,15 @@
 package life.qbic.portal.sampletracking.components
 
+import com.vaadin.ui.Button
 import com.vaadin.ui.Component
+import com.vaadin.ui.Grid
 import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.components.grid.ItemClickListener
 import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
+import life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewView
 import life.qbic.portal.sampletracking.components.toggle.ToggleButton
 
@@ -74,6 +78,16 @@ class AppView extends VerticalLayout {
         }
         projectSampleToggle.addClickListener(switchToSampleView, ToggleButton.State.ONE)
         projectSampleToggle.addClickListener(switchToProjectView, ToggleButton.State.TWO)
+
+        projectOverviewView.onProjectDoubleClick({
+            sampleOverviewView.getController().getSamplesFor(it.code)
+            toggle()
+        })
+    }
+
+    private void toggle(){
+        showProjectView(!projectOverviewView.isVisible())
+        showSampleView(!sampleOverviewView.isVisible())
     }
 
     private static Component createSpacer(float height, Unit unit) {
