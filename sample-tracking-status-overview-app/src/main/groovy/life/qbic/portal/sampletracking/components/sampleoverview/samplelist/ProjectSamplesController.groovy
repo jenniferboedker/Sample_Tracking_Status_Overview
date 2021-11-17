@@ -3,11 +3,9 @@ package life.qbic.portal.sampletracking.components.sampleoverview.samplelist
 import life.qbic.business.samples.info.GetSamplesInfoInput
 
 /**
- * <b><short description></b>
+ * <b>This controller connects to the sample loading.</b>
  *
- * <p><detailed description></p>
- *
- * @since <version tag>
+ * @since 1.0.0
  */
 class ProjectSamplesController {
 
