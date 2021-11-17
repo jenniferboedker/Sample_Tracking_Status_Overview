@@ -16,6 +16,11 @@ class ProjectSamplesController {
         this.getSamplesInfoInput = getSamplesInfoInput
     }
 
+    /**
+     * Triggers the loading of samples for the given project code
+     * @param projectCode identifies the project, samples are loaded for
+     * @since 1.0.0
+     */
     void getSamplesFor(String projectCode){
         getSamplesInfoInput.requestSampleInfosFor(projectCode)
     }
