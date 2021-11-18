@@ -10,6 +10,7 @@ import com.vaadin.ui.components.grid.ItemClickListener
 import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary
+import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewController
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewView
 import life.qbic.portal.sampletracking.components.toggle.ToggleButton
 
@@ -24,11 +25,13 @@ class AppView extends VerticalLayout {
 
     private final ProjectOverviewView projectOverviewView
     private final SampleOverviewView sampleOverviewView
+    private final SampleOverviewController sampleOverviewController
+
     private final HorizontalLayout hotbar = new HorizontalLayout()
     protected final Label titleLabel = new Label("Sample Status Portlet")
     private final ToggleButton projectSampleToggle
 
-    AppView(ProjectOverviewView projectOverviewView, SampleOverviewView sampleOverviewView) {
+    AppView(ProjectOverviewView projectOverviewView, SampleOverviewView sampleOverviewView, SampleOverviewController sampleOverviewController) {
         this.setMargin(true)
         this.setSpacing(true)
 
@@ -36,9 +39,12 @@ class AppView extends VerticalLayout {
 
         this.projectOverviewView = projectOverviewView
         this.sampleOverviewView = sampleOverviewView
+        this.sampleOverviewController = sampleOverviewController
 
         projectSampleToggle = setupProjectSampleToggle()
+
         addToggleButtonListeners()
+        listenToProjectSelectionChange()
 
         hotbar.addComponentAsFirst(projectSampleToggle)
         addHotbarItem(projectOverviewView.getHotbar())
@@ -49,6 +55,18 @@ class AppView extends VerticalLayout {
         this.addComponents(titleLabel, createSpacer(2, Unit.EM), hotbar, projectOverviewView, sampleOverviewView)
     }
 
+
+    private void listenToProjectSelectionChange(){
+        projectOverviewView.onSelectedProjectChange({
+            if (it) {
+                projectSampleToggle.setEnabled(true)
+                sampleOverviewController.getSamplesFor(it.code)
+            } else {
+                projectSampleToggle.setEnabled(false)
+                sampleOverviewView.reset()
+            }
+        })
+    }
 
     private void showProjectView(Boolean visible) {
         projectOverviewView.setVisible(visible)
@@ -80,7 +98,7 @@ class AppView extends VerticalLayout {
         projectSampleToggle.addClickListener(switchToProjectView, ToggleButton.State.TWO)
 
         projectOverviewView.onProjectDoubleClick({
-            sampleOverviewView.getController().getSamplesFor(it.code)
+            sampleOverviewController.getSamplesFor(it.code)
             projectSampleToggle.click()
         })
     }
@@ -93,6 +111,8 @@ class AppView extends VerticalLayout {
 
     private static ToggleButton setupProjectSampleToggle() {
         ToggleButton toggleButton = new ToggleButton("Show Samples", "Show Projects")
+        toggleButton.setEnabled(false)
+
         return toggleButton
     }
 }

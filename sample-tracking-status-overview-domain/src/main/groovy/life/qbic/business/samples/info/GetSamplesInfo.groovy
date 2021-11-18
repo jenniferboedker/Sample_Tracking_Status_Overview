@@ -87,7 +87,9 @@ class GetSamplesInfo implements GetSamplesInfoInput {
     }
     List<Sample> samples = codesToNames.entrySet().stream()
             .map({
-              return new Sample(it.key, it.value, codesToStatus.get(it.key))
+              String code = it.key
+              String name = it.value ?: ""
+              return new Sample(code, name, codesToStatus.get(it.key))
             }).collect()
     return Optional.ofNullable(samples).orElse([])
   }

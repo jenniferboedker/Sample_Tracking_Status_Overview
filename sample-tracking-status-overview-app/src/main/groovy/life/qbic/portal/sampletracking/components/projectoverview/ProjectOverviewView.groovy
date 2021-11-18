@@ -68,6 +68,17 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         initLayout()
     }
 
+    /**
+     * With change of the selectedProject property in the viewmodel this method calls the consumer and provides him
+     * with the selected project summary
+     * @param projectConsumer The consumer that will accept the selected project summary
+     */
+    public void onSelectedProjectChange(Consumer<ProjectSummary> projectConsumer){
+        viewModel.addPropertyChangeListener("selectedProject", {
+            projectConsumer.accept(viewModel.selectedProject)
+        })
+    }
+
     private void initLayout(){
         setupProjects()
 
