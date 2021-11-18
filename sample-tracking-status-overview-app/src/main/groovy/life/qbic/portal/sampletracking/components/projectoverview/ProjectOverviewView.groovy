@@ -96,6 +96,19 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
 
     }
 
+    /**
+     *
+     * @param consumer
+     */
+    public void onProjectDoubleClick(Consumer<ProjectSummary> consumer){
+         projectGrid.addItemClickListener({
+             //if grid.getEditor().setEnabled(true) is enabled this will not work anymore!
+             if(it.mouseEventDetails.isDoubleClick()){
+                 if(viewModel.selectedProject) consumer.accept(viewModel.selectedProject)
+             }
+         })
+    }
+
     private void connectFailedQcSamplesView() {
         FailedQCSamplesView samplesView = failedQCSamplesView
         showWhenFailingSamplesExist(samplesView)

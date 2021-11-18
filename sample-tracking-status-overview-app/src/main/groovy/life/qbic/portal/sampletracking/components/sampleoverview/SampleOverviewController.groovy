@@ -1,4 +1,4 @@
-package life.qbic.portal.sampletracking.components.sampleoverview.samplelist
+package life.qbic.portal.sampletracking.components.sampleoverview
 
 import life.qbic.business.samples.info.GetSamplesInfoInput
 
@@ -7,12 +7,11 @@ import life.qbic.business.samples.info.GetSamplesInfoInput
  *
  * @since 1.0.0
  */
-class ProjectSamplesController {
-
+class SampleOverviewController {
 
     private final GetSamplesInfoInput getSamplesInfoInput
 
-    ProjectSamplesController(GetSamplesInfoInput getSamplesInfoInput) {
+    SampleOverviewController(GetSamplesInfoInput getSamplesInfoInput) {
         this.getSamplesInfoInput = getSamplesInfoInput
     }
 

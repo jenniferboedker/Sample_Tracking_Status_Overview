@@ -34,8 +34,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.samplelist.Fai
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectPresenter
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewView
-import life.qbic.portal.sampletracking.components.sampleoverview.samplelist.ProjectSamplesController
-import life.qbic.portal.sampletracking.components.sampleoverview.samplelist.ProjectSamplesView
+import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewController
 import life.qbic.portal.sampletracking.datasources.Credentials
 import life.qbic.portal.sampletracking.datasources.OpenBisConnector
 import life.qbic.portal.sampletracking.datasources.database.DatabaseSession
@@ -150,8 +149,11 @@ class DependencyManager {
 
     private VerticalLayout setupPortletView() {
         ProjectOverviewView projectOverviewView = createProjectOverviewView()
-        SampleOverviewView sampleOverviewView = createSampleOverviewView()
-        AppView mainView = new AppView(projectOverviewView, sampleOverviewView)
+        SampleOverviewView sampleOverviewView = new SampleOverviewView(notificationService)
+        SampleOverviewController projectSamplesController = setupProjectSamplesUseCase(sampleOverviewView.getPresenter())
+
+
+        AppView mainView = new AppView(projectOverviewView, sampleOverviewView, projectSamplesController)
         return mainView
     }
 
@@ -181,15 +183,9 @@ class DependencyManager {
         return view
     }
 
-    private SampleOverviewView createSampleOverviewView() {
-        ProjectSamplesView projectSamplesView = new ProjectSamplesView(notificationService)
-        ProjectSamplesController projectSamplesController = setupProjectSamplesUseCase(projectSamplesView.getPresenter())
-        return new SampleOverviewView(projectSamplesController, projectSamplesView)
-    }
-
-    private ProjectSamplesController setupProjectSamplesUseCase(GetSamplesInfoOutput output) {
+    private SampleOverviewController setupProjectSamplesUseCase(GetSamplesInfoOutput output) {
         GetSamplesInfo getSamplesInfo = new GetSamplesInfo(sampleStatusDataSource, downloadSamplesDataSource, getSamplesInfoDataSource, output)
-        return new ProjectSamplesController(getSamplesInfo)
+        return new SampleOverviewController(getSamplesInfo)
     }
 
     private FailedQCSamplesController setupFailedQCUseCase(GetSamplesInfoOutput output){
