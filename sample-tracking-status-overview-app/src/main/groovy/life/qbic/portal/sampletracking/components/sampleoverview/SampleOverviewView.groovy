@@ -100,7 +100,7 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle, 
     }
 
     @Override
-    void reset(){
+    void reset() {
         viewModel.samples.clear()
     }
 
