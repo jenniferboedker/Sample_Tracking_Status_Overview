@@ -6,7 +6,6 @@ import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
-import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewView
 import life.qbic.portal.sampletracking.components.toggle.ToggleButton
 
@@ -49,13 +48,13 @@ class AppView extends VerticalLayout {
     }
 
     private void listenToProjectSelectionChange(){
-        projectOverviewView.onSelectedProject({
+        projectOverviewView.onSelectedProjectChange({
             if (it) {
                 projectSampleToggle.setEnabled(true)
                 sampleOverviewView.loadProjectSamples(it.code)
             } else {
                 projectSampleToggle.setEnabled(false)
-                sampleOverviewView.resetContent()
+                sampleOverviewView.reset()
             }
         })
     }

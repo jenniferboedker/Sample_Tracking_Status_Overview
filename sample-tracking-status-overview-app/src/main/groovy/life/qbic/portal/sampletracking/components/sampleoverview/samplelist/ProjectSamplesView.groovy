@@ -8,13 +8,14 @@ import com.vaadin.ui.VerticalLayout
 import life.qbic.business.samples.Sample
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.components.Resettable
 
 /**
  * <b>A simple view containing a list of samples</b>
  *
  * @since 1.0.0
  */
-class ProjectSamplesView extends VerticalLayout {
+class ProjectSamplesView extends VerticalLayout implements Resettable{
     private final ViewModel viewModel
     private final Presenter presenter
     private Grid<Sample> samplesGrid
@@ -39,6 +40,7 @@ class ProjectSamplesView extends VerticalLayout {
         return presenter
     }
 
+    @Override
     void reset(){
         viewModel.samples.clear()
     }
