@@ -81,13 +81,8 @@ class AppView extends VerticalLayout {
 
         projectOverviewView.onProjectDoubleClick({
             sampleOverviewView.getController().getSamplesFor(it.code)
-            toggle()
+            projectSampleToggle.click()
         })
-    }
-
-    private void toggle(){
-        showProjectView(!projectOverviewView.isVisible())
-        showSampleView(!sampleOverviewView.isVisible())
     }
 
     private static Component createSpacer(float height, Unit unit) {
