@@ -5,6 +5,7 @@ import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.VerticalLayout
 import life.qbic.portal.sampletracking.components.HasHotbar
 import life.qbic.portal.sampletracking.components.HasTitle
+import life.qbic.portal.sampletracking.components.Resettable
 import life.qbic.portal.sampletracking.components.sampleoverview.samplelist.ProjectSamplesController
 import life.qbic.portal.sampletracking.components.sampleoverview.samplelist.ProjectSamplesView
 
@@ -13,7 +14,7 @@ import life.qbic.portal.sampletracking.components.sampleoverview.samplelist.Proj
  *
  * @since 1.0.0
  */
-class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle {
+class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle, Resettable {
 
     private static final String TITLE = "Sample Overview"
 
@@ -29,6 +30,14 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle {
         this.setMargin(false)
     }
 
+    /**
+     * Loads the project samples for a given project code
+     * @param projectCode The code for which samples are loaded
+     */
+    void loadProjectSamples(String projectCode){
+        projectSamplesController.getSamplesFor(projectCode)
+    }
+
     @Override
     HorizontalLayout getHotbar() {
         return hotbar
@@ -37,5 +46,10 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle {
     @Override
     String getTitle() {
         return TITLE
+    }
+
+    @Override
+    void reset() {
+        projectSamplesView.reset()
     }
 }

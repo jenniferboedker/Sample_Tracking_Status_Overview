@@ -34,7 +34,9 @@ class AppView extends VerticalLayout {
         this.sampleOverviewView = sampleOverviewView
 
         projectSampleToggle = setupProjectSampleToggle()
+
         addToggleButtonListeners()
+        listenToProjectSelectionChange()
 
         hotbar.addComponentAsFirst(projectSampleToggle)
         addHotbarItem(projectOverviewView.getHotbar())
@@ -45,6 +47,17 @@ class AppView extends VerticalLayout {
         this.addComponents(titleLabel, createSpacer(2, Unit.EM), hotbar, projectOverviewView, sampleOverviewView)
     }
 
+    private void listenToProjectSelectionChange(){
+        projectOverviewView.onSelectedProjectChange({
+            if (it) {
+                projectSampleToggle.setEnabled(true)
+                sampleOverviewView.loadProjectSamples(it.code)
+            } else {
+                projectSampleToggle.setEnabled(false)
+                sampleOverviewView.reset()
+            }
+        })
+    }
 
     private void showProjectView(Boolean visible) {
         projectOverviewView.setVisible(visible)
@@ -84,6 +97,8 @@ class AppView extends VerticalLayout {
 
     private static ToggleButton setupProjectSampleToggle() {
         ToggleButton toggleButton = new ToggleButton("Show Samples", "Show Projects")
+        toggleButton.setEnabled(false)
+
         return toggleButton
     }
 }
