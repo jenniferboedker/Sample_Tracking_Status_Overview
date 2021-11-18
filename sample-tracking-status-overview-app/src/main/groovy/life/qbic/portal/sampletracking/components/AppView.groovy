@@ -6,6 +6,7 @@ import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
+import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewView
 import life.qbic.portal.sampletracking.components.toggle.ToggleButton
 
@@ -35,6 +36,7 @@ class AppView extends VerticalLayout {
 
         projectSampleToggle = setupProjectSampleToggle()
         addToggleButtonListeners()
+        addProjectSelectionListener()
 
         hotbar.addComponentAsFirst(projectSampleToggle)
         addHotbarItem(projectOverviewView.getHotbar())
@@ -45,6 +47,15 @@ class AppView extends VerticalLayout {
         this.addComponents(titleLabel, createSpacer(2, Unit.EM), hotbar, projectOverviewView, sampleOverviewView)
     }
 
+    private void addProjectSelectionListener(){
+        projectOverviewView.onSelectedProject({
+            if(it){
+                sampleOverviewView.loadProjectSamples(it.code)
+            }else{
+                sampleOverviewView.resetContent()
+            }
+        })
+    }
 
     private void showProjectView(Boolean visible) {
         projectOverviewView.setVisible(visible)

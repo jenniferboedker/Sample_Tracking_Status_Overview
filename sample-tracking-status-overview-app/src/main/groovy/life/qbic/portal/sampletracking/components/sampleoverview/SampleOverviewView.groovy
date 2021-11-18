@@ -29,6 +29,18 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle {
         this.setMargin(false)
     }
 
+    void resetContent(){
+        projectSamplesView.reset()
+    }
+
+    /**
+     * Loads the project samples for a given project code
+     * @param projectCode The code for which samples are loaded
+     */
+    void loadProjectSamples(String projectCode){
+        projectSamplesController.getSamplesFor(projectCode)
+    }
+
     @Override
     HorizontalLayout getHotbar() {
         return hotbar

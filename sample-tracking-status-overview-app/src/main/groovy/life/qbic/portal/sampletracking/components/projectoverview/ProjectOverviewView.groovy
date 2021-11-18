@@ -25,6 +25,8 @@ import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 
+import java.util.function.Consumer
+
 /**
  * <b>This class generates the layout for the ProductOverview use case</b>
  *
@@ -64,6 +66,12 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         this.failedQCSamplesController = failedQCSamplesController
 
         initLayout()
+    }
+
+    public onSelectedProject(Consumer<ProjectSummary> projectConsumer){
+        viewModel.addPropertyChangeListener("selectedProject", {
+            projectConsumer.accept(viewModel.selectedProject)
+        })
     }
 
     private void initLayout(){

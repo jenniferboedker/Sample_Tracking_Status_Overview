@@ -39,6 +39,10 @@ class ProjectSamplesView extends VerticalLayout {
         return presenter
     }
 
+    void reset(){
+        viewModel.samples.clear()
+    }
+
     private static Grid<Sample> createSamplesGrid(Collection<Sample> samples) {
         Grid<Sample> samplesGrid = new Grid<>()
         ListDataProvider<Sample> dataProvider = ListDataProvider.ofCollection(samples)
