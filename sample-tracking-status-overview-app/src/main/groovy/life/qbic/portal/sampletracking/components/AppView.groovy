@@ -50,10 +50,10 @@ class AppView extends VerticalLayout {
 
     private void listenToProjectSelectionChange(){
         projectOverviewView.onSelectedProject({
-            if(it){
+            if (it) {
                 projectSampleToggle.setEnabled(true)
                 sampleOverviewView.loadProjectSamples(it.code)
-            }else{
+            } else {
                 projectSampleToggle.setEnabled(false)
                 sampleOverviewView.resetContent()
             }
