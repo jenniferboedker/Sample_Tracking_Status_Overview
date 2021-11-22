@@ -9,6 +9,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Add sample view, showing all samples of a project with some sample details (`#150 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/150>`_)
+
 **Fixed**
 
 **Dependencies**

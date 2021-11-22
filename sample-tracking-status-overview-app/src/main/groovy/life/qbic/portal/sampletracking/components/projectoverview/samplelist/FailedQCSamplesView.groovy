@@ -5,11 +5,12 @@ import com.vaadin.data.provider.DataProvider
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
+import life.qbic.business.samples.Sample
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
-import life.qbic.portal.sampletracking.components.projectoverview.visibility.VisibilityChangeEvent
-import life.qbic.portal.sampletracking.components.projectoverview.visibility.VisibilityChangeListener
+import life.qbic.portal.sampletracking.components.visibility.VisibilityChangeEvent
+import life.qbic.portal.sampletracking.components.visibility.VisibilityChangeListener
 
 /**
  * <b>Shows the failed QC samples </b>
@@ -82,7 +83,7 @@ class FailedQCSamplesView extends VerticalLayout {
 
         this.samplesGrid = new Grid<>()
         samplesGrid.addColumn(Sample::getCode).setCaption("Failed QC Sample Code").setId("SampleCode")
-        samplesGrid.addColumn(Sample::getTitle).setCaption("Sample Title").setId("SampleTitle")
+        samplesGrid.addColumn(Sample::getName).setCaption("Sample Name").setId("SampleName")
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(DataProvider.ofCollection(viewModel.getSamples()))
         samplesGrid.setHeightMode(HeightMode.ROW)
@@ -90,16 +91,6 @@ class FailedQCSamplesView extends VerticalLayout {
 
     GetSamplesInfoOutput getPresenter() {
         return this.presenter
-    }
-
-    private static class Sample {
-        final String code
-        final String title
-
-        Sample(String code, String title) {
-            this.code = code
-            this.title = title
-        }
     }
 
     private static class ViewModel {
@@ -124,28 +115,14 @@ class FailedQCSamplesView extends VerticalLayout {
 
         /**
          * To be called after successfully fetching sample codes with respective sample names for the provided project and status.
-         * @param projectCode the code of the project samples should be returned for
-         * @param status the status of the samples that should be returned
-         * @param sampleCodesToNames list of sample codes with names
+         * @param samples a collection of samples with names
          * @since 1.0.0
          */
         @Override
-        void samplesWithNames(String projectCode, Status status, Map<String, String> sampleCodesToNames) {
-            if (status == Status.SAMPLE_QC_FAIL) {
-                List<Sample> samples = parseSamples(sampleCodesToNames)
-                viewModel.samples.clear()
-                viewModel.samples.addAll(samples)
-            } else {
-                //there is not behaviour defined so do nothing
-            }
-        }
-
-        private static List<Sample> parseSamples(Map<String, String> codesToNames) {
-            List<Sample> samples = codesToNames.entrySet().stream()
-                    .map({
-                        return new Sample(it.key, it.value)
-                    }).collect()
-            return Optional.ofNullable(samples).orElse([])
+        void samplesWithNames(Collection<Sample> samples) {
+            List<Sample> failedSamples = samples.stream().filter({it.status == Status.SAMPLE_QC_FAIL}).collect()
+            viewModel.samples.clear()
+            viewModel.samples.addAll(failedSamples)
         }
     }
 }
