@@ -4,6 +4,19 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
+1.0.0-beta.4 (2021-11-22)
+---------------------------
+
+**Added**
+
+* Add sample view, showing all samples of a project with some sample details (`#150 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/150>`_)
+
+**Fixed**
+
+**Dependencies**
+
+**Deprecated**
+
 1.0.0-beta.3 (2021-11-08)
 ---------------------------
 

@@ -22,4 +22,11 @@ interface GetSamplesInfoInput {
      */
     void requestSampleInfosFor(String projectCode, Status status)
 
+    /**
+     * This method calls the output interface with the samples for the provided project code
+     * @param projectCode a code specifying the samples that should be considered
+     * @since 1.0.0
+     */
+    void requestSampleInfosFor(String projectCode)
+
 }

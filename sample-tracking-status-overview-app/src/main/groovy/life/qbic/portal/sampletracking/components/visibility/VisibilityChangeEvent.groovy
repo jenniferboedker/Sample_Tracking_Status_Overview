@@ -1,4 +1,4 @@
-package life.qbic.portal.sampletracking.components.projectoverview.visibility
+package life.qbic.portal.sampletracking.components.visibility
 
 import com.vaadin.ui.Component
 
