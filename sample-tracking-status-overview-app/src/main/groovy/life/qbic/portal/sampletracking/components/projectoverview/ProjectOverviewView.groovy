@@ -106,10 +106,16 @@ class ProjectOverviewView extends VerticalLayout {
 
         Button postmanLink = setUpLinkButton()
         Button downloadManifestAction = setupDownloadButton()
+
+        HorizontalLayout downloadLayout = new HorizontalLayout(downloadManifestAction,postmanLink)
+        downloadLayout.setStyleName("small-space")
+        downloadLayout.setComponentAlignment(downloadManifestAction, Alignment.MIDDLE_CENTER)
+        downloadLayout.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
+
         CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
 
-        buttonBar.addComponents(downloadManifestAction, postmanLink, subscriptionCheckBox)
-        buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
+        buttonBar.addComponents(downloadLayout, subscriptionCheckBox)
+        buttonBar.setComponentAlignment(downloadLayout, Alignment.MIDDLE_CENTER)
         buttonBar.setComponentAlignment(subscriptionCheckBox, Alignment.MIDDLE_CENTER)
         return buttonBar
     }

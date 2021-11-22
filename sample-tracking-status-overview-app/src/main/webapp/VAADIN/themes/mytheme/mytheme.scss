@@ -60,4 +60,15 @@
     text-align: right;
     padding-top: 50px;
   }
+
+  .v-button-small.square {
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
+
+  .v-horizontal.small-space > .v-spacing{
+    width: 4px !important;
+  }
 }
