@@ -387,6 +387,8 @@ class ProjectOverviewView extends VerticalLayout {
     private static State determineCompleteness(SampleCount sampleCount) {
         if (sampleCount.failingSamples > 0) {
             return State.FAILED
+        } else if (sampleCount.totalSampleCount == 0) {
+            return State.IN_PROGRESS
         } else if (sampleCount.passingSamples == sampleCount.totalSampleCount) {
             return State.COMPLETED
         } else if (sampleCount.passingSamples < sampleCount.totalSampleCount) {
