@@ -17,9 +17,11 @@ import life.qbic.business.samples.download.DownloadSamplesOutput
 import life.qbic.business.samples.info.GetSamplesInfo
 import life.qbic.business.samples.info.GetSamplesInfoDataSource
 import life.qbic.business.samples.info.GetSamplesInfoOutput
+import life.qbic.business.samples.info.SampleStatusDataSource
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.components.AppView
 import life.qbic.portal.sampletracking.components.NotificationHandler
 import life.qbic.portal.sampletracking.components.projectoverview.CountSamplesPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.LoadProjectsPresenter
@@ -27,10 +29,12 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectOvervie
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.download.ManifestPresenter
+import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesController
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
-import life.qbic.portal.sampletracking.components.projectoverview.samplelist.ProjectOverviewController
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectPresenter
+import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewView
+import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewController
 import life.qbic.portal.sampletracking.datasources.Credentials
 import life.qbic.portal.sampletracking.datasources.OpenBisConnector
 import life.qbic.portal.sampletracking.datasources.database.DatabaseSession
@@ -65,6 +69,7 @@ class DependencyManager {
     private DownloadSamplesDataSource downloadSamplesDataSource
     private SubscriptionDataSource subscriptionDataSource
     private SubscribedProjectsDataSource subscribedProjectsDataSource
+    private SampleStatusDataSource sampleStatusDataSource
 
     private ResourceService<Project> projectResourceService
     private ResourceService<StatusCount> statusCountService
@@ -114,6 +119,8 @@ class DependencyManager {
         SamplesDbConnector samplesDbConnector = new SamplesDbConnector(DatabaseSession.getInstance())
         countSamplesDataSource = samplesDbConnector
         downloadSamplesDataSource = samplesDbConnector
+        lastChangedDateDataSource = samplesDbConnector
+        sampleStatusDataSource = samplesDbConnector
 
         Credentials openBisCredentials = new Credentials(
                 user: configurationManager.getDataSourceUser(),
@@ -142,7 +149,12 @@ class DependencyManager {
 
     private VerticalLayout setupPortletView() {
         ProjectOverviewView projectOverviewView = createProjectOverviewView()
-        return projectOverviewView
+        SampleOverviewView sampleOverviewView = new SampleOverviewView(notificationService)
+        SampleOverviewController projectSamplesController = setupProjectSamplesUseCase(sampleOverviewView.getPresenter())
+
+
+        AppView mainView = new AppView(projectOverviewView, sampleOverviewView, projectSamplesController)
+        return mainView
     }
 
     /**
@@ -160,15 +172,25 @@ class DependencyManager {
         DownloadProjectController downloadController = setupDownloadProjectUseCase(viewModel)
 
         FailedQCSamplesView failedQCSamplesView = new FailedQCSamplesView(notificationService)
-        ProjectOverviewController projectOverviewController = setupFailedQCUseCase(failedQCSamplesView.getPresenter())
+        FailedQCSamplesController failedQCSamplesController = setupFailedQCUseCase(failedQCSamplesView.getPresenter())
 
-        ProjectOverviewView view =  new ProjectOverviewView(notificationService, viewModel, downloadController, failedQCSamplesView, projectOverviewController, subscribeProjectController)
+        ProjectOverviewView view = new ProjectOverviewView(notificationService,
+                viewModel,
+                downloadController,
+                failedQCSamplesView,
+                failedQCSamplesController,
+                subscribeProjectController)
         return view
     }
 
-    private ProjectOverviewController setupFailedQCUseCase(GetSamplesInfoOutput output){
-        GetSamplesInfo getSamplesInfo = new GetSamplesInfo(downloadSamplesDataSource,getSamplesInfoDataSource, output)
-        return new ProjectOverviewController(getSamplesInfo)
+    private SampleOverviewController setupProjectSamplesUseCase(GetSamplesInfoOutput output) {
+        GetSamplesInfo getSamplesInfo = new GetSamplesInfo(sampleStatusDataSource, downloadSamplesDataSource, getSamplesInfoDataSource, output)
+        return new SampleOverviewController(getSamplesInfo)
+    }
+
+    private FailedQCSamplesController setupFailedQCUseCase(GetSamplesInfoOutput output){
+        GetSamplesInfo getSamplesInfo = new GetSamplesInfo(sampleStatusDataSource, downloadSamplesDataSource,getSamplesInfoDataSource, output)
+        return new FailedQCSamplesController(getSamplesInfo)
     }
 
     private DownloadProjectController setupDownloadProjectUseCase(ProjectOverviewViewModel viewModel) {
