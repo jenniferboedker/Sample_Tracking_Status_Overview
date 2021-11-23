@@ -247,7 +247,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
             }
         })
         projectGrid.setStyleGenerator(projectRow -> {
-            return "clickable_row"
+            return "clickable-row"
         })
         viewModel.updatedProjectsChannel.subscribe({updatedProjectCode ->
             refreshDataProvider()
