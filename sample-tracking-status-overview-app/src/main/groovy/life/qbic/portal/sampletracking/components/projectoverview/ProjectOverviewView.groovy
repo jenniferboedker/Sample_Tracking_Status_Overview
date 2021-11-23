@@ -133,9 +133,9 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         Button downloadManifestAction = setupDownloadButton()
 
         HorizontalLayout downloadLayout = new HorizontalLayout(downloadManifestAction,postmanLink)
-        downloadLayout.setStyleName("small-space")
         downloadLayout.setComponentAlignment(downloadManifestAction, Alignment.MIDDLE_CENTER)
         downloadLayout.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
+        downloadLayout.setSpacing(false)
 
         CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
 
@@ -153,7 +153,8 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     private Button setUpLinkButton(){
         Button button = new Button()
         button.setIcon(VaadinIcons.QUESTION_CIRCLE)
-        button.setStyleName(ValoTheme.BUTTON_ICON_ONLY + " " + ValoTheme.BUTTON_SMALL + " square")
+        button.setStyleName("round-button")
+
         button.setDescription("A manifest is a text file used by a client application (e.g. <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a>) to download selected files of interest. <br>" +
                 "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a> to download the data.", ContentMode.HTML)
 
