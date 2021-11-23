@@ -131,10 +131,16 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
 
         Button postmanLink = setUpLinkButton()
         Button downloadManifestAction = setupDownloadButton()
+
+        HorizontalLayout downloadLayout = new HorizontalLayout(downloadManifestAction,postmanLink)
+        downloadLayout.setComponentAlignment(downloadManifestAction, Alignment.MIDDLE_CENTER)
+        downloadLayout.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
+        downloadLayout.setSpacing(false)
+
         CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
 
-        buttonBar.addComponents(downloadManifestAction, postmanLink, subscriptionCheckBox)
-        buttonBar.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
+        buttonBar.addComponents(downloadLayout, subscriptionCheckBox)
+        buttonBar.setComponentAlignment(downloadLayout, Alignment.MIDDLE_CENTER)
         buttonBar.setComponentAlignment(subscriptionCheckBox, Alignment.MIDDLE_CENTER)
         return buttonBar
     }
@@ -147,7 +153,8 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     private Button setUpLinkButton(){
         Button button = new Button()
         button.setIcon(VaadinIcons.QUESTION_CIRCLE)
-        button.setStyleName(ValoTheme.BUTTON_ICON_ONLY + " " + ValoTheme.BUTTON_SMALL + " square")
+        button.setStyleName("round-button")
+
         button.setDescription("A manifest is a text file used by a client application (e.g. <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a>) to download selected files of interest. <br>" +
                 "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a> to download the data.", ContentMode.HTML)
 

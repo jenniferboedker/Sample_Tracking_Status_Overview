@@ -9,6 +9,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Improve UI (`#157 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/157>`_)
+
 **Fixed**
 
 **Dependencies**

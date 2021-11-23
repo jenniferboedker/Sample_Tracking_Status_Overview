@@ -60,4 +60,14 @@
     text-align: right;
     padding-top: 50px;
   }
+
+  .round-button {
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-left: 4px;
+    line-height: normal;
+  }
+
 }
