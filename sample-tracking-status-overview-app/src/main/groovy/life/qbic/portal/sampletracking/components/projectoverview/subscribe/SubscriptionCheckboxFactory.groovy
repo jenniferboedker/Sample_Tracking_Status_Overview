@@ -11,12 +11,12 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary
  *
  * @since 1.0.0
  */
-class subscriptionCheckboxFactory {
+class SubscriptionCheckboxFactory {
 
     private final SubscribeProjectController subscribeProjectController
     private final Subscriber subscriber
 
-    subscriptionCheckboxFactory(SubscribeProjectController subscribeProjectController, Subscriber subscriber){
+    SubscriptionCheckboxFactory(SubscribeProjectController subscribeProjectController, Subscriber subscriber){
         this.subscribeProjectController = subscribeProjectController
         this.subscriber = subscriber
     }

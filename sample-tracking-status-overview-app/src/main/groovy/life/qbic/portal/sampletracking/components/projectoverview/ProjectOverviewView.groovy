@@ -22,7 +22,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.samplelist.Fai
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
-import life.qbic.portal.sampletracking.components.projectoverview.subscribe.subscriptionCheckboxFactory
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscriptionCheckboxFactory
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 
 import java.util.function.Consumer
@@ -48,7 +48,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     private final FailedQCSamplesView failedQCSamplesView
     private final FailedQCSamplesController failedQCSamplesController
 
-    private final subscriptionCheckboxFactory subscriptionCheckboxFactory
+    private final SubscriptionCheckboxFactory subscriptionCheckboxFactory
 
     private Grid<ProjectSummary> projectGrid
     private HorizontalSplitPanel splitPanel
@@ -69,7 +69,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
 
         //todo move me to where you think its suitable, this is just for testing/showcasing
         // remove me, this is just an example
-        this.subscriptionCheckboxFactory = new subscriptionCheckboxFactory(subscribeProjectController, viewModel.subscriber)
+        this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, viewModel.subscriber)
         this.addComponent(subscriptionCheckboxFactory.createInstance(new ProjectSummary("QSTTS","A project title",true)))
 
         initLayout()
