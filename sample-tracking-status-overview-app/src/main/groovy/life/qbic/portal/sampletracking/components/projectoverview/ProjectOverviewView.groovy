@@ -11,7 +11,6 @@ import com.vaadin.shared.ui.MarginInfo
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column
-import com.vaadin.ui.themes.ValoTheme
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
@@ -23,6 +22,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.samplelist.Fai
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.ProjectSubscriptionCheckbox
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 
 import java.util.function.Consumer
@@ -48,6 +48,8 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     private final FailedQCSamplesView failedQCSamplesView
     private final FailedQCSamplesController failedQCSamplesController
 
+    private final ProjectSubscriptionCheckbox subscriptionCheckboxFactory
+
     private Grid<ProjectSummary> projectGrid
     private HorizontalSplitPanel splitPanel
     private static final Collection<String> columnIdsWithFilters = ["ProjectCode", "ProjectTitle"]
@@ -65,7 +67,13 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         this.failedQCSamplesView = failedQCSamplesView
         this.failedQCSamplesController = failedQCSamplesController
 
+        //todo move me to where you think its suitible, this is just for testing/showcasing
+        // remove me, this is just an example
+        this.subscriptionCheckboxFactory = new ProjectSubscriptionCheckbox(subscribeProjectController, viewModel.subscriber)
+        this.addComponent(subscriptionCheckboxFactory.createInstance(new ProjectSummary("QSTTS","A project title",true)))
+
         initLayout()
+
     }
 
     /**

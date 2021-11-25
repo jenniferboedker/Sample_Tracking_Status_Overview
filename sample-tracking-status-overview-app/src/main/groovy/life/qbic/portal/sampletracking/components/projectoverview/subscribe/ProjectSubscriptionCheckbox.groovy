@@ -1,6 +1,5 @@
 package life.qbic.portal.sampletracking.components.projectoverview.subscribe
 
-import com.sun.tools.javac.comp.Check
 import com.vaadin.ui.CheckBox
 import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary
@@ -15,21 +14,21 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary
 class ProjectSubscriptionCheckbox {
 
     private final SubscribeProjectController subscribeProjectController
+    private final Subscriber subscriber
 
-    ProjectSubscriptionCheckbox(SubscribeProjectController subscribeProjectController){
+    ProjectSubscriptionCheckbox(SubscribeProjectController subscribeProjectController, Subscriber subscriber){
         this.subscribeProjectController = subscribeProjectController
+        this.subscriber = subscriber
     }
 
     /**
      * Creates an instance of a {@link CheckBox} and adds a listener that triggers (un)subscription based on the checkbox value
-     * @param project
-     * @param subscriber
-     * @return
+     * @param project A {@link ProjectSummary} to which the checkbox is bound
+     * @return A checkbox which is already preconfigured with listeners and bound to the subscribe use case
      */
-    //todo I think its not nice that we need to provide the subscriber to the checkbox, why not adding it to the subscribe use case directly?
-    CheckBox createInstance(ProjectSummary project, Subscriber subscriber){
+    CheckBox createInstance(ProjectSummary project){
         CheckBox checkBox = initCheckbox(project)
-        addListener(checkBox,project, subscriber)
+        addListener(checkBox,project)
 
         return checkBox
     }
@@ -40,7 +39,7 @@ class ProjectSubscriptionCheckbox {
         return checkBox
     }
 
-    private void addListener(CheckBox checkBox, ProjectSummary summary, Subscriber subscriber){
+    private void addListener(CheckBox checkBox, ProjectSummary summary){
         checkBox.addValueChangeListener({
             summary.hasSubscription = checkBox.value
 
