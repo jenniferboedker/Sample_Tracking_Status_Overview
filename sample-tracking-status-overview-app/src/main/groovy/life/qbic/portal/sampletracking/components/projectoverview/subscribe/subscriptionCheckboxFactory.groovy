@@ -43,9 +43,9 @@ class subscriptionCheckboxFactory {
         checkBox.addValueChangeListener({
             summary.hasSubscription = checkBox.value
 
-            if(checkBox.value){
+            if (checkBox.value) {
                 subscribeProjectController.subscribeProject(subscriber, summary.code)
-            } else{
+            } else {
                 subscribeProjectController.unsubscribeProject(subscriber, summary.code)
             }
 
