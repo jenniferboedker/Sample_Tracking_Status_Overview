@@ -69,7 +69,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
 
         //todo move me to where you think its suitable, this is just for testing/showcasing
         // remove me, this is just an example
-        this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, viewModel.subscriber)
+        this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, viewModel.subscriber,notificationService)
         this.addComponent(subscriptionCheckboxFactory.getSubscriptionCheckbox(new ProjectSummary("QSTTS","A project title",true)))
 
         initLayout()

@@ -1,7 +1,10 @@
 package life.qbic.portal.sampletracking.components.projectoverview.subscribe
 
 import com.vaadin.ui.CheckBox
+import groovy.util.logging.Log4j2
 import life.qbic.business.project.subscribe.Subscriber
+import life.qbic.portal.sampletracking.Constants
+import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary
 
 /**
@@ -11,14 +14,17 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary
  *
  * @since 1.0.0
  */
+@Log4j2
 class SubscriptionCheckboxFactory {
 
     private final SubscribeProjectController subscribeProjectController
     private final Subscriber subscriber
+    private final NotificationService notificationService
 
-    SubscriptionCheckboxFactory(SubscribeProjectController subscribeProjectController, Subscriber subscriber){
+    SubscriptionCheckboxFactory(SubscribeProjectController subscribeProjectController, Subscriber subscriber, NotificationService notificationService){
         this.subscribeProjectController = subscribeProjectController
         this.subscriber = subscriber
+        this.notificationService = notificationService
     }
 
     /**
@@ -41,12 +47,17 @@ class SubscriptionCheckboxFactory {
 
     private void addListener(CheckBox checkBox, ProjectSummary summary){
         checkBox.addValueChangeListener({
-            summary.hasSubscription = checkBox.value
-
-            if (checkBox.value) {
-                subscribeProjectController.subscribeProject(subscriber, summary.code)
-            } else {
-                subscribeProjectController.unsubscribeProject(subscriber, summary.code)
+            try{
+                if (checkBox.value) {
+                    subscribeProjectController.subscribeProject(subscriber, summary.code)
+                } else {
+                    subscribeProjectController.unsubscribeProject(subscriber, summary.code)
+                }
+                summary.hasSubscription = checkBox.value
+            }catch(Exception exception){
+                notificationService.publishFailure("There was a failure while changing the subscription value of project ${summary.code}. Contact ${Constants.CONTACT_HELPDESK}")
+                log.error("There was a failure while changing the subscription value of project ${summary.code} for ${subscriber.firstName}  ${subscriber.lastName}")
+                log.error(exception.message)
             }
 
         })
