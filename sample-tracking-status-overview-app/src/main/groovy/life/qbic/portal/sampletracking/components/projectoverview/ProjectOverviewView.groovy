@@ -11,6 +11,7 @@ import com.vaadin.shared.ui.MarginInfo
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column
+import com.vaadin.ui.renderers.ComponentRenderer
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
@@ -67,13 +68,10 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         this.failedQCSamplesView = failedQCSamplesView
         this.failedQCSamplesController = failedQCSamplesController
 
-        //todo move me to where you think its suitable, this is just for testing/showcasing
-        // remove me, this is just an example
         this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, viewModel.subscriber,notificationService)
-        this.addComponent(subscriptionCheckboxFactory.getSubscriptionCheckbox(new ProjectSummary("QSTTS","A project title",true)))
+        viewModel.createSubscriptionCheckboxes(subscriptionCheckboxFactory)
 
         initLayout()
-
     }
 
     /**
@@ -101,12 +99,12 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         bindManifestToProjectSelection()
         this.addComponents(splitPanel)
         this.setMargin(false)
-
     }
 
     /**
-     *
-     * @param consumer
+     * Should be called after double-clicking a project. The provided consumer will be called and the performs the action
+     * on the double clicked project
+     * @param consumer The consumer accepts the double-clicked project and performs action
      */
     public void onProjectDoubleClick(Consumer<ProjectSummary> consumer){
          projectGrid.addItemClickListener({
@@ -304,6 +302,8 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     }
 
     private void fillProjectsGrid() {
+        projectGrid.addColumn({ viewModel.projectToCheckbox.get(it.code)}, new ComponentRenderer())
+                .setCaption("Subscription Status").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH)
         projectGrid.addColumn({ it.code })
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
                 MAX_CODE_COLUMN_WIDTH)

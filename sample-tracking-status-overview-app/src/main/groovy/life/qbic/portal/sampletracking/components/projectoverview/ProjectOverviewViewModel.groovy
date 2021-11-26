@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
+import com.vaadin.ui.CheckBox
 import groovy.beans.Bindable
 import groovy.util.logging.Log4j2
 import life.qbic.business.project.Project
@@ -8,6 +9,7 @@ import life.qbic.business.samples.count.StatusCount
 import life.qbic.portal.sampletracking.communication.Channel
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.components.projectoverview.LastChangedComparator.SortOrder
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscriptionCheckboxFactory
 import life.qbic.portal.sampletracking.resource.ResourceService
 
 /**
@@ -29,12 +31,14 @@ class ProjectOverviewViewModel {
     @Bindable String generatedManifest
     final Subscriber subscriber
     final Channel<String> updatedProjectsChannel
+    final Map<String,CheckBox> projectToCheckbox = new HashMap<>()
 
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService, Subscriber subscriber) {
         this.updatedProjectsChannel = new Channel<>()
         this.projectResourceService = projectResourceService
         this.statusCountService = statusCountService
         this.subscriber = subscriber
+
         fetchProjectData()
         subscribeToResources()
         bindManifestToSelection()
@@ -107,6 +111,18 @@ class ProjectOverviewViewModel {
     private void removeProject(Project project) {
         ProjectSummary projectOverview = getProjectSummary(project.code)
         projectOverviews.remove(projectOverview)
+    }
+
+    /**
+     * Creates checkboxes for each project with the provided SubscriptionCheckboxFactory
+     * @param subscriptionCheckboxFactory
+     */
+    void createSubscriptionCheckboxes(SubscriptionCheckboxFactory subscriptionCheckboxFactory){
+
+        projectOverviews.each {
+            CheckBox checkBox = subscriptionCheckboxFactory.getSubscriptionCheckbox(it)
+            projectToCheckbox.put(it.code, checkBox)
+        }
     }
 
     /**
