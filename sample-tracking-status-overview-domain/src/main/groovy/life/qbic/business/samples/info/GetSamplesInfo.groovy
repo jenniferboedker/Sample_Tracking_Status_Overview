@@ -62,12 +62,16 @@ class GetSamplesInfo implements GetSamplesInfoInput {
   void requestSampleInfosFor(String projectCode) {
     Objects.requireNonNull(projectCode, "Tried to request sample infos without providing a projectCode.")
     try {
-      def sampleCodes = samplesDataSource.fetchSampleCodesFor(projectCode)
+      List<String> sampleCodes = samplesDataSource.fetchSampleCodesFor(projectCode)
+      if (sampleCodes.isEmpty()) {
+        //ToDo should this be notified to the user?
+        output.samplesWithNames([])
+        return
+      }
       def sampleCodesToNames = infoDataSource.fetchSampleNamesFor(sampleCodes)
       def sampleCodesToStatus = statusDataSource.fetchSampleStatusesFor(sampleCodes)
       List<Sample> samplesWithNames = buildSamples(sampleCodesToNames, sampleCodesToStatus)
       output.samplesWithNames(samplesWithNames)
-
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
     }
