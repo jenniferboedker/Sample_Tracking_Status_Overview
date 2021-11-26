@@ -26,7 +26,7 @@ class SubscriptionCheckboxFactory {
      * @param project A {@link ProjectSummary} to which the checkbox is bound
      * @return A checkbox which is already preconfigured with listeners and bound to the subscribe use case
      */
-    CheckBox createInstance(ProjectSummary project){
+    CheckBox getSubscriptionCheckbox(ProjectSummary project){
         CheckBox checkBox = initCheckbox(project)
         addListener(checkBox,project)
 
