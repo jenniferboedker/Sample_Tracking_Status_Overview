@@ -4,6 +4,7 @@ import life.qbic.business.DataSourceException
 import life.qbic.business.samples.Sample
 import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.datamodel.samples.Status
+import java.util.stream.Collectors
 
 /**
  * <b>Get information of samples</b>
@@ -64,7 +65,6 @@ class GetSamplesInfo implements GetSamplesInfoInput {
     try {
       List<String> sampleCodes = samplesDataSource.fetchSampleCodesFor(projectCode)
       if (sampleCodes.isEmpty()) {
-        //ToDo should this be notified to the user?
         output.samplesWithNames([])
         return
       }
@@ -86,15 +86,23 @@ class GetSamplesInfo implements GetSamplesInfoInput {
   }
 
   private static List<Sample> buildSamples(Map<String, String> codesToNames, Map<String, Status> codesToStatus) {
-    if (codesToNames.keySet() != codesToStatus.keySet()) {
-      throw new RuntimeException("Tried to get samples without sufficient information.")
-    }
-    List<Sample> samples = codesToNames.entrySet().stream()
+    Set<Map.Entry<String, String>> commonNameStatusEntrySet = getCommonEntrySet(codesToNames, codesToStatus)
+    List<Sample> samples = commonNameStatusEntrySet.stream()
             .map({
               String code = it.key
               String name = it.value ?: ""
               return new Sample(code, name, codesToStatus.get(it.key))
             }).collect()
     return Optional.ofNullable(samples).orElse([])
+  }
+
+  private static Set<Map.Entry<String, String>> getCommonEntrySet(Map<String, String> codesToNames, Map<String, Status> codesToStatus) {
+    Set codeNameKeys = codesToNames.keySet()
+    Set codeStatusKeys = codesToStatus.keySet()
+    if (codeNameKeys != codeStatusKeys) {
+      Set<Map.Entry<String, String>> commonEntries = codesToNames.entrySet().stream().filter(i -> codeStatusKeys.contains(i.key)).collect(Collectors.toSet())
+      return commonEntries
+    }
+    return codesToNames.entrySet()
   }
 }
