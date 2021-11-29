@@ -196,7 +196,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
             viewModel.addSubscriptionCheckbox(it.code, checkBox)
         }
 
-        //todo everything is the old subscription code
+        //todo everything below is the old subscription code
         CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
         subscriptionCheckBox.setVisible(false)
         showWhenProjectIsSelected(subscriptionCheckBox)
