@@ -9,7 +9,6 @@ import life.qbic.business.samples.count.StatusCount
 import life.qbic.portal.sampletracking.communication.Channel
 import life.qbic.portal.sampletracking.communication.Topic
 import life.qbic.portal.sampletracking.components.projectoverview.LastChangedComparator.SortOrder
-import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscriptionCheckboxFactory
 import life.qbic.portal.sampletracking.resource.ResourceService
 
 /**
@@ -114,8 +113,10 @@ class ProjectOverviewViewModel {
     }
 
     /**
-     * Creates checkboxes for each project with the provided SubscriptionCheckboxFactory
-     * @param subscriptionCheckboxFactory
+     * Stores the subscription checkbox with its associated projectcode in the  
+     projectToCheckbox map. 
+     * @param code projectCode associated with a ProjectSummary
+     * @param checkbox subscription checkbox of a ProjectSummary
      */
     void addSubscriptionCheckbox(String code, CheckBox checkBox){
         projectToCheckbox.put(code, checkBox)
