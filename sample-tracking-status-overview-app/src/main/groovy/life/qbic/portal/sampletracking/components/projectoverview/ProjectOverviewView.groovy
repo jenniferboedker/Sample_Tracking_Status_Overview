@@ -69,7 +69,6 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         this.failedQCSamplesController = failedQCSamplesController
 
         this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, viewModel.subscriber,notificationService)
-        viewModel.createSubscriptionCheckboxes(subscriptionCheckboxFactory)
 
         initLayout()
     }
@@ -87,6 +86,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
 
     private void initLayout(){
         setupProjects()
+        setupSubscriptionCheckBox()
 
         setupButtonLayout(projectButtonBar)
         VerticalLayout projectLayout = new VerticalLayout(projectGrid)
@@ -191,7 +191,12 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     }
 
     private CheckBox setupSubscriptionCheckBox() {
+        viewModel.projectOverviews.each {
+            CheckBox checkBox = subscriptionCheckboxFactory.getSubscriptionCheckbox(it)
+            viewModel.addSubscriptionCheckbox(it.code, checkBox)
+        }
 
+        //todo everything is the old subscription code
         CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
         subscriptionCheckBox.setVisible(false)
         showWhenProjectIsSelected(subscriptionCheckBox)

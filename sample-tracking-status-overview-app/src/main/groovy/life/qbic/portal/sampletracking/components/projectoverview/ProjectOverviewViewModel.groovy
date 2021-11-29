@@ -117,12 +117,8 @@ class ProjectOverviewViewModel {
      * Creates checkboxes for each project with the provided SubscriptionCheckboxFactory
      * @param subscriptionCheckboxFactory
      */
-    void createSubscriptionCheckboxes(SubscriptionCheckboxFactory subscriptionCheckboxFactory){
-
-        projectOverviews.each {
-            CheckBox checkBox = subscriptionCheckboxFactory.getSubscriptionCheckbox(it)
-            projectToCheckbox.put(it.code, checkBox)
-        }
+    void addSubscriptionCheckbox(String code, CheckBox checkBox){
+        projectToCheckbox.put(code, checkBox)
     }
 
     /**
