@@ -250,7 +250,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
             return "clickable-row"
         })
         viewModel.updatedProjectsChannel.subscribe({updatedProjectCode ->
-            filterEmptyProjects()
+            refreshDataProvider()
         })
     }
 
