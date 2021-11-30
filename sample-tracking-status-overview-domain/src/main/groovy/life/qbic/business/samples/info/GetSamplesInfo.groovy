@@ -4,6 +4,7 @@ import life.qbic.business.DataSourceException
 import life.qbic.business.samples.Sample
 import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.datamodel.samples.Status
+import java.util.stream.Collectors
 
 /**
  * <b>Get information of samples</b>
@@ -62,12 +63,15 @@ class GetSamplesInfo implements GetSamplesInfoInput {
   void requestSampleInfosFor(String projectCode) {
     Objects.requireNonNull(projectCode, "Tried to request sample infos without providing a projectCode.")
     try {
-      def sampleCodes = samplesDataSource.fetchSampleCodesFor(projectCode)
+      List<String> sampleCodes = samplesDataSource.fetchSampleCodesFor(projectCode)
+      if (sampleCodes.isEmpty()) {
+        output.samplesWithNames([])
+        return
+      }
       def sampleCodesToNames = infoDataSource.fetchSampleNamesFor(sampleCodes)
       def sampleCodesToStatus = statusDataSource.fetchSampleStatusesFor(sampleCodes)
       List<Sample> samplesWithNames = buildSamples(sampleCodesToNames, sampleCodesToStatus)
       output.samplesWithNames(samplesWithNames)
-
     } catch (DataSourceException dataSourceException) {
       output.failedExecution(dataSourceException.getMessage())
     }
@@ -82,15 +86,29 @@ class GetSamplesInfo implements GetSamplesInfoInput {
   }
 
   private static List<Sample> buildSamples(Map<String, String> codesToNames, Map<String, Status> codesToStatus) {
-    if (codesToNames.keySet() != codesToStatus.keySet()) {
-      throw new RuntimeException("Tried to get samples without sufficient information.")
-    }
-    List<Sample> samples = codesToNames.entrySet().stream()
+    Set<Map.Entry<String, String>> commonNameStatusEntrySet = getCommonEntrySet(codesToNames, codesToStatus)
+    List<Sample> samples = commonNameStatusEntrySet.stream()
             .map({
               String code = it.key
               String name = it.value ?: ""
               return new Sample(code, name, codesToStatus.get(it.key))
             }).collect()
     return Optional.ofNullable(samples).orElse([])
+  }
+
+  /**
+   * Compares the sampleCode mappings retrieved from openBis with the mappings retrieved from the database and returns the common sampleCode subset
+   * @param codesToNames contains a mapping of the sample description to the sample code
+   * @param codesToString contains a mapping of the sample status to the sample code
+   * @since 1.0.0
+   */
+  private static Set<Map.Entry<String, String>> getCommonEntrySet(Map<String, String> codesToNames, Map<String, Status> codesToStatus) {
+    Set codeNameKeys = codesToNames.keySet()
+    Set codeStatusKeys = codesToStatus.keySet()
+    if (codeNameKeys != codeStatusKeys) {
+      Set<Map.Entry<String, String>> commonEntries = codesToNames.entrySet().stream().filter(entry -> codeStatusKeys.contains(entry.key)).collect(Collectors.toSet())
+      return commonEntries
+    }
+    return codesToNames.entrySet()
   }
 }

@@ -254,6 +254,11 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         })
     }
 
+    private void filterEmptyProjects(){
+        ListDataProvider<ProjectSummary> dataProvider = (ListDataProvider<ProjectSummary>) projectGrid.getDataProvider()
+        dataProvider.setFilter(ProjectSummary::getTotalSampleCount, totalNumber -> totalNumber > 0)
+    }
+
     private void selectProject(ProjectSummary projectSummary) {
         if (!(projectSummary in viewModel.projectOverviews)) {
             selectProject(projectSummary.code)
@@ -333,10 +338,13 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     private void refreshDataProvider() {
         DataProvider dataProvider = new ListDataProvider(viewModel.projectOverviews)
         projectGrid.setDataProvider(dataProvider)
+
         if( viewModel.selectedProject ) {
             projectGrid.select(viewModel.selectedProject)
         }
         GridUtils.setupFilters(projectGrid, columnIdsWithFilters)
+
+        filterEmptyProjects()
     }
 
     private void tryToDownloadManifest() {
