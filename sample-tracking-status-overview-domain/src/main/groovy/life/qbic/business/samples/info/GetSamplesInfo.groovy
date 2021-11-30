@@ -99,7 +99,7 @@ class GetSamplesInfo implements GetSamplesInfoInput {
   private static Set<Map.Entry<String, String>> getCommonEntrySet(Map<String, String> codesToNames, Map<String, Status> codesToStatus) {
     Set codeNameKeys = codesToNames.keySet()
     Set codeStatusKeys = codesToStatus.keySet()
-    if (codeNameKeys != codeStatusKeys) {
+    if (!codeNameKeys.containsAll(codeStatusKeys)) {
       Set<Map.Entry<String, String>> commonEntries = codesToNames.entrySet().stream().filter(entry -> codeStatusKeys.contains(entry.key)).collect(Collectors.toSet())
       return commonEntries
     }
