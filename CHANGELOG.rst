@@ -13,6 +13,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Fixed**
 
+* Address error when double-clicking a project with no samples (`#164 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/164>`_)
+
 **Dependencies**
 
 **Deprecated**
