@@ -96,10 +96,16 @@ class GetSamplesInfo implements GetSamplesInfoInput {
     return Optional.ofNullable(samples).orElse([])
   }
 
+  /**
+   * Compares the sampleCode mappings retrieved from openBis with the mappings retrieved from the database and returns the common sampleCode subset
+   * @param codesToNames contains a mapping of the sample description to the sample code
+   * @param codesToString contains a mapping of the sample status to the sample code
+   * @since 1.0.0
+   */
   private static Set<Map.Entry<String, String>> getCommonEntrySet(Map<String, String> codesToNames, Map<String, Status> codesToStatus) {
     Set codeNameKeys = codesToNames.keySet()
     Set codeStatusKeys = codesToStatus.keySet()
-    if (!codeNameKeys.containsAll(codeStatusKeys)) {
+    if (codeNameKeys != codeStatusKeys) {
       Set<Map.Entry<String, String>> commonEntries = codesToNames.entrySet().stream().filter(entry -> codeStatusKeys.contains(entry.key)).collect(Collectors.toSet())
       return commonEntries
     }
