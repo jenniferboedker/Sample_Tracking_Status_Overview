@@ -11,7 +11,7 @@ import com.vaadin.shared.ui.MarginInfo
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column
-import com.vaadin.ui.themes.ValoTheme
+import com.vaadin.ui.renderers.ComponentRenderer
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
@@ -23,6 +23,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.samplelist.Fai
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscriptionCheckboxFactory
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 
 import java.util.function.Consumer
@@ -48,6 +49,8 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     private final FailedQCSamplesView failedQCSamplesView
     private final FailedQCSamplesController failedQCSamplesController
 
+    private final SubscriptionCheckboxFactory subscriptionCheckboxFactory
+
     private Grid<ProjectSummary> projectGrid
     private HorizontalSplitPanel splitPanel
     private static final Collection<String> columnIdsWithFilters = ["ProjectCode", "ProjectTitle"]
@@ -65,6 +68,8 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         this.failedQCSamplesView = failedQCSamplesView
         this.failedQCSamplesController = failedQCSamplesController
 
+        this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, viewModel.subscriber,notificationService)
+
         initLayout()
     }
 
@@ -73,7 +78,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
      * with the selected project summary
      * @param projectConsumer The consumer that will accept the selected project summary
      */
-    public void onSelectedProjectChange(Consumer<ProjectSummary> projectConsumer){
+    void onSelectedProjectChange(Consumer<ProjectSummary> projectConsumer){
         viewModel.addPropertyChangeListener("selectedProject", {
             projectConsumer.accept(viewModel.selectedProject)
         })
@@ -93,14 +98,14 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         bindManifestToProjectSelection()
         this.addComponents(splitPanel)
         this.setMargin(false)
-
     }
 
     /**
-     *
-     * @param consumer
+     * Should be called after double-clicking a project. The provided consumer will be called and the performs the action
+     * on the double clicked project
+     * @param consumer The consumer accepts the double-clicked project and performs action
      */
-    public void onProjectDoubleClick(Consumer<ProjectSummary> consumer){
+    void onProjectDoubleClick(Consumer<ProjectSummary> consumer){
          projectGrid.addItemClickListener({
              //if grid.getEditor().setEnabled(true) is enabled this will not work anymore!
              if(it.mouseEventDetails.isDoubleClick()){
@@ -137,11 +142,8 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         downloadLayout.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
         downloadLayout.setSpacing(false)
 
-        CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
-
-        buttonBar.addComponents(downloadLayout, subscriptionCheckBox)
+        buttonBar.addComponents(downloadLayout)
         buttonBar.setComponentAlignment(downloadLayout, Alignment.MIDDLE_CENTER)
-        buttonBar.setComponentAlignment(subscriptionCheckBox, Alignment.MIDDLE_CENTER)
         return buttonBar
     }
 
@@ -182,53 +184,6 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         })
         enableWhenDownloadIsAvailable(downloadManifestAction)
         return downloadManifestAction
-    }
-
-    private CheckBox setupSubscriptionCheckBox() {
-
-        CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
-        subscriptionCheckBox.setVisible(false)
-        showWhenProjectIsSelected(subscriptionCheckBox)
-        subscriptionCheckBox.setValue(false)
-        viewModel.addPropertyChangeListener("selectedProject", {
-            Optional<ProjectSummary> selectedProjectSummary = Optional.ofNullable(it.newValue as ProjectSummary)
-            selectedProjectSummary.ifPresent({
-                subscriptionCheckBox.value = it.hasSubscription
-            })
-            if (!selectedProjectSummary.isPresent()) {
-                subscriptionCheckBox.value = false
-            }
-
-        })
-        subscriptionCheckBox.addValueChangeListener(checkBoxValueChange -> {
-            if (checkBoxValueChange.oldValue == checkBoxValueChange.value) {
-                return // just to be sure a change is present
-            }
-            if (checkBoxValueChange.value) {
-                subscribeIfNotSubscribed(viewModel.selectedProject)
-            } else {
-                unsubscribeIfSubscribed(viewModel.selectedProject)
-            }
-        })
-        return subscriptionCheckBox
-    }
-
-    /**
-     * Determines if a subscription is requested and triggers it
-     * @param projectSummary the project summary to which a subscription might be requested
-     */
-    private void subscribeIfNotSubscribed(ProjectSummary projectSummary) {
-        Optional<ProjectSummary> selectedProject = Optional.ofNullable(projectSummary)
-        selectedProject
-                .filter({ !it.hasSubscription })
-                .ifPresent({ subscribeToProject(it.code) })
-    }
-
-    private void unsubscribeIfSubscribed(ProjectSummary projectSummary) {
-        Optional<ProjectSummary> selectedProject = Optional.ofNullable(projectSummary)
-        selectedProject
-                .filter({ it.hasSubscription })
-                .ifPresent({ unsubscribeFromProject(it.code) })
     }
 
     private void setupProjects() {
@@ -301,6 +256,8 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     }
 
     private void fillProjectsGrid() {
+        projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it)}, new ComponentRenderer())
+                .setCaption("Subscription Status").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
         projectGrid.addColumn({ it.code })
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
                 MAX_CODE_COLUMN_WIDTH)
@@ -382,15 +339,6 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         return isAvailable
     }
 
-    private void showWhenProjectIsSelected(CheckBox checkBox) {
-        viewModel.addPropertyChangeListener("selectedProject", {
-            if(viewModel.selectedProject){
-             checkBox.setVisible(true)
-            }else{
-              checkBox.setVisible(false)
-            }
-        })
-    }
 
     private void showWhenFailingSamplesExist(Component component) {
         component.setVisible(failingSamplesExist())
@@ -407,21 +355,6 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         return hasFailingSamples
     }
 
-    private void subscribeToProject(String projectCode) {
-        if (viewModel.subscriber) {
-            if (projectCode) {
-                subscribeProjectController.subscribeProject(viewModel.subscriber, projectCode)
-            }
-        }
-    }
-
-    private void unsubscribeFromProject(String projectCode) {
-        if (viewModel.subscriber) {
-            if (projectCode) {
-                subscribeProjectController.unsubscribeProject(viewModel.subscriber, projectCode)
-            }
-        }
-    }
 
     /**
      * Determines the state of the current status. Is it in progress or did it complete already

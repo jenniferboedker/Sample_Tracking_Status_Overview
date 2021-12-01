@@ -28,6 +28,9 @@ class SubscribeProject implements SubscribeProjectInput {
         try {
             InputValidator.validate(subscriber, projectCode)
         } catch (ValidationException validationException) {
+            //todo this should never happen in production
+            //better: show notification to the user --> subscriptionFailed telling him to contact zendesk bzw this needs
+            //to be caught in the view otherwise
             throw new IllegalArgumentException(validationException.getMessage())
         }
         try {
