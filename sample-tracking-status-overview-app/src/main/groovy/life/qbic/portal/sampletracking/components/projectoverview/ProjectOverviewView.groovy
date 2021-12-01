@@ -143,11 +143,8 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         downloadLayout.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
         downloadLayout.setSpacing(false)
 
-        CheckBox subscriptionCheckBox = setupSubscriptionCheckBox()
-
-        buttonBar.addComponents(downloadLayout, subscriptionCheckBox)
+        buttonBar.addComponents(downloadLayout)
         buttonBar.setComponentAlignment(downloadLayout, Alignment.MIDDLE_CENTER)
-        buttonBar.setComponentAlignment(subscriptionCheckBox, Alignment.MIDDLE_CENTER)
         return buttonBar
     }
 
@@ -190,57 +187,13 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         return downloadManifestAction
     }
 
-    private CheckBox setupSubscriptionCheckBox() {
+    private void setupSubscriptionCheckBox() {
         viewModel.projectOverviews.each {
             CheckBox checkBox = subscriptionCheckboxFactory.getSubscriptionCheckbox(it)
             viewModel.addSubscriptionCheckbox(it.code, checkBox)
         }
-
-        //todo everything below is the old subscription code
-        CheckBox subscriptionCheckBox = new CheckBox("Subscribe")
-        subscriptionCheckBox.setVisible(false)
-        showWhenProjectIsSelected(subscriptionCheckBox)
-        subscriptionCheckBox.setValue(false)
-        viewModel.addPropertyChangeListener("selectedProject", {
-            Optional<ProjectSummary> selectedProjectSummary = Optional.ofNullable(it.newValue as ProjectSummary)
-            selectedProjectSummary.ifPresent({
-                subscriptionCheckBox.value = it.hasSubscription
-            })
-            if (!selectedProjectSummary.isPresent()) {
-                subscriptionCheckBox.value = false
-            }
-
-        })
-        subscriptionCheckBox.addValueChangeListener(checkBoxValueChange -> {
-            if (checkBoxValueChange.oldValue == checkBoxValueChange.value) {
-                return // just to be sure a change is present
-            }
-            if (checkBoxValueChange.value) {
-                subscribeIfNotSubscribed(viewModel.selectedProject)
-            } else {
-                unsubscribeIfSubscribed(viewModel.selectedProject)
-            }
-        })
-        return subscriptionCheckBox
     }
 
-    /**
-     * Determines if a subscription is requested and triggers it
-     * @param projectSummary the project summary to which a subscription might be requested
-     */
-    private void subscribeIfNotSubscribed(ProjectSummary projectSummary) {
-        Optional<ProjectSummary> selectedProject = Optional.ofNullable(projectSummary)
-        selectedProject
-                .filter({ !it.hasSubscription })
-                .ifPresent({ subscribeToProject(it.code) })
-    }
-
-    private void unsubscribeIfSubscribed(ProjectSummary projectSummary) {
-        Optional<ProjectSummary> selectedProject = Optional.ofNullable(projectSummary)
-        selectedProject
-                .filter({ it.hasSubscription })
-                .ifPresent({ unsubscribeFromProject(it.code) })
-    }
 
     private void setupProjects() {
         projectGrid = new Grid<ProjectSummary>()
@@ -395,15 +348,6 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         return isAvailable
     }
 
-    private void showWhenProjectIsSelected(CheckBox checkBox) {
-        viewModel.addPropertyChangeListener("selectedProject", {
-            if(viewModel.selectedProject){
-             checkBox.setVisible(true)
-            }else{
-              checkBox.setVisible(false)
-            }
-        })
-    }
 
     private void showWhenFailingSamplesExist(Component component) {
         component.setVisible(failingSamplesExist())
@@ -420,21 +364,6 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         return hasFailingSamples
     }
 
-    private void subscribeToProject(String projectCode) {
-        if (viewModel.subscriber) {
-            if (projectCode) {
-                subscribeProjectController.subscribeProject(viewModel.subscriber, projectCode)
-            }
-        }
-    }
-
-    private void unsubscribeFromProject(String projectCode) {
-        if (viewModel.subscriber) {
-            if (projectCode) {
-                subscribeProjectController.unsubscribeProject(viewModel.subscriber, projectCode)
-            }
-        }
-    }
 
     /**
      * Determines the state of the current status. Is it in progress or did it complete already
