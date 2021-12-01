@@ -78,7 +78,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
      * with the selected project summary
      * @param projectConsumer The consumer that will accept the selected project summary
      */
-    public void onSelectedProjectChange(Consumer<ProjectSummary> projectConsumer){
+    void onSelectedProjectChange(Consumer<ProjectSummary> projectConsumer){
         viewModel.addPropertyChangeListener("selectedProject", {
             projectConsumer.accept(viewModel.selectedProject)
         })
@@ -86,7 +86,6 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
 
     private void initLayout(){
         setupProjects()
-        setupSubscriptionCheckBox()
 
         setupButtonLayout(projectButtonBar)
         VerticalLayout projectLayout = new VerticalLayout(projectGrid)
@@ -106,7 +105,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
      * on the double clicked project
      * @param consumer The consumer accepts the double-clicked project and performs action
      */
-    public void onProjectDoubleClick(Consumer<ProjectSummary> consumer){
+    void onProjectDoubleClick(Consumer<ProjectSummary> consumer){
          projectGrid.addItemClickListener({
              //if grid.getEditor().setEnabled(true) is enabled this will not work anymore!
              if(it.mouseEventDetails.isDoubleClick()){
@@ -187,14 +186,6 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         return downloadManifestAction
     }
 
-    private void setupSubscriptionCheckBox() {
-        viewModel.projectOverviews.each {
-            CheckBox checkBox = subscriptionCheckboxFactory.getSubscriptionCheckbox(it)
-            viewModel.addSubscriptionCheckbox(it.code, checkBox)
-        }
-    }
-
-
     private void setupProjects() {
         projectGrid = new Grid<ProjectSummary>()
         fillProjectsGrid()
@@ -265,7 +256,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     }
 
     private void fillProjectsGrid() {
-        projectGrid.addColumn({ viewModel.projectToCheckbox.get(it.code)}, new ComponentRenderer())
+        projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it)}, new ComponentRenderer())
                 .setCaption("Subscription Status").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
         projectGrid.addColumn({ it.code })
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(

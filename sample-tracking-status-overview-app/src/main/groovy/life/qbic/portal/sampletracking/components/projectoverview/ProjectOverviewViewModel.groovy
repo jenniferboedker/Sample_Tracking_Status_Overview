@@ -113,16 +113,6 @@ class ProjectOverviewViewModel {
     }
 
     /**
-     * Stores the subscription checkbox with its associated projectcode in the  
-     projectToCheckbox map. 
-     * @param code projectCode associated with a ProjectSummary
-     * @param checkbox subscription checkbox of a ProjectSummary
-     */
-    void addSubscriptionCheckbox(String code, CheckBox checkBox){
-        projectToCheckbox.put(code, checkBox)
-    }
-
-    /**
      * Returns the project summary for a given project code based on the projects listed in the overview
      * @param projectCode The project code specifies a project
      * @return The project summary for the respective code

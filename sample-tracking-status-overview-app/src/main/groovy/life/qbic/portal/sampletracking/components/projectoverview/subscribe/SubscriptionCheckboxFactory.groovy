@@ -21,20 +21,30 @@ class SubscriptionCheckboxFactory {
     private final Subscriber subscriber
     private final NotificationService notificationService
 
+    private Map<String,CheckBox> projectCodeToCheckBox
+
     SubscriptionCheckboxFactory(SubscribeProjectController subscribeProjectController, Subscriber subscriber, NotificationService notificationService){
         this.subscribeProjectController = subscribeProjectController
         this.subscriber = subscriber
         this.notificationService = notificationService
+        this.projectCodeToCheckBox = new HashMap<>()
     }
 
     /**
-     * Creates an instance of a {@link CheckBox} and adds a listener that triggers (un)subscription based on the checkbox value
+     * Returns an instance of a {@link CheckBox} or creates a new one if none exits already.
+     * Furthermore, a listener is added that triggers (un)subscription based on the checkbox value
      * @param project A {@link ProjectSummary} to which the checkbox is bound
      * @return A checkbox which is already preconfigured with listeners and bound to the subscribe use case
      */
     CheckBox getSubscriptionCheckbox(ProjectSummary project){
+
+        if(projectCodeToCheckBox.containsKey(project.code)){
+            return projectCodeToCheckBox.get(project.code)
+        }
+
         CheckBox checkBox = initCheckbox(project)
         addListener(checkBox,project)
+        projectCodeToCheckBox.put(project.code, checkBox)
 
         return checkBox
     }
