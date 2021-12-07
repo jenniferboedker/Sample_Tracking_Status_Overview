@@ -4,6 +4,23 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
+1.0.0-beta.5 (2021-12-07)
+---------------------------
+
+**Added**
+
+* Improve UI (`#157 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/157>`_)
+
+* Add new column with checkboxes to subscribe/unsubscribe directly for each project (`#162 <https://github.com/qbicsoftware/sample-tracking-status-overview/issues/162>`_)
+
+**Fixed**
+
+* Address error when double-clicking a project with no samples (`#164 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/164>`_)
+
+**Dependencies**
+
+**Deprecated**
+
 1.0.0-beta.4 (2021-11-22)
 ---------------------------
 

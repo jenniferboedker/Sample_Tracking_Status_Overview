@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
+import com.vaadin.ui.CheckBox
 import groovy.beans.Bindable
 import groovy.util.logging.Log4j2
 import life.qbic.business.project.Project
@@ -29,12 +30,14 @@ class ProjectOverviewViewModel {
     @Bindable String generatedManifest
     final Subscriber subscriber
     final Channel<String> updatedProjectsChannel
+    final Map<String,CheckBox> projectToCheckbox = new HashMap<>()
 
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService, Subscriber subscriber) {
         this.updatedProjectsChannel = new Channel<>()
         this.projectResourceService = projectResourceService
         this.statusCountService = statusCountService
         this.subscriber = subscriber
+
         fetchProjectData()
         subscribeToResources()
         bindManifestToSelection()

@@ -54,10 +54,28 @@
     text-align: center;
   }
 
+  .v-grid-cell.subscription-checkbox {
+    text-align: center;
+  }
+
   /* Insert your theme rules here */
   .portlet-footer {
     font-size: 9pt;
     text-align: right;
     padding-top: 50px;
   }
+
+  .round-button {
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-left: 4px;
+    line-height: normal;
+  }
+
+  .clickable-row {
+    cursor: pointer;
+  }
+
 }
