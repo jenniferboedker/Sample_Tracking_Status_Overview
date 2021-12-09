@@ -4,7 +4,7 @@ import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
-import com.vaadin.server.Extension
+import com.vaadin.server.ClientConnector
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
 import com.vaadin.shared.ui.ContentMode
@@ -172,11 +172,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         Button downloadManifestAction = new Button("Download Manifest", VaadinIcons.DOWNLOAD)
         viewModel.addPropertyChangeListener("generatedManifest", {
             if (it.getOldValue() != it.getNewValue()) {
-                Collection<Extension> fileDownloaders = downloadManifestAction
-                        .extensions.stream()
-                        .filter((extension) -> extension instanceof FileDownloader)
-                        .collect()
-                fileDownloaders.forEach(downloadManifestAction::removeExtension)
+                removeFileDownloaders(downloadManifestAction)
                 if (it.newValue) {
                     FileDownloader fileDownloader = new FileDownloader(new StreamResource({viewModel.getManifestInputStream()}, "manifest.txt"))
                     fileDownloader.extend(downloadManifestAction)
@@ -186,6 +182,13 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         enableWhenDownloadIsAvailable(downloadManifestAction)
         return downloadManifestAction
     }
+
+    private static void removeFileDownloaders(ClientConnector clientConnector) {
+        clientConnector.extensions.stream()
+                .filter((extension) -> extension instanceof FileDownloader)
+                .forEach(clientConnector::removeExtension)
+    }
+
 
     private void setupProjects() {
         projectGrid = new Grid<ProjectSummary>()
