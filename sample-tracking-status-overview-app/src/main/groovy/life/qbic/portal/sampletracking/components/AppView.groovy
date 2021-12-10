@@ -10,8 +10,10 @@ import com.vaadin.ui.components.grid.ItemClickListener
 import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary
+import life.qbic.portal.sampletracking.components.projectoverview.Projectview
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewController
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewView
+import life.qbic.portal.sampletracking.components.sampleoverview.SampleView
 import life.qbic.portal.sampletracking.components.toggle.ToggleButton
 
 /**
@@ -52,7 +54,7 @@ class AppView extends VerticalLayout {
         showProjectView(true)
         showSampleView(false)
 
-        this.addComponents(titleLabel, createSpacer(2, Unit.EM), hotbar, projectOverviewView, sampleOverviewView)
+        this.addComponents(titleLabel, createSpacer(2, Unit.EM), hotbar, new Projectview(), new SampleView())
     }
 
 

@@ -22,6 +22,7 @@ import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.AppView
+import life.qbic.portal.sampletracking.components.MainPage
 import life.qbic.portal.sampletracking.components.NotificationHandler
 import life.qbic.portal.sampletracking.components.projectoverview.CountSamplesPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.LoadProjectsPresenter
@@ -152,9 +153,9 @@ class DependencyManager {
         SampleOverviewView sampleOverviewView = new SampleOverviewView(notificationService)
         SampleOverviewController projectSamplesController = setupProjectSamplesUseCase(sampleOverviewView.getPresenter())
 
-
+        MainPage mainPage = new MainPage()
         AppView mainView = new AppView(projectOverviewView, sampleOverviewView, projectSamplesController)
-        return mainView
+        return mainPage
     }
 
     /**

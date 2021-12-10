@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/groovy&quot;,&quot;THEME&quot;:&quot;mytheme&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout size-full>
+   <vaadin-horizontal-layout width-full _id="hotbarLayout">
+    <vaadin-horizontal-layout :middle>
+     <vaadin-text-field value-change-mode="eager" placeholder="Search ..." width="215px" height="37px" _id="searchField"></vaadin-text-field>
+     <vaadin-combo-box placeholder="Sort by ..." height="37px" _id="sort"></vaadin-combo-box>
+    </vaadin-horizontal-layout>
+    <vaadin-horizontal-layout visible="false" style-name="card" spacing="false" :middle :right>
+     <vaadin-button disable-on-click style-name="primary" width="98px" height="37px" plain-text _id="projectsButton" :middle :center>
+       Projects 
+     </vaadin-button>
+     <vaadin-button disable-on-click style-name="borderless-colored" width="88px" height="37px" plain-text _id="samplesButton" :middle :center>
+       Samples 
+     </vaadin-button>
+    </vaadin-horizontal-layout>
+   </vaadin-horizontal-layout>
+   <vaadin-grid size-full :middle :center :expand></vaadin-grid>
+  </vaadin-vertical-layout>
+ </body>
+</html>
