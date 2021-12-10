@@ -14,6 +14,8 @@ import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscriptionCheckboxFactory
 
+import java.util.function.Consumer
+
 class ProjectView extends ProjectDesign{
 
     private final ViewModel viewModel
@@ -25,8 +27,6 @@ class ProjectView extends ProjectDesign{
         super()
         this.viewModel = viewModel
         this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, subscriber,notificationService)
-
-        samplesButton.setEnabled(false)
 
         bindData()
         addClickListener()
@@ -53,10 +53,6 @@ class ProjectView extends ProjectDesign{
     private void refreshDataProvider() {
         DataProvider dataProvider = new ListDataProvider(viewModel.projectOverviews)
         projectGrid.setDataProvider(dataProvider)
-
-        if( viewModel.selectedProject ) {
-            projectGrid.select(viewModel.selectedProject)
-        }
 
         filterEmptyProjects()
     }
@@ -90,7 +86,6 @@ class ProjectView extends ProjectDesign{
         }
     }
 
-
     private void addClickListener() {
         projectGrid.addSelectionListener({
             if (it instanceof SingleSelectionEvent<ProjectSummary>) {
@@ -113,14 +108,16 @@ class ProjectView extends ProjectDesign{
             viewModel.sampleViewEnabled = true
         })
 
-        viewModel.addPropertyChangeListener({
-            if(viewModel.projectViewEnabled){
-                this.setVisible(true)
-                this.samplesButton.setEnabled(true)
-            }else{
-                this.setVisible(false)
-                this.samplesButton.setEnabled(false)
-            }
+    }
+
+    /**
+     * With change of the selectedProject property in the viewmodel this method calls the consumer and provides him
+     * with the selected project summary
+     * @param projectConsumer The consumer that will accept the selected project summary
+     */
+    void onSelectedProjectChange(Consumer<ProjectSummary> projectConsumer){
+        viewModel.addPropertyChangeListener("selectedProject", {
+            projectConsumer.accept(viewModel.selectedProject)
         })
     }
 }

@@ -22,7 +22,23 @@
      </vaadin-button>
     </vaadin-horizontal-layout>
    </vaadin-horizontal-layout>
-   <vaadin-grid size-full _id="sampleGrid" :middle :center :expand></vaadin-grid>
+   <vaadin-grid size-full data-item-type="life.qbic.business.samples.Sample" selection-mode="none" _id="sampleGrid" :middle :center :expand>
+    <table>
+     <colgroup>
+      <col column-id="name" sortable>
+      <col column-id="code" sortable>
+      <col column-id="status" sortable>
+     </colgroup>
+     <thead>
+      <tr default>
+       <th plain-text column-ids="name">Sample Label</th>
+       <th plain-text column-ids="code">QBiC Code</th>
+       <th plain-text column-ids="status">Status</th>
+      </tr>
+     </thead>
+     <tbody></tbody>
+    </table>
+   </vaadin-grid>
   </vaadin-vertical-layout>
  </body>
 </html>

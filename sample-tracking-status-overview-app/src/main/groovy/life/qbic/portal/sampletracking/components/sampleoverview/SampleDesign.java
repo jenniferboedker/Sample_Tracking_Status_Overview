@@ -28,7 +28,7 @@ public class SampleDesign extends VerticalLayout {
     protected ComboBox sort;
     protected Button projectsButton;
     protected Button samplesButton;
-    protected Grid sampleGrid;
+    protected Grid<life.qbic.business.samples.Sample> sampleGrid;
 
     public SampleDesign() {
         Design.read(this);

@@ -156,8 +156,14 @@ class DependencyManager {
         SampleOverviewView sampleOverviewView = new SampleOverviewView(notificationService)
         SampleOverviewController projectSamplesController = setupProjectSamplesUseCase(sampleOverviewView.getPresenter())
 
+        /// vaadin designer test start
         ViewModel viewModel = new ViewModel(projectResourceService,statusCountService)
-        MainPage mainPage = new MainPage(new ProjectView(viewModel, setupSubscribeProjectUseCase(), notificationService, subscriptionUser),new SampleView(viewModel))
+        SampleView sampleView = new SampleView(viewModel,notificationService)
+        ProjectView projectView = new ProjectView(viewModel, setupSubscribeProjectUseCase(), notificationService, subscriptionUser)
+        SampleOverviewController sampleOverviewController = setupProjectSamplesUseCase(sampleView.getPresenter())
+
+        MainPage mainPage = new MainPage(projectView,sampleView,viewModel,sampleOverviewController)
+        ///vaadin designer test end
         AppView mainView = new AppView(projectOverviewView, sampleOverviewView, projectSamplesController)
         return mainPage
     }
