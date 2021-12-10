@@ -21,7 +21,6 @@ class MainPage extends VerticalLayout {
 
         this.addComponents(projectLayout,sampleLayout)
         sampleLayout.setVisible(false)
-        viewModel.sampleViewEnabled = false
 
         listenToProjectSelectionChange()
     }
@@ -33,6 +32,14 @@ class MainPage extends VerticalLayout {
             } else {
                 sampleView.reset()
             }
+        })
+
+        //todo here the switching does not work properly does not work on the first click when clicking on the sample button
+        viewModel.addPropertyChangeListener("sampleViewEnabled",{
+            sampleView.setVisible(it.newValue as boolean)
+        })
+        viewModel.addPropertyChangeListener("projectViewEnabled",{
+            projectView.setVisible(it.newValue as boolean)
         })
     }
 }

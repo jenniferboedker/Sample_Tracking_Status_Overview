@@ -29,7 +29,7 @@ class ViewModel {
         this.projectResourceService = projectResourceService
         this.statusCountService = statusCountService
 
-        projectViewEnabled = true
+        projectViewEnabled = false
         sampleViewEnabled = false
 
         fetchProjectData()

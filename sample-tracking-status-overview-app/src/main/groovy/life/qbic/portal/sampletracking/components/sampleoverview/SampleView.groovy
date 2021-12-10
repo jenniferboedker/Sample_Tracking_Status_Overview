@@ -32,10 +32,8 @@ class SampleView extends SampleDesign{
 
         viewModel.addPropertyChangeListener({
             if(viewModel.sampleViewEnabled){
-                this.setVisible(true)
                 this.projectsButton.setEnabled(true)
             }else{
-                this.setVisible(false)
                 this.projectsButton.setEnabled(false)
             }
         })
