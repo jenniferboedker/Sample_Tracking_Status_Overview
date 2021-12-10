@@ -1,19 +1,14 @@
 package life.qbic.portal.sampletracking.components
 
-import com.vaadin.ui.Button
+
 import com.vaadin.ui.Component
-import com.vaadin.ui.Grid
 import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
-import com.vaadin.ui.components.grid.ItemClickListener
 import com.vaadin.ui.themes.ValoTheme
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
-import life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary
-import life.qbic.portal.sampletracking.components.projectoverview.Projectview
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewController
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewView
-import life.qbic.portal.sampletracking.components.sampleoverview.SampleView
 import life.qbic.portal.sampletracking.components.toggle.ToggleButton
 
 /**

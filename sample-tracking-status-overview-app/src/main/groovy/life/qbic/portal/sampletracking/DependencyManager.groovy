@@ -24,10 +24,12 @@ import life.qbic.portal.sampletracking.communication.notification.NotificationSe
 import life.qbic.portal.sampletracking.components.AppView
 import life.qbic.portal.sampletracking.components.MainPage
 import life.qbic.portal.sampletracking.components.NotificationHandler
+import life.qbic.portal.sampletracking.components.ViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.CountSamplesPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.LoadProjectsPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
+import life.qbic.portal.sampletracking.components.projectoverview.ProjectView
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.download.ManifestPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesController
@@ -36,6 +38,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.subscribe.Subs
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectPresenter
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewView
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewController
+import life.qbic.portal.sampletracking.components.sampleoverview.SampleView
 import life.qbic.portal.sampletracking.datasources.Credentials
 import life.qbic.portal.sampletracking.datasources.OpenBisConnector
 import life.qbic.portal.sampletracking.datasources.database.DatabaseSession
@@ -153,7 +156,8 @@ class DependencyManager {
         SampleOverviewView sampleOverviewView = new SampleOverviewView(notificationService)
         SampleOverviewController projectSamplesController = setupProjectSamplesUseCase(sampleOverviewView.getPresenter())
 
-        MainPage mainPage = new MainPage()
+        ViewModel viewModel = new ViewModel()
+        MainPage mainPage = new MainPage(new ProjectView(viewModel),new SampleView(viewModel))
         AppView mainView = new AppView(projectOverviewView, sampleOverviewView, projectSamplesController)
         return mainPage
     }
