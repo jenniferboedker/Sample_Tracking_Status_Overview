@@ -30,14 +30,14 @@ class AppView extends VerticalLayout {
     private final SampleOverviewController sampleOverviewController
 
     private final HorizontalLayout hotbar = new HorizontalLayout()
-    protected final Label titleLabel = new Label("Sample Status Portlet")
+    protected final Label appTitleLabel = new Label("Sample Status Viewer")
     private final ToggleButton projectSampleToggle
 
     AppView(ProjectOverviewView projectOverviewView, SampleOverviewView sampleOverviewView, SampleOverviewController sampleOverviewController) {
         this.setMargin(true)
         this.setSpacing(true)
 
-        titleLabel.addStyleName(ValoTheme.LABEL_HUGE)
+        appTitleLabel.addStyleName(ValoTheme.LABEL_HUGE)
 
         this.projectOverviewView = projectOverviewView
         this.sampleOverviewView = sampleOverviewView
@@ -54,7 +54,7 @@ class AppView extends VerticalLayout {
         showProjectView(true)
         showSampleView(false)
 
-        this.addComponents(titleLabel, createSpacer(2, Unit.EM), hotbar, new Projectview(), new SampleView())
+        this.addComponents(appTitleLabel, createSpacer(2, Unit.EM), hotbar, projectOverviewView, sampleOverviewView)
     }
 
 
@@ -73,13 +73,11 @@ class AppView extends VerticalLayout {
     private void showProjectView(Boolean visible) {
         projectOverviewView.setVisible(visible)
         projectOverviewView.getHotbar().setVisible(visible)
-        if (visible) this.titleLabel.value = projectOverviewView.getTitle()
     }
 
     private void showSampleView(Boolean visible) {
         sampleOverviewView.setVisible(visible)
         sampleOverviewView.getHotbar().setVisible(visible)
-        if (visible) this.titleLabel.value = sampleOverviewView.getTitle()
     }
 
     private void addHotbarItem(HorizontalLayout item) {
