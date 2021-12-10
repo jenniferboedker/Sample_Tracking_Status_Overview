@@ -2,9 +2,15 @@ package life.qbic.portal.sampletracking.components.projectoverview
 
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
+import com.vaadin.ui.CheckBox
+import com.vaadin.ui.renderers.ComponentRenderer
+import com.vaadin.ui.renderers.Renderer
+import life.qbic.business.project.subscribe.Subscriber
+import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.ViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscriptionCheckboxFactory
 
 class ProjectView extends ProjectDesign{
@@ -14,10 +20,10 @@ class ProjectView extends ProjectDesign{
     private final SubscriptionCheckboxFactory subscriptionCheckboxFactory
 
 
-    ProjectView(ViewModel viewModel) {
+    ProjectView(ViewModel viewModel, SubscribeProjectController subscribeProjectController, NotificationService notificationService, Subscriber subscriber) {
         super()
         this.viewModel = viewModel
-        this.subscriptionCheckboxFactory = null //new SubscriptionCheckboxFactory(subscribeProjectController, viewModel.subscriber,notificationService)
+        this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, subscriber,notificationService)
 
         bindData()
         addClickListener()
@@ -27,10 +33,11 @@ class ProjectView extends ProjectDesign{
      * NO LAYOUTING HERE
      */
     private void bindData(){
-       // projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it)}, new ComponentRenderer())
-       //         .setCaption("Subscription Status").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
-        projectGrid.getColumn("code").setMaximumWidth(MAX_CODE_COLUMN_WIDTH)
+        projectGrid.getColumn("hasSubscription").setRenderer({ new CheckBox("",it as Boolean)}, new ComponentRenderer())
+                .setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
+
         projectGrid.getColumn("title").setMaximumWidth(800)
+        projectGrid.getColumn("code").setMaximumWidth(MAX_CODE_COLUMN_WIDTH)
 
         projectGrid.getColumn("samplesReceived").setExpandRatio(1).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesReceived)})
         projectGrid.getColumn("samplesQc").setExpandRatio(1).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesQc)})

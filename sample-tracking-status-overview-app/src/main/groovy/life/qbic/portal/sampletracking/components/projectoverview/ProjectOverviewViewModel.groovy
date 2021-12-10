@@ -30,7 +30,6 @@ class ProjectOverviewViewModel {
     @Bindable String generatedManifest
     final Subscriber subscriber
     final Channel<String> updatedProjectsChannel
-    final Map<String,CheckBox> projectToCheckbox = new HashMap<>()
 
     ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService, Subscriber subscriber) {
         this.updatedProjectsChannel = new Channel<>()

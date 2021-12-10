@@ -24,6 +24,7 @@
    <vaadin-grid size-full data-item-type="life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary" _id="projectGrid" :middle :center :expand>
     <table>
      <colgroup>
+      <col column-id="hasSubscription" sortable="false">
       <col column-id="code" sortable="false">
       <col column-id="title" sortable="false">
       <col column-id="samplesReceived" sortable="false">
@@ -33,6 +34,7 @@
      </colgroup>
      <thead>
       <tr default>
+       <th plain-text column-ids="hasSubscription">Subscribe</th>
        <th plain-text column-ids="code">Code</th>
        <th plain-text column-ids="title">Title</th>
        <th plain-text column-ids="samplesReceived">Samples Received</th>

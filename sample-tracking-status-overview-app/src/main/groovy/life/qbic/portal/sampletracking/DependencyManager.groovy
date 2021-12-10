@@ -157,7 +157,7 @@ class DependencyManager {
         SampleOverviewController projectSamplesController = setupProjectSamplesUseCase(sampleOverviewView.getPresenter())
 
         ViewModel viewModel = new ViewModel(projectResourceService,statusCountService)
-        MainPage mainPage = new MainPage(new ProjectView(viewModel),new SampleView(viewModel))
+        MainPage mainPage = new MainPage(new ProjectView(viewModel, setupSubscribeProjectUseCase(), notificationService, subscriptionUser),new SampleView(viewModel))
         AppView mainView = new AppView(projectOverviewView, sampleOverviewView, projectSamplesController)
         return mainPage
     }
