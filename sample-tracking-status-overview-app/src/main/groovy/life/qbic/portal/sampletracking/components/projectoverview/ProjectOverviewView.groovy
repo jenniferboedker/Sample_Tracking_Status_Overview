@@ -184,9 +184,10 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     }
 
     private static void removeFileDownloaders(ClientConnector clientConnector) {
-        clientConnector.extensions.stream()
+        def fileDownloaders = clientConnector.extensions.stream()
                 .filter((extension) -> extension instanceof FileDownloader)
-                .forEach(clientConnector::removeExtension)
+                .collect()
+        fileDownloaders.forEach(clientConnector::removeExtension)
     }
 
 
