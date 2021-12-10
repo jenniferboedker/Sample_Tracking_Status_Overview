@@ -2,6 +2,7 @@ package life.qbic.portal.sampletracking.components.projectoverview
 
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
+import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.ui.CheckBox
 import com.vaadin.ui.renderers.ComponentRenderer
 import com.vaadin.ui.renderers.Renderer
@@ -24,6 +25,8 @@ class ProjectView extends ProjectDesign{
         super()
         this.viewModel = viewModel
         this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, subscriber,notificationService)
+
+        samplesButton.setEnabled(false)
 
         bindData()
         addClickListener()
@@ -89,6 +92,22 @@ class ProjectView extends ProjectDesign{
 
 
     private void addClickListener() {
+        projectGrid.addSelectionListener({
+            if (it instanceof SingleSelectionEvent<ProjectSummary>) {
+            Optional<ProjectSummary> selectedItem = it.getSelectedItem()
+            if (!selectedItem.isPresent()) {
+                viewModel.selectedProject = null
+                samplesButton.setEnabled(false)
+            }
+            selectedItem.ifPresent({
+                viewModel.selectedProject = it
+                samplesButton.setEnabled(true)
+            })
+        }})
+        projectGrid.setStyleGenerator(projectRow -> {
+            return "clickable-row"
+        })
+
         this.samplesButton.addClickListener({
             viewModel.projectViewEnabled = false
             viewModel.sampleViewEnabled = true
