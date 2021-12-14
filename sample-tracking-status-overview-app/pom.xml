@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>war</packaging>
     <properties>
-        <log4j.version>2.15.0</log4j.version>
+        <log4j.version>2.16.0</log4j.version>
     </properties>
     <artifactId>sample-tracking-status-overview-app</artifactId>
     <name>The sample tracking status overview portlet</name>
