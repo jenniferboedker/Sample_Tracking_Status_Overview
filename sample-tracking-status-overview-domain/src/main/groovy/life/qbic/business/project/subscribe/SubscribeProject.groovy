@@ -75,12 +75,17 @@ class SubscribeProject implements SubscribeProjectInput {
                 if (!subscriber.lastName) throw new ValidationException(
                         "Please provide a first name.")
         }
+        private static Consumer<Subscriber> validateTitle = {
+            Subscriber subscriber ->
+                if (!subscriber.title) throw new ValidationException(
+                        "Please provide a title.")
+        }
         private static Consumer<Subscriber> validateEmail = {
             Subscriber subscriber ->
                 if (!subscriber.email) throw new ValidationException("Please provide a first name.")
         }
         private static Consumer<Subscriber> validateSubscriber = validateFirstName.andThen(
-                validateLastName).andThen(validateEmail)
+                validateLastName).andThen(validateEmail).andThen(validateTitle)
         private static Consumer<String> projectCodeValidator = new ProjectCodeValidator()
     }
 }
