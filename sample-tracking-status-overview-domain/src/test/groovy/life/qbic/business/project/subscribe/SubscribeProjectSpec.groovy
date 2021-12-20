@@ -13,9 +13,10 @@ class SubscribeProjectSpec extends Specification {
     @Shared final String validFirstName = "firstname"
     @Shared final String validLastName = "lastname"
     @Shared final String validEmail = "email@addre.ss"
+    @Shared final String validTitle = "Dr."
     final String validProjectCode = "QABCD"
 
-    final Subscriber validSubscriber = new Subscriber(validFirstName, validLastName, validEmail)
+    final Subscriber validSubscriber = new Subscriber(validFirstName, validLastName, validTitle, validEmail)
 
     SubscribeProjectOutput output = Mock()
     SubscriptionDataSource subscriptionDataSource = Mock()
@@ -28,7 +29,7 @@ class SubscribeProjectSpec extends Specification {
         thrown(IllegalArgumentException)
         where:
         invalidFirstName << [null, ""]
-        invalidSubscriber = new Subscriber(invalidFirstName, validLastName, validEmail)
+        invalidSubscriber = new Subscriber(invalidFirstName, validLastName, validTitle,validEmail)
     }
 
     def "Subscribe fails for invalid last name: #invalidLastName"() {
@@ -38,7 +39,17 @@ class SubscribeProjectSpec extends Specification {
         thrown(IllegalArgumentException)
         where:
         invalidLastName << [null, ""]
-        invalidSubscriber = new Subscriber(validFirstName, invalidLastName, validEmail)
+        invalidSubscriber = new Subscriber(validFirstName, invalidLastName, validTitle, validEmail)
+    }
+
+    def "Subscribe fails for invalid title: #invalidTitle"() {
+        when:
+        subscribeProject.subscribe(invalidSubscriber, validProjectCode)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        invalidTitle << [null, ""]
+        invalidSubscriber = new Subscriber(validFirstName, validLastName, invalidTitle, validEmail)
     }
 
     def "Subscribe fails for invalid email address: #invalidEmail"() {
@@ -48,7 +59,7 @@ class SubscribeProjectSpec extends Specification {
         thrown(IllegalArgumentException)
         where:
         invalidEmail << [null, ""]
-        invalidSubscriber = new Subscriber(validFirstName, validLastName, invalidEmail)
+        invalidSubscriber = new Subscriber(validFirstName, validLastName, validTitle, invalidEmail)
     }
 
     def "Subscribe fails for invalid project code: #invalidProjectCode"() {
@@ -111,7 +122,7 @@ class SubscribeProjectSpec extends Specification {
         thrown(IllegalArgumentException)
         where:
         invalidEmail << [null, ""]
-        invalidSubscriber = new Subscriber(validFirstName, validLastName, invalidEmail)
+        invalidSubscriber = new Subscriber(validFirstName, validLastName, validTitle, invalidEmail)
     }
 
     def "Unsubscribe fails for invalid project code: #invalidProjectCode"() {

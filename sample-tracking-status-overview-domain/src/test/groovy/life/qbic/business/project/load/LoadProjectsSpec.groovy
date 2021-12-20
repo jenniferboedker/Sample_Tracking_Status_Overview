@@ -14,7 +14,7 @@ import java.time.Instant
  */
 class LoadProjectsSpec extends Specification {
 
-    Subscriber subscriber =  new Subscriber("First", "Last", "e.ma@i.ll")
+    Subscriber subscriber =  new Subscriber("First", "Last", "Dr.","e.ma@i.ll")
 
     def "LoadProjects successful execution returns expected projects"() {
         given: "a project"
