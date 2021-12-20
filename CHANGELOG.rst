@@ -9,7 +9,9 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
-* Color sample status
+* Color sample status (#177)
+
+* Use person table instead of subscriber (#183)
 
 **Fixed**
 
