@@ -15,7 +15,7 @@ import java.sql.Statement
 /**
  * <b>Provides methods to handle user's subscriptions to projects</b>
  *
- * <p>Connects to the subscription database in order to store or fetch user's subsriptions to project. Uses Subscriber objects and the project code</p>
+ * <p>Connects to the subscription database in order to store or fetch user's subscriptions to project. Uses Subscriber objects and the project code</p>
  *
  * @since 1.0.0
  */
