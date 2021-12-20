@@ -105,22 +105,24 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
     }
     
     private int getSubscriberId(Connection connection, Subscriber subscriber) {
-          int subscriberId = fetchExistingSubscriberId(subscriber)
-          if(subscriberId <= 0) {
-            String query = "INSERT INTO subscriber (first_name, last_name, email) VALUES(?, ?, ?)"
-            
+        int subscriberId = fetchExistingSubscriberId(subscriber)
+        if(subscriberId <= 0) {
+            String query = "INSERT INTO person (user_id, first_name, last_name, title, email) VALUES(?, ?, ?, ?, ?)"
+
             def statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
-            
-            statement.setString(1, subscriber.firstName)
-            statement.setString(2, subscriber.lastName)
-            statement.setString(3, subscriber.email)
+
+            statement.setString(1, subscriber.email)//todo do we need the id since it is the same as the email?
+            statement.setString(2, subscriber.firstName)
+            statement.setString(3, subscriber.lastName)
+            statement.setString(4, subscriber.title)
+            statement.setString(5, subscriber.email)
             statement.execute()
             def keys = statement.getGeneratedKeys()
             while (keys.next()) {
-              subscriberId = keys.getInt(1)
+                subscriberId = keys.getInt(1)
             }
-          }
-          return subscriberId
+        }
+        return subscriberId
     }
     
     private void addSubscription(Connection connection, int subscriberId, String projectCode) {
@@ -147,16 +149,17 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
     }
     
     private int fetchExistingSubscriberId(Subscriber subscriber) {
-          String query = "SELECT id FROM subscriber WHERE first_name = ? AND last_name = ? AND email = ?"
-          Connection connection = connectionProvider.connect()
+        String query = "SELECT id FROM person WHERE first_name = ? AND last_name = ? AND title = ? AND email = ?"
+        Connection connection = connectionProvider.connect()
 
-          int personId = -1
+        int personId = -1
 
-          connection.withCloseable {
+        connection.withCloseable {
             def statement = connection.prepareStatement(query)
             statement.setString(1, subscriber.firstName)
             statement.setString(2, subscriber.lastName)
-            statement.setString(3, subscriber.email)
+            statement.setString(3, subscriber.title)
+            statement.setString(4, subscriber.email)
 
             ResultSet result = statement.executeQuery()
             while (result.next()) {
