@@ -108,8 +108,6 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
     private int getSubscriberId(Subscriber subscriber) {
         String query = "SELECT id FROM person WHERE first_name = ? AND last_name = ? AND title = ? AND email = ?"
 
-        println subscriber.toString()
-
         int personId = -1
         Connection connection = connectionProvider.connect()
 
@@ -174,7 +172,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
     List<String> findSubscribedProjectCodesFor(Subscriber subscriber) {
         List<String> subscribedProjects = []
 
-        String query = "SELECT project_code FROM subscription WHERE subscriber_id = ?"
+        String query = "SELECT project FROM subscriptions WHERE user_id = ?"
         Connection connection = connectionProvider.connect()
 
         connection.withCloseable {
@@ -185,7 +183,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
 
             ResultSet resultSet = statement.executeQuery()
             while(resultSet.next()) {
-                subscribedProjects <<  resultSet.getString("project_code")
+                subscribedProjects <<  resultSet.getString("project")
             }
         }
         return subscribedProjects
