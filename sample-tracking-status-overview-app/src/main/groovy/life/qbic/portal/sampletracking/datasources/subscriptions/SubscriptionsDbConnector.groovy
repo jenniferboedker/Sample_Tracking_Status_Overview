@@ -50,7 +50,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
       
             connection.withCloseable { it ->
               try {
-                int subscriberId = getSubscriberId(subscriber)
+                int subscriberId = getSubscriberId(subscriber).get()
                 addSubscription(it, subscriberId, projectCode)
                 connection.commit()
               } catch (Exception e) {
@@ -83,7 +83,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
       
             connection.withCloseable { it ->
               try {
-                int subscriberId = getSubscriberId(subscriber)
+                int subscriberId = getSubscriberId(subscriber).get()
                 // action must only be taken if this subscriber exists
                 if(subscriberId > 0) {
                   removeSubscription(it, subscriberId, projectCode)
@@ -105,10 +105,10 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
           }
     }
     
-    private int getSubscriberId(Subscriber subscriber) {
+    private Optional<Integer> getSubscriberId(Subscriber subscriber) {
         String query = "SELECT id FROM person WHERE first_name = ? AND last_name = ? AND title = ? AND email = ?"
 
-        int personId = -1
+        Optional<Integer> personId = Optional.empty()
         Connection connection = connectionProvider.connect()
 
         connection.withCloseable {
@@ -120,7 +120,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
 
             ResultSet result = statement.executeQuery()
             while (result.next()) {
-                personId = result.getInt(1)
+                personId = Optional.of(result.getInt(1))
             }
         }
         return personId
@@ -176,7 +176,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
         Connection connection = connectionProvider.connect()
 
         connection.withCloseable {
-            int subscriberId = getSubscriberId(subscriber)
+            int subscriberId = getSubscriberId(subscriber).get()
 
             PreparedStatement statement = connection.prepareStatement(query)
             statement.setInt(1, subscriberId)
