@@ -4,12 +4,18 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-1.0.0-beta.8 (2021-12-21)
+1.0.0-beta.8-SNAPSHOT (2021-12-21)
 ---------------------------
 
 **Added**
 
+* Color sample status (#177)
+
+* Use person table instead of subscriber (#183)
+
 **Fixed**
+
+* Manifest file download is reset correctly after project selection change (`#169 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/169>`_)
 
 * CVE-2021-45105
 

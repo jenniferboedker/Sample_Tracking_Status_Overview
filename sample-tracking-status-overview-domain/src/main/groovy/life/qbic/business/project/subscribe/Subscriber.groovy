@@ -12,10 +12,12 @@ class Subscriber {
     final String firstName
     final String lastName
     final String email
+    final String title
 
-    Subscriber(String firstName, String lastName, String email) {
+    Subscriber(String firstName, String lastName, String title, String email) {
         this.firstName = firstName
         this.lastName = lastName
+        this.title = title
         this.email = email
     }
 
@@ -23,6 +25,7 @@ class Subscriber {
     @Override
     String toString() {
         return "Subscriber{" +
+                "title='" + title + '\'' +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +

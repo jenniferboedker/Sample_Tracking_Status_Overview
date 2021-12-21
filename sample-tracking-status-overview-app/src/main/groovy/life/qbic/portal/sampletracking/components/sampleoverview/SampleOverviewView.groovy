@@ -7,10 +7,13 @@ import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.VerticalLayout
 import life.qbic.business.samples.Sample
 import life.qbic.business.samples.info.GetSamplesInfoOutput
+import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.HasHotbar
 import life.qbic.portal.sampletracking.components.HasTitle
 import life.qbic.portal.sampletracking.components.Resettable
+import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
+import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 
 /**
  * <b>A view component showing a list of samples</b>
@@ -51,11 +54,22 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle, 
         ListDataProvider<Sample> dataProvider = ListDataProvider.ofCollection(samples)
         samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
         samplesGrid.addColumn(Sample::getName).setCaption("Sample Name").setId("SampleName")
-        samplesGrid.addColumn(Sample::getStatus).setCaption("Sample Status").setId("SampleStatus")
+        samplesGrid.addColumn(Sample::getStatus).setCaption("Sample Status").setId("SampleStatus").setStyleGenerator({Sample sample -> determineColor(sample.status)})
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(dataProvider)
         samplesGrid.setHeightMode(HeightMode.ROW)
         return samplesGrid
+    }
+
+    private static String determineColor(Status status) {
+        switch (status){
+            case Status.DATA_AVAILABLE:
+                return State.COMPLETED.getCssClass()
+            case Status.SAMPLE_QC_FAIL:
+                return State.FAILED.getCssClass()
+            default:
+                return State.IN_PROGRESS.getCssClass()
+        }
     }
 
     /**

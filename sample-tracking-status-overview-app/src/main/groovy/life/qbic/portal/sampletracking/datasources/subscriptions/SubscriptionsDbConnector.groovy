@@ -6,6 +6,7 @@ import life.qbic.business.project.load.SubscribedProjectsDataSource
 import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.business.project.subscribe.SubscriptionDataSource
 import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
+import life.qbic.portal.sampletracking.datasources.database.DatabaseSession
 
 import java.sql.Connection
 import java.sql.PreparedStatement
@@ -15,7 +16,7 @@ import java.sql.Statement
 /**
  * <b>Provides methods to handle user's subscriptions to projects</b>
  *
- * <p>Connects to the subscription database in order to store or fetch user's subsriptions to project. Uses Subscriber objects and the project code</p>
+ * <p>Connects to the subscription database in order to store or fetch user's subscriptions to project. Uses Subscriber objects and the project code</p>
  *
  * @since 1.0.0
  */
@@ -42,14 +43,14 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
      * @since 1.1.0
      */
     @Override
-    void subscribeToProject(Subscriber subscriber, String projectCode) {
+    void subscribeToProject(Subscriber subscriber, String projectCode) throws DataSourceException{
           try {
             Connection connection = connectionProvider.connect()
             connection.setAutoCommit(false)
       
             connection.withCloseable { it ->
               try {
-                int subscriberId = getSubscriberId(it, subscriber)
+                int subscriberId = getSubscriberId(subscriber).orElseThrow({new DataSourceException("Could not find user in the database")})
                 addSubscription(it, subscriberId, projectCode)
                 connection.commit()
               } catch (Exception e) {
@@ -82,7 +83,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
       
             connection.withCloseable { it ->
               try {
-                int subscriberId = fetchExistingSubscriberId(subscriber)
+                int subscriberId = getSubscriberId(subscriber).orElseThrow({new DataSourceException("Could not find user in the database")})
                 // action must only be taken if this subscriber exists
                 if(subscriberId > 0) {
                   removeSubscription(it, subscriberId, projectCode)
@@ -104,40 +105,45 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
           }
     }
     
-    private int getSubscriberId(Connection connection, Subscriber subscriber) {
-          int subscriberId = fetchExistingSubscriberId(subscriber)
-          if(subscriberId <= 0) {
-            String query = "INSERT INTO subscriber (first_name, last_name, email) VALUES(?, ?, ?)"
-            
-            def statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
-            
+    private Optional<Integer> getSubscriberId(Subscriber subscriber) {
+        String query = "SELECT id FROM person WHERE first_name = ? AND last_name = ? AND title = ? AND email = ?"
+
+        Optional<Integer> personId = Optional.empty()
+        Connection connection = connectionProvider.connect()
+
+        connection.withCloseable {
+            def statement = connection.prepareStatement(query)
             statement.setString(1, subscriber.firstName)
             statement.setString(2, subscriber.lastName)
-            statement.setString(3, subscriber.email)
-            statement.execute()
-            def keys = statement.getGeneratedKeys()
-            while (keys.next()) {
-              subscriberId = keys.getInt(1)
+            statement.setString(3, subscriber.title)
+            statement.setString(4, subscriber.email)
+
+            ResultSet result = statement.executeQuery()
+            while (result.next()) {
+                personId = Optional.of(result.getInt(1))
             }
-          }
-          return subscriberId
+        }
+        return personId
     }
     
     private void addSubscription(Connection connection, int subscriberId, String projectCode) {
-          if (!projectAlreadySubscribed(subscriberId, projectCode)) {
-              String query = "INSERT INTO subscription (project_code, subscriber_id) VALUES(?, ?)"
+        if(subscriberId == -1){
+            throw new DataSourceException("Subscriber entry is not in the database.")
+        }
+        if (!projectAlreadySubscribed(subscriberId, projectCode)) {
+            String query = "INSERT INTO subscriptions (project, user_id) VALUES(?, ?)"
 
-              def statement = connection.prepareStatement(query)
+            def statement = connection.prepareStatement(query)
 
-              statement.setString(1, projectCode)
-              statement.setInt(2, subscriberId)
-              statement.execute()
-          }
+            statement.setString(1, projectCode)
+            statement.setInt(2, subscriberId)
+            statement.execute()
+        }
     }
     
     private static void removeSubscription(Connection connection, int subscriberId, String projectCode) {
           // we do not need to check if the subscription exists, here, as removing a non-existent row does not lead to errors
-          String query = "DELETE FROM subscription WHERE project_code = ? AND subscriber_id = ?"
+          String query = "DELETE FROM subscriptions WHERE project = ? AND user_id = ?"
 
           def statement = connection.prepareStatement(query)
 
@@ -145,29 +151,9 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
           statement.setInt(2, subscriberId)
           statement.execute()
     }
-    
-    private int fetchExistingSubscriberId(Subscriber subscriber) {
-          String query = "SELECT id FROM subscriber WHERE first_name = ? AND last_name = ? AND email = ?"
-          Connection connection = connectionProvider.connect()
-
-          int personId = -1
-
-          connection.withCloseable {
-            def statement = connection.prepareStatement(query)
-            statement.setString(1, subscriber.firstName)
-            statement.setString(2, subscriber.lastName)
-            statement.setString(3, subscriber.email)
-
-            ResultSet result = statement.executeQuery()
-            while (result.next()) {
-              personId = result.getInt(1)
-            }
-          }
-          return personId
-    }
 
     private boolean projectAlreadySubscribed(int subscriberId, String projectCode) {
-        String query = "SELECT id FROM subscription WHERE project_code = ? AND subscriber_id = ? "
+        String query = "SELECT id FROM subscriptions WHERE project = ? AND user_id = ? "
         Connection connection = connectionProvider.connect()
         boolean isAlreadySubscribed = false
         connection.withCloseable {
@@ -185,15 +171,19 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
     @Override
     List<String> findSubscribedProjectCodesFor(Subscriber subscriber) {
         List<String> subscribedProjects = []
-        int subscriberId = fetchExistingSubscriberId(subscriber)
-        String query = "SELECT project_code FROM subscription WHERE subscriber_id = ?"
+
+        String query = "SELECT project FROM subscriptions WHERE user_id = ?"
         Connection connection = connectionProvider.connect()
+
         connection.withCloseable {
+            int subscriberId = getSubscriberId(subscriber).orElseThrow({new DataSourceException("Could not find user in the database")})
+
             PreparedStatement statement = connection.prepareStatement(query)
             statement.setInt(1, subscriberId)
+
             ResultSet resultSet = statement.executeQuery()
             while(resultSet.next()) {
-                subscribedProjects <<  resultSet.getString("project_code")
+                subscribedProjects <<  resultSet.getString("project")
             }
         }
         return subscribedProjects

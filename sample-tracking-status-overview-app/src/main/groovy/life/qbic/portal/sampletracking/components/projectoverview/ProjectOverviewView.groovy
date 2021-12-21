@@ -4,6 +4,7 @@ import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
+import com.vaadin.server.ClientConnector
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
 import com.vaadin.shared.ui.ContentMode
@@ -23,8 +24,8 @@ import life.qbic.portal.sampletracking.components.projectoverview.samplelist.Fai
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesView
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
-import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscriptionCheckboxFactory
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
+import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscriptionCheckboxFactory
 
 import java.util.function.Consumer
 
@@ -56,7 +57,6 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     private static final Collection<String> columnIdsWithFilters = ["ProjectCode", "ProjectTitle"]
 
     final static int MAX_CODE_COLUMN_WIDTH = 400
-    private FileDownloader fileDownloader
     private HorizontalLayout projectButtonBar = new HorizontalLayout()
 
     ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController
@@ -171,20 +171,25 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     private Button setupDownloadButton() {
         Button downloadManifestAction = new Button("Download Manifest", VaadinIcons.DOWNLOAD)
         viewModel.addPropertyChangeListener("generatedManifest", {
-            if (isDownloadAvailable()) {
-                this.fileDownloader = new FileDownloader(new StreamResource({viewModel.getManifestInputStream()}, "manifest.txt"))
-                this.fileDownloader.extend(downloadManifestAction)
-            } else {
-                if (this.fileDownloader) {
-                    if (downloadManifestAction.extensions.contains(fileDownloader)) {
-                        downloadManifestAction.removeExtension(this.fileDownloader)
-                    }
+            if (it.getOldValue() != it.getNewValue()) {
+                removeFileDownloaders(downloadManifestAction)
+                if (it.newValue) {
+                    FileDownloader fileDownloader = new FileDownloader(new StreamResource({viewModel.getManifestInputStream()}, "manifest.txt"))
+                    fileDownloader.extend(downloadManifestAction)
                 }
             }
         })
         enableWhenDownloadIsAvailable(downloadManifestAction)
         return downloadManifestAction
     }
+
+    private static void removeFileDownloaders(ClientConnector clientConnector) {
+        def fileDownloaders = clientConnector.extensions.stream()
+                .filter((extension) -> extension instanceof FileDownloader)
+                .collect()
+        fileDownloaders.forEach(clientConnector::removeExtension)
+    }
+
 
     private void setupProjects() {
         projectGrid = new Grid<ProjectSummary>()
