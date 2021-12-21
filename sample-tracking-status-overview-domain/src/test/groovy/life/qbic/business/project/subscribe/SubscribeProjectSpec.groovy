@@ -13,52 +13,15 @@ class SubscribeProjectSpec extends Specification {
     @Shared final String validFirstName = "firstname"
     @Shared final String validLastName = "lastname"
     @Shared final String validEmail = "email@addre.ss"
+    @Shared final String validTitle = "Dr."
     final String validProjectCode = "QABCD"
 
-    final Subscriber validSubscriber = new Subscriber(validFirstName, validLastName, validEmail)
+    final Subscriber validSubscriber = new Subscriber(validFirstName, validLastName, validTitle, validEmail)
 
     SubscribeProjectOutput output = Mock()
     SubscriptionDataSource subscriptionDataSource = Mock()
     SubscribeProject subscribeProject = new SubscribeProject(subscriptionDataSource, output)
 
-    def "Subscribe fails for invalid first name: #invalidFirstName"() {
-        when:
-        subscribeProject.subscribe(invalidSubscriber, validProjectCode)
-        then:
-        thrown(IllegalArgumentException)
-        where:
-        invalidFirstName << [null, ""]
-        invalidSubscriber = new Subscriber(invalidFirstName, validLastName, validEmail)
-    }
-
-    def "Subscribe fails for invalid last name: #invalidLastName"() {
-        when:
-        subscribeProject.subscribe(invalidSubscriber, validProjectCode)
-        then:
-        thrown(IllegalArgumentException)
-        where:
-        invalidLastName << [null, ""]
-        invalidSubscriber = new Subscriber(validFirstName, invalidLastName, validEmail)
-    }
-
-    def "Subscribe fails for invalid email address: #invalidEmail"() {
-        when:
-        subscribeProject.subscribe(invalidSubscriber, validProjectCode)
-        then:
-        thrown(IllegalArgumentException)
-        where:
-        invalidEmail << [null, ""]
-        invalidSubscriber = new Subscriber(validFirstName, validLastName, invalidEmail)
-    }
-
-    def "Subscribe fails for invalid project code: #invalidProjectCode"() {
-        when:
-        subscribeProject.subscribe(validSubscriber, invalidProjectCode)
-        then:
-        thrown(IllegalArgumentException)
-        where:
-        invalidProjectCode << [null, "", "1234", "ZBCA"]
-    }
 
     def "Subscribe does not throw an IllegalArgumentException for valid arguments"() {
         when:
@@ -103,26 +66,6 @@ class SubscribeProjectSpec extends Specification {
 
     
     // unsubscription
-    
-    def "Unsubscribe fails for invalid email address: #invalidEmail"() {
-        when:
-        subscribeProject.unsubscribe(invalidSubscriber, validProjectCode)
-        then:
-        thrown(IllegalArgumentException)
-        where:
-        invalidEmail << [null, ""]
-        invalidSubscriber = new Subscriber(validFirstName, validLastName, invalidEmail)
-    }
-
-    def "Unsubscribe fails for invalid project code: #invalidProjectCode"() {
-        when:
-        subscribeProject.unsubscribe(validSubscriber, invalidProjectCode)
-        then:
-        thrown(IllegalArgumentException)
-        where:
-        invalidProjectCode << [null, "", "1234", "ZBCA"]
-    }
-
     def "Unsubscribe does not throw an IllegalArgumentException for valid arguments"() {
         when:
         subscribeProject.unsubscribe(validSubscriber, validProjectCode)
