@@ -50,7 +50,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
       
             connection.withCloseable { it ->
               try {
-                int subscriberId = getSubscriberId(subscriber).get()
+                int subscriberId = getSubscriberId(subscriber).orElseThrow({new DataSourceException("Could not find user in the database")})
                 addSubscription(it, subscriberId, projectCode)
                 connection.commit()
               } catch (Exception e) {
@@ -83,7 +83,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
       
             connection.withCloseable { it ->
               try {
-                int subscriberId = getSubscriberId(subscriber).get()
+                int subscriberId = getSubscriberId(subscriber).orElseThrow({new DataSourceException("Could not find user in the database")})
                 // action must only be taken if this subscriber exists
                 if(subscriberId > 0) {
                   removeSubscription(it, subscriberId, projectCode)
@@ -176,7 +176,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
         Connection connection = connectionProvider.connect()
 
         connection.withCloseable {
-            int subscriberId = getSubscriberId(subscriber).get()
+            int subscriberId = getSubscriberId(subscriber).orElseThrow({new DataSourceException("Could not find user in the database")})
 
             PreparedStatement statement = connection.prepareStatement(query)
             statement.setInt(1, subscriberId)
