@@ -49,8 +49,9 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
      */
     @Override
     void subscriptionFailed(Subscriber subscriber, String projectCode) {
+        //todo this message might not be meaningful to the user, e.g. if a person entry is missing
         String message = "An unexpected error occured while trying to subscribe to project ${projectCode}. " +
-                    "Please contact ${Constants.CONTACT_HELPDESK}."
+                    "${Constants.CONTACT_HELPDESK}."
         notificationService.publishFailure(message)
     }
     
@@ -78,8 +79,9 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
      */
     @Override
     void unsubscriptionFailed(Subscriber subscriber, String projectCode) {
+        //todo this message might not be meaningful to the user
         String message = "An unexpected error occured while trying to unsubscribe from project ${projectCode}. " +
-                    "Please contact ${Constants.CONTACT_HELPDESK}."
+                    "${Constants.CONTACT_HELPDESK}."
         notificationService.publishFailure(message)
     }
 }

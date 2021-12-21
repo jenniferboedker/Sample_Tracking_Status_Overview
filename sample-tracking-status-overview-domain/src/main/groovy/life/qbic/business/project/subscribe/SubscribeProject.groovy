@@ -26,14 +26,6 @@ class SubscribeProject implements SubscribeProjectInput {
     @Override
     void subscribe(Subscriber subscriber, String projectCode) {
         try {
-            InputValidator.validate(subscriber, projectCode)
-        } catch (ValidationException validationException) {
-            //todo this should never happen in production
-            //better: show notification to the user --> subscriptionFailed telling him to contact zendesk bzw this needs
-            //to be caught in the view otherwise
-            throw new IllegalArgumentException(validationException.getMessage())
-        }
-        try {
             dataSource.subscribeToProject(subscriber, projectCode)
             output.subscriptionAdded(projectCode)
         } catch (DataSourceException ignored) {
@@ -46,11 +38,6 @@ class SubscribeProject implements SubscribeProjectInput {
     @Override
     void unsubscribe(Subscriber subscriber, String projectCode) {
         try {
-            InputValidator.validate(subscriber, projectCode)
-        } catch (ValidationException validationException) {
-            throw new IllegalArgumentException(validationException.getMessage())
-        }
-        try {
             dataSource.unsubscribeFromProject(subscriber, projectCode)
             output.subscriptionRemoved(projectCode)
         } catch (DataSourceException dataSourceException) {
@@ -60,33 +47,5 @@ class SubscribeProject implements SubscribeProjectInput {
         }
     }
 
-    private static class InputValidator {
-        static void validate(Subscriber subscriber, String projectCode) throws ValidationException {
-            validateSubscriber.accept(subscriber)
-            projectCodeValidator.accept(projectCode)
-        }
-        private static Consumer<Subscriber> validateFirstName = {
-            Subscriber subscriber ->
-                if (!subscriber.firstName) throw new ValidationException(
-                        "Please provide a first name.")
-        }
-        private static Consumer<Subscriber> validateLastName = {
-            Subscriber subscriber ->
-                if (!subscriber.lastName) throw new ValidationException(
-                        "Please provide a first name.")
-        }
-        private static Consumer<Subscriber> validateTitle = {
-            Subscriber subscriber ->
-                if (!subscriber.title) throw new ValidationException(
-                        "Please provide a title.")
-        }
-        private static Consumer<Subscriber> validateEmail = {
-            Subscriber subscriber ->
-                if (!subscriber.email) throw new ValidationException("Please provide a first name.")
-        }
-        private static Consumer<Subscriber> validateSubscriber = validateFirstName.andThen(
-                validateLastName).andThen(validateEmail).andThen(validateTitle)
-        private static Consumer<String> projectCodeValidator = new ProjectCodeValidator()
-    }
 }
 
