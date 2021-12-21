@@ -5,13 +5,10 @@
     <parent>
         <artifactId>sample-tracking-status-overview</artifactId>
         <groupId>life.qbic</groupId>
-        <version>1.0.0-beta.7</version> <!-- <<QUBE_FORCE_BUMP>> -->
+        <version>1.0.0-beta.8</version> <!-- <<QUBE_FORCE_BUMP>> -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>war</packaging>
-    <properties>
-        <log4j.version>2.16.0</log4j.version>
-    </properties>
     <artifactId>sample-tracking-status-overview-app</artifactId>
     <name>The sample tracking status overview portlet</name>
     <url>http://github.com/qbicsoftware/sample-tracking-status-overview</url>
@@ -19,7 +16,7 @@
         <dependency>
             <groupId>life.qbic</groupId>
             <artifactId>sample-tracking-status-overview-domain</artifactId>
-            <version>1.0.0-beta.7</version> <!-- <<QUBE_FORCE_BUMP>> -->
+            <version>1.0.0-beta.8</version> <!-- <<QUBE_FORCE_BUMP>> -->
             <scope>compile</scope>
         </dependency>
         <dependency>
