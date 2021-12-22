@@ -4,7 +4,7 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-1.0.0-beta.8-SNAPSHOT (2021-12-21)
+1.0.0-beta.8 (2021-12-21)
 ---------------------------
 
 **Added**
@@ -19,10 +19,15 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * CVE-2021-45105
 
+* CVE-2021-33609
+
 **Dependencies**
 
 * ``org.apache.logging.log4j:log4j-core:2.16.0`` -> ``2.17.0``
+
 * ``org.apache.logging.log4j:log4j-api:2.16.0`` -> ``2.17.0``
+
+* ``com.vaadin:vaadin-bom:8.14.0`` -> ``8.14.1``
 
 1.0.0-beta.7 (2021-12-15)
 ---------------------------
@@ -36,6 +41,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 **Dependencies**
 
 * ``org.apache.logging.log4j:log4j-core:2.15.0`` -> ``2.16.0``
+
 * ``org.apache.logging.log4j:log4j-api:2.15.0`` -> ``2.16.0``
 
 1.0.0-beta.6 (2021-12-13)
@@ -50,6 +56,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 **Dependencies**
 
 * ``org.apache.logging.log4j:log4j-core:2.13.2`` -> ``2.15.0``
+
 * ``org.apache.logging.log4j:log4j-api:2.13.2`` -> ``2.15.0``
 
 **Deprecated**
