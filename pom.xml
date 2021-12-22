@@ -10,7 +10,7 @@
   </modules>
   <artifactId>sample-tracking-status-overview</artifactId>
   <groupId>life.qbic</groupId>
-  <version>1.0.0-beta.8</version> <!-- <<QUBE_FORCE_BUMP>> -->
+  <version>1.0.0-beta.9-SNAPSHOT</version> <!-- <<QUBE_FORCE_BUMP>> -->
   <name>Sample Tracking Status Overview</name>
   <url>https://github.com/qbicsoftware/sample-tracking-status-overview</url>
   <description>Gives a visual overview of sample statuses</description>
