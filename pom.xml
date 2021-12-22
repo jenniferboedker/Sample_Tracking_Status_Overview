@@ -2,7 +2,7 @@
 <project
   xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <modules>
     <module>sample-tracking-status-overview-app</module>
@@ -10,9 +10,9 @@
   </modules>
   <artifactId>sample-tracking-status-overview</artifactId>
   <groupId>life.qbic</groupId>
-  <version>1.0.0-beta.7</version> <!-- <<QUBE_FORCE_BUMP>> -->
+  <version>1.0.0-beta.8</version> <!-- <<QUBE_FORCE_BUMP>> -->
   <name>Sample Tracking Status Overview</name>
-  <url>http://github.com/qbicsoftware/sample-tracking-status-overview</url>
+  <url>https://github.com/qbicsoftware/sample-tracking-status-overview</url>
   <description>Gives a visual overview of sample statuses</description>
   <packaging>pom</packaging>
   <!-- we only need to tell maven where to find our parent pom and other QBiC dependencies -->
@@ -23,7 +23,9 @@
 
     <groovy.version>3.0.8</groovy.version>
 
-    <vaadin.version>8.14.0</vaadin.version>
+    <log4j.version>2.17.0</log4j.version>
+
+    <vaadin.version>8.14.1</vaadin.version>
     <vaadin.plugin.version>8.14.0</vaadin.plugin.version>
   </properties>
 
@@ -136,12 +138,12 @@
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-api</artifactId>
-        <version>2.16.0</version>
+        <version>${log4j.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-core</artifactId>
-        <version>2.16.0</version>
+        <version>${log4j.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
