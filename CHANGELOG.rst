@@ -4,8 +4,8 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-1.0.0-beta.8-SNAPSHOT (2021-12-08)
-----------------------------------
+1.0.0-beta.8-SNAPSHOT (2021-12-21)
+---------------------------
 
 **Added**
 
@@ -17,9 +17,12 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * Manifest file download is reset correctly after project selection change (`#169 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/169>`_)
 
+* CVE-2021-45105
+
 **Dependencies**
 
-**Deprecated**
+* ``org.apache.logging.log4j:log4j-core:2.16.0`` -> ``2.17.0``
+* ``org.apache.logging.log4j:log4j-api:2.16.0`` -> ``2.17.0``
 
 1.0.0-beta.7 (2021-12-15)
 ---------------------------
