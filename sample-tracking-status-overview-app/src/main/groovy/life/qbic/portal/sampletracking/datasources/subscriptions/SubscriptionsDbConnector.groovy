@@ -127,9 +127,6 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
     }
     
     private void addSubscription(Connection connection, int subscriberId, String projectCode) {
-        if(subscriberId == -1){
-            throw new DataSourceException("Subscriber entry is not in the database.")
-        }
         if (!projectAlreadySubscribed(subscriberId, projectCode)) {
             String query = "INSERT INTO subscriptions (project, user_id) VALUES(?, ?)"
 
