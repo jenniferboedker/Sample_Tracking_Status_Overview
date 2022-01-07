@@ -4,6 +4,17 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
+1.0.0-beta.10-SNAPSHOT (2022-01-07)
+-----------------------------------
+
+**Added**
+
+**Fixed**
+
+**Dependencies**
+
+**Deprecated**
+
 1.0.0-beta.9 (2022-01-04)
 ---------------------------
 
