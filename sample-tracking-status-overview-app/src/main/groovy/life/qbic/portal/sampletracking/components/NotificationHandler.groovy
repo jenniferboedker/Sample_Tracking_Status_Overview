@@ -22,7 +22,7 @@ class NotificationHandler {
         subscribeToService()
     }
 
-    private void showMessage(String message, Type type) {
+    private static void showMessage(String message, Type type) {
         StyledNotification notification = new StyledNotification(message, type)
         if (Page.getCurrent()) {
             notification.show(Page.getCurrent())
