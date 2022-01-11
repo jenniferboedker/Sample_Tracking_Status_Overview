@@ -9,6 +9,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Added**
 
+* Changed notification style (#191)
+
 **Fixed**
 
 **Dependencies**
