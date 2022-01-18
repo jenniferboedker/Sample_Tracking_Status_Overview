@@ -4,6 +4,19 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
+1.0.0-beta.10 (2022-01-18)
+---------------------------
+
+**Added**
+
+**Fixed**
+
+* Use user id instead of email field to find subscriber in the database (#192)
+
+**Dependencies**
+
+**Deprecated**
+
 1.0.0-beta.9 (2022-01-04)
 ---------------------------
 

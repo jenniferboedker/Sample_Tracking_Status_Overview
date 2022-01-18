@@ -106,7 +106,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
     }
     
     private Optional<Integer> getSubscriberId(Subscriber subscriber) {
-        String query = "SELECT id FROM person WHERE first_name = ? AND last_name = ? AND title = ? AND email = ?"
+        String query = "SELECT id FROM person WHERE first_name = ? AND last_name = ? AND title = ? AND user_id = ?"
 
         Optional<Integer> personId = Optional.empty()
         Connection connection = connectionProvider.connect()
