@@ -23,7 +23,7 @@ class NotificationHandler {
     }
 
     private static void showMessage(String message, Type type) {
-        Notification notification = new Notification(message, type)
+        StyledNotification notification = new StyledNotification(message, type)
         if (Page.getCurrent()) {
             notification.show(Page.getCurrent())
         } else {
