@@ -157,8 +157,8 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         button.setIcon(VaadinIcons.QUESTION_CIRCLE)
         button.setStyleName("round-button")
 
-        button.setDescription("A manifest is a text file used by a client application (e.g. <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a>) to download selected files of interest. <br>" +
-                "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a> to download the data.", ContentMode.HTML)
+        button.setDescription("A manifest is a text file with sample codes used by our client application to download the data attached to the defined samples. <br>" +
+                "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">"+ VaadinIcons.EXTERNAL_LINK.getHtml() +" qpostman</a> to download the sample data.", ContentMode.HTML)
 
         button.addClickListener({
             getUI().getPage().open(
