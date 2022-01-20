@@ -37,7 +37,7 @@ class StatusOverviewApp extends QBiCPortletUI {
         // The constructor MUST NOT fail since the user does not get any feedback otherwise.
         try {
             PortalUser user = loadUser()
-            log.info("Loading portlet for user: $user.userId - $user.authProviderId")
+            log.info("Loading portlet for user: $user.userId - $user.firstName $user.lastName ($user.authProviderId)")
             dependencyManager = new DependencyManager(user)
             notificationCenter = dependencyManager.getNotificationCenter()
         } catch (Exception e) {
