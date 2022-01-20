@@ -263,11 +263,11 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     private void fillProjectsGrid() {
         projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it)}, new ComponentRenderer())
                 .setCaption("Subscription Status").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
+        projectGrid.addColumn({ it.title })
+                .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ProjectSummary project -> project.title})
         projectGrid.addColumn({ it.code })
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
                 MAX_CODE_COLUMN_WIDTH)
-        projectGrid.addColumn({ it.title })
-                .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ProjectSummary project -> project.title})
 
         projectGrid.addColumn({it.samplesReceived}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesReceived)})
                 .setCaption("Samples Received").setId("SamplesReceived")

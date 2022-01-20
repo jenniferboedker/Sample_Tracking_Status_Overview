@@ -12,7 +12,6 @@ import life.qbic.portal.sampletracking.communication.notification.NotificationSe
 import life.qbic.portal.sampletracking.components.HasHotbar
 import life.qbic.portal.sampletracking.components.HasTitle
 import life.qbic.portal.sampletracking.components.Resettable
-import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 
 /**
@@ -52,9 +51,9 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle, 
     private static Grid<Sample> createSamplesGrid(Collection<Sample> samples) {
         Grid<Sample> samplesGrid = new Grid<>()
         ListDataProvider<Sample> dataProvider = ListDataProvider.ofCollection(samples)
-        samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
         samplesGrid.addColumn(Sample::getName).setCaption("Sample Name").setId("SampleName")
         samplesGrid.addColumn(Sample::getStatus).setCaption("Sample Status").setId("SampleStatus").setStyleGenerator({Sample sample -> determineColor(sample.status)})
+        samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(dataProvider)
         samplesGrid.setHeightMode(HeightMode.ROW)
