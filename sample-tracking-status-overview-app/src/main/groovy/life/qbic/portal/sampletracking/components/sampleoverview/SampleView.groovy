@@ -24,7 +24,7 @@ class SampleView extends SampleDesign{
         createSamplesGrid()
     }
 
-    private void addClickListener() {
+    private void activateViewToggle() {
         this.projectsButton.addClickListener({
             viewModel.projectViewEnabled = true
             viewModel.sampleViewEnabled = false

@@ -38,14 +38,10 @@ class ViewModel {
 
     private void fetchProjectData() {
         projectOverviews.clear()
-        projectResourceService.iterator().each { Project project ->
-            addProject(project)
-        }
+        projectResourceService.iterator().forEach(this::addProject)
         Collections.sort(projectOverviews, new LastChangedComparator(LastChangedComparator.SortOrder.DESCENDING))
 
-        statusCountService.iterator().each { StatusCount statusCount ->
-            updateStatusCount(statusCount)
-        }
+        statusCountService.iterator().forEach(this::updateStatusCount)
     }
 
     private void subscribeToResources() {
