@@ -18,6 +18,8 @@ class ViewModel {
     @Bindable List<ProjectSummary> projectOverviews = []
     @Bindable List<Sample> samples = []
     @Bindable ProjectSummary selectedProject
+    @Bindable String generatedManifest
+
 
     private final ResourceService<Project> projectResourceService
     private final ResourceService<StatusCount> statusCountService
@@ -33,6 +35,7 @@ class ViewModel {
 
         fetchProjectData()
         subscribeToResources()
+        bindManifestToSelection()
     }
 
     private void fetchProjectData() {
@@ -118,4 +121,24 @@ class ViewModel {
         return projectSummary
     }
 
+    /**
+     * Makes sure that the manifest is reset when a selected project is removed
+     */
+    private void bindManifestToSelection() {
+        addPropertyChangeListener("selectedProject", {
+            ProjectSummary newValue = it.newValue as ProjectSummary
+            if (newValue == null) {
+                setGeneratedManifest(null)
+            } else {
+                if (newValue.sampleDataAvailable.passingSamples < 1) {
+                    setGeneratedManifest(null)
+                }
+            }
+        })
+    }
+
+    InputStream getManifestInputStream() {
+        InputStream result = new ByteArrayInputStream(generatedManifest.getBytes())
+        return result
+    }
 }

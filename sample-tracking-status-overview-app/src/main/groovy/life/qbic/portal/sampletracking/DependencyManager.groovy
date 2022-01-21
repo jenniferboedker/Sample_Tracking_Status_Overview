@@ -159,7 +159,7 @@ class DependencyManager {
         /// vaadin designer test start
         ViewModel viewModel = new ViewModel(projectResourceService,statusCountService)
         SampleView sampleView = new SampleView(viewModel,notificationService)
-        ProjectView projectView = new ProjectView(viewModel, setupSubscribeProjectUseCase(), notificationService, subscriptionUser)
+        ProjectView projectView = new ProjectView(viewModel, setupSubscribeProjectUseCase(), notificationService, subscriptionUser, null)
         SampleOverviewController sampleOverviewController = setupProjectSamplesUseCase(sampleView.getPresenter())
 
         MainPage mainPage = new MainPage(projectView,sampleView,viewModel,sampleOverviewController)

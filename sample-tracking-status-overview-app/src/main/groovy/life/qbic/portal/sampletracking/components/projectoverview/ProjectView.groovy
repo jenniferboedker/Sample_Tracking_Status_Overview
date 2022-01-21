@@ -3,12 +3,20 @@ package life.qbic.portal.sampletracking.components.projectoverview
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
+import com.vaadin.icons.VaadinIcons
+import com.vaadin.server.FileDownloader
+import com.vaadin.server.StreamResource
+import com.vaadin.ui.Button
 import com.vaadin.ui.CheckBox
+import com.vaadin.ui.Component
 import com.vaadin.ui.renderers.ComponentRenderer
 import com.vaadin.ui.renderers.Renderer
+import groovy.util.logging.Log4j2
 import life.qbic.business.project.subscribe.Subscriber
+import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.ViewModel
+import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectController
@@ -16,20 +24,25 @@ import life.qbic.portal.sampletracking.components.projectoverview.subscribe.Subs
 
 import java.util.function.Consumer
 
+@Log4j2
 class ProjectView extends ProjectDesign{
 
     private final ViewModel viewModel
+    private FileDownloader fileDownloader
+    private final DownloadProjectController downloadProjectController
     final static int MAX_CODE_COLUMN_WIDTH = 400
     private final SubscriptionCheckboxFactory subscriptionCheckboxFactory
 
 
-    ProjectView(ViewModel viewModel, SubscribeProjectController subscribeProjectController, NotificationService notificationService, Subscriber subscriber) {
+    ProjectView(ViewModel viewModel, SubscribeProjectController subscribeProjectController, NotificationService notificationService, Subscriber subscriber, DownloadProjectController downloadProjectController) {
         super()
         this.viewModel = viewModel
         this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, subscriber,notificationService)
-
+        this.downloadProjectController = downloadProjectController
         bindData()
         addClickListener()
+        setupDownloadButton()
+        bindManifestToProjectSelection()
     }
 
     /**
@@ -48,6 +61,10 @@ class ProjectView extends ProjectDesign{
         projectGrid.getColumn("sampleDataAvailable").setExpandRatio(1)setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.sampleDataAvailable)})
 
         refreshDataProvider()
+    }
+
+    private void bindManifestToProjectSelection() {
+        viewModel.addPropertyChangeListener("selectedProject", { tryToDownloadManifest() })
     }
 
     private void refreshDataProvider() {
@@ -107,6 +124,58 @@ class ProjectView extends ProjectDesign{
             viewModel.projectViewEnabled = false
         })
 
+    }
+
+    private void setupDownloadButton() {
+        downloadButton.setIcon(VaadinIcons.DOWNLOAD)
+        viewModel.addPropertyChangeListener("generatedManifest", {
+            if (isDownloadAvailable()) {
+                this.fileDownloader = new FileDownloader(new StreamResource({viewModel.getManifestInputStream()}, "manifest.txt"))
+                this.fileDownloader.extend(downloadButton)
+            } else {
+                if (this.fileDownloader) {
+                    if (downloadButton.extensions.contains(fileDownloader)) {
+                        downloadButton.removeExtension(this.fileDownloader)
+                    }
+                }
+            }
+        })
+        enableWhenDownloadIsAvailable(downloadButton)
+    }
+
+    private void tryToDownloadManifest() {
+        Optional<ProjectSummary> selectedSummary = Optional.empty()
+        try {
+            Optional<ProjectSummary> downloadableProject = Optional.ofNullable(viewModel.selectedProject).filter(
+                    {
+                        it.sampleDataAvailable.passingSamples > 0
+                    })
+            downloadableProject.ifPresent({
+                String projectCode = it.getCode()
+                downloadProjectController.downloadProject(projectCode)
+            })
+        } catch (IllegalArgumentException illegalArgument ) {
+            String projectCode = selectedSummary.map(ProjectSummary::getCode).orElse(
+                    "No project selected")
+            //notificationService.publishFailure("Manifest Download failed for project ${projectCode}. ${Constants.CONTACT_HELPDESK}")
+            log.error "Manifest Download failed due to: ${illegalArgument.getMessage()}"
+        } catch (Exception exception ) {
+            //notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+            log.error "An error occured whily trying to download ${selectedSummary}"
+            log.error "Manifest Download failed due to: ${exception.getMessage()}"
+        }
+    }
+
+    private void enableWhenDownloadIsAvailable(Component component) {
+        component.enabled = isDownloadAvailable()
+        viewModel.addPropertyChangeListener("generatedManifest") {
+            component.enabled = isDownloadAvailable()
+        }
+    }
+
+    private boolean isDownloadAvailable() {
+        boolean isAvailable = viewModel.generatedManifest as boolean
+        return isAvailable
     }
 
     /**

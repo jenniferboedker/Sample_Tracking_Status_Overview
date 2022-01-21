@@ -26,6 +26,7 @@ public class ProjectDesign extends VerticalLayout {
     protected HorizontalLayout hotbarLayout;
     protected TextField searchField;
     protected ComboBox sort;
+    protected Button downloadButton;
     protected Button projectsButton;
     protected Button samplesButton;
     protected Grid<ProjectSummary> projectGrid;
