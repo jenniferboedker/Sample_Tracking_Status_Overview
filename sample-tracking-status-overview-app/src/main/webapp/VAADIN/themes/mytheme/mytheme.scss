@@ -39,6 +39,10 @@
   /* Include all the styles from the valo theme */
   @include valo;
 
+  .v-grid-cell.header-with-tooltip {
+    cursor: help;
+  }
+
   .v-grid-cell.status-completed {
     background-color: #31c44a;
     text-align: center;

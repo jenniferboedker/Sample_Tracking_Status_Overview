@@ -12,6 +12,7 @@ import com.vaadin.shared.ui.MarginInfo
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column
+import com.vaadin.ui.components.grid.HeaderRow
 import com.vaadin.ui.renderers.ComponentRenderer
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
@@ -261,6 +262,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     }
 
     private void fillProjectsGrid() {
+
         projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it)}, new ComponentRenderer())
                 .setCaption("Subscription Status").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
         projectGrid.addColumn({ it.code })
@@ -290,6 +292,22 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         projectGrid.getColumn("SampleDataAvailable").setExpandRatio(1)
 
         projectGrid.setHeightMode(HeightMode.ROW)
+
+        HeaderRow headerRow = projectGrid.getDefaultHeaderRow()
+        headerRow.getCell("Subscription").setStyleName("header-with-tooltip")
+        headerRow.getCell("Subscription").setDescription("Select a project to get status updates per email.")
+
+        headerRow.getCell("SamplesReceived").setStyleName("header-with-tooltip")
+        headerRow.getCell("SamplesReceived").setDescription("Number of samples that arrived in the processing facility.")
+
+        headerRow.getCell("SamplesPassedQc").setStyleName("header-with-tooltip")
+        headerRow.getCell("SamplesPassedQc").setDescription("Number of samples that passed quality control.")
+
+        headerRow.getCell("LibraryPrepFinished").setStyleName("header-with-tooltip")
+        headerRow.getCell("LibraryPrepFinished").setDescription("Number of samples where library prep has been finished.")
+
+        headerRow.getCell("SampleDataAvailable").setStyleName("header-with-tooltip")
+        headerRow.getCell("SampleDataAvailable").setDescription("Number of available raw datasets.")
 
         // remove manual sorting - any sorting in the code should probably done before disabling it
         for (Column col : projectGrid.getColumns()) {
