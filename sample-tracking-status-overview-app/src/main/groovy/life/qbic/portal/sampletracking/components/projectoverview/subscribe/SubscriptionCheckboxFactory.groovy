@@ -37,7 +37,6 @@ class SubscriptionCheckboxFactory {
      * @return A checkbox which is already preconfigured with listeners and bound to the subscribe use case
      */
     CheckBox getSubscriptionCheckbox(ProjectSummary project){
-        println(project.toString())
 
         if(projectCodeToCheckBox.containsKey(project.code)){
             return projectCodeToCheckBox.get(project.code)
