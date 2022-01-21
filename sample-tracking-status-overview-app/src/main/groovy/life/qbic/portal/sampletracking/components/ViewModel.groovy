@@ -1,6 +1,7 @@
 package life.qbic.portal.sampletracking.components
 
 import groovy.beans.Bindable
+import groovy.util.logging.Log4j2
 import life.qbic.business.project.Project
 import life.qbic.business.samples.Sample
 import life.qbic.business.samples.count.StatusCount
@@ -10,11 +11,10 @@ import life.qbic.portal.sampletracking.components.projectoverview.LastChangedCom
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary
 import life.qbic.portal.sampletracking.resource.ResourceService
 
-
+@Log4j2
 class ViewModel {
 
-    @Bindable boolean projectViewEnabled
-    @Bindable boolean sampleViewEnabled
+    @Bindable Boolean projectViewEnabled
     @Bindable List<ProjectSummary> projectOverviews = []
     @Bindable List<Sample> samples = []
     @Bindable ProjectSummary selectedProject
@@ -29,8 +29,7 @@ class ViewModel {
         this.projectResourceService = projectResourceService
         this.statusCountService = statusCountService
 
-        projectViewEnabled = false
-        sampleViewEnabled = false
+        projectViewEnabled = true
 
         fetchProjectData()
         subscribeToResources()
@@ -38,10 +37,11 @@ class ViewModel {
 
     private void fetchProjectData() {
         projectOverviews.clear()
-        projectResourceService.iterator().forEach(this::addProject)
+
+        projectResourceService.iterator().each(this::addProject)
         Collections.sort(projectOverviews, new LastChangedComparator(LastChangedComparator.SortOrder.DESCENDING))
 
-        statusCountService.iterator().forEach(this::updateStatusCount)
+        statusCountService.iterator().each(this::updateStatusCount)
     }
 
     private void subscribeToResources() {

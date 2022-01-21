@@ -34,12 +34,9 @@ class MainPage extends VerticalLayout {
             }
         })
 
-        //todo here the switching does not work properly does not work on the first click when clicking on the sample button
-        viewModel.addPropertyChangeListener("sampleViewEnabled",{
-            sampleView.setVisible(it.newValue as boolean)
-        })
         viewModel.addPropertyChangeListener("projectViewEnabled",{
-            projectView.setVisible(it.newValue as boolean)
+            projectView.setVisible(viewModel.projectViewEnabled)
+            sampleView.setVisible(!viewModel.projectViewEnabled)
         })
     }
 }

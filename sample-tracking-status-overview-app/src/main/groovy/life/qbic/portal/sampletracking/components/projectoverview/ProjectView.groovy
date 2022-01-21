@@ -105,7 +105,6 @@ class ProjectView extends ProjectDesign{
 
         this.samplesButton.addClickListener({
             viewModel.projectViewEnabled = false
-            viewModel.sampleViewEnabled = true
         })
 
     }

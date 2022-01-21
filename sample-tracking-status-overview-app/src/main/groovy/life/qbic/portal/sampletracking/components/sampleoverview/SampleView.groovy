@@ -20,21 +20,20 @@ class SampleView extends SampleDesign{
         this.presenter = new Presenter(notificationService, viewModel)
 
 
-        addClickListener()
+        activateViewToggle()
         createSamplesGrid()
     }
 
     private void activateViewToggle() {
         this.projectsButton.addClickListener({
             viewModel.projectViewEnabled = true
-            viewModel.sampleViewEnabled = false
         })
 
-        viewModel.addPropertyChangeListener({
-            if(viewModel.sampleViewEnabled){
-                this.projectsButton.setEnabled(true)
-            }else{
+        viewModel.addPropertyChangeListener("projectViewEnabled",{
+            if(viewModel.projectViewEnabled){
                 this.projectsButton.setEnabled(false)
+            }else{
+                this.projectsButton.setEnabled(true)
             }
         })
     }
