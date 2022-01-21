@@ -295,7 +295,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
 
         HeaderRow headerRow = projectGrid.getDefaultHeaderRow()
         headerRow.getCell("Subscription").setStyleName("header-with-tooltip")
-        headerRow.getCell("Subscription").setDescription("Select a project you want to get notified via email and get daily status updates.")
+        headerRow.getCell("Subscription").setDescription("Select a project to get status updates per email.")
 
         headerRow.getCell("SamplesReceived").setStyleName("header-with-tooltip")
         headerRow.getCell("SamplesReceived").setDescription("Number of samples that arrived in the processing facility.")
