@@ -44,9 +44,15 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle, 
 
         this.samplesGrid = createSamplesGrid(viewModel.samples)
         samplesGrid.setSizeFull()
-        this.statusComboBox = new ComboBox<>("Status", [Status.DATA_AVAILABLE, Status.SAMPLE_RECEIVED, Status.SAMPLE_QC_FAIL])
+        this.statusComboBox = new ComboBox<>("Status", Status.values().toList())
+        statusComboBox.setItemCaptionGenerator({it.toString()})
+        statusComboBox.setEmptySelectionCaption("All statuses")
         statusComboBox.addValueChangeListener({
-            sampleFilter.withStatus(it.getValue().toString())
+            if (it.getValue()) {
+                sampleFilter.withStatus(it.getValue().toString())
+            } else {
+                sampleFilter.clearStatus()
+            }
             samplesGrid.dataProvider.refreshAll()
         })
         this.addComponents(statusComboBox, samplesGrid)

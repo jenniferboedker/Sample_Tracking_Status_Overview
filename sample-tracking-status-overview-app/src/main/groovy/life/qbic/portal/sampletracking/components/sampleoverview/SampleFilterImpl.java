@@ -34,4 +34,11 @@ public class SampleFilterImpl implements SampleFilter {
   public Predicate<? extends Sample> asPredicate() {
     return it -> allowedStatuses.isEmpty() || allowedStatuses.contains(it.getStatus().toString());
   }
+
+
+  @Override
+  public SampleFilter clearStatus() {
+    allowedStatuses.clear();
+    return this;
+  }
 }

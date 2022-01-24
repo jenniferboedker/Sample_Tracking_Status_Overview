@@ -33,4 +33,10 @@ public interface SampleFilter {
    */
   Predicate<? extends Sample> asPredicate();
 
+  /**
+   * Clears the current configuration regarding sample status.
+   * @return the sample filter with no configured status
+   */
+  SampleFilter clearStatus();
+
 }
