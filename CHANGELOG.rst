@@ -11,6 +11,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Fixed**
 
+* Update overall UI design (#198)
+
 **Dependencies**
 
 **Deprecated**
