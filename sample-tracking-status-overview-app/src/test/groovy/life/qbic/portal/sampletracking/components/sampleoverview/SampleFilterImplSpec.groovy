@@ -26,7 +26,6 @@ class SampleFilterImplSpec extends Specification {
     Sample sampleWithCond1 = new Sample("QABCD001A0", "test sample", Status.DATA_AVAILABLE)
     Sample sampleWithCond2 = new Sample("QABCD001A0", "test sample", Status.SAMPLE_RECEIVED)
 
-    sampleFilter.asPredicate().test(sampleWithCond1)
     then: "only samples matching the changed status pass"
     !sampleFilter.asPredicate().test(sampleWithCond1)
     sampleFilter.asPredicate().test(sampleWithCond2)
