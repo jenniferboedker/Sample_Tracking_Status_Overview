@@ -15,7 +15,7 @@ import life.qbic.portal.sampletracking.resource.ResourceService
 class ViewModel {
 
     @Bindable Boolean projectViewEnabled
-    @Bindable List<ProjectSummary> projectOverviews = []
+    @Bindable List<ProjectSummary> projectSummaries = []
     @Bindable List<Sample> samples = []
     @Bindable ProjectSummary selectedProject
     @Bindable String generatedManifest
@@ -39,10 +39,10 @@ class ViewModel {
     }
 
     private void fetchProjectData() {
-        projectOverviews.clear()
+        projectSummaries.clear()
 
         projectResourceService.iterator().each(this::addProject)
-        Collections.sort(projectOverviews, new LastChangedComparator(LastChangedComparator.SortOrder.DESCENDING))
+        Collections.sort(projectSummaries, new LastChangedComparator(LastChangedComparator.SortOrder.DESCENDING))
 
         statusCountService.iterator().each(this::updateStatusCount)
     }
@@ -75,17 +75,17 @@ class ViewModel {
         projectSummary.sampleDataAvailable.passingSamples = statusCount.dataAvailable
 
         projectSummary.totalSampleCount = statusCount.samplesInProject
-        this.projectOverviews[this.projectOverviews.indexOf(projectSummary)] = projectSummary
+        this.projectSummaries[this.projectSummaries.indexOf(projectSummary)] = projectSummary
     }
 
     private void updateProjectSummary(ProjectSummary projectSummary, Project project) {
         projectSummary.hasSubscription = project.hasSubscription
-        this.projectOverviews[this.projectOverviews.indexOf(projectSummary)] = projectSummary
+        this.projectSummaries[this.projectSummaries.indexOf(projectSummary)] = projectSummary
     }
 
     private void addProject(Project project) {
         ProjectSummary projectSummary = ProjectSummary.of(project)
-        projectOverviews.add(projectSummary)
+        projectSummaries.add(projectSummary)
     }
 
     private void updateProject(Project project) {
@@ -101,7 +101,7 @@ class ViewModel {
 
     private void removeProject(Project project) {
         ProjectSummary projectOverview = getProjectSummary(project.code)
-        projectOverviews.remove(projectOverview)
+        projectSummaries.remove(projectOverview)
     }
 
     /**
@@ -110,7 +110,7 @@ class ViewModel {
      * @return The project summary for the respective code
      */
     protected ProjectSummary getProjectSummary(String projectCode) {
-        List<ProjectSummary> projectOverviews = projectOverviews.findAll { it ->
+        List<ProjectSummary> projectOverviews = projectSummaries.findAll { it ->
             it.code == projectCode
         }
         if (projectOverviews.size() > 1) {

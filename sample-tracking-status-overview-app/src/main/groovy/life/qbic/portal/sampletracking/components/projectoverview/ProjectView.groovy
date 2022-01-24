@@ -8,12 +8,9 @@ import com.vaadin.server.ClientConnector
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
 import com.vaadin.shared.ui.grid.HeightMode
-import com.vaadin.ui.Button
-import com.vaadin.ui.CheckBox
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
 import com.vaadin.ui.renderers.ComponentRenderer
-import com.vaadin.ui.renderers.Renderer
 import groovy.util.logging.Log4j2
 import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.portal.sampletracking.Constants
@@ -96,7 +93,7 @@ class ProjectView extends ProjectDesign{
     }
 
     private void refreshDataProvider() {
-        DataProvider dataProvider = new ListDataProvider(viewModel.projectOverviews)
+        DataProvider dataProvider = new ListDataProvider(viewModel.projectSummaries)
         projectGrid.setDataProvider(dataProvider)
 
         filterEmptyProjects()
