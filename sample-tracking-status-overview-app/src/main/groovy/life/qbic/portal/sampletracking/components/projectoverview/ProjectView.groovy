@@ -6,9 +6,11 @@ import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
+import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Button
 import com.vaadin.ui.CheckBox
 import com.vaadin.ui.Component
+import com.vaadin.ui.Grid
 import com.vaadin.ui.renderers.ComponentRenderer
 import com.vaadin.ui.renderers.Renderer
 import groovy.util.logging.Log4j2
@@ -52,18 +54,40 @@ class ProjectView extends ProjectDesign{
      * NO LAYOUTING HERE
      */
     private void bindData(){
-        projectGrid.getColumn("hasSubscription").setRenderer({ new CheckBox("",it as Boolean)}, new ComponentRenderer())
-                .setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
+        projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it)}, new ComponentRenderer())
+                .setCaption("Subscription Status").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
+        projectGrid.addColumn({ it.code })
+                .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
+                MAX_CODE_COLUMN_WIDTH)
+        projectGrid.addColumn({ it.title })
+                .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ProjectSummary project -> project.title})
 
-        projectGrid.getColumn("title").setMaximumWidth(800)
-        projectGrid.getColumn("code").setMaximumWidth(MAX_CODE_COLUMN_WIDTH)
+        projectGrid.addColumn({it.samplesReceived}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesReceived)})
+                .setCaption("Samples Received").setId("SamplesReceived")
 
-        projectGrid.getColumn("samplesReceived").setExpandRatio(1).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesReceived)})
-        projectGrid.getColumn("samplesQc").setExpandRatio(1).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesQc)})
-        projectGrid.getColumn("samplesLibraryPrepFinished").setExpandRatio(1).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesLibraryPrepFinished)})
-        projectGrid.getColumn("sampleDataAvailable").setExpandRatio(1)setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.sampleDataAvailable)})
+        projectGrid.addColumn({it.samplesQc}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesQc)})
+                .setCaption("Samples Passed QC").setId("SamplesPassedQc")
 
+        projectGrid.addColumn({it.samplesLibraryPrepFinished}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesLibraryPrepFinished)})
+                .setCaption("Library Prep Finished").setId("LibraryPrepFinished")
+
+        projectGrid.addColumn({it.sampleDataAvailable}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.sampleDataAvailable)})
+                .setCaption("Data Available").setId("SampleDataAvailable")
         refreshDataProvider()
+        //specify size of grid and layout
+        projectGrid.setWidthFull()
+        projectGrid.getColumn("ProjectTitle").setMaximumWidth(800)
+        projectGrid.getColumn("SamplesReceived").setExpandRatio(1)
+        projectGrid.getColumn("SamplesPassedQc").setExpandRatio(1)
+        projectGrid.getColumn("LibraryPrepFinished").setExpandRatio(1)
+        projectGrid.getColumn("SampleDataAvailable").setExpandRatio(1)
+
+        projectGrid.setHeightMode(HeightMode.ROW)
+
+        // remove manual sorting - any sorting in the code should probably done before disabling it
+        for (Grid.Column col : projectGrid.getColumns()) {
+            col.setSortable(false)
+        }
     }
 
     private void bindManifestToProjectSelection() {
