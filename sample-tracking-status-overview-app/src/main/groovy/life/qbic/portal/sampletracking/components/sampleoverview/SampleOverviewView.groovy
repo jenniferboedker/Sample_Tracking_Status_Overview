@@ -2,6 +2,7 @@ package life.qbic.portal.sampletracking.components.sampleoverview
 
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.shared.ui.grid.HeightMode
+import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid
 import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.VerticalLayout
@@ -12,7 +13,6 @@ import life.qbic.portal.sampletracking.communication.notification.NotificationSe
 import life.qbic.portal.sampletracking.components.HasHotbar
 import life.qbic.portal.sampletracking.components.HasTitle
 import life.qbic.portal.sampletracking.components.Resettable
-import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 
 /**
@@ -26,8 +26,10 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle, 
 
     private final ViewModel viewModel
     private final Presenter presenter
+    private ComboBox<Status> statusComboBox
     private Grid<Sample> samplesGrid
     private final HorizontalLayout hotbar = new HorizontalLayout()
+    static private sampleFilter = new SampleFilterImpl()
 
     SampleOverviewView(NotificationService notificationService) {
         this.viewModel = new ViewModel()
@@ -42,7 +44,12 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle, 
 
         this.samplesGrid = createSamplesGrid(viewModel.samples)
         samplesGrid.setSizeFull()
-        this.addComponents(samplesGrid)
+        this.statusComboBox = new ComboBox<>("Status", [Status.DATA_AVAILABLE, Status.SAMPLE_RECEIVED, Status.SAMPLE_QC_FAIL])
+        statusComboBox.addValueChangeListener({
+            sampleFilter.withStatus(it.getValue().toString())
+            samplesGrid.dataProvider.refreshAll()
+        })
+        this.addComponents(statusComboBox, samplesGrid)
     }
 
     Presenter getPresenter() {
@@ -54,9 +61,12 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle, 
         ListDataProvider<Sample> dataProvider = ListDataProvider.ofCollection(samples)
         samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
         samplesGrid.addColumn(Sample::getName).setCaption("Sample Name").setId("SampleName")
-        samplesGrid.addColumn(Sample::getStatus).setCaption("Sample Status").setId("SampleStatus").setStyleGenerator({Sample sample -> determineColor(sample.status)})
+        samplesGrid.addColumn(Sample::getStatus).setCaption("Sample Status").setId("SampleStatus")
+                .setStyleGenerator({Sample sample -> determineColor(sample.status)})
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(dataProvider)
+        dataProvider.addFilter({ sampleFilter.asPredicate().test(it) })
+        dataProvider.refreshAll()
         samplesGrid.setHeightMode(HeightMode.ROW)
         return samplesGrid
     }

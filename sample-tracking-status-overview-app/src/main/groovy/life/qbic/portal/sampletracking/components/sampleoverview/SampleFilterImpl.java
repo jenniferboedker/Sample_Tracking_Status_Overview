@@ -25,12 +25,13 @@ public class SampleFilterImpl implements SampleFilter {
 
   @Override
   public SampleFilter withStatus(String status) {
+    allowedStatuses.clear();
     allowedStatuses.add(status);
     return this;
   }
 
   @Override
   public Predicate<? extends Sample> asPredicate() {
-    return it -> allowedStatuses.contains(it.getStatus().toString());
+    return it -> allowedStatuses.isEmpty() || allowedStatuses.contains(it.getStatus().toString());
   }
 }

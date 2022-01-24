@@ -19,7 +19,7 @@ import life.qbic.business.samples.Sample;
 public interface SampleFilter {
 
   /**
-   * Configures the filter to pass samples with the specific status
+   * Configures the filter to pass samples with the specific status only.
    * @param status the String representation of the Status
    * @return a SampleFilter configured to pass the provided status
    * @since 1.0.0
