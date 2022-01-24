@@ -183,7 +183,6 @@ class ProjectView extends ProjectDesign{
                     {
                         it.sampleDataAvailable.passingSamples > 0
                     })
-            println(downloadableProject)
             downloadableProject.ifPresent({
                 String projectCode = it.getCode()
                 downloadProjectController.downloadProject(projectCode)
