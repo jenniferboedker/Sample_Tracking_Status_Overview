@@ -59,7 +59,7 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle, 
                 Status.LIBRARY_PREP_FINISHED,
                 Status.DATA_AVAILABLE
         )
-        statusComboBox.setItemCaptionGenerator({ it.toString() }) //TODO replace with display name
+        statusComboBox.setItemCaptionGenerator({ it.getDisplayName() })
         statusComboBox.setEmptySelectionCaption("All statuses")
         statusComboBox.addValueChangeListener({
             if (it.getValue()) {
