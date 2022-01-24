@@ -152,56 +152,19 @@ class DependencyManager {
     }
 
     private VerticalLayout setupPortletView() {
-        ProjectOverviewView projectOverviewView = createProjectOverviewView()
-        SampleOverviewView sampleOverviewView = new SampleOverviewView(notificationService)
-        SampleOverviewController projectSamplesController = setupProjectSamplesUseCase(sampleOverviewView.getPresenter())
-
-        /// vaadin designer test start
         ViewModel viewModel = new ViewModel(projectResourceService,statusCountService)
         SampleView sampleView = new SampleView(viewModel,notificationService)
         ProjectView projectView = new ProjectView(viewModel, setupSubscribeProjectUseCase(), notificationService, subscriptionUser, setupDownloadProjectUseCase(viewModel))
         SampleOverviewController sampleOverviewController = setupProjectSamplesUseCase(sampleView.getPresenter())
 
         MainPage mainPage = new MainPage(projectView,sampleView,viewModel,sampleOverviewController)
-        ///vaadin designer test end
-        AppView mainView = new AppView(projectOverviewView, sampleOverviewView, projectSamplesController)
+
         return mainPage
-    }
-
-    /**
-     * Creates a new ProjectOverviewView using
-     * <ul>
-     *     <li>{@link #projectResourceService}</li>
-     *     <li>{@link #statusCountService}</li>
-     * </ul>
-     * @return a new ProjectOverviewView
-     */
-    private ProjectOverviewView createProjectOverviewView() {
-        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService,
-                this.subscriptionUser)
-        SubscribeProjectController subscribeProjectController = setupSubscribeProjectUseCase()
-        DownloadProjectController downloadController = setupDownloadProjectUseCase(null)
-
-        FailedQCSamplesView failedQCSamplesView = new FailedQCSamplesView(notificationService)
-        FailedQCSamplesController failedQCSamplesController = setupFailedQCUseCase(failedQCSamplesView.getPresenter())
-
-        ProjectOverviewView view = new ProjectOverviewView(notificationService,
-                viewModel,
-                downloadController,
-                failedQCSamplesView,
-                failedQCSamplesController,
-                subscribeProjectController)
-        return view
     }
 
     private SampleOverviewController setupProjectSamplesUseCase(GetSamplesInfoOutput output) {
         GetSamplesInfo getSamplesInfo = new GetSamplesInfo(sampleStatusDataSource, downloadSamplesDataSource, getSamplesInfoDataSource, output)
         return new SampleOverviewController(getSamplesInfo)
-    }
-
-    private FailedQCSamplesController setupFailedQCUseCase(GetSamplesInfoOutput output){
-        GetSamplesInfo getSamplesInfo = new GetSamplesInfo(sampleStatusDataSource, downloadSamplesDataSource,getSamplesInfoDataSource, output)
-        return new FailedQCSamplesController(getSamplesInfo)
     }
 
     private DownloadProjectController setupDownloadProjectUseCase(ViewModel viewModel) {
