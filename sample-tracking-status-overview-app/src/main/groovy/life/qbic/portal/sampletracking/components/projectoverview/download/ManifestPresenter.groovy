@@ -3,7 +3,7 @@ package life.qbic.portal.sampletracking.components.projectoverview.download
 import life.qbic.business.OutputException
 import life.qbic.business.samples.download.DownloadSamplesOutput
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
-import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
+import life.qbic.portal.sampletracking.components.ViewModel
 
 /**
  * <b>Presents a download manifest to the viewModel containing identifiers that point to associated data</b>
@@ -15,10 +15,10 @@ import life.qbic.portal.sampletracking.components.projectoverview.ProjectOvervie
  */
 class ManifestPresenter implements DownloadSamplesOutput {
 
-    private final ProjectOverviewViewModel viewModel
+    private final ViewModel viewModel
     private final NotificationService notificationService
 
-    ManifestPresenter(NotificationService notificationService, ProjectOverviewViewModel viewModel) {
+    ManifestPresenter(NotificationService notificationService, ViewModel viewModel) {
         this.notificationService = notificationService
         this.viewModel = viewModel
     }

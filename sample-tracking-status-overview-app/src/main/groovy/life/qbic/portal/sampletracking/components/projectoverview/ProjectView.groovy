@@ -32,6 +32,7 @@ class ProjectView extends ProjectDesign{
     private final DownloadProjectController downloadProjectController
     final static int MAX_CODE_COLUMN_WIDTH = 400
     private final SubscriptionCheckboxFactory subscriptionCheckboxFactory
+    private final NotificationService notificationService
 
 
     ProjectView(ViewModel viewModel, SubscribeProjectController subscribeProjectController, NotificationService notificationService, Subscriber subscriber, DownloadProjectController downloadProjectController) {
@@ -39,6 +40,8 @@ class ProjectView extends ProjectDesign{
         this.viewModel = viewModel
         this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, subscriber,notificationService)
         this.downloadProjectController = downloadProjectController
+        this.notificationService = notificationService
+
         bindData()
         addClickListener()
         setupDownloadButton()
@@ -128,6 +131,7 @@ class ProjectView extends ProjectDesign{
 
     private void setupDownloadButton() {
         downloadButton.setIcon(VaadinIcons.DOWNLOAD)
+
         viewModel.addPropertyChangeListener("generatedManifest", {
             if (isDownloadAvailable()) {
                 this.fileDownloader = new FileDownloader(new StreamResource({viewModel.getManifestInputStream()}, "manifest.txt"))
@@ -150,6 +154,7 @@ class ProjectView extends ProjectDesign{
                     {
                         it.sampleDataAvailable.passingSamples > 0
                     })
+            println(downloadableProject)
             downloadableProject.ifPresent({
                 String projectCode = it.getCode()
                 downloadProjectController.downloadProject(projectCode)
@@ -157,10 +162,10 @@ class ProjectView extends ProjectDesign{
         } catch (IllegalArgumentException illegalArgument ) {
             String projectCode = selectedSummary.map(ProjectSummary::getCode).orElse(
                     "No project selected")
-            //notificationService.publishFailure("Manifest Download failed for project ${projectCode}. ${Constants.CONTACT_HELPDESK}")
+            notificationService.publishFailure("Manifest Download failed for project ${projectCode}. ${Constants.CONTACT_HELPDESK}")
             log.error "Manifest Download failed due to: ${illegalArgument.getMessage()}"
         } catch (Exception exception ) {
-            //notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+            notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
             log.error "An error occured whily trying to download ${selectedSummary}"
             log.error "Manifest Download failed due to: ${exception.getMessage()}"
         }

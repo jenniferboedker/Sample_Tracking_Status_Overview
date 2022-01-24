@@ -159,7 +159,7 @@ class DependencyManager {
         /// vaadin designer test start
         ViewModel viewModel = new ViewModel(projectResourceService,statusCountService)
         SampleView sampleView = new SampleView(viewModel,notificationService)
-        ProjectView projectView = new ProjectView(viewModel, setupSubscribeProjectUseCase(), notificationService, subscriptionUser, null)
+        ProjectView projectView = new ProjectView(viewModel, setupSubscribeProjectUseCase(), notificationService, subscriptionUser, setupDownloadProjectUseCase(viewModel))
         SampleOverviewController sampleOverviewController = setupProjectSamplesUseCase(sampleView.getPresenter())
 
         MainPage mainPage = new MainPage(projectView,sampleView,viewModel,sampleOverviewController)
@@ -180,7 +180,7 @@ class DependencyManager {
         ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService,
                 this.subscriptionUser)
         SubscribeProjectController subscribeProjectController = setupSubscribeProjectUseCase()
-        DownloadProjectController downloadController = setupDownloadProjectUseCase(viewModel)
+        DownloadProjectController downloadController = setupDownloadProjectUseCase(null)
 
         FailedQCSamplesView failedQCSamplesView = new FailedQCSamplesView(notificationService)
         FailedQCSamplesController failedQCSamplesController = setupFailedQCUseCase(failedQCSamplesView.getPresenter())
@@ -204,7 +204,7 @@ class DependencyManager {
         return new FailedQCSamplesController(getSamplesInfo)
     }
 
-    private DownloadProjectController setupDownloadProjectUseCase(ProjectOverviewViewModel viewModel) {
+    private DownloadProjectController setupDownloadProjectUseCase(ViewModel viewModel) {
         DownloadSamplesOutput output = new ManifestPresenter(notificationService, viewModel)
         DownloadSamples downloadSamples = new DownloadSamples(downloadSamplesDataSource, output)
         
