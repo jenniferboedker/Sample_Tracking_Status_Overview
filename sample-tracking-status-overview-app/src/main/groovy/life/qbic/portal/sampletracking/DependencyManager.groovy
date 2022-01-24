@@ -97,6 +97,7 @@ class DependencyManager {
     private static Subscriber subscriberFor(PortalUser portalUser) {
         return new Subscriber(portalUser.firstName,
                 portalUser.lastName,
+                portalUser.title.value,
                 portalUser.emailAddress)
     }
 

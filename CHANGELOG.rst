@@ -4,10 +4,12 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-1.0.0-beta.6-SNAPSHOT (2021-12-08)
+1.0.0-beta.11-SNAPSHOT (2022-01-18)
 ---------------------------
 
 **Added**
+
+* Changed notification style (#191)
 
 **Fixed**
 
@@ -17,6 +19,91 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Deprecated**
 
+1.0.0-beta.10 (2022-01-18)
+---------------------------
+
+**Added**
+
+**Fixed**
+
+* Use user id instead of email field to find subscriber in the database (#192)
+
+**Dependencies**
+
+**Deprecated**
+
+1.0.0-beta.9 (2022-01-04)
+---------------------------
+
+**Added**
+
+**Fixed**
+
+* CVE-2021-44832
+
+**Dependencies**
+
+* ``org.apache.logging.log4j:log4j-core:2.17.0`` -> ``2.17.1``
+* ``org.apache.logging.log4j:log4j-api:2.17.0`` -> ``2.17.1``
+
+**Deprecated**
+
+1.0.0-beta.8 (2021-12-22)
+---------------------------
+
+**Added**
+
+* Color sample status (#177)
+
+* Use person table instead of subscriber (#183)
+
+**Fixed**
+
+* Manifest file download is reset correctly after project selection change (`#169 <https://github.com/qbicsoftware/sample-tracking-status-overview/pull/169>`_)
+
+* CVE-2021-45105
+
+* CVE-2021-33609
+
+**Dependencies**
+
+* ``org.apache.logging.log4j:log4j-core:2.16.0`` -> ``2.17.0``
+
+* ``org.apache.logging.log4j:log4j-api:2.16.0`` -> ``2.17.0``
+
+* ``com.vaadin:vaadin-bom:8.14.0`` -> ``8.14.1``
+
+1.0.0-beta.7 (2021-12-15)
+---------------------------
+
+**Added**
+
+**Fixed**
+
+* CVE-2021-45046
+
+**Dependencies**
+
+* ``org.apache.logging.log4j:log4j-core:2.15.0`` -> ``2.16.0``
+
+* ``org.apache.logging.log4j:log4j-api:2.15.0`` -> ``2.16.0``
+
+1.0.0-beta.6 (2021-12-13)
+---------------------------
+
+**Added**
+
+**Fixed**
+
+* CVE-2021-44228
+
+**Dependencies**
+
+* ``org.apache.logging.log4j:log4j-core:2.13.2`` -> ``2.15.0``
+
+* ``org.apache.logging.log4j:log4j-api:2.13.2`` -> ``2.15.0``
+
+**Deprecated**
 
 1.0.0-beta.5 (2021-12-07)
 ---------------------------
