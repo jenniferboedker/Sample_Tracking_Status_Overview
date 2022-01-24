@@ -4,6 +4,7 @@ import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
+import com.vaadin.server.ClientConnector
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
 import com.vaadin.shared.ui.grid.HeightMode
@@ -157,18 +158,22 @@ class ProjectView extends ProjectDesign{
         downloadButton.setIcon(VaadinIcons.DOWNLOAD)
 
         viewModel.addPropertyChangeListener("generatedManifest", {
-            if (isDownloadAvailable()) {
-                this.fileDownloader = new FileDownloader(new StreamResource({viewModel.getManifestInputStream()}, "manifest.txt"))
-                this.fileDownloader.extend(downloadButton)
-            } else {
-                if (this.fileDownloader) {
-                    if (downloadButton.extensions.contains(fileDownloader)) {
-                        downloadButton.removeExtension(this.fileDownloader)
-                    }
+            if (it.getOldValue() != it.getNewValue()) {
+                removeFileDownloaders(downloadButton)
+                if (it.newValue) {
+                    FileDownloader fileDownloader = new FileDownloader(new StreamResource({viewModel.getManifestInputStream()}, "manifest.txt"))
+                    fileDownloader.extend(downloadButton)
                 }
             }
         })
         enableWhenDownloadIsAvailable(downloadButton)
+    }
+
+    private static void removeFileDownloaders(ClientConnector clientConnector) {
+        def fileDownloaders = clientConnector.extensions.stream()
+                .filter((extension) -> extension instanceof FileDownloader)
+                .collect()
+        fileDownloaders.forEach(clientConnector::removeExtension)
     }
 
     private void tryToDownloadManifest() {
