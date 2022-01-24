@@ -25,7 +25,6 @@ public class SampleDesign extends VerticalLayout {
     protected HorizontalLayout hotbarLayout;
     protected TextField searchField;
     protected ComboBox status;
-    protected ComboBox sort;
     protected Button projectsButton;
     protected Button samplesButton;
     protected Grid<life.qbic.business.samples.Sample> sampleGrid;
