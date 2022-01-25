@@ -33,8 +33,8 @@ class NotificationHandler {
 
 
     void subscribeToService() {
-        notificationService.subscribe({showMessage(it, Type.ERROR_MESSAGE)}, Topic.NOTIFICATION_FAILURE)
-        notificationService.subscribe({showMessage(it, Type.HUMANIZED_MESSAGE)}, Topic.NOTIFICATION_SUCCESS)
-        notificationService.subscribe({showMessage(it, Type.ASSISTIVE_NOTIFICATION)}, Topic.NOTIFICATION_INFO)
+        notificationService.subscribe({ showMessage(it, Type.ERROR_MESSAGE) }, Topic.NOTIFICATION_FAILURE)
+        notificationService.subscribe({ showMessage(it, Type.HUMANIZED_MESSAGE) }, Topic.NOTIFICATION_SUCCESS)
+        notificationService.subscribe({ showMessage(it, Type.ASSISTIVE_NOTIFICATION) }, Topic.NOTIFICATION_INFO)
     }
 }

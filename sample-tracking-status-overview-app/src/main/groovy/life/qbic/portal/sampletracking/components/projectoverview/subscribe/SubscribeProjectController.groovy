@@ -18,24 +18,24 @@ class SubscribeProjectController {
     SubscribeProjectController(SubscribeProject subscribeProject) {
         this.subscribeProject = subscribeProject
     }
-    
+
     /**
      * Triggers the Subscribe Project case. If no project code or subscriber is provided, throws an {@link IllegalArgumentException}
      * @param projectCode the code of the selected project
      * @param projectCode the user that will be subscribed to the project
      * @throws IllegalArgumentException in case the project code or subscriber is not provided
      */
-    void subscribeProject(Subscriber subscriber, String projectCode) throws IllegalArgumentException{
+    void subscribeProject(Subscriber subscriber, String projectCode) throws IllegalArgumentException {
         subscribeProject.subscribe(subscriber, projectCode)
     }
-    
+
     /**
      * Triggers the unsubscribe project case. If no project code or subscriber is provided, throws an {@link IllegalArgumentException}
      * @param projectCode the code of the selected project
      * @param projectCode the user that will be unsubscribed from the project
      * @throws IllegalArgumentException in case the project code or subscriber is not provided
      */
-    void unsubscribeProject(Subscriber subscriber, String projectCode) throws IllegalArgumentException{
+    void unsubscribeProject(Subscriber subscriber, String projectCode) throws IllegalArgumentException {
         subscribeProject.unsubscribe(subscriber, projectCode)
     }
 }

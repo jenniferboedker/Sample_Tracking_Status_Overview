@@ -59,7 +59,7 @@ import life.qbic.portal.utils.ConfigurationManagerFactory
  *
  * @since 1.0.0
  *
-*/
+ */
 class DependencyManager {
     private VerticalLayout portletView
     private ConfigurationManager configurationManager
@@ -153,12 +153,12 @@ class DependencyManager {
     }
 
     private VerticalLayout setupPortletView() {
-        ViewModel viewModel = new ViewModel(projectResourceService,statusCountService)
-        SampleView sampleView = new SampleView(viewModel,notificationService)
+        ViewModel viewModel = new ViewModel(projectResourceService, statusCountService)
+        SampleView sampleView = new SampleView(viewModel, notificationService)
         ProjectView projectView = new ProjectView(viewModel, setupSubscribeProjectUseCase(), notificationService, subscriptionUser, setupDownloadProjectUseCase(viewModel))
         SampleOverviewController sampleOverviewController = setupProjectSamplesUseCase(sampleView.getPresenter())
 
-        MainPage mainPage = new MainPage(projectView,sampleView,viewModel,sampleOverviewController)
+        MainPage mainPage = new MainPage(projectView, sampleView, viewModel, sampleOverviewController)
 
         return mainPage
     }
@@ -171,7 +171,7 @@ class DependencyManager {
     private DownloadProjectController setupDownloadProjectUseCase(ViewModel viewModel) {
         DownloadSamplesOutput output = new ManifestPresenter(notificationService, viewModel)
         DownloadSamples downloadSamples = new DownloadSamples(downloadSamplesDataSource, output)
-        
+
         return new DownloadProjectController(downloadSamples)
     }
 
@@ -187,7 +187,7 @@ class DependencyManager {
      */
     private void populateProjectService() {
         LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService, notificationService)
-        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output, lastChangedDateDataSource, subscribedProjectsDataSource )
+        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output, lastChangedDateDataSource, subscribedProjectsDataSource)
         loadProjects.withSubscriptions(subscriptionUser)
     }
 
@@ -205,7 +205,7 @@ class DependencyManager {
         }
     }
 
-        /**
+    /**
      * Returns the global notification center
      * @return a notification center that handles app notifications
      */

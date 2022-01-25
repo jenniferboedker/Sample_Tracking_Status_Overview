@@ -13,7 +13,7 @@ class DownloadManifest {
     private Set<String> sampleCodes
 
     /**
-     * Please use {@link DownloadManifest#from(Collection<String>)} to create a DownloadManifest
+     * Please use {@link DownloadManifest#from(Collection < String >)} to create a DownloadManifest
      * @see DownloadManifest#from
      */
     private DownloadManifest() {

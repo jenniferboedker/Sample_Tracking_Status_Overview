@@ -80,10 +80,10 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle, 
     private static Grid<Sample> createSamplesGrid(Collection<Sample> samples) {
         Grid<Sample> samplesGrid = new Grid<>()
         ListDataProvider<Sample> dataProvider = ListDataProvider.ofCollection(samples)
-        samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
         samplesGrid.addColumn(Sample::getName).setCaption("Sample Name").setId("SampleName")
+        samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
         samplesGrid.addColumn(Sample::getStatus).setCaption("Sample Status").setId("SampleStatus")
-                .setStyleGenerator({Sample sample -> determineColor(sample.status)})
+                .setStyleGenerator({ Sample sample -> determineColor(sample.status) })
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)
         samplesGrid.setDataProvider(dataProvider)
         dataProvider.addFilter({ sampleFilter.asPredicate().test(it) })
@@ -93,7 +93,7 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle, 
     }
 
     private static String determineColor(Status status) {
-        switch (status){
+        switch (status) {
             case Status.DATA_AVAILABLE:
                 return State.COMPLETED.getCssClass()
             case Status.SAMPLE_QC_FAIL:

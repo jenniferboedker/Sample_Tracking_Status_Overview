@@ -23,13 +23,15 @@ class SampleView extends SampleDesign {
     super()
     this.viewModel = viewModel
     this.presenter = new Presenter(notificationService, viewModel)
+        init()
+    }
 
-
-    activateViewToggle()
-    createSamplesGrid()
-    enableUserSampleFiltering()
-    addColumnColoring()
-  }
+    private void init() {
+        activateViewToggle()
+        createSamplesGrid()
+        enableUserSampleFiltering()
+        addColumnColoring()
+    }
 
   private void activateViewToggle() {
     this.projectsButton.addClickListener({
@@ -55,6 +57,33 @@ class SampleView extends SampleDesign {
   void reset() {
     viewModel.samples.clear()
   }
+
+    private ComboBox<Status> setupStatusFiltering(SampleFilter sampleFilter) {
+        statusComboBox.setItems(
+                Status.METADATA_REGISTERED,
+                Status.SAMPLE_RECEIVED,
+                Status.SAMPLE_QC_FAIL,
+                Status.SAMPLE_QC_PASS,
+                Status.LIBRARY_PREP_FINISHED,
+                Status.DATA_AVAILABLE
+        )
+        statusComboBox.setItemCaptionGenerator({ it.getDisplayName() })
+        statusComboBox.setEmptySelectionCaption("All statuses")
+        statusComboBox.addValueChangeListener({
+            if (it.getValue()) {
+                sampleFilter.withStatus(it.getValue().toString())
+            } else {
+                sampleFilter.clearStatus()
+            }
+            sampleGrid.dataProvider.refreshAll()
+        })
+        statusComboBox.setSizeUndefined()
+        return statusComboBox
+    }
+
+    void reset() {
+        viewModel.samples.clear()
+    }
 
   Presenter getPresenter() {
     return presenter
