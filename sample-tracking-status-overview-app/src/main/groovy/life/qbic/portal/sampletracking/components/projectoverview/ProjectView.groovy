@@ -7,6 +7,7 @@ import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.ClientConnector
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
+import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
