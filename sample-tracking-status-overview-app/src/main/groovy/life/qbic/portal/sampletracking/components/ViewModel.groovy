@@ -1,41 +1,37 @@
-package life.qbic.portal.sampletracking.components.projectoverview
+package life.qbic.portal.sampletracking.components
 
-import com.vaadin.ui.CheckBox
 import groovy.beans.Bindable
 import groovy.util.logging.Log4j2
 import life.qbic.business.project.Project
-import life.qbic.business.project.subscribe.Subscriber
+import life.qbic.business.samples.Sample
 import life.qbic.business.samples.count.StatusCount
 import life.qbic.portal.sampletracking.communication.Channel
 import life.qbic.portal.sampletracking.communication.Topic
-import life.qbic.portal.sampletracking.components.projectoverview.LastChangedComparator.SortOrder
+import life.qbic.portal.sampletracking.components.projectoverview.LastChangedComparator
+import life.qbic.portal.sampletracking.components.projectoverview.ProjectSummary
 import life.qbic.portal.sampletracking.resource.ResourceService
 
-/**
- * <h1>ViewModel for the {@link ProjectOverviewView}</h1>
- *
- * <p>This model stores the values that are displayed on the {@link ProjectOverviewView}</p>
- *
- * @since 1.0.0
- *
- */
 @Log4j2
-class ProjectOverviewViewModel {
+class ViewModel {
 
-    List<ProjectSummary> projectOverviews =[]
-    private final ResourceService<Project> projectResourceService
-    private final ResourceService<StatusCount> statusCountService
-
+    @Bindable Boolean projectViewEnabled
+    @Bindable List<ProjectSummary> projectSummaries = []
+    @Bindable List<Sample> samples = []
     @Bindable ProjectSummary selectedProject
     @Bindable String generatedManifest
-    final Subscriber subscriber
+
+
+    private final ResourceService<Project> projectResourceService
+    private final ResourceService<StatusCount> statusCountService
     final Channel<String> updatedProjectsChannel
 
-    ProjectOverviewViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService, Subscriber subscriber) {
+
+    ViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService){
         this.updatedProjectsChannel = new Channel<>()
         this.projectResourceService = projectResourceService
         this.statusCountService = statusCountService
-        this.subscriber = subscriber
+
+        projectViewEnabled = true
 
         fetchProjectData()
         subscribeToResources()
@@ -43,15 +39,12 @@ class ProjectOverviewViewModel {
     }
 
     private void fetchProjectData() {
-        projectOverviews.clear()
-        projectResourceService.iterator().each { Project project ->
-            addProject(project)
-        }
-        Collections.sort(projectOverviews, new LastChangedComparator(SortOrder.DESCENDING))
+        projectSummaries.clear()
 
-        statusCountService.iterator().each { StatusCount statusCount ->
-            updateStatusCount(statusCount)
-        }
+        projectResourceService.iterator().each(this::addProject)
+        Collections.sort(projectSummaries, new LastChangedComparator(LastChangedComparator.SortOrder.DESCENDING))
+
+        statusCountService.iterator().each(this::updateStatusCount)
     }
 
     private void subscribeToResources() {
@@ -82,17 +75,17 @@ class ProjectOverviewViewModel {
         projectSummary.sampleDataAvailable.passingSamples = statusCount.dataAvailable
 
         projectSummary.totalSampleCount = statusCount.samplesInProject
-        this.projectOverviews[this.projectOverviews.indexOf(projectSummary)] = projectSummary
+        this.projectSummaries[this.projectSummaries.indexOf(projectSummary)] = projectSummary
     }
 
     private void updateProjectSummary(ProjectSummary projectSummary, Project project) {
         projectSummary.hasSubscription = project.hasSubscription
-        this.projectOverviews[this.projectOverviews.indexOf(projectSummary)] = projectSummary
+        this.projectSummaries[this.projectSummaries.indexOf(projectSummary)] = projectSummary
     }
 
     private void addProject(Project project) {
         ProjectSummary projectSummary = ProjectSummary.of(project)
-        projectOverviews.add(projectSummary)
+        projectSummaries.add(projectSummary)
     }
 
     private void updateProject(Project project) {
@@ -108,7 +101,7 @@ class ProjectOverviewViewModel {
 
     private void removeProject(Project project) {
         ProjectSummary projectOverview = getProjectSummary(project.code)
-        projectOverviews.remove(projectOverview)
+        projectSummaries.remove(projectOverview)
     }
 
     /**
@@ -117,8 +110,8 @@ class ProjectOverviewViewModel {
      * @return The project summary for the respective code
      */
     protected ProjectSummary getProjectSummary(String projectCode) {
-        List<ProjectSummary> projectOverviews = projectOverviews.findAll { it ->
-           it.code == projectCode
+        List<ProjectSummary> projectOverviews = projectSummaries.findAll { it ->
+            it.code == projectCode
         }
         if (projectOverviews.size() > 1) {
             log.error("More than one project summaries for project code $projectCode")
