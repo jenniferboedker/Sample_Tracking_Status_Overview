@@ -5,8 +5,10 @@ import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Grid
 import life.qbic.business.samples.Sample
 import life.qbic.business.samples.info.GetSamplesInfoOutput
+import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.ViewModel
+import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 
 class SampleView extends SampleDesign{
 
@@ -22,6 +24,7 @@ class SampleView extends SampleDesign{
 
         activateViewToggle()
         createSamplesGrid()
+        addColumnColoring()
     }
 
     private void activateViewToggle() {
@@ -49,6 +52,21 @@ class SampleView extends SampleDesign{
 
     Presenter getPresenter(){
         return presenter
+    }
+
+    private static String determineColor(Status status) {
+        switch (status){
+            case Status.DATA_AVAILABLE:
+                return State.COMPLETED.getCssClass()
+            case Status.SAMPLE_QC_FAIL:
+                return State.FAILED.getCssClass()
+            default:
+                return State.IN_PROGRESS.getCssClass()
+        }
+    }
+
+    private void addColumnColoring() {
+        sampleGrid.getColumn("status").setStyleGenerator({Sample sample -> determineColor(sample.status)})
     }
 
     /**
