@@ -25,7 +25,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.subscribe.Subs
 import java.util.function.Consumer
 
 @Log4j2
-class ProjectView extends ProjectDesign{
+class ProjectView extends ProjectDesign {
 
     private final ViewModel viewModel
     private FileDownloader fileDownloader
@@ -38,7 +38,7 @@ class ProjectView extends ProjectDesign{
     ProjectView(ViewModel viewModel, SubscribeProjectController subscribeProjectController, NotificationService notificationService, Subscriber subscriber, DownloadProjectController downloadProjectController) {
         super()
         this.viewModel = viewModel
-        this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, subscriber,notificationService)
+        this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, subscriber, notificationService)
         this.downloadProjectController = downloadProjectController
         this.notificationService = notificationService
 
@@ -48,24 +48,24 @@ class ProjectView extends ProjectDesign{
         bindManifestToProjectSelection()
     }
 
-    private void bindData(){
-        projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it)}, new ComponentRenderer())
-                .setCaption("Subscribe").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
+    private void bindData() {
+        projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it) }, new ComponentRenderer())
+                .setCaption("Subscribe").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({ "subscription-checkbox" })
         projectGrid.addColumn({ it.title })
-                .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ProjectSummary project -> project.title})
+                .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ ProjectSummary project -> project.title })
         projectGrid.addColumn({ it.code })
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
                 MAX_CODE_COLUMN_WIDTH)
-        projectGrid.addColumn({it.samplesReceived}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesReceived)})
+        projectGrid.addColumn({ it.samplesReceived }).setStyleGenerator({ ProjectSummary project -> getStyleForColumn(project.samplesReceived) })
                 .setCaption("Samples Received").setId("SamplesReceived")
 
-        projectGrid.addColumn({it.samplesQc}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesQc)})
+        projectGrid.addColumn({ it.samplesQc }).setStyleGenerator({ ProjectSummary project -> getStyleForColumn(project.samplesQc) })
                 .setCaption("Samples Passed QC").setId("SamplesPassedQc")
 
-        projectGrid.addColumn({it.samplesLibraryPrepFinished}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesLibraryPrepFinished)})
+        projectGrid.addColumn({ it.samplesLibraryPrepFinished }).setStyleGenerator({ ProjectSummary project -> getStyleForColumn(project.samplesLibraryPrepFinished) })
                 .setCaption("Library Prep Finished").setId("LibraryPrepFinished")
 
-        projectGrid.addColumn({it.sampleDataAvailable}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.sampleDataAvailable)})
+        projectGrid.addColumn({ it.sampleDataAvailable }).setStyleGenerator({ ProjectSummary project -> getStyleForColumn(project.sampleDataAvailable) })
                 .setCaption("Data Available").setId("SampleDataAvailable")
         refreshDataProvider()
         //specify size of grid and layout
@@ -95,7 +95,7 @@ class ProjectView extends ProjectDesign{
         filterEmptyProjects()
     }
 
-    private void filterEmptyProjects(){
+    private void filterEmptyProjects() {
         ListDataProvider<ProjectSummary> dataProvider = (ListDataProvider<ProjectSummary>) projectGrid.getDataProvider()
         dataProvider.setFilter(ProjectSummary::getTotalSampleCount, totalNumber -> totalNumber > 0)
     }
@@ -127,16 +127,17 @@ class ProjectView extends ProjectDesign{
     private void addClickListener() {
         projectGrid.addSelectionListener({
             if (it instanceof SingleSelectionEvent<ProjectSummary>) {
-            Optional<ProjectSummary> selectedItem = it.getSelectedItem()
-            if (!selectedItem.isPresent()) {
-                viewModel.selectedProject = null
-                samplesButton.setEnabled(false)
+                Optional<ProjectSummary> selectedItem = it.getSelectedItem()
+                if (!selectedItem.isPresent()) {
+                    viewModel.selectedProject = null
+                    samplesButton.setEnabled(false)
+                }
+                selectedItem.ifPresent({
+                    viewModel.selectedProject = it
+                    samplesButton.setEnabled(true)
+                })
             }
-            selectedItem.ifPresent({
-                viewModel.selectedProject = it
-                samplesButton.setEnabled(true)
-            })
-        }})
+        })
         projectGrid.setStyleGenerator(projectRow -> {
             return "clickable-row"
         })
@@ -155,7 +156,7 @@ class ProjectView extends ProjectDesign{
             if (it.getOldValue() != it.getNewValue()) {
                 removeFileDownloaders(downloadButton)
                 if (it.newValue) {
-                    FileDownloader fileDownloader = new FileDownloader(new StreamResource({viewModel.getManifestInputStream()}, "manifest.txt"))
+                    FileDownloader fileDownloader = new FileDownloader(new StreamResource({ viewModel.getManifestInputStream() }, "manifest.txt"))
                     fileDownloader.extend(downloadButton)
                 }
             }
@@ -182,12 +183,12 @@ class ProjectView extends ProjectDesign{
                 downloadProjectController.downloadProject(projectCode)
             })
             downloadButton.setVisible(downloadableProject.isPresent())
-        } catch (IllegalArgumentException illegalArgument ) {
+        } catch (IllegalArgumentException illegalArgument) {
             String projectCode = selectedSummary.map(ProjectSummary::getCode).orElse(
                     "No project selected")
             notificationService.publishFailure("Manifest Download failed for project ${projectCode}. ${Constants.CONTACT_HELPDESK}")
             log.error "Manifest Download failed due to: ${illegalArgument.getMessage()}"
-        } catch (Exception exception ) {
+        } catch (Exception exception) {
             notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
             log.error "An error occured whily trying to download ${selectedSummary}"
             log.error "Manifest Download failed due to: ${exception.getMessage()}"
@@ -211,7 +212,7 @@ class ProjectView extends ProjectDesign{
      * with the selected project summary
      * @param projectConsumer The consumer that will accept the selected project summary
      */
-    void onSelectedProjectChange(Consumer<ProjectSummary> projectConsumer){
+    void onSelectedProjectChange(Consumer<ProjectSummary> projectConsumer) {
         viewModel.addPropertyChangeListener("selectedProject", {
             projectConsumer.accept(viewModel.selectedProject)
         })
