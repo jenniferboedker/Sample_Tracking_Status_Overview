@@ -15,6 +15,8 @@ class SampleView extends SampleDesign {
   private final ViewModel viewModel
   private final Presenter presenter
 
+  private final SampleFilter sampleFilter = new SampleFilterImpl()
+
 
   SampleView(ViewModel viewModel, NotificationService notificationService) {
     super()
@@ -42,10 +44,12 @@ class SampleView extends SampleDesign {
     })
   }
 
-    private void createSamplesGrid() {
-        ListDataProvider<Sample> dataProvider = ListDataProvider.ofCollection(viewModel.samples)
-        sampleGrid.setDataProvider(dataProvider)
-    }
+
+  private void createSamplesGrid() {
+    ListDataProvider<Sample> dataProvider = ListDataProvider.ofCollection(viewModel.samples)
+    dataProvider.addFilter((Sample it) -> sampleFilter.asPredicate().test(it))
+    sampleGrid.setDataProvider(dataProvider)
+  }
 
   void reset() {
     viewModel.samples.clear()
@@ -70,12 +74,35 @@ class SampleView extends SampleDesign {
     sampleGrid.getColumn("status").setStyleGenerator({ Sample sample -> determineColor(sample.status) })
   }
 
-    /**
-     * Presenter filling the grid model with information
-     */
-    private static class Presenter implements GetSamplesInfoOutput {
-        private final NotificationService notificationService
-        private final ViewModel viewModel
+  void enableUserSampleFiltering() {
+    ComboBox<Status> statusComboBox = this.shownStatus
+    DataProvider<Sample, ?> dataProvider = this.sampleGrid.getDataProvider()
+    statusComboBox.setItems(
+            Status.METADATA_REGISTERED,
+            Status.SAMPLE_RECEIVED,
+            Status.SAMPLE_QC_FAIL,
+            Status.SAMPLE_QC_PASS,
+            Status.LIBRARY_PREP_FINISHED,
+            Status.DATA_AVAILABLE
+    )
+    statusComboBox.setItemCaptionGenerator({ it.getDisplayName() })
+    statusComboBox.setEmptySelectionCaption("All statuses")
+    statusComboBox.addValueChangeListener({
+      if (it.getValue()) {
+        sampleFilter.withStatus(it.getValue().toString())
+      } else {
+        sampleFilter.clearStatus()
+      }
+      dataProvider.refreshAll()
+    })
+  }
+
+  /**
+   * Presenter filling the grid model with information
+   */
+  private static class Presenter implements GetSamplesInfoOutput {
+    private final NotificationService notificationService
+    private final ViewModel viewModel
 
     Presenter(NotificationService notificationService, ViewModel viewModel) {
       this.notificationService = notificationService
