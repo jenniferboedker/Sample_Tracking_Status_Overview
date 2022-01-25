@@ -2,7 +2,9 @@ package life.qbic.portal.sampletracking.components.sampleoverview
 
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
+import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.ui.ComboBox
+import com.vaadin.ui.TextField
 import life.qbic.business.samples.Sample
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
@@ -75,8 +77,15 @@ class SampleView extends SampleDesign {
   }
 
   void enableUserSampleFiltering() {
+
+    enableUserFilterByStatus()
+    enableUserFilterBySearchbar()
+
+  }
+
+  private void enableUserFilterByStatus() {
     ComboBox<Status> statusComboBox = this.shownStatus
-    DataProvider<Sample, ?> dataProvider = this.sampleGrid.getDataProvider()
+
     statusComboBox.setItems(
             Status.METADATA_REGISTERED,
             Status.SAMPLE_RECEIVED,
@@ -87,11 +96,26 @@ class SampleView extends SampleDesign {
     )
     statusComboBox.setItemCaptionGenerator({ it.getDisplayName() })
     statusComboBox.setEmptySelectionCaption("All statuses")
+    DataProvider<Sample, ?> dataProvider = this.sampleGrid.getDataProvider()
     statusComboBox.addValueChangeListener({
       if (it.getValue()) {
         sampleFilter.withStatus(it.getValue().toString())
       } else {
         sampleFilter.clearStatus()
+      }
+      dataProvider.refreshAll()
+    })
+  }
+
+  void enableUserFilterBySearchbar() {
+    TextField searchField = this.searchField
+    DataProvider<Sample, ?> dataProvider = this.sampleGrid.getDataProvider()
+    searchField.setValueChangeMode(ValueChangeMode.EAGER)
+    searchField.addValueChangeListener({
+      if (it.getValue()) {
+        sampleFilter.containingText(it.getValue())
+      } else {
+        sampleFilter.containingText("")
       }
       dataProvider.refreshAll()
     })

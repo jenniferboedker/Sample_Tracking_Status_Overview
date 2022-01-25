@@ -27,6 +27,14 @@ public interface SampleFilter {
   SampleFilter withStatus(String status);
 
   /**
+   * Configures the filter to pass samples with the name or code containing the substring
+   * @param substring the string contained in either name or code
+   * @return a SampleFilter configured with the substring
+   * @since 1.0.0
+   */
+  SampleFilter containingText(String substring);
+
+  /**
    * Turns this SampleFilter into a Predicate based on its configuration
    * @return a predicate based on the configuration of the filter
    * @since 1.0.0
