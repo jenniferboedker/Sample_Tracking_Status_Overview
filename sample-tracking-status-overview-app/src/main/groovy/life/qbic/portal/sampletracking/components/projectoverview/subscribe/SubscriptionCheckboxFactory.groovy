@@ -21,9 +21,9 @@ class SubscriptionCheckboxFactory {
     private final Subscriber subscriber
     private final NotificationService notificationService
 
-    private Map<String,CheckBox> projectCodeToCheckBox
+    private Map<String, CheckBox> projectCodeToCheckBox
 
-    SubscriptionCheckboxFactory(SubscribeProjectController subscribeProjectController, Subscriber subscriber, NotificationService notificationService){
+    SubscriptionCheckboxFactory(SubscribeProjectController subscribeProjectController, Subscriber subscriber, NotificationService notificationService) {
         this.subscribeProjectController = subscribeProjectController
         this.subscriber = subscriber
         this.notificationService = notificationService
@@ -36,35 +36,35 @@ class SubscriptionCheckboxFactory {
      * @param project A {@link ProjectSummary} to which the checkbox is bound
      * @return A checkbox which is already preconfigured with listeners and bound to the subscribe use case
      */
-    CheckBox getSubscriptionCheckbox(ProjectSummary project){
+    CheckBox getSubscriptionCheckbox(ProjectSummary project) {
 
-        if(projectCodeToCheckBox.containsKey(project.code)){
+        if (projectCodeToCheckBox.containsKey(project.code)) {
             return projectCodeToCheckBox.get(project.code)
         }
 
         CheckBox checkBox = initCheckbox(project)
-        addListener(checkBox,project)
+        addListener(checkBox, project)
         projectCodeToCheckBox.put(project.code, checkBox)
 
         return checkBox
     }
 
-    private CheckBox initCheckbox(ProjectSummary project){
+    private CheckBox initCheckbox(ProjectSummary project) {
         CheckBox checkBox = new CheckBox()
         checkBox.value = project.hasSubscription
         return checkBox
     }
 
-    private void addListener(CheckBox checkBox, ProjectSummary summary){
+    private void addListener(CheckBox checkBox, ProjectSummary summary) {
         checkBox.addValueChangeListener({
-            try{
+            try {
                 if (checkBox.value) {
                     subscribeProjectController.subscribeProject(subscriber, summary.code)
                 } else {
                     subscribeProjectController.unsubscribeProject(subscriber, summary.code)
                 }
                 summary.hasSubscription = checkBox.value
-            }catch(Exception exception){
+            } catch (Exception exception) {
                 notificationService.publishFailure("There was a failure while changing the subscription value of project ${summary.code}. Contact ${Constants.CONTACT_HELPDESK}")
                 log.error("There was a failure while changing the subscription value of project ${summary.code} for ${subscriber.firstName}  ${subscriber.lastName}")
                 log.error(exception.message)

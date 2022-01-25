@@ -18,7 +18,7 @@ class SampleCount {
         this.passingSamples = passingSamples
     }
 
-    SampleCount(int passing, int failing, int totalCount){
+    SampleCount(int passing, int failing, int totalCount) {
         this.passingSamples = passing
         this.failingSamples = failing
         this.totalSampleCount = totalCount

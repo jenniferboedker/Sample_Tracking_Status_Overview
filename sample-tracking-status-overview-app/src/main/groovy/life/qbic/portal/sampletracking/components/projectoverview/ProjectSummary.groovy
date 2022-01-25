@@ -30,10 +30,10 @@ class ProjectSummary {
         this.code = code
         this.title = title
         this.hasSubscription = hasSubscription
-        this.samplesReceived = new SampleCount(0,0,0)
-        this.samplesQc = new SampleCount(0,0,0)
-        this.samplesLibraryPrepFinished = new SampleCount(0,0,0)
-        this.sampleDataAvailable = new SampleCount(0,0,0)
+        this.samplesReceived = new SampleCount(0, 0, 0)
+        this.samplesQc = new SampleCount(0, 0, 0)
+        this.samplesLibraryPrepFinished = new SampleCount(0, 0, 0)
+        this.sampleDataAvailable = new SampleCount(0, 0, 0)
         this.totalSampleCount = 0
         this.lastChanged = Instant.MIN
     }

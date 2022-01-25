@@ -14,11 +14,16 @@ import life.qbic.portal.sampletracking.resource.ResourceService
 @Log4j2
 class ViewModel {
 
-    @Bindable Boolean projectViewEnabled
-    @Bindable List<ProjectSummary> projectSummaries = []
-    @Bindable List<Sample> samples = []
-    @Bindable ProjectSummary selectedProject
-    @Bindable String generatedManifest
+    @Bindable
+    Boolean projectViewEnabled
+    @Bindable
+    List<ProjectSummary> projectSummaries = []
+    @Bindable
+    List<Sample> samples = []
+    @Bindable
+    ProjectSummary selectedProject
+    @Bindable
+    String generatedManifest
 
 
     private final ResourceService<Project> projectResourceService
@@ -26,7 +31,7 @@ class ViewModel {
     final Channel<String> updatedProjectsChannel
 
 
-    ViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService){
+    ViewModel(ResourceService<Project> projectResourceService, ResourceService<StatusCount> statusCountService) {
         this.updatedProjectsChannel = new Channel<>()
         this.projectResourceService = projectResourceService
         this.statusCountService = statusCountService
@@ -52,7 +57,8 @@ class ViewModel {
         this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
         this.projectResourceService.subscribe({ updateProject(it) }, Topic.PROJECT_UPDATED)
         this.statusCountService.subscribe({
-            updateStatusCount(it) }, Topic.SAMPLE_COUNT_UPDATE)
+            updateStatusCount(it)
+        }, Topic.SAMPLE_COUNT_UPDATE)
     }
 
     private void updateStatusCount(StatusCount statusCount) {

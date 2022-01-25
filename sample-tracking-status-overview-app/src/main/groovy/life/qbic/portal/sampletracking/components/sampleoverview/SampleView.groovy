@@ -25,7 +25,7 @@ class SampleView extends SampleDesign {
         init()
     }
 
-    private void init(){
+    private void init() {
         activateViewToggle()
         createSamplesGrid()
         addColumnColoring()
@@ -53,7 +53,7 @@ class SampleView extends SampleDesign {
         sampleGrid.setDataProvider(dataProvider)
     }
 
-    private void addFilterToGrid(){
+    private void addFilterToGrid() {
         ListDataProvider<Sample> dataProvider = sampleGrid.getDataProvider() as ListDataProvider<Sample>
 
         dataProvider.addFilter({ sampleFilter.asPredicate().test(it) })
