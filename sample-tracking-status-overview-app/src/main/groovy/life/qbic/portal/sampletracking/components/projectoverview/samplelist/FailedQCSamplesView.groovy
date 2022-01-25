@@ -35,10 +35,10 @@ class FailedQCSamplesView extends VerticalLayout {
         createSamplesGrid()
         HorizontalLayout buttonLayout = setupCloseButtonLayout()
 
-        this.addComponents(buttonLayout,samplesGrid)
+        this.addComponents(buttonLayout, samplesGrid)
     }
 
-    void addVisibilityChangeListener(VisibilityChangeListener listener){
+    void addVisibilityChangeListener(VisibilityChangeListener listener) {
         visibilityChangeListeners.add(listener)
     }
 
@@ -120,7 +120,7 @@ class FailedQCSamplesView extends VerticalLayout {
          */
         @Override
         void samplesWithNames(Collection<Sample> samples) {
-            List<Sample> failedSamples = samples.stream().filter({it.status == Status.SAMPLE_QC_FAIL}).collect()
+            List<Sample> failedSamples = samples.stream().filter({ it.status == Status.SAMPLE_QC_FAIL }).collect()
             viewModel.samples.clear()
             viewModel.samples.addAll(failedSamples)
         }

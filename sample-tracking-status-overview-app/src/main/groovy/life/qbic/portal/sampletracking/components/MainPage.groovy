@@ -19,13 +19,13 @@ class MainPage extends VerticalLayout {
         this.viewModel = viewModel
         this.controller = sampleOverviewController
 
-        this.addComponents(projectLayout,sampleLayout)
+        this.addComponents(projectLayout, sampleLayout)
         sampleLayout.setVisible(false)
 
         listenToProjectSelectionChange()
     }
 
-    private void listenToProjectSelectionChange(){
+    private void listenToProjectSelectionChange() {
         projectView.onSelectedProjectChange({
             if (it) {
                 controller.getSamplesFor(it.code)
@@ -34,7 +34,7 @@ class MainPage extends VerticalLayout {
             }
         })
 
-        viewModel.addPropertyChangeListener("projectViewEnabled",{
+        viewModel.addPropertyChangeListener("projectViewEnabled", {
             projectView.setVisible(viewModel.projectViewEnabled)
             sampleView.setVisible(!viewModel.projectViewEnabled)
         })

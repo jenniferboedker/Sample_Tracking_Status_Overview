@@ -38,7 +38,7 @@ import java.util.function.Consumer
  *
  * @since 1.0.0
  *
-*/
+ */
 @Log4j2
 class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle {
 
@@ -61,7 +61,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     private HorizontalLayout projectButtonBar = new HorizontalLayout()
 
     ProjectOverviewView(NotificationService notificationService, ProjectOverviewViewModel viewModel, DownloadProjectController downloadProjectController
-                        , FailedQCSamplesView failedQCSamplesView, FailedQCSamplesController failedQCSamplesController, SubscribeProjectController subscribeProjectController){
+                        , FailedQCSamplesView failedQCSamplesView, FailedQCSamplesController failedQCSamplesController, SubscribeProjectController subscribeProjectController) {
         this.notificationService = notificationService
         this.viewModel = viewModel
         this.downloadProjectController = downloadProjectController
@@ -69,7 +69,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         this.failedQCSamplesView = failedQCSamplesView
         this.failedQCSamplesController = failedQCSamplesController
 
-        this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, viewModel.subscriber,notificationService)
+        this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, viewModel.subscriber, notificationService)
 
         initLayout()
     }
@@ -79,20 +79,20 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
      * with the selected project summary
      * @param projectConsumer The consumer that will accept the selected project summary
      */
-    void onSelectedProjectChange(Consumer<ProjectSummary> projectConsumer){
+    void onSelectedProjectChange(Consumer<ProjectSummary> projectConsumer) {
         viewModel.addPropertyChangeListener("selectedProject", {
             projectConsumer.accept(viewModel.selectedProject)
         })
     }
 
-    private void initLayout(){
+    private void initLayout() {
         setupProjects()
 
         setupButtonLayout(projectButtonBar)
         VerticalLayout projectLayout = new VerticalLayout(projectGrid)
         projectLayout.setMargin(false)
 
-        splitPanel = createSplitLayout(projectLayout,failedQCSamplesView)
+        splitPanel = createSplitLayout(projectLayout, failedQCSamplesView)
         failedQCSamplesView.addVisibilityChangeListener({ splitPanel.splitPosition = it.newValue ? 65 : 100 })
 
         connectFailedQcSamplesView()
@@ -106,13 +106,13 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
      * on the double clicked project
      * @param consumer The consumer accepts the double-clicked project and performs action
      */
-    void onProjectDoubleClick(Consumer<ProjectSummary> consumer){
-         projectGrid.addItemClickListener({
-             //if grid.getEditor().setEnabled(true) is enabled this will not work anymore!
-             if(it.mouseEventDetails.isDoubleClick()){
-                 if(viewModel.selectedProject) consumer.accept(viewModel.selectedProject)
-             }
-         })
+    void onProjectDoubleClick(Consumer<ProjectSummary> consumer) {
+        projectGrid.addItemClickListener({
+            //if grid.getEditor().setEnabled(true) is enabled this will not work anymore!
+            if (it.mouseEventDetails.isDoubleClick()) {
+                if (viewModel.selectedProject) consumer.accept(viewModel.selectedProject)
+            }
+        })
     }
 
     private void connectFailedQcSamplesView() {
@@ -122,7 +122,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         viewModel.addPropertyChangeListener("selectedProject", {
             Optional<ProjectSummary> selectedProject = Optional.ofNullable(viewModel.selectedProject)
             selectedProject.ifPresent({
-                if(failingSamplesExist()){
+                if (failingSamplesExist()) {
                     loadFailedQcSamples(it)
                 }
             })
@@ -138,7 +138,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         Button postmanLink = setUpLinkButton()
         Button downloadManifestAction = setupDownloadButton()
 
-        HorizontalLayout downloadLayout = new HorizontalLayout(downloadManifestAction,postmanLink)
+        HorizontalLayout downloadLayout = new HorizontalLayout(downloadManifestAction, postmanLink)
         downloadLayout.setComponentAlignment(downloadManifestAction, Alignment.MIDDLE_CENTER)
         downloadLayout.setComponentAlignment(postmanLink, Alignment.MIDDLE_CENTER)
         downloadLayout.setSpacing(false)
@@ -153,13 +153,13 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         failedQCSamplesController.getFailedQcSamples(code)
     }
 
-    private Button setUpLinkButton(){
+    private Button setUpLinkButton() {
         Button button = new Button()
         button.setIcon(VaadinIcons.QUESTION_CIRCLE)
         button.setStyleName("round-button")
 
         button.setDescription("A manifest is a text file with sample codes used by our client application to download the data attached to the defined samples. <br>" +
-                "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">"+ VaadinIcons.EXTERNAL_LINK.getHtml() +" qpostman</a> to download the sample data.", ContentMode.HTML)
+                "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">" + VaadinIcons.EXTERNAL_LINK.getHtml() + " qpostman</a> to download the sample data.", ContentMode.HTML)
 
         button.addClickListener({
             getUI().getPage().open(
@@ -175,7 +175,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
             if (it.getOldValue() != it.getNewValue()) {
                 removeFileDownloaders(downloadManifestAction)
                 if (it.newValue) {
-                    FileDownloader fileDownloader = new FileDownloader(new StreamResource({viewModel.getManifestInputStream()}, "manifest.txt"))
+                    FileDownloader fileDownloader = new FileDownloader(new StreamResource({ viewModel.getManifestInputStream() }, "manifest.txt"))
                     fileDownloader.extend(downloadManifestAction)
                 }
             }
@@ -210,12 +210,12 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         projectGrid.setStyleGenerator(projectRow -> {
             return "clickable-row"
         })
-        viewModel.updatedProjectsChannel.subscribe({updatedProjectCode ->
+        viewModel.updatedProjectsChannel.subscribe({ updatedProjectCode ->
             refreshDataProvider()
         })
     }
 
-    private void filterEmptyProjects(){
+    private void filterEmptyProjects() {
         ListDataProvider<ProjectSummary> dataProvider = (ListDataProvider<ProjectSummary>) projectGrid.getDataProvider()
         dataProvider.setFilter(ProjectSummary::getTotalSampleCount, totalNumber -> totalNumber > 0)
     }
@@ -227,12 +227,13 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
             viewModel.selectedProject = projectSummary
         }
     }
+
     private void selectProject(String projectCode) {
         Optional<ProjectSummary> projectSummary = Optional.ofNullable(viewModel.getProjectSummary(projectCode))
         projectSummary.ifPresent({
             viewModel.selectedProject = it
         })
-        if (! projectSummary.isPresent()) {
+        if (!projectSummary.isPresent()) {
             // we tried to select a project summary that is not in our list of project summaries
             // this should not happen
             throw new IllegalArgumentException("No project with code $projectCode could be selected." +
@@ -240,10 +241,10 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         }
     }
 
-    private static HorizontalSplitPanel createSplitLayout(Layout leftComponent, VerticalLayout rightComponent){
-        HorizontalSplitPanel splitPanel = new HorizontalSplitPanel(leftComponent,rightComponent)
+    private static HorizontalSplitPanel createSplitLayout(Layout leftComponent, VerticalLayout rightComponent) {
+        HorizontalSplitPanel splitPanel = new HorizontalSplitPanel(leftComponent, rightComponent)
         splitPanel.setSplitPosition(100)
-        rightComponent.setMargin(new MarginInfo(false,false,false,true))
+        rightComponent.setMargin(new MarginInfo(false, false, false, true))
 
         return splitPanel
     }
@@ -263,24 +264,24 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
 
     private void fillProjectsGrid() {
 
-        projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it)}, new ComponentRenderer())
-                .setCaption("Subscription Status").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
+        projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it) }, new ComponentRenderer())
+                .setCaption("Subscription Status").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({ "subscription-checkbox" })
         projectGrid.addColumn({ it.title })
-                .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ProjectSummary project -> project.title})
+                .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ ProjectSummary project -> project.title })
         projectGrid.addColumn({ it.code })
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
                 MAX_CODE_COLUMN_WIDTH)
 
-        projectGrid.addColumn({it.samplesReceived}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesReceived)})
+        projectGrid.addColumn({ it.samplesReceived }).setStyleGenerator({ ProjectSummary project -> getStyleForColumn(project.samplesReceived) })
                 .setCaption("Samples Received").setId("SamplesReceived")
 
-        projectGrid.addColumn({it.samplesQc}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesQc)})
+        projectGrid.addColumn({ it.samplesQc }).setStyleGenerator({ ProjectSummary project -> getStyleForColumn(project.samplesQc) })
                 .setCaption("Samples Passed QC").setId("SamplesPassedQc")
 
-        projectGrid.addColumn({it.samplesLibraryPrepFinished}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesLibraryPrepFinished)})
+        projectGrid.addColumn({ it.samplesLibraryPrepFinished }).setStyleGenerator({ ProjectSummary project -> getStyleForColumn(project.samplesLibraryPrepFinished) })
                 .setCaption("Library Prep Finished").setId("LibraryPrepFinished")
 
-        projectGrid.addColumn({it.sampleDataAvailable}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.sampleDataAvailable)})
+        projectGrid.addColumn({ it.sampleDataAvailable }).setStyleGenerator({ ProjectSummary project -> getStyleForColumn(project.sampleDataAvailable) })
                 .setCaption("Data Available").setId("SampleDataAvailable")
         refreshDataProvider()
         //specify size of grid and layout
@@ -311,7 +312,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
 
         // remove manual sorting - any sorting in the code should probably done before disabling it
         for (Column col : projectGrid.getColumns()) {
-          col.setSortable(false)
+            col.setSortable(false)
         }
     }
 
@@ -319,7 +320,7 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         DataProvider dataProvider = new ListDataProvider(viewModel.projectOverviews)
         projectGrid.setDataProvider(dataProvider)
 
-        if( viewModel.selectedProject ) {
+        if (viewModel.selectedProject) {
             projectGrid.select(viewModel.selectedProject)
         }
         GridUtils.setupFilters(projectGrid, columnIdsWithFilters)
@@ -338,16 +339,16 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
                 String projectCode = it.getCode()
                 downloadProjectController.downloadProject(projectCode)
             })
-        } catch (IllegalArgumentException illegalArgument ) {
-                String projectCode = selectedSummary.map(ProjectSummary::getCode).orElse(
-                        "No project selected")
-                notificationService.publishFailure("Manifest Download failed for project ${projectCode}. ${Constants.CONTACT_HELPDESK}")
-                log.error "Manifest Download failed due to: ${illegalArgument.getMessage()}"
-            } catch (Exception exception ) {
-                notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
-                log.error "An error occured whily trying to download ${selectedSummary}"
-                log.error "Manifest Download failed due to: ${exception.getMessage()}"
-            }
+        } catch (IllegalArgumentException illegalArgument) {
+            String projectCode = selectedSummary.map(ProjectSummary::getCode).orElse(
+                    "No project selected")
+            notificationService.publishFailure("Manifest Download failed for project ${projectCode}. ${Constants.CONTACT_HELPDESK}")
+            log.error "Manifest Download failed due to: ${illegalArgument.getMessage()}"
+        } catch (Exception exception) {
+            notificationService.publishFailure("Manifest Download failed for unknown reasons. ${Constants.CONTACT_HELPDESK}")
+            log.error "An error occured whily trying to download ${selectedSummary}"
+            log.error "Manifest Download failed due to: ${exception.getMessage()}"
+        }
     }
 
     private void enableWhenDownloadIsAvailable(Component component) {

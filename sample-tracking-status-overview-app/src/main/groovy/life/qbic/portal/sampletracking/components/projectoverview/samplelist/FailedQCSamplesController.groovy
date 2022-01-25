@@ -12,11 +12,11 @@ class FailedQCSamplesController {
 
     private GetSamplesInfoInput getSamplesInfoInput
 
-    FailedQCSamplesController(GetSamplesInfoInput samplesInfoInput){
+    FailedQCSamplesController(GetSamplesInfoInput samplesInfoInput) {
         this.getSamplesInfoInput = samplesInfoInput
     }
 
-    void getFailedQcSamples(String projectCode){
+    void getFailedQcSamples(String projectCode) {
         getSamplesInfoInput.requestSampleInfosFor(projectCode, Status.SAMPLE_QC_FAIL)
     }
 

@@ -26,10 +26,10 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     }
 
     /**
-    * A subscription was added for a given project
-    * @param project the project code of the subscribed project
-    * @since 1.0.0
-    */
+     * A subscription was added for a given project
+     * @param project the project code of the subscribed project
+     * @since 1.0.0
+     */
     @Override
     void subscriptionAdded(String project) {
         String message = "Subscription to ${project} was successful. You will receive emails informing you about updates on project ${project}."
@@ -51,15 +51,15 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     void subscriptionFailed(Subscriber subscriber, String projectCode) {
         //todo this message might not be meaningful to the user, e.g. if a person entry is missing
         String message = "An unexpected error occured while trying to subscribe to project ${projectCode}. " +
-                    "${Constants.CONTACT_HELPDESK}."
+                "${Constants.CONTACT_HELPDESK}."
         notificationService.publishFailure(message)
     }
-    
+
     /**
-    * A subscription was removed for a given project
-    * @param project the project code of the subscribed project
-    * @since 1.0.0
-    */
+     * A subscription was removed for a given project
+     * @param project the project code of the subscribed project
+     * @since 1.0.0
+     */
     @Override
     void subscriptionRemoved(String project) {
         String message = "Unsubscribed successfully from ${project}. You will no longer receive emails with updates on project ${project}."
@@ -81,7 +81,7 @@ class SubscribeProjectPresenter implements SubscribeProjectOutput {
     void unsubscriptionFailed(Subscriber subscriber, String projectCode) {
         //todo this message might not be meaningful to the user
         String message = "An unexpected error occured while trying to unsubscribe from project ${projectCode}. " +
-                    "${Constants.CONTACT_HELPDESK}."
+                "${Constants.CONTACT_HELPDESK}."
         notificationService.publishFailure(message)
     }
 }

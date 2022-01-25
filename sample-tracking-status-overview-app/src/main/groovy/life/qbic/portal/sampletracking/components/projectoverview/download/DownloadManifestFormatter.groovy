@@ -14,7 +14,7 @@ class DownloadManifestFormatter {
      * @since 1.0.0
      */
     static String format(DownloadManifest downloadManifest) {
-        String result = downloadManifest.listSampleCodes().collect {formatSampleRow(it)}.sum("")
+        String result = downloadManifest.listSampleCodes().collect { formatSampleRow(it) }.sum("")
         return result
     }
 

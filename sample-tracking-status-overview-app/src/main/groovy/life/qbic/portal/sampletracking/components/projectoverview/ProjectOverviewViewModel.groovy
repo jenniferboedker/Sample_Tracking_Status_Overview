@@ -22,12 +22,14 @@ import life.qbic.portal.sampletracking.resource.ResourceService
 @Log4j2
 class ProjectOverviewViewModel {
 
-    List<ProjectSummary> projectOverviews =[]
+    List<ProjectSummary> projectOverviews = []
     private final ResourceService<Project> projectResourceService
     private final ResourceService<StatusCount> statusCountService
 
-    @Bindable ProjectSummary selectedProject
-    @Bindable String generatedManifest
+    @Bindable
+    ProjectSummary selectedProject
+    @Bindable
+    String generatedManifest
     final Subscriber subscriber
     final Channel<String> updatedProjectsChannel
 
@@ -59,7 +61,8 @@ class ProjectOverviewViewModel {
         this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
         this.projectResourceService.subscribe({ updateProject(it) }, Topic.PROJECT_UPDATED)
         this.statusCountService.subscribe({
-            updateStatusCount(it) }, Topic.SAMPLE_COUNT_UPDATE)
+            updateStatusCount(it)
+        }, Topic.SAMPLE_COUNT_UPDATE)
     }
 
     private void updateStatusCount(StatusCount statusCount) {
@@ -118,7 +121,7 @@ class ProjectOverviewViewModel {
      */
     protected ProjectSummary getProjectSummary(String projectCode) {
         List<ProjectSummary> projectOverviews = projectOverviews.findAll { it ->
-           it.code == projectCode
+            it.code == projectCode
         }
         if (projectOverviews.size() > 1) {
             log.error("More than one project summaries for project code $projectCode")
