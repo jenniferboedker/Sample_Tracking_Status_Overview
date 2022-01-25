@@ -7,9 +7,11 @@ import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.ClientConnector
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
+import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
+import com.vaadin.ui.components.grid.HeaderRow
 import com.vaadin.ui.renderers.ComponentRenderer
 import groovy.util.logging.Log4j2
 import life.qbic.business.project.subscribe.Subscriber
@@ -28,7 +30,6 @@ import java.util.function.Consumer
 class ProjectView extends ProjectDesign{
 
     private final ViewModel viewModel
-    private FileDownloader fileDownloader
     private final DownloadProjectController downloadProjectController
     final static int MAX_CODE_COLUMN_WIDTH = 400
     private final SubscriptionCheckboxFactory subscriptionCheckboxFactory
@@ -46,16 +47,20 @@ class ProjectView extends ProjectDesign{
         addClickListener()
         setupDownloadButton()
         bindManifestToProjectSelection()
+        addTooltips(projectGrid.getDefaultHeaderRow())
     }
 
     private void bindData(){
         projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it)}, new ComponentRenderer())
                 .setCaption("Subscribe").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
+
         projectGrid.addColumn({ it.title })
                 .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ProjectSummary project -> project.title})
+
         projectGrid.addColumn({ it.code })
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
                 MAX_CODE_COLUMN_WIDTH)
+
         projectGrid.addColumn({it.samplesReceived}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesReceived)})
                 .setCaption("Samples Received").setId("SamplesReceived")
 
@@ -82,6 +87,23 @@ class ProjectView extends ProjectDesign{
         for (Grid.Column col : projectGrid.getColumns()) {
             col.setSortable(false)
         }
+    }
+
+    private void addTooltips(HeaderRow headerRow){
+        headerRow.getCell("Subscription").setStyleName("header-with-tooltip")
+        headerRow.getCell("Subscription").setDescription("Select a project to get status updates per email.")
+
+        headerRow.getCell("SamplesReceived").setStyleName("header-with-tooltip")
+        headerRow.getCell("SamplesReceived").setDescription("Number of samples that arrived in the processing facility.")
+
+        headerRow.getCell("SamplesPassedQc").setStyleName("header-with-tooltip")
+        headerRow.getCell("SamplesPassedQc").setDescription("Number of samples that passed quality control.")
+
+        headerRow.getCell("LibraryPrepFinished").setStyleName("header-with-tooltip")
+        headerRow.getCell("LibraryPrepFinished").setDescription("Number of samples where library prep has been finished.")
+
+        headerRow.getCell("SampleDataAvailable").setStyleName("header-with-tooltip")
+        headerRow.getCell("SampleDataAvailable").setDescription("Number of available raw datasets.")
     }
 
     private void bindManifestToProjectSelection() {
@@ -150,6 +172,9 @@ class ProjectView extends ProjectDesign{
     private void setupDownloadButton() {
         downloadButton.setIcon(VaadinIcons.DOWNLOAD)
         downloadButton.setVisible(false)
+
+        downloadButton.setDescription("A manifest is a text file with sample codes used by our client application to download the data attached to the defined samples. <br>" +
+                "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">"+ VaadinIcons.EXTERNAL_LINK.getHtml() +" qpostman</a> to download the sample data.", ContentMode.HTML)
 
         viewModel.addPropertyChangeListener("generatedManifest", {
             if (it.getOldValue() != it.getNewValue()) {
