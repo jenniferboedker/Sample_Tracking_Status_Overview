@@ -1,8 +1,7 @@
 package life.qbic.portal.sampletracking.components.sampleoverview
 
 import com.vaadin.data.provider.ListDataProvider
-import com.vaadin.shared.ui.grid.HeightMode
-import com.vaadin.ui.Grid
+import com.vaadin.ui.ComboBox
 import life.qbic.business.samples.Sample
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
@@ -10,10 +9,12 @@ import life.qbic.portal.sampletracking.communication.notification.NotificationSe
 import life.qbic.portal.sampletracking.components.ViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 
-class SampleView extends SampleDesign{
+class SampleView extends SampleDesign {
 
     private final ViewModel viewModel
     private final Presenter presenter
+
+    static private sampleFilter = new SampleFilterImpl()
 
 
     SampleView(ViewModel viewModel, NotificationService notificationService) {
@@ -21,10 +22,16 @@ class SampleView extends SampleDesign{
         this.viewModel = viewModel
         this.presenter = new Presenter(notificationService, viewModel)
 
+        init()
+    }
 
+    private void init(){
         activateViewToggle()
         createSamplesGrid()
         addColumnColoring()
+
+        setupStatusFiltering(sampleFilter)
+        addFilterToGrid()
     }
 
     private void activateViewToggle() {
@@ -32,10 +39,10 @@ class SampleView extends SampleDesign{
             viewModel.projectViewEnabled = true
         })
 
-        viewModel.addPropertyChangeListener("projectViewEnabled",{
-            if(viewModel.projectViewEnabled){
+        viewModel.addPropertyChangeListener("projectViewEnabled", {
+            if (viewModel.projectViewEnabled) {
                 this.projectsButton.setEnabled(false)
-            }else{
+            } else {
                 this.projectsButton.setEnabled(true)
             }
         })
@@ -46,16 +53,46 @@ class SampleView extends SampleDesign{
         sampleGrid.setDataProvider(dataProvider)
     }
 
-    void reset(){
+    private void addFilterToGrid(){
+        ListDataProvider<Sample> dataProvider = sampleGrid.getDataProvider() as ListDataProvider<Sample>
+
+        dataProvider.addFilter({ sampleFilter.asPredicate().test(it) })
+        dataProvider.refreshAll()
+    }
+
+    private ComboBox<Status> setupStatusFiltering(SampleFilter sampleFilter) {
+        statusComboBox.setItems(
+                Status.METADATA_REGISTERED,
+                Status.SAMPLE_RECEIVED,
+                Status.SAMPLE_QC_FAIL,
+                Status.SAMPLE_QC_PASS,
+                Status.LIBRARY_PREP_FINISHED,
+                Status.DATA_AVAILABLE
+        )
+        statusComboBox.setItemCaptionGenerator({ it.getDisplayName() })
+        statusComboBox.setEmptySelectionCaption("All statuses")
+        statusComboBox.addValueChangeListener({
+            if (it.getValue()) {
+                sampleFilter.withStatus(it.getValue().toString())
+            } else {
+                sampleFilter.clearStatus()
+            }
+            sampleGrid.dataProvider.refreshAll()
+        })
+        statusComboBox.setSizeUndefined()
+        return statusComboBox
+    }
+
+    void reset() {
         viewModel.samples.clear()
     }
 
-    Presenter getPresenter(){
+    Presenter getPresenter() {
         return presenter
     }
 
     private static String determineColor(Status status) {
-        switch (status){
+        switch (status) {
             case Status.DATA_AVAILABLE:
                 return State.COMPLETED.getCssClass()
             case Status.SAMPLE_QC_FAIL:
@@ -66,7 +103,7 @@ class SampleView extends SampleDesign{
     }
 
     private void addColumnColoring() {
-        sampleGrid.getColumn("status").setStyleGenerator({Sample sample -> determineColor(sample.status)})
+        sampleGrid.getColumn("status").setStyleGenerator({ Sample sample -> determineColor(sample.status) })
     }
 
     /**
