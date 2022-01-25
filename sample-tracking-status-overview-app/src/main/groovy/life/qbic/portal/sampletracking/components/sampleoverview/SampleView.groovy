@@ -23,15 +23,15 @@ class SampleView extends SampleDesign {
     super()
     this.viewModel = viewModel
     this.presenter = new Presenter(notificationService, viewModel)
-        init()
-    }
+    init()
+  }
 
-    private void init() {
-        activateViewToggle()
-        createSamplesGrid()
-        enableUserSampleFiltering()
-        addColumnColoring()
-    }
+  private void init() {
+    activateViewToggle()
+    createSamplesGrid()
+    enableUserSampleFiltering()
+    addColumnColoring()
+  }
 
   private void activateViewToggle() {
     this.projectsButton.addClickListener({
@@ -58,33 +58,6 @@ class SampleView extends SampleDesign {
     viewModel.samples.clear()
   }
 
-    private ComboBox<Status> setupStatusFiltering(SampleFilter sampleFilter) {
-        statusComboBox.setItems(
-                Status.METADATA_REGISTERED,
-                Status.SAMPLE_RECEIVED,
-                Status.SAMPLE_QC_FAIL,
-                Status.SAMPLE_QC_PASS,
-                Status.LIBRARY_PREP_FINISHED,
-                Status.DATA_AVAILABLE
-        )
-        statusComboBox.setItemCaptionGenerator({ it.getDisplayName() })
-        statusComboBox.setEmptySelectionCaption("All statuses")
-        statusComboBox.addValueChangeListener({
-            if (it.getValue()) {
-                sampleFilter.withStatus(it.getValue().toString())
-            } else {
-                sampleFilter.clearStatus()
-            }
-            sampleGrid.dataProvider.refreshAll()
-        })
-        statusComboBox.setSizeUndefined()
-        return statusComboBox
-    }
-
-    void reset() {
-        viewModel.samples.clear()
-    }
-
   Presenter getPresenter() {
     return presenter
   }
@@ -105,23 +78,19 @@ class SampleView extends SampleDesign {
   }
 
   void enableUserSampleFiltering() {
-
     enableUserFilterByStatus()
     enableUserFilterBySearchbar()
-
   }
 
   private void enableUserFilterByStatus() {
-    ComboBox<Status> statusComboBox = this.shownStatus
+    ComboBox<Status> statusComboBox = this.statusComboBox
 
-    statusComboBox.setItems(
-            Status.METADATA_REGISTERED,
+    statusComboBox.setItems(Status.METADATA_REGISTERED,
             Status.SAMPLE_RECEIVED,
             Status.SAMPLE_QC_FAIL,
             Status.SAMPLE_QC_PASS,
             Status.LIBRARY_PREP_FINISHED,
-            Status.DATA_AVAILABLE
-    )
+            Status.DATA_AVAILABLE)
     statusComboBox.setItemCaptionGenerator({ it.getDisplayName() })
     statusComboBox.setEmptySelectionCaption("All statuses")
     DataProvider<Sample, ?> dataProvider = this.sampleGrid.getDataProvider()
@@ -149,8 +118,7 @@ class SampleView extends SampleDesign {
   }
 
   /**
-   * Presenter filling the grid model with information
-   */
+   * Presenter filling the grid model with information*/
   private static class Presenter implements GetSamplesInfoOutput {
     private final NotificationService notificationService
     private final ViewModel viewModel
