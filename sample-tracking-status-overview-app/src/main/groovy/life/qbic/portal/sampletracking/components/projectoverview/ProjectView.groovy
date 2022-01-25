@@ -48,9 +48,6 @@ class ProjectView extends ProjectDesign{
         bindManifestToProjectSelection()
     }
 
-    /**
-     * NO LAYOUTING HERE
-     */
     private void bindData(){
         projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it)}, new ComponentRenderer())
                 .setCaption("Subscription Status").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
@@ -153,6 +150,7 @@ class ProjectView extends ProjectDesign{
 
     private void setupDownloadButton() {
         downloadButton.setIcon(VaadinIcons.DOWNLOAD)
+        downloadButton.setVisible(false)
 
         viewModel.addPropertyChangeListener("generatedManifest", {
             if (it.getOldValue() != it.getNewValue()) {
@@ -184,6 +182,7 @@ class ProjectView extends ProjectDesign{
                 String projectCode = it.getCode()
                 downloadProjectController.downloadProject(projectCode)
             })
+            downloadButton.setVisible(downloadableProject.isPresent())
         } catch (IllegalArgumentException illegalArgument ) {
             String projectCode = selectedSummary.map(ProjectSummary::getCode).orElse(
                     "No project selected")
