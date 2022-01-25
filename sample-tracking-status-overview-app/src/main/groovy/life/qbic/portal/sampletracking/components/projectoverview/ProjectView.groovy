@@ -7,6 +7,7 @@ import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.ClientConnector
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
+import com.vaadin.shared.data.sort.SortDirection
 import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Component
@@ -48,6 +49,7 @@ class ProjectView extends ProjectDesign {
         setupDownloadButton()
         bindManifestToProjectSelection()
         addTooltips(projectGrid.getDefaultHeaderRow())
+        addSorting()
     }
 
     private void bindData() {
@@ -104,6 +106,37 @@ class ProjectView extends ProjectDesign {
 
         headerRow.getCell("SampleDataAvailable").setStyleName("header-with-tooltip")
         headerRow.getCell("SampleDataAvailable").setDescription("Number of available raw datasets.")
+    }
+
+    private void addSorting(){
+        sort.setItems(["Subscribed", "Not Subscribed"])
+
+        addSortColumns()
+
+        sort.addValueChangeListener({
+            if(it.value){
+                switch (it.value){
+                    case "Subscribed":
+                        projectGrid.sort("isSubscribed", SortDirection.DESCENDING)
+                        break
+                    case "Not Subscribed":
+                        projectGrid.sort("isSubscribed", SortDirection.ASCENDING)
+                        break
+                    default:
+                        projectGrid.clearSortOrder()
+                }
+            }else{
+                projectGrid.clearSortOrder() //FYI because the dataprovider content is sorted by last updated this is how its sorted currently
+            }
+        })
+    }
+
+    /**
+     * Adds hidden columns used for sorting the grid
+     */
+    private void addSortColumns(){
+        projectGrid.addColumn({it.hasSubscription}).setId("isSubscribed")
+        projectGrid.getColumn("isSubscribed").setHidden(true)
     }
 
     private void bindManifestToProjectSelection() {
