@@ -15,6 +15,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * Update overall UI design (#198)
 
+* Add tooltips and cursor change for better UX (#201)
+
 **Dependencies**
 
 **Deprecated**
