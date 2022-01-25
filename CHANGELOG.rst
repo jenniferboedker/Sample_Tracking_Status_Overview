@@ -11,6 +11,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * Changed notification style (#191)
 
+* Add sorting by subscription (#204)
+
 **Fixed**
 
 * Update overall UI design (#198)
