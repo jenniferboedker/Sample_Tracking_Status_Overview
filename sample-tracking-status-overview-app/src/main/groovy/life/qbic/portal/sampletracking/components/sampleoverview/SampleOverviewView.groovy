@@ -80,8 +80,8 @@ class SampleOverviewView extends VerticalLayout implements HasHotbar, HasTitle, 
     private static Grid<Sample> createSamplesGrid(Collection<Sample> samples) {
         Grid<Sample> samplesGrid = new Grid<>()
         ListDataProvider<Sample> dataProvider = ListDataProvider.ofCollection(samples)
-        samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
         samplesGrid.addColumn(Sample::getName).setCaption("Sample Name").setId("SampleName")
+        samplesGrid.addColumn(Sample::getCode).setCaption("Sample Code").setId("SampleCode")
         samplesGrid.addColumn(Sample::getStatus).setCaption("Sample Status").setId("SampleStatus")
                 .setStyleGenerator({Sample sample -> determineColor(sample.status)})
         samplesGrid.setSelectionMode(Grid.SelectionMode.NONE)

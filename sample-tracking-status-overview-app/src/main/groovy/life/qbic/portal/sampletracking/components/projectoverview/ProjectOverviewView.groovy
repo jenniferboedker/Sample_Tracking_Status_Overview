@@ -12,6 +12,7 @@ import com.vaadin.shared.ui.MarginInfo
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.*
 import com.vaadin.ui.Grid.Column
+import com.vaadin.ui.components.grid.HeaderRow
 import com.vaadin.ui.renderers.ComponentRenderer
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.Constants
@@ -157,8 +158,8 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         button.setIcon(VaadinIcons.QUESTION_CIRCLE)
         button.setStyleName("round-button")
 
-        button.setDescription("A manifest is a text file used by a client application (e.g. <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a>) to download selected files of interest. <br>" +
-                "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">qpostman</a> to download the data.", ContentMode.HTML)
+        button.setDescription("A manifest is a text file with sample codes used by our client application to download the data attached to the defined samples. <br>" +
+                "Use <a href=\"https://github.com/qbicsoftware/postman-cli\" target=\"_blank\">"+ VaadinIcons.EXTERNAL_LINK.getHtml() +" qpostman</a> to download the sample data.", ContentMode.HTML)
 
         button.addClickListener({
             getUI().getPage().open(
@@ -261,13 +262,14 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
     }
 
     private void fillProjectsGrid() {
+
         projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it)}, new ComponentRenderer())
                 .setCaption("Subscription Status").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({"subscription-checkbox"})
+        projectGrid.addColumn({ it.title })
+                .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ProjectSummary project -> project.title})
         projectGrid.addColumn({ it.code })
                 .setCaption("Project Code").setId("ProjectCode").setMaximumWidth(
                 MAX_CODE_COLUMN_WIDTH)
-        projectGrid.addColumn({ it.title })
-                .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ProjectSummary project -> project.title})
 
         projectGrid.addColumn({it.samplesReceived}).setStyleGenerator({ProjectSummary project -> getStyleForColumn(project.samplesReceived)})
                 .setCaption("Samples Received").setId("SamplesReceived")
@@ -290,6 +292,22 @@ class ProjectOverviewView extends VerticalLayout implements HasHotbar, HasTitle 
         projectGrid.getColumn("SampleDataAvailable").setExpandRatio(1)
 
         projectGrid.setHeightMode(HeightMode.ROW)
+
+        HeaderRow headerRow = projectGrid.getDefaultHeaderRow()
+        headerRow.getCell("Subscription").setStyleName("header-with-tooltip")
+        headerRow.getCell("Subscription").setDescription("Select a project to get status updates per email.")
+
+        headerRow.getCell("SamplesReceived").setStyleName("header-with-tooltip")
+        headerRow.getCell("SamplesReceived").setDescription("Number of samples that arrived in the processing facility.")
+
+        headerRow.getCell("SamplesPassedQc").setStyleName("header-with-tooltip")
+        headerRow.getCell("SamplesPassedQc").setDescription("Number of samples that passed quality control.")
+
+        headerRow.getCell("LibraryPrepFinished").setStyleName("header-with-tooltip")
+        headerRow.getCell("LibraryPrepFinished").setDescription("Number of samples where library prep has been finished.")
+
+        headerRow.getCell("SampleDataAvailable").setStyleName("header-with-tooltip")
+        headerRow.getCell("SampleDataAvailable").setDescription("Number of available raw datasets.")
 
         // remove manual sorting - any sorting in the code should probably done before disabling it
         for (Column col : projectGrid.getColumns()) {
