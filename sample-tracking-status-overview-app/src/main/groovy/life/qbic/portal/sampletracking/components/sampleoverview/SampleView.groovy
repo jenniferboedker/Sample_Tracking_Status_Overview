@@ -2,7 +2,6 @@ package life.qbic.portal.sampletracking.components.sampleoverview
 
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
-import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.TextField
 import life.qbic.business.samples.Sample
@@ -110,7 +109,6 @@ class SampleView extends SampleDesign {
   void enableUserFilterBySearchbar() {
     TextField searchField = this.searchField
     DataProvider<Sample, ?> dataProvider = this.sampleGrid.getDataProvider()
-    searchField.setValueChangeMode(ValueChangeMode.EAGER)
     searchField.addValueChangeListener({
       if (it.getValue()) {
         sampleFilter.containingText(it.getValue())

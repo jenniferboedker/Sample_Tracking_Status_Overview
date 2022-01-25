@@ -53,7 +53,7 @@ public class SampleFilterImpl implements SampleFilter {
     final Predicate<Sample> statusMatches = it -> allowedStatuses.isEmpty()
       || allowedStatuses.contains(it.getStatus().toString());
 
-    return statusMatches.and(containsText);
+    return containsText.and(statusMatches);
   }
 
 
