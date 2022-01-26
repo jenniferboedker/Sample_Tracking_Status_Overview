@@ -92,7 +92,7 @@ class SampleView extends SampleDesign {
             Status.LIBRARY_PREP_FINISHED,
             Status.DATA_AVAILABLE)
     statusComboBox.setItemCaptionGenerator({ it.getDisplayName() })
-    statusComboBox.setEmptySelectionCaption("All statuses")
+
     DataProvider<Sample, ?> dataProvider = this.sampleGrid.getDataProvider()
     statusComboBox.addValueChangeListener({
       if (it.getValue()) {

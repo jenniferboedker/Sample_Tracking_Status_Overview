@@ -7,6 +7,7 @@ import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.ClientConnector
 import com.vaadin.server.FileDownloader
 import com.vaadin.server.StreamResource
+import com.vaadin.shared.data.sort.SortDirection
 import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Component
@@ -50,12 +51,14 @@ class ProjectView extends ProjectDesign {
         setupDownloadButton()
         bindManifestToProjectSelection()
         addTooltips(projectGrid.getDefaultHeaderRow())
+        addSorting()
         enableUserProjectFiltering()
     }
 
     private void bindData() {
         projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it) }, new ComponentRenderer())
-                .setCaption("Subscribe").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({ "subscription-checkbox" })
+                .setCaption("Subscribe").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH)
+                .setStyleGenerator({ "subscription-checkbox" }).setComparator((o1, o2) -> o1.hasSubscription <=> o2.hasSubscription)
 
         projectGrid.addColumn({ it.title })
                 .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ ProjectSummary project -> project.title })
@@ -75,6 +78,9 @@ class ProjectView extends ProjectDesign {
 
         projectGrid.addColumn({ it.sampleDataAvailable }).setStyleGenerator({ ProjectSummary project -> getStyleForColumn(project.sampleDataAvailable) })
                 .setCaption("Data Available").setId("SampleDataAvailable")
+
+        projectGrid.addColumn({it.lastChanged}).setId("lastUpdated").setHidden(true)
+
         refreshDataProvider()
         //specify size of grid and layout
         projectGrid.setWidthFull()
@@ -107,6 +113,33 @@ class ProjectView extends ProjectDesign {
 
         headerRow.getCell("SampleDataAvailable").setStyleName("header-with-tooltip")
         headerRow.getCell("SampleDataAvailable").setDescription("Number of available raw datasets.")
+    }
+
+    private void addSorting(){
+        sort.setItems(["Recently Updated", "Last Recently Updated", "Subscribed", "Not Subscribed"])
+
+        sort.addValueChangeListener({
+            if(it.value){
+                switch (it.value){
+                    case "Subscribed":
+                        projectGrid.sort("Subscription", SortDirection.DESCENDING)
+                        break
+                    case "Not Subscribed":
+                        projectGrid.sort("Subscription", SortDirection.ASCENDING)
+                        break
+                    case "Recently Updated":
+                        projectGrid.sort("lastUpdated", SortDirection.DESCENDING)
+                        break
+                    case "Last Recently Updated":
+                        projectGrid.sort("lastUpdated", SortDirection.ASCENDING)
+                        break
+                    default:
+                        projectGrid.clearSortOrder()
+                }
+            }else{
+                projectGrid.clearSortOrder() //FYI because the dataprovider content is sorted by last updated this is how its sorted currently
+            }
+        })
     }
 
     private void bindManifestToProjectSelection() {
