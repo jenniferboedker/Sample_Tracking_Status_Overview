@@ -25,6 +25,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Dependencies**
 
+* ``life.qbic:data-model-lib:2.12.0`` -> ``2.15.0``
+
 **Deprecated**
 
 1.0.0-beta.10 (2022-01-18)
