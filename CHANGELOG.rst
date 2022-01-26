@@ -4,16 +4,18 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-1.0.0-beta.11-SNAPSHOT (2022-01-18)
+1.0.0-beta.11 (2022-01-26)
 ---------------------------
 
 **Added**
 
 * Changed notification style (#191)
 
-* Add sorting by subscription (#204)
+* Add sorting by subscription and last updated (#204)
 
 * Implement searchbar for projects and samples (#205)
+
+* Add filtering by status (#199)
 
 **Fixed**
 
