@@ -11,8 +11,8 @@ import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
-import com.vaadin.ui.components.grid.HeaderRow
 import com.vaadin.ui.TextField
+import com.vaadin.ui.components.grid.HeaderRow
 import com.vaadin.ui.renderers.ComponentRenderer
 import groovy.util.logging.Log4j2
 import life.qbic.business.project.subscribe.Subscriber

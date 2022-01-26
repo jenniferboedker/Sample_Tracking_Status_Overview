@@ -43,8 +43,9 @@ public class SampleFilterImpl implements SampleFilter {
   @Override
   public Predicate<? extends Sample> asPredicate() {
     final Predicate<Sample> containsText = it -> {
-      if (substring.isEmpty())
+      if (substring.isEmpty()) {
         return true;
+      }
       boolean codeContainsText = containsIgnoreCase(it.getCode(), (substring));
       boolean nameContainsText = containsIgnoreCase(it.getName(), (substring));
       return codeContainsText || nameContainsText;
