@@ -4,6 +4,31 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
+1.0.0-beta.11 (2022-01-26)
+---------------------------
+
+**Added**
+
+* Changed notification style (#191)
+
+* Add sorting by subscription and last updated (#204)
+
+* Implement searchbar for projects and samples (#205)
+
+* Add filtering by status (#199)
+
+**Fixed**
+
+* Update overall UI design (#198)
+
+* Add tooltips and cursor change for better UX (#201)
+
+**Dependencies**
+
+* ``life.qbic:data-model-lib:2.12.0`` -> ``2.15.0``
+
+**Deprecated**
+
 1.0.0-beta.10 (2022-01-18)
 ---------------------------
 

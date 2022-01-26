@@ -21,8 +21,10 @@ class TestingSystemContext {
     static Optional<PortalUser> getUser() {
         String email = System.getProperty("email")
         String auth_id = System.getProperty("auth_id")
+        String firstName = System.getProperty("first_name") ?: "Test"
+        String lastName = System.getProperty("last_name") ?: "User"
         PortalUser testUser = new PortalUser.Builder(email,
-                auth_id, "Test", "User", email).build()
+                auth_id, firstName, lastName, email).build()
         return Optional.of(testUser)
     }
 

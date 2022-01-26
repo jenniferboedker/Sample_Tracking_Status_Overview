@@ -20,7 +20,7 @@ class SampleOverviewController {
      * @param projectCode identifies the project, samples are loaded for
      * @since 1.0.0
      */
-    void getSamplesFor(String projectCode){
+    void getSamplesFor(String projectCode) {
         getSamplesInfoInput.requestSampleInfosFor(projectCode)
     }
 }

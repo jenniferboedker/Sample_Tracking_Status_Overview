@@ -78,4 +78,12 @@
     cursor: pointer;
   }
 
+  .v-grid-cell.header-with-tooltip {
+    cursor: help;
+  }
+
+  .backColor{
+    background: grey;
+  }
+
 }

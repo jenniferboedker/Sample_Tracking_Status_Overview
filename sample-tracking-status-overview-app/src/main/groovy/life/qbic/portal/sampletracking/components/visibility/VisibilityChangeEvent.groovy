@@ -10,12 +10,12 @@ import com.vaadin.ui.Component
  * @since 1.0.0
  */
 class VisibilityChangeEvent {
-  final Component source
-  final boolean oldValue, newValue
+    final Component source
+    final boolean oldValue, newValue
 
-  VisibilityChangeEvent(Component source, boolean oldValue, boolean newValue) {
-    this.source = source
-    this.oldValue = oldValue
-    this.newValue = newValue
-  }
+    VisibilityChangeEvent(Component source, boolean oldValue, boolean newValue) {
+        this.source = source
+        this.oldValue = oldValue
+        this.newValue = newValue
+    }
 }

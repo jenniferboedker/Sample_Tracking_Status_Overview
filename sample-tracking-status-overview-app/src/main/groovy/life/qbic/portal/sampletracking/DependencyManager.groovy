@@ -22,11 +22,14 @@ import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.portal.sampletracking.communication.notification.MessageBroker
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.AppView
+import life.qbic.portal.sampletracking.components.MainPage
 import life.qbic.portal.sampletracking.components.NotificationHandler
+import life.qbic.portal.sampletracking.components.ViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.CountSamplesPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.LoadProjectsPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewView
 import life.qbic.portal.sampletracking.components.projectoverview.ProjectOverviewViewModel
+import life.qbic.portal.sampletracking.components.projectoverview.ProjectView
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.download.ManifestPresenter
 import life.qbic.portal.sampletracking.components.projectoverview.samplelist.FailedQCSamplesController
@@ -35,6 +38,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.subscribe.Subs
 import life.qbic.portal.sampletracking.components.projectoverview.subscribe.SubscribeProjectPresenter
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewView
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewController
+import life.qbic.portal.sampletracking.components.sampleoverview.SampleView
 import life.qbic.portal.sampletracking.datasources.Credentials
 import life.qbic.portal.sampletracking.datasources.OpenBisConnector
 import life.qbic.portal.sampletracking.datasources.database.DatabaseSession
@@ -55,7 +59,7 @@ import life.qbic.portal.utils.ConfigurationManagerFactory
  *
  * @since 1.0.0
  *
-*/
+ */
 class DependencyManager {
     private VerticalLayout portletView
     private ConfigurationManager configurationManager
@@ -149,39 +153,14 @@ class DependencyManager {
     }
 
     private VerticalLayout setupPortletView() {
-        ProjectOverviewView projectOverviewView = createProjectOverviewView()
-        SampleOverviewView sampleOverviewView = new SampleOverviewView(notificationService)
-        SampleOverviewController projectSamplesController = setupProjectSamplesUseCase(sampleOverviewView.getPresenter())
+        ViewModel viewModel = new ViewModel(projectResourceService, statusCountService)
+        SampleView sampleView = new SampleView(viewModel, notificationService)
+        ProjectView projectView = new ProjectView(viewModel, setupSubscribeProjectUseCase(), notificationService, subscriptionUser, setupDownloadProjectUseCase(viewModel))
+        SampleOverviewController sampleOverviewController = setupProjectSamplesUseCase(sampleView.getPresenter())
 
+        MainPage mainPage = new MainPage(projectView, sampleView, viewModel, sampleOverviewController)
 
-        AppView mainView = new AppView(projectOverviewView, sampleOverviewView, projectSamplesController)
-        return mainView
-    }
-
-    /**
-     * Creates a new ProjectOverviewView using
-     * <ul>
-     *     <li>{@link #projectResourceService}</li>
-     *     <li>{@link #statusCountService}</li>
-     * </ul>
-     * @return a new ProjectOverviewView
-     */
-    private ProjectOverviewView createProjectOverviewView() {
-        ProjectOverviewViewModel viewModel = new ProjectOverviewViewModel(projectResourceService, statusCountService,
-                this.subscriptionUser)
-        SubscribeProjectController subscribeProjectController = setupSubscribeProjectUseCase()
-        DownloadProjectController downloadController = setupDownloadProjectUseCase(viewModel)
-
-        FailedQCSamplesView failedQCSamplesView = new FailedQCSamplesView(notificationService)
-        FailedQCSamplesController failedQCSamplesController = setupFailedQCUseCase(failedQCSamplesView.getPresenter())
-
-        ProjectOverviewView view = new ProjectOverviewView(notificationService,
-                viewModel,
-                downloadController,
-                failedQCSamplesView,
-                failedQCSamplesController,
-                subscribeProjectController)
-        return view
+        return mainPage
     }
 
     private SampleOverviewController setupProjectSamplesUseCase(GetSamplesInfoOutput output) {
@@ -189,15 +168,10 @@ class DependencyManager {
         return new SampleOverviewController(getSamplesInfo)
     }
 
-    private FailedQCSamplesController setupFailedQCUseCase(GetSamplesInfoOutput output){
-        GetSamplesInfo getSamplesInfo = new GetSamplesInfo(sampleStatusDataSource, downloadSamplesDataSource,getSamplesInfoDataSource, output)
-        return new FailedQCSamplesController(getSamplesInfo)
-    }
-
-    private DownloadProjectController setupDownloadProjectUseCase(ProjectOverviewViewModel viewModel) {
+    private DownloadProjectController setupDownloadProjectUseCase(ViewModel viewModel) {
         DownloadSamplesOutput output = new ManifestPresenter(notificationService, viewModel)
         DownloadSamples downloadSamples = new DownloadSamples(downloadSamplesDataSource, output)
-        
+
         return new DownloadProjectController(downloadSamples)
     }
 
@@ -213,7 +187,7 @@ class DependencyManager {
      */
     private void populateProjectService() {
         LoadProjectsOutput output = new LoadProjectsPresenter(projectResourceService, notificationService)
-        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output, lastChangedDateDataSource, subscribedProjectsDataSource )
+        LoadProjectsInput loadProjects = new LoadProjects(loadProjectsDataSource, output, lastChangedDateDataSource, subscribedProjectsDataSource)
         loadProjects.withSubscriptions(subscriptionUser)
     }
 
@@ -231,7 +205,7 @@ class DependencyManager {
         }
     }
 
-        /**
+    /**
      * Returns the global notification center
      * @return a notification center that handles app notifications
      */

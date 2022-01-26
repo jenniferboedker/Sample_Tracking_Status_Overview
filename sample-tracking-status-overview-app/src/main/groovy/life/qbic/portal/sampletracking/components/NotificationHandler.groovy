@@ -23,7 +23,7 @@ class NotificationHandler {
     }
 
     private static void showMessage(String message, Type type) {
-        Notification notification = new Notification(message, type)
+        StyledNotification notification = new StyledNotification(message, type)
         if (Page.getCurrent()) {
             notification.show(Page.getCurrent())
         } else {
@@ -33,8 +33,8 @@ class NotificationHandler {
 
 
     void subscribeToService() {
-        notificationService.subscribe({showMessage(it, Type.ERROR_MESSAGE)}, Topic.NOTIFICATION_FAILURE)
-        notificationService.subscribe({showMessage(it, Type.HUMANIZED_MESSAGE)}, Topic.NOTIFICATION_SUCCESS)
-        notificationService.subscribe({showMessage(it, Type.ASSISTIVE_NOTIFICATION)}, Topic.NOTIFICATION_INFO)
+        notificationService.subscribe({ showMessage(it, Type.ERROR_MESSAGE) }, Topic.NOTIFICATION_FAILURE)
+        notificationService.subscribe({ showMessage(it, Type.HUMANIZED_MESSAGE) }, Topic.NOTIFICATION_SUCCESS)
+        notificationService.subscribe({ showMessage(it, Type.ASSISTIVE_NOTIFICATION) }, Topic.NOTIFICATION_INFO)
     }
 }
