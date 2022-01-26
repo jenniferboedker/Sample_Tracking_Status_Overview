@@ -122,8 +122,11 @@ class ProjectView extends ProjectDesign {
                     case "Not Subscribed":
                         projectGrid.sort("isSubscribed", SortDirection.ASCENDING)
                         break
-                    case "Last Updated":
+                    case "Recently Updated":
                         projectGrid.sort("lastUpdated", SortDirection.DESCENDING)
+                        break
+                    case "Last Recently Updated":
+                        projectGrid.sort("lastUpdated", SortDirection.ASCENDING)
                         break
                     default:
                         projectGrid.clearSortOrder()
