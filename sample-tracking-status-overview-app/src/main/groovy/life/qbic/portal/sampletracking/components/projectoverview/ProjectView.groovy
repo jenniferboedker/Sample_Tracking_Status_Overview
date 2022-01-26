@@ -109,7 +109,7 @@ class ProjectView extends ProjectDesign {
     }
 
     private void addSorting(){
-        sort.setItems(["Subscribed", "Not Subscribed"])
+        sort.setItems(["Last Updated", "Subscribed", "Not Subscribed"])
 
         addSortColumns()
 
@@ -121,6 +121,9 @@ class ProjectView extends ProjectDesign {
                         break
                     case "Not Subscribed":
                         projectGrid.sort("isSubscribed", SortDirection.ASCENDING)
+                        break
+                    case "Last Updated":
+                        projectGrid.sort("lastUpdated", SortDirection.DESCENDING)
                         break
                     default:
                         projectGrid.clearSortOrder()
@@ -135,8 +138,9 @@ class ProjectView extends ProjectDesign {
      * Adds hidden columns used for sorting the grid
      */
     private void addSortColumns(){
-        projectGrid.addColumn({it.hasSubscription}).setId("isSubscribed")
-        projectGrid.getColumn("isSubscribed").setHidden(true)
+        projectGrid.addColumn({it.hasSubscription}).setId("isSubscribed").setHidden(true)
+
+        projectGrid.addColumn({it.lastChanged}).setId("lastUpdated").setHidden(true)
     }
 
     private void bindManifestToProjectSelection() {
