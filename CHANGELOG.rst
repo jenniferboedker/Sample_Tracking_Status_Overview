@@ -13,6 +13,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * Add sorting by subscription (#204)
 
+* Implement searchbar for projects and samples (#205)
+
 **Fixed**
 
 * Update overall UI design (#198)

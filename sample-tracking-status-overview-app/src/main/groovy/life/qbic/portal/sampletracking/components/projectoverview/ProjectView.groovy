@@ -12,6 +12,7 @@ import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
+import com.vaadin.ui.TextField
 import com.vaadin.ui.components.grid.HeaderRow
 import com.vaadin.ui.renderers.ComponentRenderer
 import groovy.util.logging.Log4j2
@@ -35,6 +36,7 @@ class ProjectView extends ProjectDesign {
     final static int MAX_CODE_COLUMN_WIDTH = 400
     private final SubscriptionCheckboxFactory subscriptionCheckboxFactory
     private final NotificationService notificationService
+    private final ProjectFilter projectFilter = new ProjectFilterImpl().allowEmptyProjects(false)
 
 
     ProjectView(ViewModel viewModel, SubscribeProjectController subscribeProjectController, NotificationService notificationService, Subscriber subscriber, DownloadProjectController downloadProjectController) {
@@ -50,6 +52,7 @@ class ProjectView extends ProjectDesign {
         bindManifestToProjectSelection()
         addTooltips(projectGrid.getDefaultHeaderRow())
         addSorting()
+        enableUserProjectFiltering()
     }
 
     private void bindData() {
@@ -95,7 +98,7 @@ class ProjectView extends ProjectDesign {
         }
     }
 
-    private void addTooltips(HeaderRow headerRow) {
+    private static void addTooltips(HeaderRow headerRow) {
         headerRow.getCell("Subscription").setStyleName("header-with-tooltip")
         headerRow.getCell("Subscription").setDescription("Select a project to get status updates per email.")
 
@@ -144,16 +147,11 @@ class ProjectView extends ProjectDesign {
     }
 
     private void refreshDataProvider() {
-        DataProvider dataProvider = new ListDataProvider(viewModel.projectSummaries)
+        ListDataProvider<ProjectSummary> dataProvider = new ListDataProvider(viewModel.projectSummaries)
+        dataProvider.addFilter((ProjectSummary it) -> projectFilter.asPredicate().test(it))
         projectGrid.setDataProvider(dataProvider)
-
-        filterEmptyProjects()
     }
 
-    private void filterEmptyProjects() {
-        ListDataProvider<ProjectSummary> dataProvider = (ListDataProvider<ProjectSummary>) projectGrid.getDataProvider()
-        dataProvider.setFilter(ProjectSummary::getTotalSampleCount, totalNumber -> totalNumber > 0)
-    }
 
     private static String getStyleForColumn(SampleCount sampleStatusCount) {
         State state = determineCompleteness(sampleStatusCount)
@@ -273,6 +271,19 @@ class ProjectView extends ProjectDesign {
     void onSelectedProjectChange(Consumer<ProjectSummary> projectConsumer) {
         viewModel.addPropertyChangeListener("selectedProject", {
             projectConsumer.accept(viewModel.selectedProject)
+        })
+    }
+
+    void enableUserProjectFiltering() {
+        TextField searchField = this.searchField
+        DataProvider<ProjectSummary, ?> dataProvider = this.projectGrid.getDataProvider()
+        searchField.addValueChangeListener({
+            if (it.getValue()) {
+                projectFilter.containingText(it.getValue())
+            } else {
+                projectFilter.containingText("")
+            }
+            dataProvider.refreshAll()
         })
     }
 }
