@@ -70,7 +70,7 @@ class SampleView extends SampleDesign {
                 Status.DATA_AVAILABLE
         )
         statusComboBox.setItemCaptionGenerator({ it.getDisplayName() })
-        statusComboBox.setEmptySelectionCaption("All statuses")
+
         statusComboBox.addValueChangeListener({
             if (it.getValue()) {
                 sampleFilter.withStatus(it.getValue().toString())
