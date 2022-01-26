@@ -195,6 +195,10 @@ class ProjectView extends ProjectDesign {
             return "clickable-row"
         })
 
+        viewModel.updatedProjectsChannel.subscribe({ updatedProjectCode ->
+            refreshDataProvider()
+        })
+
         this.samplesButton.addClickListener({
             viewModel.projectViewEnabled = false
         })
