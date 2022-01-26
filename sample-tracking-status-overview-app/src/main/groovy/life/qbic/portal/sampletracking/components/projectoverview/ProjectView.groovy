@@ -54,7 +54,8 @@ class ProjectView extends ProjectDesign {
 
     private void bindData() {
         projectGrid.addColumn({ subscriptionCheckboxFactory.getSubscriptionCheckbox(it) }, new ComponentRenderer())
-                .setCaption("Subscribe").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH).setStyleGenerator({ "subscription-checkbox" })
+                .setCaption("Subscribe").setId("Subscription").setMaximumWidth(MAX_CODE_COLUMN_WIDTH)
+                .setStyleGenerator({ "subscription-checkbox" }).setComparator((o1, o2) -> o1.hasSubscription <=> o2.hasSubscription)
 
         projectGrid.addColumn({ it.title })
                 .setCaption("Project Title").setId("ProjectTitle").setDescriptionGenerator({ ProjectSummary project -> project.title })
@@ -74,6 +75,9 @@ class ProjectView extends ProjectDesign {
 
         projectGrid.addColumn({ it.sampleDataAvailable }).setStyleGenerator({ ProjectSummary project -> getStyleForColumn(project.sampleDataAvailable) })
                 .setCaption("Data Available").setId("SampleDataAvailable")
+
+        projectGrid.addColumn({it.lastChanged}).setId("lastUpdated").setHidden(true)
+
         refreshDataProvider()
         //specify size of grid and layout
         projectGrid.setWidthFull()
@@ -111,16 +115,14 @@ class ProjectView extends ProjectDesign {
     private void addSorting(){
         sort.setItems(["Recently Updated", "Last Recently Updated", "Subscribed", "Not Subscribed"])
 
-        addSortColumns()
-
         sort.addValueChangeListener({
             if(it.value){
                 switch (it.value){
                     case "Subscribed":
-                        projectGrid.sort("isSubscribed", SortDirection.DESCENDING)
+                        projectGrid.sort("Subscription", SortDirection.DESCENDING)
                         break
                     case "Not Subscribed":
-                        projectGrid.sort("isSubscribed", SortDirection.ASCENDING)
+                        projectGrid.sort("Subscription", SortDirection.ASCENDING)
                         break
                     case "Recently Updated":
                         projectGrid.sort("lastUpdated", SortDirection.DESCENDING)
@@ -135,15 +137,6 @@ class ProjectView extends ProjectDesign {
                 projectGrid.clearSortOrder() //FYI because the dataprovider content is sorted by last updated this is how its sorted currently
             }
         })
-    }
-
-    /**
-     * Adds hidden columns used for sorting the grid
-     */
-    private void addSortColumns(){
-        projectGrid.addColumn({it.hasSubscription}).setId("isSubscribed").setHidden(true)
-
-        projectGrid.addColumn({it.lastChanged}).setId("lastUpdated").setHidden(true)
     }
 
     private void bindManifestToProjectSelection() {
