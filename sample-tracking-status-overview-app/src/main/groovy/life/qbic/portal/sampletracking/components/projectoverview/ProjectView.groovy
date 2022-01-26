@@ -109,7 +109,7 @@ class ProjectView extends ProjectDesign {
     }
 
     private void addSorting(){
-        sort.setItems(["Last Updated", "Subscribed", "Not Subscribed"])
+        sort.setItems(["Recently Updated", "Last Recently Updated", "Subscribed", "Not Subscribed"])
 
         addSortColumns()
 
