@@ -1,7 +1,6 @@
 package life.qbic.portal.sampletracking.components
 
 import com.vaadin.server.Page
-import com.vaadin.ui.Notification
 import com.vaadin.ui.Notification.Type
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.communication.Topic
