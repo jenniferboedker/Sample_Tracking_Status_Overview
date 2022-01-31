@@ -1,7 +1,6 @@
 package life.qbic.business.samples.info
 
 import life.qbic.business.samples.Sample
-import life.qbic.datamodel.samples.Status
 
 /**
  * <b>Output interface for the {@link GetSamplesInfo} feature</b>
