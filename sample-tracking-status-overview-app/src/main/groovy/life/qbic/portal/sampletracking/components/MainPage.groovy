@@ -19,6 +19,8 @@ class MainPage extends VerticalLayout {
         this.viewModel = viewModel
         this.controller = sampleOverviewController
 
+        this.setMargin(false)
+
         this.addComponents(projectLayout, sampleLayout)
         sampleLayout.setVisible(false)
 
