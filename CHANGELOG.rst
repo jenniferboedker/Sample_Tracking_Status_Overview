@@ -26,16 +26,18 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Searchbar allows filtering samples and projects by code, label and title
 
 
-1.0.0-beta.11-SNAPSHOT (2022-01-18)
+1.0.0-beta.11-SNAPSHOT (2022-01-26)
 ---------------------------
 
 **Added**
 
 * Changed notification style (#191)
 
-* Add sorting by subscription (#204)
+* Add sorting by subscription and last updated (#204)
 
 * Implement searchbar for projects and samples (#205)
+
+* Add filtering by status (#199)
 
 **Fixed**
 
@@ -44,6 +46,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Add tooltips and cursor change for better UX (#201)
 
 **Dependencies**
+
+* ``life.qbic:data-model-lib:2.12.0`` -> ``2.15.0``
 
 **Deprecated**
 
