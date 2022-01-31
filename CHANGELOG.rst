@@ -4,16 +4,51 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-1.0.0-beta.11-SNAPSHOT (2022-01-18)
+1.1.0-SNAPSHOT (2022-01-31)
+---------------------------
+
+**Added**
+
+**Fixed**
+
+**Dependencies**
+
+**Deprecated**
+
+1.0.0 (2022-01-31)
+---------------------------
+
+**Added**
+
+* Introduce a grid showing all project with code, title, subscription status
+
+* Introduce a grid showing all samples of a project with code, label, status
+
+* Show number of samples per project for each status: Sample Received, Sample available, Samples Passed/Failing QC, Library Prep Finished, Data Available
+
+* Download of available sample data via a manifest file
+
+* Possibility to subscribe and unsubscribe to project notifications
+
+* Colored sample counts and statuses
+
+* Sorting by subscription and updated status such as sample statuses
+
+* Searchbar allows filtering samples and projects by code, label and title
+
+
+1.0.0-beta.11-SNAPSHOT (2022-01-26)
 ---------------------------
 
 **Added**
 
 * Changed notification style (#191)
 
-* Add sorting by subscription (#204)
+* Add sorting by subscription and last updated (#204)
 
 * Implement searchbar for projects and samples (#205)
+
+* Add filtering by status (#199)
 
 **Fixed**
 
@@ -22,6 +57,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Add tooltips and cursor change for better UX (#201)
 
 **Dependencies**
+
+* ``life.qbic:data-model-lib:2.12.0`` -> ``2.15.0``
 
 **Deprecated**
 
