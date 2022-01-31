@@ -1,10 +1,6 @@
 package life.qbic.business.project.subscribe
 
 import life.qbic.business.DataSourceException
-import life.qbic.datamodel.validation.ValidationException
-import life.qbic.datamodel.validation.projectmanagement.ProjectCodeValidator
-
-import java.util.function.Consumer
 
 /**
  * <b>Subscribe to a project or remove a subscription</b>
@@ -40,9 +36,9 @@ class SubscribeProject implements SubscribeProjectInput {
         try {
             dataSource.unsubscribeFromProject(subscriber, projectCode)
             output.subscriptionRemoved(projectCode)
-        } catch (DataSourceException dataSourceException) {
+        } catch (DataSourceException ignored) {
             output.unsubscriptionFailed(subscriber, projectCode)
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             throw new RuntimeException("Could not unsubscribe ${subscriber.firstName} ${subscriber.lastName} (${subscriber.email}) from ${projectCode}.")
         }
     }

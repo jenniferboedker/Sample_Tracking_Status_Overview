@@ -1,10 +1,9 @@
-package life.qbic.portal.sampletracking.components;
+package life.qbic.portal.sampletracking.components
 
-import life.qbic.portal.sampletracking.components.projectoverview.ProjectView;
 import com.vaadin.ui.VerticalLayout
-import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewController;
+import life.qbic.portal.sampletracking.components.projectoverview.ProjectView
+import life.qbic.portal.sampletracking.components.sampleoverview.SampleOverviewController
 import life.qbic.portal.sampletracking.components.sampleoverview.SampleView
-
 
 class MainPage extends VerticalLayout {
 
