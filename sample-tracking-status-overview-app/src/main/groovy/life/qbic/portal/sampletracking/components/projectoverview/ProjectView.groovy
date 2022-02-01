@@ -6,10 +6,13 @@ import com.vaadin.event.selection.SingleSelectionEvent
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.ClientConnector
 import com.vaadin.server.FileDownloader
+import com.vaadin.server.Page
 import com.vaadin.server.StreamResource
+import com.vaadin.server.WebBrowser
 import com.vaadin.shared.data.sort.SortDirection
 import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
+import com.vaadin.ui.Alignment
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
@@ -38,19 +41,18 @@ class ProjectView extends ProjectDesign {
     private final NotificationService notificationService
     private final ProjectFilter projectFilter = new ProjectFilterImpl().allowEmptyProjects(false)
 
-
     ProjectView(ViewModel viewModel, SubscribeProjectController subscribeProjectController, NotificationService notificationService, Subscriber subscriber, DownloadProjectController downloadProjectController) {
         super()
         this.viewModel = viewModel
         this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, subscriber, notificationService)
         this.downloadProjectController = downloadProjectController
         this.notificationService = notificationService
-
         bindData()
         addClickListener()
         setupDownloadButton()
         bindManifestToProjectSelection()
         addTooltips(projectGrid.getDefaultHeaderRow())
+        makeGridCellsResponsive(projectGrid)
         addSorting()
         enableUserProjectFiltering()
     }
@@ -83,8 +85,7 @@ class ProjectView extends ProjectDesign {
 
         refreshDataProvider()
         //specify size of grid and layout
-        projectGrid.setWidthFull()
-        projectGrid.getColumn("ProjectTitle").setMaximumWidth(800)
+        projectGrid.getColumn("ProjectTitle").setExpandRatio(3)
         projectGrid.getColumn("SamplesReceived").setExpandRatio(1)
         projectGrid.getColumn("SamplesPassedQc").setExpandRatio(1)
         projectGrid.getColumn("LibraryPrepFinished").setExpandRatio(1)
@@ -99,6 +100,7 @@ class ProjectView extends ProjectDesign {
     }
 
     private static void addTooltips(HeaderRow headerRow) {
+
         headerRow.getCell("Subscription").setStyleName("header-with-tooltip")
         headerRow.getCell("Subscription").setDescription("Select a project to get status updates per email.")
 
@@ -113,6 +115,64 @@ class ProjectView extends ProjectDesign {
 
         headerRow.getCell("SampleDataAvailable").setStyleName("header-with-tooltip")
         headerRow.getCell("SampleDataAvailable").setDescription("Number of available raw datasets.")
+
+    }
+
+    private void makeGridCellsResponsive(Grid projectGrid) {
+
+        setComponentAlignment(projectGrid, Alignment.TOP_LEFT)
+        projectGrid.setWidthFull()
+        int browserWindowWidth = 0
+        addAttachListener(attachedEvent -> {
+            browserWindowWidth = super.getUI().getPage().getBrowserWindowWidth()
+        })
+        projectGrid.addColumnResizeListener(columnListener -> {
+
+            double columnsWidth = 0
+            projectGrid.getColumns().each { column ->
+                columnsWidth += column.getWidth()
+            }
+            if (columnsWidth < browserWindowWidth) {
+                println(columnsWidth + "smaller than " + browserWindowWidth)
+                println(Math.floor(columnsWidth).toString())
+                projectGrid.setWidth(Math.floor(columnsWidth).toString())
+                hotbarLayout.setWidth(Math.floor(columnsWidth).toString())
+            } else {
+                println(columnsWidth + "bigger than " + browserWindowWidth)
+                projectGrid.setWidthFull()
+                hotbarLayout.setWidthFull()
+            }
+        })
+
+        projectGrid.getDefaultHeaderRow().getCell("Subscription").setStyleName("responsive-cell")
+        projectGrid.getDefaultHeaderRow().getCell("ProjectTitle").setStyleName("responsive-cell")
+        projectGrid.getDefaultHeaderRow().getCell("ProjectCode").setStyleName("responsive-cell")
+        projectGrid.getDefaultHeaderRow().getCell("SamplesReceived").setStyleName("responsive-cell")
+        projectGrid.getDefaultHeaderRow().getCell("SamplesPassedQc").setStyleName("responsive-cell")
+        projectGrid.getDefaultHeaderRow().getCell("LibraryPrepFinished").setStyleName("responsive-cell")
+        projectGrid.getDefaultHeaderRow().getCell("SampleDataAvailable").setStyleName("responsive-cell")
+
+        projectGrid.getColumn("Subscription").setStyleGenerator(projectTitleColumn -> {
+           return "responsive-cell"
+        })
+        projectGrid.getColumn("ProjectTitle").setStyleGenerator(projectTitleColumn -> {
+            return "responsive-cell"
+        })
+        projectGrid.getColumn("ProjectCode").setStyleGenerator(projectTitleColumn -> {
+            return "responsive-cell"
+        })
+        projectGrid.getColumn("SamplesReceived").setStyleGenerator(projectTitleColumn -> {
+            return "responsive-cell"
+        })
+        projectGrid.getColumn("SamplesPassedQc").setStyleGenerator(projectTitleColumn -> {
+            return "responsive-cell"
+        })
+        projectGrid.getColumn("LibraryPrepFinished").setStyleGenerator(projectTitleColumn -> {
+            return "responsive-cell"
+        })
+        projectGrid.getColumn("SampleDataAvailable").setStyleGenerator(projectTitleColumn -> {
+            return "responsive-cell"
+        })
     }
 
     private void addSorting(){
