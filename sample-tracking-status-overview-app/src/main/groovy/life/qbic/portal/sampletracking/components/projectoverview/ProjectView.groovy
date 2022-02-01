@@ -116,7 +116,7 @@ class ProjectView extends ProjectDesign {
     }
 
     private void addSorting(){
-        sort.setItems(["Recently Updated", "Last Recently Updated", "Subscribed", "Not Subscribed"])
+        sort.setItems(["Most Recently Updated", "Least Recently Updated", "Subscribed", "Not Subscribed"])
 
         sort.addValueChangeListener({
             if(it.value){
@@ -127,10 +127,10 @@ class ProjectView extends ProjectDesign {
                     case "Not Subscribed":
                         projectGrid.sort("Subscription", SortDirection.ASCENDING)
                         break
-                    case "Recently Updated":
+                    case "Most Recently Updated":
                         projectGrid.sort("lastUpdated", SortDirection.DESCENDING)
                         break
-                    case "Last Recently Updated":
+                    case "Least Recently Updated":
                         projectGrid.sort("lastUpdated", SortDirection.ASCENDING)
                         break
                     default:
