@@ -11,6 +11,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Fixed**
 
+* Search field not working after subscription change (#212)
+
 **Dependencies**
 
 **Deprecated**
