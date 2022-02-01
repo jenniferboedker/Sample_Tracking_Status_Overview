@@ -11,6 +11,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 **Fixed**
 
+* Fix wording in sorting to improve UX (#213)
+
 **Dependencies**
 
 **Deprecated**
