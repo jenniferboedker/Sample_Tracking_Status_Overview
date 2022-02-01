@@ -4,6 +4,19 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
+1.0.1 (2022-02-01)
+---------------------------
+
+**Added**
+
+**Fixed**
+
+* Search field not working after subscription change (#212)
+
+**Dependencies**
+
+**Deprecated**
+
 1.0.0 (2022-01-31)
 ---------------------------
 
