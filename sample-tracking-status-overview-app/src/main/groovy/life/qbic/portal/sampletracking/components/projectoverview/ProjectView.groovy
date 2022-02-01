@@ -280,14 +280,18 @@ class ProjectView extends ProjectDesign {
 
     void enableUserProjectFiltering() {
         TextField searchField = this.searchField
-        DataProvider<ProjectSummary, ?> dataProvider = this.projectGrid.getDataProvider()
         searchField.addValueChangeListener({
             if (it.getValue()) {
                 projectFilter.containingText(it.getValue())
             } else {
                 projectFilter.containingText("")
             }
-            dataProvider.refreshAll()
+            currentDataProvider().refreshAll()
         })
+    }
+
+    private DataProvider<ProjectSummary, ?> currentDataProvider() {
+        DataProvider<ProjectSummary, ?> dataProvider = this.projectGrid.getDataProvider()
+        return dataProvider
     }
 }
