@@ -116,7 +116,7 @@ class ProjectView extends ProjectDesign {
     }
 
     private void addSorting(){
-        sort.setItems(["Newest Changes", "Oldest Changes", "Subscribed", "Not Subscribed"])
+        sort.setItems(["Recently Updated", "Last Recently Updated", "Subscribed", "Not Subscribed"])
 
         sort.addValueChangeListener({
             if(it.value){
@@ -127,10 +127,10 @@ class ProjectView extends ProjectDesign {
                     case "Not Subscribed":
                         projectGrid.sort("Subscription", SortDirection.ASCENDING)
                         break
-                    case "Newest Changes":
+                    case "Recently Updated":
                         projectGrid.sort("lastUpdated", SortDirection.DESCENDING)
                         break
-                    case "Oldest Changes":
+                    case "Last Recently Updated":
                         projectGrid.sort("lastUpdated", SortDirection.ASCENDING)
                         break
                     default:
@@ -280,18 +280,14 @@ class ProjectView extends ProjectDesign {
 
     void enableUserProjectFiltering() {
         TextField searchField = this.searchField
+        DataProvider<ProjectSummary, ?> dataProvider = this.projectGrid.getDataProvider()
         searchField.addValueChangeListener({
             if (it.getValue()) {
                 projectFilter.containingText(it.getValue())
             } else {
                 projectFilter.containingText("")
             }
-            currentDataProvider().refreshAll()
+            dataProvider.refreshAll()
         })
-    }
-
-    private DataProvider<ProjectSummary, ?> currentDataProvider() {
-        DataProvider<ProjectSummary, ?> dataProvider = this.projectGrid.getDataProvider()
-        return dataProvider
     }
 }
