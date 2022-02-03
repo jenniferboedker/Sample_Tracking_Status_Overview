@@ -18,6 +18,7 @@ First compile the project and build an executable java archive:
 
     mvn clean package
 
+Note that you will need java 8.
 The JAR file will be created in the /target folder:
 
 .. code-block:: bash
