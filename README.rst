@@ -93,8 +93,8 @@ This project was created with qube_.
     :target: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/Run%20Maven%20Tests/badge.svg
     :alt: Github Workflow Tests Status
 
-.. |codeql| image:: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/codeql-analysis.yml/badge.svg
-    :target: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/codeql-analysis.yml/badge.svg
+.. |codeql| image:: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/CodeQL/badge.svg
+    :target: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/CodeQL/badge.svg
     :alt: CodeQl Status
 
 .. |license| image:: https://img.shields.io/github/license/qbicsoftware/sample-tracking-status-overview
