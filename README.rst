@@ -1,7 +1,8 @@
 Sample Tracking Status Overview
 -----------------------------------
 
-|maven-build| |maven-test| |codeql| |release| |license| |java| |groovy|
+|maven-build| |maven-test| |codeql| |release|
+|license| |java| |groovy|
 
 
 Gives a visual overview of sample statuses
