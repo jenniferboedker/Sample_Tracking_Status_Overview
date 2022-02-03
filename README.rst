@@ -32,9 +32,9 @@ The created war file can then be deployed on a portal system.
 
 .. list-table::
 
-    * - Environment
-      - Description
-      - Default Value
+    * - **Environment**
+      - **Description**
+      - **Default Value**
     * - datasource.url
       - Connection to datasource
       - https://openbis.domain.de
