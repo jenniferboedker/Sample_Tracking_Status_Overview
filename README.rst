@@ -89,11 +89,11 @@ Projects
 
 To find the status for each sample the table samples_locations is used
 
-image:: sample-tracking-status-overview/samples_locations-(DDL).png
+image:: samples_locations-(DDL).png
 
 To associate to which projects a person is subscribed, the subscriptions table is used
 
-image:: sample-tracking-status-overview/person-(DDL).png
+image:: person-(DDL).png
 
 
 
