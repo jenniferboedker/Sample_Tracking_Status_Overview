@@ -80,10 +80,22 @@ You can run the application in a ``testing`` mode:
 The email property is used to generate your portal-user id, the auth-id is the one that is provided by the authentication provider after successful login into the portal.
 The first and last name as they are stored in the database need to be provided as well. As we run in test mode here, you need to simulate it with the properties.
 
-Credits
--------
+Datastructures
+--------------
 
-This project was created with qube_.
+To show the actual sample and project information, following entities need to be provided:
+Samples
+Projects
+
+To find the status for each sample the table samples_locations is used
+
+image:: samples_locations-(DDL).png
+
+To associate to which projects a person is subscribed, the subscriptions table is used
+
+image:: person-(DDL).png
+
+
 
 .. _qube: https://github.com/qbicsoftware/qube
 
