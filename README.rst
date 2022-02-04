@@ -89,7 +89,7 @@ Projects
 
 To find the status for each sample the table samples_locations is used
 
-image:: samples_locations-(DDL).png
+image:: https://github.com/qbicsoftware/sample-tracking-status-overview/blob/dd32f10b5952a367c16a05e99514e1e0e617d5d5/samples_locations-(DDL).png
 
 To associate to which projects a person is subscribed, the subscriptions table is used
 
