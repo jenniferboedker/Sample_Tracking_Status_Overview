@@ -84,17 +84,16 @@ Datastructures
 --------------
 
 To show the actual sample and project information, following entities need to be provided:
-Samples
-Projects
+'ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample' (with code, properties and secondary name) and 'ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project' (with code, space code and description)
+
 
 To find the status for each sample the table samples_locations is used
 
-.. image:: https://github.com/qbicsoftware/sample-tracking-status-overview/blob/dd32f10b5952a367c16a05e99514e1e0e617d5d5/samples_locations-(DDL).png
+.. image:: samples_locations-(DDL).png
 
 To associate to which projects a person is subscribed, the subscriptions table is used
 
 .. image:: person-(DDL).png
-
 
 
 .. |maven-build| image:: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/Build%20Maven%20Package/badge.svg
