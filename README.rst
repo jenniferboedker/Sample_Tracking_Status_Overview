@@ -95,19 +95,10 @@ To associate to which projects a person is subscribed, the subscriptions table i
 License
 -------
 
-This work is licensed under the |mit|.
+This work is licensed under the `MIT license <https://mit-license.org/>`_.
 
-**Note**: This work uses the |vaadin|, which is licensed under |apache2.0|.
+**Note**: This work uses the `Vaadin Framework <https://github.com/vaadin>`_, which is licensed under `Apache 2.0 <https://www.apache.org/licenses/LICENSE-2.0>`_.
 
-
-.. |mit| :target: https://mit-license.org/
-    :alt: MIT license
-
-.. |vaadin| :target: https://github.com/vaadin
-    :alt: Vaadin Framework
-
-.. |apache2.0| :target: https://www.apache.org/licenses/LICENSE-2.0
-    :alt: Apache 2.0
 
 .. |maven-build| image:: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/Build%20Maven%20Package/badge.svg
     :target: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/Build%20Maven%20Package/badge.svg
