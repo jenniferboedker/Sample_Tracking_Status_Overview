@@ -1,13 +1,9 @@
 Sample Tracking Status Overview
 -----------------------------------
+Gives a visual overview of sample statuses
 
 |maven-build| |maven-test| |codeql| |release|
 |license| |java| |groovy|
-
-
-Gives a visual overview of sample statuses
-
-* Free software: MIT
 
 How to run
 ----------------
@@ -95,6 +91,23 @@ To associate to which projects a person is subscribed, the subscriptions table i
 
 .. image:: person-(DDL).png
 
+
+License
+-------
+
+This work is licensed under the |mit|.
+
+**Note**: This work uses the |vaadin|, which is licensed under |apache2.0|.
+
+
+.. |mit| :target: https://mit-license.org/
+    :alt: MIT license
+
+.. |vaadin| :target: https://github.com/vaadin
+    :alt: Vaadin Framework
+
+.. |apache2.0| :target: https://www.apache.org/licenses/LICENSE-2.0
+    :alt: Apache 2.0
 
 .. |maven-build| image:: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/Build%20Maven%20Package/badge.svg
     :target: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/Build%20Maven%20Package/badge.svg
