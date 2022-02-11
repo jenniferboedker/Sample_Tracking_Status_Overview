@@ -101,19 +101,19 @@ This work is licensed under the `MIT license <https://mit-license.org/>`_.
 
 
 .. |maven-build| image:: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/Build%20Maven%20Package/badge.svg
-    :target: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/Build%20Maven%20Package/badge.svg
+    :target: https://github.com/qbicsoftware/sample-tracking-status-overview/actions/workflows/build_package.yml
     :alt: Github Workflow Build Maven Package Status
 
 .. |maven-test| image:: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/Run%20Maven%20Tests/badge.svg
-    :target: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/Run%20Maven%20Tests/badge.svg
+    :target: https://github.com/qbicsoftware/sample-tracking-status-overview/actions/workflows/run_tests.yml
     :alt: Github Workflow Tests Status
 
 .. |codeql| image:: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/CodeQL/badge.svg
-    :target: https://github.com/qbicsoftware/sample-tracking-status-overview/workflows/CodeQL/badge.svg
+    :target: https://github.com/qbicsoftware/sample-tracking-status-overview/actions/workflows/codeql-analysis.yml
     :alt: CodeQl Status
 
 .. |license| image:: https://img.shields.io/github/license/qbicsoftware/sample-tracking-status-overview
-    :target: https://img.shields.io/github/license/qbicsoftware/sample-tracking-status-overview
+    :target: https://github.com/qbicsoftware/sample-tracking-status-overview/blob/master/LICENSE
     :alt: Project Licence
 
 .. |release| image:: https://img.shields.io/github/v/release/qbicsoftware/sample-tracking-status-overview.svg?include_prereleases
