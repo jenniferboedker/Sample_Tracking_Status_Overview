@@ -20,6 +20,7 @@ import groovy.util.logging.Log4j2
 import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.components.GridUtils
 import life.qbic.portal.sampletracking.components.ViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
@@ -49,8 +50,8 @@ class ProjectView extends ProjectDesign {
         addClickListener()
         setupDownloadButton()
         bindManifestToProjectSelection()
-        makeProjectLayoutResponsive()
-        makeProjectGridResponsive(projectGrid)
+        GridUtils.setupLayoutResponsiveness(this)
+        GridUtils.makeGridResponsiveToResize(projectGrid, hotbarLayout)
         setProjectGridStyles(projectGrid)
         addSorting()
         enableUserProjectFiltering()
@@ -99,15 +100,11 @@ class ProjectView extends ProjectDesign {
     }
 
     private void setProjectGridStyles(Grid projectGrid) {
+        setComponentAlignment(projectGrid, Alignment.TOP_LEFT)
+        projectGrid.setWidthFull()
         setHeaderRowStyle(projectGrid.getDefaultHeaderRow())
         addTooltips(projectGrid.getDefaultHeaderRow())
         setColumnsStyle(projectGrid)
-    }
-
-    private void makeProjectLayoutResponsive() {
-        //The layout has to be set responsive for the media breakpoints to function
-        this.addStyleName("responsive-project-layout")
-        this.setResponsive(true)
     }
 
     private static void addTooltips(HeaderRow headerRow) {
@@ -119,57 +116,22 @@ class ProjectView extends ProjectDesign {
     }
 
     private static void setHeaderRowStyle(HeaderRow headerRow) {
-        headerRow.getCell("Subscription").setStyleName("project-cell-min-width header-with-tooltip")
-        headerRow.getCell("SamplesReceived").setStyleName("project-cell-min-width header-with-tooltip")
-        headerRow.getCell("SamplesPassedQc").setStyleName("project-cell-min-width header-with-tooltip")
-        headerRow.getCell("LibraryPrepFinished").setStyleName("project-cell-min-width header-with-tooltip")
-        headerRow.getCell("SampleDataAvailable").setStyleName("project-cell-min-width header-with-tooltip")
-        headerRow.getCell("ProjectTitle").setStyleName("project-cell-min-width project-title-cell")
-        headerRow.getCell("ProjectCode").setStyleName("project-cell-min-width")
+        headerRow.getCell("Subscription").setStyleName("cell-min-width header-with-tooltip")
+        headerRow.getCell("SamplesReceived").setStyleName("cell-min-width header-with-tooltip")
+        headerRow.getCell("SamplesPassedQc").setStyleName("cell-min-width header-with-tooltip")
+        headerRow.getCell("LibraryPrepFinished").setStyleName("cell-min-width header-with-tooltip")
+        headerRow.getCell("SampleDataAvailable").setStyleName("cell-min-width header-with-tooltip")
+        headerRow.getCell("ProjectTitle").setStyleName("cell-min-width project-title-cell")
+        headerRow.getCell("ProjectCode").setStyleName("cell-min-width")
         headerRow.getCell("Subscription").setStyleName("subscription-cell")
     }
 
-    private void setColumnsStyle(Grid projectGrid) {
-        setComponentAlignment(projectGrid, Alignment.TOP_LEFT)
-        projectGrid.setWidthFull()
+    private static void setColumnsStyle(Grid projectGrid) {
         projectGrid.getColumn("ProjectTitle").setStyleGenerator(projectTitleColumn -> {
-            return "project-cell-min-width project-title-cell"
+            return "cell-min-width project-title-cell"
         })
         projectGrid.getColumn("Subscription").setStyleGenerator(projectTitleColumn -> {
             return "subscription-cell"
-        })
-    }
-
-    private void makeProjectGridResponsive(Grid projectGrid) {
-        /*
-        Defines the lower end on how small columns can be resized manually.
-        Necessary to avoid overlapping the project/samples button with the download manifest button
-         */
-        int browserWindowWidth = 0
-        int maximumGridWidth = 0
-        //add padding width for left and right side of grid
-        final int gridPaddingWidth = 74
-        addAttachListener(attachedEvent -> {
-            browserWindowWidth = super.getUI().getPage().getBrowserWindowWidth()
-            maximumGridWidth = browserWindowWidth - gridPaddingWidth
-        })
-
-        //The grid width should adjust to the resizing preferences of the user
-        projectGrid.addColumnResizeListener(columnListener -> {
-
-            double columnsWidth = 0
-            projectGrid.getColumns().each { column ->
-                columnsWidth += column.getWidth()
-            }
-            if (columnsWidth <= maximumGridWidth) {
-                projectGrid.setWidth(Math.floor(columnsWidth).toString())
-                hotbarLayout.setWidth(Math.floor(columnsWidth).toString())
-            } else {
-                //If projectGrid width is bigger than screen adjust grid to max screen size
-                this.setWidth(maximumGridWidth.toString())
-                projectGrid.setWidth(maximumGridWidth.toString())
-                hotbarLayout.setWidth(maximumGridWidth.toString())
-            }
         })
     }
 

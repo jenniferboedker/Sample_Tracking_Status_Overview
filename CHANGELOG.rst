@@ -4,6 +4,20 @@ Changelog
 
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
+1.0.2 (2022-02-14)
+---------------------------
+
+**Added**
+
+* Make projectGrid and sampleGrid responsive to screen size
+
+**Fixed**
+
+**Dependencies**
+
+**Deprecated**
+
+
 1.0.1 (2022-02-01)
 ---------------------------
 
