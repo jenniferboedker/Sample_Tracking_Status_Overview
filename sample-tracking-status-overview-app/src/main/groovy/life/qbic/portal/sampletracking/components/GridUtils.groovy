@@ -7,12 +7,9 @@ import life.qbic.business.logging.Logger
 import life.qbic.business.logging.Logging
 
 /**
- * <class short description - One Line!>
+ * A helper class with static utility functions for Vaadin Grids.
  *
- * <More detailed description - When to use, what it solves, etc.>
- *
- * @since: <version tag>
- *
+ * @since 1.0.2
  */
 class GridUtils {
 
@@ -89,7 +86,7 @@ class GridUtils {
             return maximumPortletWidth
         } catch (Exception exception) {
             log.error("Unable to compute browser page width $exception.message")
-            log.debug("An error occured during the compuation of maximum possible portlet width $exception.message", exception)
+            log.debug("An error occured during the computation of maximum possible portlet width $exception.message", exception)
         }
     }
 
