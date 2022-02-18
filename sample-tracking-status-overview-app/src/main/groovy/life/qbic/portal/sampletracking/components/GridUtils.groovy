@@ -1,8 +1,13 @@
 package life.qbic.portal.sampletracking.components
 
+import com.vaadin.server.Sizeable
 import com.vaadin.ui.AbstractComponent
 import com.vaadin.ui.Grid
-import com.vaadin.ui.UI
+import com.vaadin.ui.JavaScript
+import com.vaadin.ui.JavaScriptFunction
+import com.vaadin.ui.Panel
+import elemental.json.JsonArray
+import elemental.json.impl.JreJsonNumber
 import life.qbic.business.logging.Logger
 import life.qbic.business.logging.Logging
 
@@ -36,34 +41,32 @@ class GridUtils {
     /**
      * Adjusts the width of the grid and it's associated hotbar layout when the grid is manually resized by the user
      *
-     * @param AbstractComponent hotbarLayout the {@link com.vaadin.ui.AbstractComponent}
+     * @param AbstractComponent gridHostingLayout the {@link com.vaadin.ui.abstractComponent} into which the grid is hosted,
      * @param Grid grid the {@link com.vaadin.ui.Grid},
      *
      * @since 1.0.2
      */
-    static void makeGridResponsiveToResize(Grid grid, AbstractComponent hotbarLayout) {
-
+    static void makeGridResponsiveToResize(AbstractComponent gridHostingLayout, Grid grid) {
         //The grid width should adjust to the resizing preferences of the user
+
+        double maximumBrowserWindowWidth = 0
+
         try {
-            grid.addColumnResizeListener(columnListener -> {
-                int maximumPortletWidth = computeMaximumLiferayPortletWidth()
-                double columnsWidth = 0
+            grid.addAttachListener(event -> {
+                maximumBrowserWindowWidth = computeGridLayoutWidth(gridHostingLayout)
+                JavaScript.getCurrent().execute("getAbsoluteWidth(document.getElementById('Test').clientWidth);")
+            })
+            grid.addColumnResizeListener(columnResizeEvent -> {
+                float columnsWidth = 0
                 grid.getColumns().each { column ->
                     columnsWidth += column.getWidth()
                 }
-                if (columnsWidth <= maximumPortletWidth) {
-                    grid.setWidth(Math.floor(columnsWidth).toString())
-
+                if (columnsWidth <= maximumBrowserWindowWidth) {
+                    gridHostingLayout.setWidth(columnsWidth, Sizeable.Unit.PIXELS)
                 } else {
                     //If projectGrid width is bigger than screen adjust grid to max screen size
-                    grid.setWidth(maximumPortletWidth.toString())
-                }
-                if (hotbarLayout) {
-                    if (columnsWidth <= maximumPortletWidth) {
-                        hotbarLayout.setWidth(Math.floor(columnsWidth).toString())
-                    } else {
-                        hotbarLayout.setWidth(maximumPortletWidth.toString())
-                    }
+                    gridHostingLayout.setWidth(100, Sizeable.Unit.PERCENTAGE)
+                    grid.setWidth(100,Sizeable.Unit.PERCENTAGE)
                 }
             })
         } catch (Exception exception) {
@@ -78,15 +81,23 @@ class GridUtils {
      * @returns maximumPortletWidth maximum width a portlet can take accounting for the liferay margins and paddings
      */
 
-    private static int computeMaximumLiferayPortletWidth() {
+    private static double computeGridLayoutWidth(AbstractComponent abstractComponent) {
         try {
-            int browserWindowWidth = UI.getCurrent().getPage().getBrowserWindowWidth()
-            //We need to adjust the grid width to the liferay padding
-            int maximumPortletWidth = Math.floor(0.88 * browserWindowWidth).toInteger()
-            return maximumPortletWidth
+            abstractComponent.setId("Test")
+            double gridLayoutWidth = 0
+            JavaScriptFunction foo = new JavaScriptFunction() {
+                @Override
+                void call(JsonArray arguments) {
+                    JreJsonNumber width = arguments.get(0)
+                    gridLayoutWidth = width.getNumber()
+                    println(gridLayoutWidth)
+                }
+            }
+            JavaScript.getCurrent().addFunction("getAbsoluteWidth", foo)
+            return gridLayoutWidth
         } catch (Exception exception) {
-            log.error("Unable to compute browser page width $exception.message")
-            log.debug("An error occured during the computation of maximum possible portlet width $exception.message", exception)
+            log.error("Unable to compute grid maximum width $exception.message")
+            log.debug("An error occured during the computation of initial maximum grid width $exception.message", exception)
         }
     }
 

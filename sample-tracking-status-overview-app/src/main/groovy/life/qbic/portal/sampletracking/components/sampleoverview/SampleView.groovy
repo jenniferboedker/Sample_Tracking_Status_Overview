@@ -36,7 +36,7 @@ class SampleView extends SampleDesign {
         enableUserSampleFiltering()
         addColumnColoring()
         GridUtils.setupLayoutResponsiveness(this)
-        GridUtils.makeGridResponsiveToResize(sampleGrid, hotbarLayout)
+        GridUtils.makeGridResponsiveToResize(this, sampleGrid)
         setSampleGridStyle(sampleGrid)
     }
 

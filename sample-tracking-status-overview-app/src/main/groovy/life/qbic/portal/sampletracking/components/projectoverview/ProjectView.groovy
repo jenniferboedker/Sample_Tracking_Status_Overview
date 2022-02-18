@@ -51,7 +51,7 @@ class ProjectView extends ProjectDesign {
         setupDownloadButton()
         bindManifestToProjectSelection()
         GridUtils.setupLayoutResponsiveness(this)
-        GridUtils.makeGridResponsiveToResize(projectGrid, hotbarLayout)
+        GridUtils.makeGridResponsiveToResize(this, projectGrid)
         setProjectGridStyles(projectGrid)
         addSorting()
         enableUserProjectFiltering()
@@ -101,7 +101,6 @@ class ProjectView extends ProjectDesign {
 
     private void setProjectGridStyles(Grid projectGrid) {
         setComponentAlignment(projectGrid, Alignment.TOP_LEFT)
-        projectGrid.setWidthFull()
         setHeaderRowStyle(projectGrid.getDefaultHeaderRow())
         addTooltips(projectGrid.getDefaultHeaderRow())
         setColumnsStyle(projectGrid)
