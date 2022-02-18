@@ -36,7 +36,8 @@ class SampleView extends SampleDesign {
         enableUserSampleFiltering()
         addColumnColoring()
         GridUtils.setupLayoutResponsiveness(this)
-        GridUtils.makeGridResponsiveToResize(this, sampleGrid)
+        GridUtils.makeGridNonResizable(sampleGrid)
+        GridUtils.makeGridResponsive(sampleGrid)
         setSampleGridStyle(sampleGrid)
     }
 
@@ -56,11 +57,13 @@ class SampleView extends SampleDesign {
 
 
     private void createSamplesGrid() {
-        setComponentAlignment(sampleGrid, Alignment.TOP_LEFT)
         sampleGrid.setWidthFull()
         ListDataProvider<Sample> dataProvider = ListDataProvider.ofCollection(viewModel.samples)
         dataProvider.addFilter((Sample it) -> sampleFilter.asPredicate().test(it))
         sampleGrid.setDataProvider(dataProvider)
+        sampleGrid.getColumn("name").setExpandRatio(3)
+        sampleGrid.getColumn("code").setExpandRatio(1)
+        sampleGrid.getColumn("status").setExpandRatio(2)
     }
 
     void reset() {

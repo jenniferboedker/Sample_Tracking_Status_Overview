@@ -20,10 +20,10 @@ class MainPage extends VerticalLayout {
 
         this.setMargin(false)
 
-        this.addComponents(projectLayout, sampleLayout)
+        this.addComponentsAndExpand(projectLayout, sampleLayout)
         sampleLayout.setVisible(false)
-
         listenToProjectSelectionChange()
+        makeMainPageScrollable()
     }
 
     private void listenToProjectSelectionChange() {
@@ -39,5 +39,11 @@ class MainPage extends VerticalLayout {
             projectView.setVisible(viewModel.projectViewEnabled)
             sampleView.setVisible(!viewModel.projectViewEnabled)
         })
+    }
+
+    private void makeMainPageScrollable () {
+        this.setWidth("100%");
+        this.setHeight("100%");
+        this.addStyleName("scrollable-layout")
     }
 }

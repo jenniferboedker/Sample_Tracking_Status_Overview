@@ -51,7 +51,8 @@ class ProjectView extends ProjectDesign {
         setupDownloadButton()
         bindManifestToProjectSelection()
         GridUtils.setupLayoutResponsiveness(this)
-        GridUtils.makeGridResponsiveToResize(this, projectGrid)
+        GridUtils.makeGridNonResizable(projectGrid)
+        GridUtils.makeGridResponsive(projectGrid)
         setProjectGridStyles(projectGrid)
         addSorting()
         enableUserProjectFiltering()
@@ -85,12 +86,7 @@ class ProjectView extends ProjectDesign {
 
         refreshDataProvider()
         //specify size of grid and layout
-        projectGrid.getColumn("ProjectTitle").setExpandRatio(5)
-        projectGrid.getColumn("SamplesReceived").setExpandRatio(1)
-        projectGrid.getColumn("SamplesPassedQc").setExpandRatio(1)
-        projectGrid.getColumn("LibraryPrepFinished").setExpandRatio(1)
-        projectGrid.getColumn("SampleDataAvailable").setExpandRatio(1)
-
+        projectGrid.setWidthFull()
         projectGrid.setHeightMode(HeightMode.ROW)
 
         // remove manual sorting - any sorting in the code should probably done before disabling it
@@ -99,8 +95,7 @@ class ProjectView extends ProjectDesign {
         }
     }
 
-    private void setProjectGridStyles(Grid projectGrid) {
-        setComponentAlignment(projectGrid, Alignment.TOP_LEFT)
+    private static void setProjectGridStyles(Grid projectGrid) {
         setHeaderRowStyle(projectGrid.getDefaultHeaderRow())
         addTooltips(projectGrid.getDefaultHeaderRow())
         setColumnsStyle(projectGrid)
@@ -120,14 +115,14 @@ class ProjectView extends ProjectDesign {
         headerRow.getCell("SamplesPassedQc").setStyleName("cell-min-width header-with-tooltip")
         headerRow.getCell("LibraryPrepFinished").setStyleName("cell-min-width header-with-tooltip")
         headerRow.getCell("SampleDataAvailable").setStyleName("cell-min-width header-with-tooltip")
-        headerRow.getCell("ProjectTitle").setStyleName("cell-min-width project-title-cell")
+        headerRow.getCell("ProjectTitle").setStyleName("cell-min-width cell-max-width")
         headerRow.getCell("ProjectCode").setStyleName("cell-min-width")
         headerRow.getCell("Subscription").setStyleName("subscription-cell")
     }
 
     private static void setColumnsStyle(Grid projectGrid) {
         projectGrid.getColumn("ProjectTitle").setStyleGenerator(projectTitleColumn -> {
-            return "cell-min-width project-title-cell"
+            return "cell-min-width cell-max-width"
         })
         projectGrid.getColumn("Subscription").setStyleGenerator(projectTitleColumn -> {
             return "subscription-cell"
