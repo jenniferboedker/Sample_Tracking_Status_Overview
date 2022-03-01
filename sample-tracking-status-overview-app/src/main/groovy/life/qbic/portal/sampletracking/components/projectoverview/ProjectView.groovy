@@ -20,8 +20,7 @@ import groovy.util.logging.Log4j2
 import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
-import life.qbic.portal.sampletracking.components.GridUtils
-import life.qbic.portal.sampletracking.components.GridUtilsImpl
+import life.qbic.portal.sampletracking.components.Responsive
 import life.qbic.portal.sampletracking.components.ViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
@@ -32,7 +31,7 @@ import life.qbic.portal.sampletracking.components.projectoverview.subscribe.Subs
 import java.util.function.Consumer
 
 @Log4j2
-class ProjectView extends ProjectDesign {
+class ProjectView extends ProjectDesign implements Responsive {
 
     private final ViewModel viewModel
     private final DownloadProjectController downloadProjectController
@@ -40,7 +39,6 @@ class ProjectView extends ProjectDesign {
     private final SubscriptionCheckboxFactory subscriptionCheckboxFactory
     private final NotificationService notificationService
     private final ProjectFilter projectFilter = new ProjectFilterImpl().allowEmptyProjects(false)
-    private final GridUtils gridUtils = new GridUtilsImpl()
 
     ProjectView(ViewModel viewModel, SubscribeProjectController subscribeProjectController, NotificationService notificationService, Subscriber subscriber, DownloadProjectController downloadProjectController) {
         super()
@@ -333,12 +331,47 @@ class ProjectView extends ProjectDesign {
      */
     private void setDynamicResizing(boolean isDynamicResizing) {
         if (isDynamicResizing) {
-            gridUtils.disableResizableColumns(projectGrid)
-            gridUtils.enableDynamicResizing(projectGrid)
+            disableResizableColumns()
+            enableDynamicResizing()
         }
         else {
-            gridUtils.enableResizableColumns(projectGrid)
-            gridUtils.disableDynamicResizing(projectGrid)
+            enableResizableColumns()
+            disableDynamicResizing()
         }
+    }
+
+    @Override
+    void enableResizableColumns() {
+        projectGrid.getColumns().each { it ->
+            {
+                it.setResizable(true)
+            }
+        }
+    }
+
+    @Override
+    void disableResizableColumns() {
+        projectGrid.getColumns().each { it ->
+            {
+                it.setResizable(false)
+            }
+        }
+    }
+
+    @Override
+    void enableDynamicResizing() {
+        projectGrid.addAttachListener(attachEvent -> {
+            projectGrid.getUI().getCurrent().getPage().addBrowserWindowResizeListener(resizeEvent -> {
+                projectGrid.recalculateColumnWidths()
+            })
+        })
+    }
+
+    @Override
+    void disableDynamicResizing() {
+        Collection<AttachListener> attachListeners = projectGrid.getListeners(AttachListener) as Collection<AttachListener>
+        attachListeners.each {attachListener -> {
+            projectGrid.removeAttachListener(attachListener)
+        }}
     }
 }

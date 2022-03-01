@@ -11,8 +11,7 @@ import life.qbic.business.samples.Sample
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
-import life.qbic.portal.sampletracking.components.GridUtils
-import life.qbic.portal.sampletracking.components.GridUtilsImpl
+
 import life.qbic.portal.sampletracking.components.Responsive
 import life.qbic.portal.sampletracking.components.ViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
@@ -22,7 +21,6 @@ class SampleView extends SampleDesign implements Responsive {
     private final ViewModel viewModel
     private final Presenter presenter
     private final SampleFilter sampleFilter = new SampleFilterImpl()
-    private final GridUtils gridUtils = new GridUtilsImpl()
 
     SampleView(ViewModel viewModel, NotificationService notificationService) {
         super()
@@ -160,33 +158,48 @@ class SampleView extends SampleDesign implements Responsive {
      */
     private void setDynamicResizing(boolean isDynamicResizing) {
         if (isDynamicResizing) {
-            gridUtils.disableResizableColumns(sampleGrid)
-            gridUtils.enableDynamicResizing(sampleGrid)
+            disableResizableColumns()
+            enableDynamicResizing()
         }
         else {
-            gridUtils.enableResizableColumns(sampleGrid)
-            gridUtils.disableDynamicResizing(sampleGrid)
+            enableResizableColumns()
+            disableDynamicResizing()
         }
     }
 
     @Override
     void enableResizableColumns() {
-
+        sampleGrid.getColumns().each { it ->
+            {
+                it.setResizable(true)
+            }
+        }
     }
 
     @Override
     void disableResizableColumns() {
-
+        sampleGrid.getColumns().each { it ->
+            {
+                it.setResizable(false)
+            }
+        }
     }
 
     @Override
     void enableDynamicResizing() {
-
+        sampleGrid.addAttachListener(attachEvent -> {
+            sampleGrid.getUI().getCurrent().getPage().addBrowserWindowResizeListener(resizeEvent -> {
+                sampleGrid.recalculateColumnWidths()
+            })
+        })
     }
 
     @Override
     void disableDynamicResizing() {
-
+        Collection<AttachListener> attachListeners = sampleGrid.getListeners(AttachListener) as Collection<AttachListener>
+        attachListeners.each {attachListener -> {
+            sampleGrid.removeAttachListener(attachListener)
+        }}
     }
 
     /**
