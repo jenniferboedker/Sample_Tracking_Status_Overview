@@ -328,7 +328,6 @@ class ProjectView extends ProjectDesign {
     /**
      * Disables manual resizing of individual grid columns and calculates column width dependent on screen size
      *
-     *
      * @param isDynamicResizing boolean value determining if a grid should be manually or automatically resizable
      * @since 1.0.2
      */
