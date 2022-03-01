@@ -2,7 +2,7 @@ package life.qbic.portal.sampletracking.components.sampleoverview
 
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
-import com.vaadin.ui.Alignment
+import com.vaadin.ui.AbstractComponent
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
@@ -12,6 +12,7 @@ import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.GridUtils
+import life.qbic.portal.sampletracking.components.GridUtilsImpl
 import life.qbic.portal.sampletracking.components.ViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 
@@ -19,9 +20,8 @@ class SampleView extends SampleDesign {
 
     private final ViewModel viewModel
     private final Presenter presenter
-
     private final SampleFilter sampleFilter = new SampleFilterImpl()
-
+    private final GridUtils gridUtils = new GridUtilsImpl()
 
     SampleView(ViewModel viewModel, NotificationService notificationService) {
         super()
@@ -35,9 +35,8 @@ class SampleView extends SampleDesign {
         createSamplesGrid()
         enableUserSampleFiltering()
         addColumnColoring()
-        GridUtils.setupLayoutResponsiveness(this)
-        GridUtils.makeGridNonResizable(sampleGrid)
-        GridUtils.makeGridResponsive(sampleGrid)
+        setDynamicResizing(true)
+        setupLayoutResponsiveness(this)
         setSampleGridStyle(sampleGrid)
     }
 
@@ -137,6 +136,37 @@ class SampleView extends SampleDesign {
         headerRow.getCell("name").setStyleName("cell-min-width")
         headerRow.getCell("code").setStyleName("cell-min-width")
         headerRow.getCell("status").setStyleName("cell-min-width")
+    }
+
+    /**
+     * Adds responsiveness to an abstractComponent
+     *
+     * <p>This applies the css class style .responsive-grid-layout to the provided abstractComponent allowing it to display it's content in a responsive manner</p>
+     *
+     * @param AbstractComponent the {@link com.vaadin.ui.AbstractComponent}, where the css style and responsiveness should be added
+     * @since 1.0.2
+     */
+    static void setupLayoutResponsiveness(AbstractComponent abstractComponent) {
+            abstractComponent.addStyleName("responsive-grid-layout")
+            abstractComponent.setWidthFull()
+    }
+
+    /**
+     * Disables manual resizing of individual grid columns and calculates column width dependent on screen size
+     *
+     *
+     * @param isDynamicResizing boolean value determining if a grid should be manually or automatically resizable
+     * @since 1.0.2
+     */
+    private void setDynamicResizing(boolean isDynamicResizing) {
+        if (isDynamicResizing) {
+            gridUtils.disableResizableColumns(sampleGrid)
+            gridUtils.enableDynamicResizing(sampleGrid)
+        }
+        else {
+            gridUtils.enableResizableColumns(sampleGrid)
+            gridUtils.disableDynamicResizing(sampleGrid)
+        }
     }
 
     /**

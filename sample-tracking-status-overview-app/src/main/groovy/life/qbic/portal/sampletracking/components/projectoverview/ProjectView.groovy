@@ -10,7 +10,7 @@ import com.vaadin.server.StreamResource
 import com.vaadin.shared.data.sort.SortDirection
 import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
-import com.vaadin.ui.Alignment
+import com.vaadin.ui.AbstractComponent
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
@@ -21,6 +21,7 @@ import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.portal.sampletracking.Constants
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.GridUtils
+import life.qbic.portal.sampletracking.components.GridUtilsImpl
 import life.qbic.portal.sampletracking.components.ViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.SampleCount
@@ -39,6 +40,7 @@ class ProjectView extends ProjectDesign {
     private final SubscriptionCheckboxFactory subscriptionCheckboxFactory
     private final NotificationService notificationService
     private final ProjectFilter projectFilter = new ProjectFilterImpl().allowEmptyProjects(false)
+    private final GridUtils gridUtils = new GridUtilsImpl()
 
     ProjectView(ViewModel viewModel, SubscribeProjectController subscribeProjectController, NotificationService notificationService, Subscriber subscriber, DownloadProjectController downloadProjectController) {
         super()
@@ -50,9 +52,8 @@ class ProjectView extends ProjectDesign {
         addClickListener()
         setupDownloadButton()
         bindManifestToProjectSelection()
-        GridUtils.setupLayoutResponsiveness(this)
-        GridUtils.makeGridNonResizable(projectGrid)
-        GridUtils.makeGridResponsive(projectGrid)
+        setupLayoutResponsiveness(this)
+        setDynamicResizing(true)
         setProjectGridStyles(projectGrid)
         addSorting()
         enableUserProjectFiltering()
@@ -309,5 +310,36 @@ class ProjectView extends ProjectDesign {
     private DataProvider<ProjectSummary, ?> currentDataProvider() {
         DataProvider<ProjectSummary, ?> dataProvider = this.projectGrid.getDataProvider()
         return dataProvider
+    }
+
+    /**
+     * Adds responsiveness to an abstractComponent
+     *
+     * <p>This applies the css class style .responsive-grid-layout to the provided abstractComponent allowing it to display it's content in a responsive manner</p>
+     *
+     * @param AbstractComponent the {@link com.vaadin.ui.AbstractComponent}, where the css style and responsiveness should be added
+     * @since 1.0.2
+     */
+    static void setupLayoutResponsiveness(AbstractComponent abstractComponent) {
+        abstractComponent.addStyleName("responsive-grid-layout")
+        abstractComponent.setWidthFull()
+    }
+
+    /**
+     * Disables manual resizing of individual grid columns and calculates column width dependent on screen size
+     *
+     *
+     * @param isDynamicResizing boolean value determining if a grid should be manually or automatically resizable
+     * @since 1.0.2
+     */
+    private void setDynamicResizing(boolean isDynamicResizing) {
+        if (isDynamicResizing) {
+            gridUtils.disableResizableColumns(projectGrid)
+            gridUtils.enableDynamicResizing(projectGrid)
+        }
+        else {
+            gridUtils.enableResizableColumns(projectGrid)
+            gridUtils.disableDynamicResizing(projectGrid)
+        }
     }
 }
