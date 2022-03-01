@@ -35,7 +35,7 @@ The created war file can then be deployed on a portal system.
     * - datasource.url
       - Connection to datasource
       - https://openbis.domain.de
-    * - datasource.api.url =
+    * - datasource.api.url
       - Connection to API datasource
       - https://openbis.domain.de/api/path
     * - datasource.user
