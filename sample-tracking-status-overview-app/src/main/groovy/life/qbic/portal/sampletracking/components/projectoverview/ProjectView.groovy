@@ -10,7 +10,6 @@ import com.vaadin.server.StreamResource
 import com.vaadin.shared.data.sort.SortDirection
 import com.vaadin.shared.ui.ContentMode
 import com.vaadin.shared.ui.grid.HeightMode
-import com.vaadin.ui.AbstractComponent
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
@@ -46,13 +45,18 @@ class ProjectView extends ProjectDesign implements Responsive {
         this.subscriptionCheckboxFactory = new SubscriptionCheckboxFactory(subscribeProjectController, subscriber, notificationService)
         this.downloadProjectController = downloadProjectController
         this.notificationService = notificationService
+        init()
+    }
+
+    private void init(){
         bindData()
         addClickListener()
         setupDownloadButton()
         bindManifestToProjectSelection()
-        setupLayoutResponsiveness(this)
-        setDynamicResizing(true)
-        setProjectGridStyles(projectGrid)
+        setupLayoutResponsiveness()
+        setProjectGridStyles()
+        disableResizableColumns()
+        enableDynamicResizing()
         addSorting()
         enableUserProjectFiltering()
     }
@@ -94,13 +98,14 @@ class ProjectView extends ProjectDesign implements Responsive {
         }
     }
 
-    private static void setProjectGridStyles(Grid projectGrid) {
-        setHeaderRowStyle(projectGrid.getDefaultHeaderRow())
-        addTooltips(projectGrid.getDefaultHeaderRow())
-        setColumnsStyle(projectGrid)
+    private void setProjectGridStyles() {
+        setHeaderRowStyle()
+        addTooltips()
+        setColumnsStyle()
     }
 
-    private static void addTooltips(HeaderRow headerRow) {
+    private void addTooltips() {
+        HeaderRow headerRow = projectGrid.getDefaultHeaderRow()
         headerRow.getCell("Subscription").setDescription("Select a project to get status updates per email.")
         headerRow.getCell("SamplesReceived").setDescription("Number of samples that arrived in the processing facility.")
         headerRow.getCell("SamplesPassedQc").setDescription("Number of samples that passed quality control.")
@@ -108,7 +113,8 @@ class ProjectView extends ProjectDesign implements Responsive {
         headerRow.getCell("SampleDataAvailable").setDescription("Number of available raw datasets.")
     }
 
-    private static void setHeaderRowStyle(HeaderRow headerRow) {
+    private void setHeaderRowStyle() {
+        HeaderRow headerRow = projectGrid.getDefaultHeaderRow()
         headerRow.getCell("Subscription").setStyleName("cell-min-width header-with-tooltip")
         headerRow.getCell("SamplesReceived").setStyleName("cell-min-width header-with-tooltip")
         headerRow.getCell("SamplesPassedQc").setStyleName("cell-min-width header-with-tooltip")
@@ -119,7 +125,7 @@ class ProjectView extends ProjectDesign implements Responsive {
         headerRow.getCell("Subscription").setStyleName("subscription-cell")
     }
 
-    private static void setColumnsStyle(Grid projectGrid) {
+    private void setColumnsStyle() {
         projectGrid.getColumn("ProjectTitle").setStyleGenerator(projectTitleColumn -> {
             return "cell-min-width cell-max-width"
         })
@@ -318,26 +324,9 @@ class ProjectView extends ProjectDesign implements Responsive {
      * @param AbstractComponent the {@link com.vaadin.ui.AbstractComponent}, where the css style and responsiveness should be added
      * @since 1.0.2
      */
-    static void setupLayoutResponsiveness(AbstractComponent abstractComponent) {
-        abstractComponent.addStyleName("responsive-grid-layout")
-        abstractComponent.setWidthFull()
-    }
-
-    /**
-     * Disables manual resizing of individual grid columns and calculates column width dependent on screen size
-     *
-     * @param isDynamicResizing boolean value determining if a grid should be manually or automatically resizable
-     * @since 1.0.2
-     */
-    private void setDynamicResizing(boolean isDynamicResizing) {
-        if (isDynamicResizing) {
-            disableResizableColumns()
-            enableDynamicResizing()
-        }
-        else {
-            enableResizableColumns()
-            disableDynamicResizing()
-        }
+    void setupLayoutResponsiveness() {
+        this.addStyleName("responsive-grid-layout")
+        this.setWidthFull()
     }
 
     @Override

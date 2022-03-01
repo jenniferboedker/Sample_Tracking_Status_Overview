@@ -11,7 +11,6 @@ import life.qbic.business.samples.Sample
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
-
 import life.qbic.portal.sampletracking.components.Responsive
 import life.qbic.portal.sampletracking.components.ViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
@@ -34,9 +33,10 @@ class SampleView extends SampleDesign implements Responsive {
         createSamplesGrid()
         enableUserSampleFiltering()
         addColumnColoring()
-        setDynamicResizing(true)
-        setupLayoutResponsiveness(this)
-        setSampleGridStyle(sampleGrid)
+        setupLayoutResponsiveness()
+        setSampleGridStyle()
+        disableResizableColumns()
+        enableDynamicResizing()
     }
 
     private void activateViewToggle() {
@@ -52,7 +52,6 @@ class SampleView extends SampleDesign implements Responsive {
             }
         })
     }
-
 
     private void createSamplesGrid() {
         sampleGrid.setWidthFull()
@@ -127,11 +126,12 @@ class SampleView extends SampleDesign implements Responsive {
         })
     }
 
-    private static void setSampleGridStyle(Grid sampleGrid) {
-        setHeaderRowStyle(sampleGrid.getDefaultHeaderRow())
+    private void setSampleGridStyle() {
+        setHeaderRowStyle()
     }
 
-    private static void setHeaderRowStyle(HeaderRow headerRow) {
+    private void setHeaderRowStyle() {
+        HeaderRow headerRow = sampleGrid.getDefaultHeaderRow()
         headerRow.getCell("name").setStyleName("cell-min-width")
         headerRow.getCell("code").setStyleName("cell-min-width")
         headerRow.getCell("status").setStyleName("cell-min-width")
@@ -145,26 +145,9 @@ class SampleView extends SampleDesign implements Responsive {
      * @param AbstractComponent the {@link com.vaadin.ui.AbstractComponent}, where the css style and responsiveness should be added
      * @since 1.0.2
      */
-    static void setupLayoutResponsiveness(AbstractComponent abstractComponent) {
-            abstractComponent.addStyleName("responsive-grid-layout")
-            abstractComponent.setWidthFull()
-    }
-
-    /**
-     * Disables manual resizing of individual grid columns and calculates column width dependent on screen size
-     *
-     * @param isDynamicResizing boolean value determining if a grid should be manually or automatically resizable
-     * @since 1.0.2
-     */
-    private void setDynamicResizing(boolean isDynamicResizing) {
-        if (isDynamicResizing) {
-            disableResizableColumns()
-            enableDynamicResizing()
-        }
-        else {
-            enableResizableColumns()
-            disableDynamicResizing()
-        }
+    void setupLayoutResponsiveness() {
+            this.addStyleName("responsive-grid-layout")
+            this.setWidthFull()
     }
 
     @Override
