@@ -13,10 +13,11 @@ import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.components.GridUtils
 import life.qbic.portal.sampletracking.components.GridUtilsImpl
+import life.qbic.portal.sampletracking.components.Responsive
 import life.qbic.portal.sampletracking.components.ViewModel
 import life.qbic.portal.sampletracking.components.projectoverview.statusdisplay.State
 
-class SampleView extends SampleDesign {
+class SampleView extends SampleDesign implements Responsive {
 
     private final ViewModel viewModel
     private final Presenter presenter
@@ -166,6 +167,26 @@ class SampleView extends SampleDesign {
             gridUtils.enableResizableColumns(sampleGrid)
             gridUtils.disableDynamicResizing(sampleGrid)
         }
+    }
+
+    @Override
+    void enableResizableColumns() {
+
+    }
+
+    @Override
+    void disableResizableColumns() {
+
+    }
+
+    @Override
+    void enableDynamicResizing() {
+
+    }
+
+    @Override
+    void disableDynamicResizing() {
+
     }
 
     /**
