@@ -86,26 +86,19 @@
   .backColor {
     background: grey;
   }
+
+  .scrollable-layout {
+    overflow: auto;
+  }
+
   /* projectGrid layout can't be smaller otherwise the download button and project/sample button will overlap*/
-  .responsive-project-layout {
-    min-width: 940px;
-  }
-  /* Cells in projectGrid should never be smaller than the content in their header*/
-  .project-cell-min-width {
-    min-width: 170px;
+  .responsive-grid-layout {
+    min-width: 1000px;
+    display: block;
   }
 
-  /* Adjust size of ProjectTitle Column if Layout is too small*/
-  .responsive-project-layout[width-range~="0px-1400px"] {
-    .project-title-cell {
-      width: 15vw;
-    }
+  /* Style to cut off cells if their content would expand the cell above 40% of the viewWidth*/
+  .cell-max-width {
+    max-width: 40%;
   }
-
-  .responsive-project-layout[width-range~="1400px-"] {
-    .project-title-cell {
-      width: 30vw;
-    }
-  }
-
 }
