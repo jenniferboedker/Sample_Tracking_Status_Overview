@@ -299,7 +299,7 @@ class ProjectView extends ProjectDesign implements Responsive {
         })
     }
 
-    void enableUserProjectFiltering() {
+    private void enableUserProjectFiltering() {
         TextField searchField = this.searchField
         searchField.addValueChangeListener({
             if (it.getValue()) {
@@ -324,7 +324,7 @@ class ProjectView extends ProjectDesign implements Responsive {
      * @param AbstractComponent the {@link com.vaadin.ui.AbstractComponent}, where the css style and responsiveness should be added
      * @since 1.0.2
      */
-    void setupLayoutResponsiveness() {
+    private void setupLayoutResponsiveness() {
         this.addStyleName("responsive-grid-layout")
         this.setWidthFull()
     }

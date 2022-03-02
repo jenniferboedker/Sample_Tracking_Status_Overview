@@ -86,7 +86,7 @@ class SampleView extends SampleDesign implements Responsive {
         sampleGrid.getColumn("status").setStyleGenerator({ Sample sample -> determineColor(sample.status) })
     }
 
-    void enableUserSampleFiltering() {
+    private void enableUserSampleFiltering() {
         enableUserFilterByStatus()
         enableUserFilterBySearchbar()
     }
@@ -113,7 +113,7 @@ class SampleView extends SampleDesign implements Responsive {
         })
     }
 
-    void enableUserFilterBySearchbar() {
+    private void enableUserFilterBySearchbar() {
         TextField searchField = this.searchField
         DataProvider<Sample, ?> dataProvider = this.sampleGrid.getDataProvider()
         searchField.addValueChangeListener({
@@ -145,7 +145,7 @@ class SampleView extends SampleDesign implements Responsive {
      * @param AbstractComponent the {@link com.vaadin.ui.AbstractComponent}, where the css style and responsiveness should be added
      * @since 1.0.2
      */
-    void setupLayoutResponsiveness() {
+    private void setupLayoutResponsiveness() {
             this.addStyleName("responsive-grid-layout")
             this.setWidthFull()
     }
