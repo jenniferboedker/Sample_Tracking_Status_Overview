@@ -123,7 +123,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
     
     private void addSubscription(Connection connection, int subscriberId, String projectCode) {
         if (!projectAlreadySubscribed(subscriberId, projectCode)) {
-            String query = "INSERT INTO subscriptions (project, user_id) VALUES(?, ?)"
+            String query = "INSERT INTO subscriptions (project_code, person_id) VALUES(?, ?)"
 
             def statement = connection.prepareStatement(query)
 
@@ -135,7 +135,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
     
     private static void removeSubscription(Connection connection, int subscriberId, String projectCode) {
           // we do not need to check if the subscription exists, here, as removing a non-existent row does not lead to errors
-          String query = "DELETE FROM subscriptions WHERE project = ? AND user_id = ?"
+          String query = "DELETE FROM subscriptions WHERE project_code = ? AND person_id = ?"
 
           def statement = connection.prepareStatement(query)
 
@@ -145,7 +145,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
     }
 
     private boolean projectAlreadySubscribed(int subscriberId, String projectCode) {
-        String query = "SELECT id FROM subscriptions WHERE project = ? AND user_id = ? "
+        String query = "SELECT id FROM subscriptions WHERE project_code = ? AND person_id = ? "
         Connection connection = connectionProvider.connect()
         boolean isAlreadySubscribed = false
         connection.withCloseable {
@@ -164,7 +164,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
     List<String> findSubscribedProjectCodesFor(Subscriber subscriber) {
         List<String> subscribedProjects = []
 
-        String query = "SELECT project FROM subscriptions WHERE user_id = ?"
+        String query = "SELECT project_code FROM subscriptions WHERE person_id = ?"
         Connection connection = connectionProvider.connect()
 
         connection.withCloseable {
@@ -175,7 +175,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
 
             ResultSet resultSet = statement.executeQuery()
             while(resultSet.next()) {
-                subscribedProjects <<  resultSet.getString("project")
+                subscribedProjects <<  resultSet.getString("project_code")
             }
         }
         return subscribedProjects
