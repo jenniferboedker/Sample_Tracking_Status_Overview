@@ -175,7 +175,7 @@ class SubscriptionsDbConnector implements SubscriptionDataSource, SubscribedProj
 
             ResultSet resultSet = statement.executeQuery()
             while(resultSet.next()) {
-                subscribedProjects <<  resultSet.getString("project")
+                subscribedProjects <<  resultSet.getString("project_code")
             }
         }
         return subscribedProjects
