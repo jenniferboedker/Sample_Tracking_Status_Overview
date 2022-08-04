@@ -46,21 +46,35 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
     @Override
     List<String> fetchSampleCodesFor(String projectCode, Status status) {
         String queryTemplate = Query.fetchLatestSampleEntries()
-        queryTemplate += " WHERE sample_status = ?"
         Connection connection = connectionProvider.connect()
         List<String> sampleCodes = new ArrayList<>()
         String sqlRegex = "${projectCode}%"
         connection.withCloseable {
             PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
             preparedStatement.setString(1, sqlRegex)
-            preparedStatement.setString(2, status.toString())
             ResultSet resultSet = preparedStatement.executeQuery()
             while (resultSet.next()) {
-                String sampleCode = resultSet.getString("sample_id")
-                sampleCodes.add(sampleCode)
+                String sampleCode = resultSet.getString("sample_code")
+                //TODO column type
+                Status eventStatus = getStatusFromEvent(resultSet.getBlob("event_serialized"))
+                if(eventStatus.equals(status)) {
+                    sampleCodes.add(sampleCode)
+                }
             }
         }
         return sampleCodes
+    }
+
+    private Status getStatusFromEvent(String eventJson) {
+        Status result
+        try {
+            result = null//TODO
+        } catch(IllegalArgumentException statusNotFound) {
+            // The status in the database is invalid. This should never be the case!
+            log.error("Could not parse status from $eventJson", statusNotFound)
+            throw new DataSourceException("Retrieval of sample statuses failed for sample event $eventJson")
+        }
+        return result
     }
 
     /**
@@ -79,7 +93,7 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
             preparedStatement.setString(1, sqlRegex)
             ResultSet resultSet = preparedStatement.executeQuery()
             while (resultSet.next()) {
-                String sampleCode = resultSet.getString("sample_id")
+                String sampleCode = resultSet.getString("sample_code")
                 sampleCodes.add(sampleCode)
             }
         }
@@ -103,17 +117,8 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
             preparedStatement.setString(1, sqlRegex)
             ResultSet resultSet = preparedStatement.executeQuery()
             while (resultSet.next()) {
-                String sampleCode = resultSet.getString("sample_id")
-                String sampleStatusString = resultSet.getString("sample_status")
-                String arrivalTime = resultSet.getString("arrival_time")
-                Status sampleStatus
-                try {
-                    sampleStatus = Status.valueOf(sampleStatusString)
-                } catch(IllegalArgumentException statusNotFound) {
-                    // The status in the database is invalid. This should never be the case!
-                    log.error("Could not parse status $sampleStatusString for $sampleCode at $arrivalTime", statusNotFound)
-                    throw new DataSourceException("Retrieval of sample statuses failed for sample $sampleCode")
-                }
+                //TODO column type
+                Status sampleStatus = getStatusFromEvent(resultSet.getBlob("event_serialized"))
                 statuses.add(sampleStatus)
             }
         }
@@ -123,13 +128,14 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
 
     
     /**
+     * Keep in mind this will return any sample events and not only sample status updates
      * {@inheritDoc}
      * @since 1.0.0
      */
     @Override
     Instant getLatestChange(String projectCode) throws DataSourceException {
       Connection connection = connectionProvider.connect()
-      String latestChangeQuery = "select MAX(UNIX_TIMESTAMP(arrival_time)) from samples_locations where sample_id LIKE ?"
+      String latestChangeQuery = "select MAX(UNIX_TIMESTAMP(event_time)) from sample_events where sample_code LIKE ?"
       String sqlRegex = "${projectCode}%"
       Instant latest = Instant.MIN
       connection.withCloseable {
@@ -137,13 +143,13 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
           preparedStatement.setString(1, sqlRegex)
           ResultSet resultSet = preparedStatement.executeQuery()
           while (resultSet.next()) {
-            long arrivalTime = resultSet.getLong(1)
-            if(arrivalTime > 0) {
+            long eventTime = resultSet.getLong(1)
+            if(eventTime > 0) {
               try {
-                latest = Instant.ofEpochSecond(arrivalTime)
+                latest = Instant.ofEpochSecond(eventTime)
               } catch(Exception e) {
                 // The status in the database is invalid. This should never be the case!
-                log.error("Could not parse arrival time $arrivalTime", e)
+                log.error("Could not parse arrival time $eventTime", e)
                 throw new DataSourceException("Retrieval of latest change failed for project $projectCode")
               }
             }
@@ -201,6 +207,7 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
             Replace `?` with your matching sample_id.
              */
             final String filterCriteria = "WHERE sample_id LIKE ? AND sample_id NOT LIKE \"%ENTITY%\""
+            final String filterCriteriaV2 = "WHERE sample_code LIKE ? AND sample_id NOT LIKE \"%ENTITY%\""
             /*
              * This query constructs a table in the form of
              # sample_id| MAX(arrival_time)
@@ -216,6 +223,7 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
              */
             final String latestEditQuery = "SELECT sample_id, MAX(arrival_time) as arrival_time FROM samples_locations $filterCriteria GROUP BY sample_id"
 
+            final String latestEntriesQueryV2 = "SELECT sample_code, MAX(event_time), event_serialized FROM sample_events $filterCriteriaV2 GROUP BY sample_code"
             /*
              * This query filters the samples_locations table and only returns samples whose
              * arrival_time matches the latest arrival_time.
@@ -226,7 +234,7 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
                     "ON latest_arrivals.sample_id = samples_locations.sample_id " +
                     "AND latest_arrivals.arrival_time = samples_locations.arrival_time"
 
-            return latestEntriesQuery
+            return latestEntriesQueryV2
         }
     }
 }
