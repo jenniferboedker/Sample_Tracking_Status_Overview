@@ -207,7 +207,7 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
             Replace `?` with your matching sample_id.
              */
             final String filterCriteria = "WHERE sample_id LIKE ? AND sample_id NOT LIKE \"%ENTITY%\""
-            final String filterCriteriaV2 = "WHERE sample_code LIKE ? AND sample_id NOT LIKE \"%ENTITY%\""
+            final String filterCriteriaV2 = "WHERE sample_code LIKE ? AND sample_code NOT LIKE \"%ENTITY%\""
             /*
              * This query constructs a table in the form of
              # sample_id| MAX(arrival_time)
