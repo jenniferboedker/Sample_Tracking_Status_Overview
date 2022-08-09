@@ -12,7 +12,7 @@ interface SampleTrackingService {
     /**
      * Requests the sample tracking status for a sample by code
      * @param sampleCode The sample for which the status will be requested
-     * @return
+     * @return optional of tracked samples, if no sample found the optional will be empty
      */
     Optional<SampleTracking.TrackedSample> requestSampleStatus(String sampleCode)
 
