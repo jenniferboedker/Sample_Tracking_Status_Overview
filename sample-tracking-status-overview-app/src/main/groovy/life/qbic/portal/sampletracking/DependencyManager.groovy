@@ -41,6 +41,8 @@ import life.qbic.portal.sampletracking.datasources.subscriptions.SubscriptionsDb
 import life.qbic.portal.sampletracking.resource.ResourceService
 import life.qbic.portal.sampletracking.resource.project.ProjectResourceService
 import life.qbic.portal.sampletracking.resource.status.StatusCountResourceService
+import life.qbic.portal.sampletracking.services.sample.SampleTracking
+import life.qbic.portal.sampletracking.services.sample.SampleTrackingService
 import life.qbic.portal.utils.ConfigurationManager
 import life.qbic.portal.utils.ConfigurationManagerFactory
 
@@ -114,8 +116,10 @@ class DependencyManager {
         String port = Objects.requireNonNull(configurationManager.getMysqlPort(), "Mysql port missing.")
         String sqlDatabase = Objects.requireNonNull(configurationManager.getMysqlDB(), "Mysql database name missing.")
 
+
         DatabaseSession.init(user, password, host, port, sqlDatabase)
-        SamplesDbConnector samplesDbConnector = new SamplesDbConnector(DatabaseSession.getInstance())
+        SampleTrackingService service = setUpTrackingService()
+        SamplesDbConnector samplesDbConnector = new SamplesDbConnector(DatabaseSession.getInstance(),service)
         countSamplesDataSource = samplesDbConnector
         downloadSamplesDataSource = samplesDbConnector
         lastChangedDateDataSource = samplesDbConnector
@@ -136,6 +140,15 @@ class DependencyManager {
         SubscriptionsDbConnector subscriptionsDbConnector = new SubscriptionsDbConnector(DatabaseSession.getInstance())
         subscriptionDataSource = subscriptionsDbConnector
         subscribedProjectsDataSource = subscriptionsDbConnector
+    }
+
+    private SampleTrackingService setUpTrackingService(){
+        String serviceURL = Objects.requireNonNull(configurationManager.getServicesRegistryUrl())
+        Map<String, String> env = System.getenv()
+        String user = env.get("SERVICE_USER")
+        String pass = env.get("SERVICE_USER_PW")
+
+        return new SampleTracking(serviceURL, user, pass)
     }
 
     /**
