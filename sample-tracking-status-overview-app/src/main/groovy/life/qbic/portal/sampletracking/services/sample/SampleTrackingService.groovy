@@ -16,4 +16,10 @@ interface SampleTrackingService {
      */
     Optional<SampleTracking.TrackedSample> requestSampleStatus(String sampleCode)
 
+    /**
+     *
+     * @param projectCode
+     * @return
+     */
+    List<SampleTracking.TrackedSample> requestProjectSamplesStatus(String projectCode)
 }
