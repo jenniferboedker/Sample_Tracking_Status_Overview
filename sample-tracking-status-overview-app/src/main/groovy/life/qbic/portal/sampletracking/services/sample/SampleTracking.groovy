@@ -57,7 +57,7 @@ class SampleTracking implements SampleTrackingService{
         }
     }
 
-    TrackedSample extractTrackedSample(String result) {
+    private static TrackedSample extractTrackedSample(String result) {
         //the http response body is a json object
         ObjectMapper jsonMapper = new ObjectMapper()
         JsonNode node = jsonMapper.readTree(result)
@@ -65,7 +65,7 @@ class SampleTracking implements SampleTrackingService{
         return getTrackedSampleFromJsonNode(node)
     }
 
-    private TrackedSample getTrackedSampleFromJsonNode(JsonNode node) {
+    private static TrackedSample getTrackedSampleFromJsonNode(JsonNode node) {
         String status = node.get("status")
         String validSince = node.get("statusValidSince")
         String sampleCode = node.get("sampleCode")
@@ -104,7 +104,7 @@ class SampleTracking implements SampleTrackingService{
         return httpGet
     }
 
-    List<TrackedSample> extractTrackedSamples(String jsonString) {
+    private static List<TrackedSample> extractTrackedSamples(String jsonString) {
         List trackedSamples = new ArrayList<TrackedSample>()
 
         ObjectMapper mapper = new ObjectMapper()
