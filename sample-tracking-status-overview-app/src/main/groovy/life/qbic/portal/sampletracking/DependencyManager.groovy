@@ -118,8 +118,10 @@ class DependencyManager {
 
 
         DatabaseSession.init(user, password, host, port, sqlDatabase)
+        ///////
         SampleTrackingService service = setUpTrackingService()
         SamplesDbConnector samplesDbConnector = new SamplesDbConnector(DatabaseSession.getInstance(),service)
+        //////
         countSamplesDataSource = samplesDbConnector
         downloadSamplesDataSource = samplesDbConnector
         lastChangedDateDataSource = samplesDbConnector
@@ -148,7 +150,12 @@ class DependencyManager {
         String user = env.get("SERVICE_USER")
         String pass = env.get("SERVICE_USER_PW")
 
-        return new SampleTracking(serviceURL, user, pass)
+        Credentials credentials = new Credentials(
+                user: user,
+                password: pass
+        )
+
+        return new SampleTracking(serviceURL, credentials)
     }
 
     /**
