@@ -1,6 +1,5 @@
 package life.qbic.portal.sampletracking.services.sample
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import life.qbic.portal.sampletracking.datasources.Credentials
@@ -9,7 +8,6 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
-import org.json.JSONObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -91,7 +89,6 @@ class SampleTracking implements SampleTrackingService{
 
             return trackedSample
         } catch (Exception e) {
-            //todo what to do when something fails
             logger.error(e.getMessage())
             return new ArrayList<TrackedSample>()
         }
