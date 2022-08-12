@@ -33,7 +33,6 @@ class SampleTrackingSpec extends Specification{
 
         then:
         codes.size() == 5
-
     }
 
     def "when fetchSampleCodesFor project, then return an empty list of no samples were found" () {
@@ -51,7 +50,6 @@ class SampleTrackingSpec extends Specification{
 
         then:
         codes.size() == 0
-
     }
 
 
