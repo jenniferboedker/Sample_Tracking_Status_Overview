@@ -46,6 +46,8 @@ import life.qbic.portal.sampletracking.services.sample.SampleTrackingService
 import life.qbic.portal.utils.ConfigurationManager
 import life.qbic.portal.utils.ConfigurationManagerFactory
 
+import static java.util.Objects.requireNonNull
+
 /**
  * <h1>Class that manages all the dependency injections and class instance creations</h1>
  *
@@ -110,18 +112,15 @@ class DependencyManager {
     }
 
     private void setupDatabaseConnections() {
-        String user = Objects.requireNonNull(configurationManager.getMysqlUser(), "Mysql user missing.")
-        String password = Objects.requireNonNull(configurationManager.getMysqlPass(), "Mysql password missing.")
-        String host = Objects.requireNonNull(configurationManager.getMysqlHost(), "Mysql host missing.")
-        String port = Objects.requireNonNull(configurationManager.getMysqlPort(), "Mysql port missing.")
-        String sqlDatabase = Objects.requireNonNull(configurationManager.getMysqlDB(), "Mysql database name missing.")
-
+        String user = requireNonNull(configurationManager.getMysqlUser(), "Mysql user missing.")
+        String password = requireNonNull(configurationManager.getMysqlPass(), "Mysql password missing.")
+        String host = requireNonNull(configurationManager.getMysqlHost(), "Mysql host missing.")
+        String port = requireNonNull(configurationManager.getMysqlPort(), "Mysql port missing.")
+        String sqlDatabase = requireNonNull(configurationManager.getMysqlDB(), "Mysql database name missing.")
 
         DatabaseSession.init(user, password, host, port, sqlDatabase)
-        ///////
         SampleTrackingService service = setUpTrackingService()
         SamplesDbConnector samplesDbConnector = new SamplesDbConnector(DatabaseSession.getInstance(),service)
-        //////
         countSamplesDataSource = samplesDbConnector
         downloadSamplesDataSource = samplesDbConnector
         lastChangedDateDataSource = samplesDbConnector
@@ -145,14 +144,12 @@ class DependencyManager {
     }
 
     private SampleTrackingService setUpTrackingService(){
-        String serviceURL = Objects.requireNonNull(configurationManager.getServicesRegistryUrl())
-        Map<String, String> env = System.getenv()
-        String user = env.get("SERVICE_USER")
-        String pass = env.get("SERVICE_USER_PW")
+        String serviceURL = requireNonNull(configurationManager.getServicesRegistryUrl())
+        def user = requireNonNull(configurationManager.getServiceUser())
 
         Credentials credentials = new Credentials(
-                user: user,
-                password: pass
+                user: user.name,
+                password: user.password
         )
 
         return new SampleTracking(serviceURL, credentials)
