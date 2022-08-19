@@ -3,6 +3,7 @@ package life.qbic.portal.sampletracking.services.sample
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import life.qbic.portal.sampletracking.datasources.Credentials
+import org.apache.http.HttpException
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.CloseableHttpClient
@@ -44,7 +45,9 @@ class SampleTracking implements SampleTrackingService{
             CloseableHttpClient httpClient = HttpClients.createDefault()
             HttpGet httpGet = createHttpGETSampleStatement(sampleCode)
             CloseableHttpResponse response = httpClient.execute(httpGet)
-
+            if (response.getStatusLine().statusCode != 200){
+                throw new HttpException("Sample Tracking Service returned ${response.getStatusLine().getStatusCode()} : ${response.getStatusLine().reasonPhrase} for ${sampleCode}")
+            }
             String result = EntityUtils.toString(response.getEntity())
             TrackedSample trackedSample = extractTrackedSample(result)
 
@@ -86,7 +89,9 @@ class SampleTracking implements SampleTrackingService{
             CloseableHttpClient httpClient = HttpClients.createDefault()
             HttpGet httpGet = createHttpGETProjectStatement(projectCode)
             CloseableHttpResponse response = httpClient.execute(httpGet)
-
+            if (response.getStatusLine().statusCode != 200){
+                throw new HttpException("Sample Tracking Service returned ${response.getStatusLine().getStatusCode()} : ${response.getStatusLine().reasonPhrase} for ${projectCode}")
+            }
             String result = EntityUtils.toString(response.getEntity())
             List<TrackedSample> trackedSample = extractTrackedSamples(result)
 
