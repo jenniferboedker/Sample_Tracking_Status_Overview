@@ -67,6 +67,9 @@ class SampleTracking implements SampleTrackingService{
         String status = node.get("status")
         String validSince = node.get("statusValidSince")
         String sampleCode = node.get("sampleCode")
+        status = status.replace('"', '')
+        validSince = validSince.replace('"', '')
+        sampleCode = sampleCode.replace('"', '')
 
         return new TrackedSample(sampleCode, status, validSince)
     }
@@ -95,7 +98,7 @@ class SampleTracking implements SampleTrackingService{
     }
 
     private HttpGet createHttpGETProjectStatement(String projectCode) {
-        HttpGet httpGet = new HttpGet(serviceEndPoint + PROJECTS_ROUTE + "/" + projectCode + SAMPLES_ROUTE  + STATUS_ENDPOINT)
+        HttpGet httpGet = new HttpGet(serviceEndPoint + PROJECTS_ROUTE + "/" + projectCode + STATUS_ENDPOINT)
         httpGet.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((serviceUser + ":" + userPass).getBytes()))
 
         return httpGet
