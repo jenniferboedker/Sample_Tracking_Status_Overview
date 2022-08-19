@@ -8,13 +8,9 @@ import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.business.samples.info.SampleStatusDataSource
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
-import life.qbic.portal.sampletracking.services.sample.SampleTracking
 import life.qbic.portal.sampletracking.services.sample.SampleTracking.TrackedSample
 import life.qbic.portal.sampletracking.services.sample.SampleTrackingService
 
-import java.sql.Connection
-import java.sql.PreparedStatement
-import java.sql.ResultSet
 import java.time.Instant
 
 /**
@@ -110,7 +106,7 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
             Status parsedStatus = Status.valueOf(status)
             return Optional.of(parsedStatus)
         } catch (Exception e) {
-            log.error(e.getMessage())
+            log.error(e.getMessage(), e)
             return Optional.empty()
         }
     }

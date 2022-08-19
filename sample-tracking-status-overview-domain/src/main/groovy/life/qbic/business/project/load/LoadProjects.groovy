@@ -3,6 +3,8 @@ package life.qbic.business.project.load
 import life.qbic.business.DataSourceException
 import life.qbic.business.project.Project
 import life.qbic.business.project.subscribe.Subscriber
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 /**
  * <b>Load projects</b>
@@ -16,6 +18,9 @@ class LoadProjects implements LoadProjectsInput{
     private final SubscribedProjectsDataSource subscribedProjectsDataSource
     private final LastChangedDateDataSource loadLastChangedDataSource
     private final LoadProjectsOutput output
+
+    private static final Logger log = LogManager.getLogger(LoadProjects.class)
+
 
     /**
      * Default constructor for this use case
@@ -41,8 +46,10 @@ class LoadProjects implements LoadProjectsInput{
             List<Project> projects = loadUserProjects()
             output.loadedProjects(projects)
         } catch (DataSourceException dataSourceException) {
+            log.error(dataSourceException.message, dataSourceException)
             output.failedExecution(dataSourceException.getMessage())
         } catch (Exception e) {
+            log.error(e.message, e)
             output.failedExecution("Could not load projects")
         }
     }
@@ -54,9 +61,10 @@ class LoadProjects implements LoadProjectsInput{
             loadSubscriptionInformationInto(projects, subscriber)
             output.loadedProjects(projects)
         } catch (DataSourceException dataSourceException) {
+            log.error(dataSourceException.message, dataSourceException)
             output.failedExecution(dataSourceException.getMessage())
         } catch (Exception e) {
-            e.printStackTrace()
+            log.error(e.message, e)
             output.failedExecution("Could not load projects")
         }
     }

@@ -4,6 +4,8 @@ import life.qbic.business.DataSourceException
 import life.qbic.business.samples.Sample
 import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.datamodel.samples.Status
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 import java.util.stream.Collectors
 
@@ -20,6 +22,8 @@ class GetSamplesInfo implements GetSamplesInfoInput {
   private final GetSamplesInfoDataSource infoDataSource
   private final SampleStatusDataSource statusDataSource
   private final GetSamplesInfoOutput output
+
+  private static final Logger log = LogManager.getLogger(GetSamplesInfo.class)
 
   /**
    * Default constructor for this use case
@@ -51,6 +55,7 @@ class GetSamplesInfo implements GetSamplesInfoInput {
       List<Sample> samplesWithNames = buildSamples(sampleCodesToNames, status)
       output.samplesWithNames(samplesWithNames)
     } catch (DataSourceException dataSourceException) {
+      log.error(dataSourceException.message, dataSourceException)
       output.failedExecution(dataSourceException.getMessage())
     } 
   }
@@ -74,6 +79,7 @@ class GetSamplesInfo implements GetSamplesInfoInput {
       List<Sample> samplesWithNames = buildSamples(sampleCodesToNames, sampleCodesToStatus)
       output.samplesWithNames(samplesWithNames)
     } catch (DataSourceException dataSourceException) {
+      log.error(dataSourceException.message, dataSourceException)
       output.failedExecution(dataSourceException.getMessage())
     }
   }

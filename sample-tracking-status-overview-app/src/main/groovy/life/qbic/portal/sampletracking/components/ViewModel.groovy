@@ -53,9 +53,15 @@ class ViewModel {
     }
 
     private void subscribeToResources() {
-        this.projectResourceService.subscribe({ addProject(it) }, Topic.PROJECT_ADDED)
-        this.projectResourceService.subscribe({ removeProject(it) }, Topic.PROJECT_REMOVED)
-        this.projectResourceService.subscribe({ updateProject(it) }, Topic.PROJECT_UPDATED)
+        this.projectResourceService.subscribe({
+            addProject(it)
+        }, Topic.PROJECT_ADDED)
+        this.projectResourceService.subscribe({
+            removeProject(it)
+        }, Topic.PROJECT_REMOVED)
+        this.projectResourceService.subscribe({
+            updateProject(it)
+        }, Topic.PROJECT_UPDATED)
         this.statusCountService.subscribe({
             updateStatusCount(it)
         }, Topic.SAMPLE_COUNT_UPDATE)
@@ -90,6 +96,7 @@ class ViewModel {
     }
 
     private void addProject(Project project) {
+        log.debug("Adding project $project.code $project.title")
         ProjectSummary projectSummary = ProjectSummary.of(project)
         projectSummaries.add(projectSummary)
     }
