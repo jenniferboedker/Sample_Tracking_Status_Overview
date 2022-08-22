@@ -3,6 +3,8 @@ package life.qbic.business.samples.download
 import life.qbic.business.DataSourceException
 import life.qbic.business.OutputException
 import life.qbic.datamodel.samples.Status
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 /**
  * <b>Download samples</b>
@@ -12,6 +14,8 @@ import life.qbic.datamodel.samples.Status
  * @since 1.0.0
  */
 class DownloadSamples implements DownloadSamplesInput {
+  private static final Logger log = LogManager.getLogger(DownloadSamples.class)
+
   private final DownloadSamplesDataSource dataSource
   private final DownloadSamplesOutput output
   // used to be able to add samples for having completed the available data status when they are in a further step
@@ -48,6 +52,7 @@ class DownloadSamples implements DownloadSamplesInput {
       }
       output.foundDownloadableSamples(projectCode, sampleCodes)
     } catch (DataSourceException dataSourceException) {
+      log.error(dataSourceException.message, dataSourceException)
       output.failedExecution(dataSourceException.getMessage())
     } catch (OutputException ignored) {
       throw new RuntimeException("Could not forward results for ${projectCode}")

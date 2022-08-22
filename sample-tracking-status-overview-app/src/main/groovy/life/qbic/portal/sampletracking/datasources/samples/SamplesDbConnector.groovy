@@ -8,10 +8,9 @@ import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.business.samples.info.SampleStatusDataSource
 import life.qbic.datamodel.samples.Status
 import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
+import life.qbic.portal.sampletracking.services.sample.SampleTracking.TrackedSample
+import life.qbic.portal.sampletracking.services.sample.SampleTrackingService
 
-import java.sql.Connection
-import java.sql.PreparedStatement
-import java.sql.ResultSet
 import java.time.Instant
 
 /**
@@ -27,6 +26,7 @@ import java.time.Instant
 @Log4j2
 class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataSource, LastChangedDateDataSource, SampleStatusDataSource {
     private final ConnectionProvider connectionProvider
+    private final SampleTrackingService sampleTrackingService
 
     /**
      * Creates a database connector that will connect to the database using the provided connection
@@ -35,8 +35,9 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
      * connect to the database
      * @since 1.0.0
      */
-    SamplesDbConnector(ConnectionProvider connectionProvider) {
+    SamplesDbConnector(ConnectionProvider connectionProvider, SampleTrackingService sampleTrackingService) {
         this.connectionProvider = connectionProvider
+        this.sampleTrackingService = sampleTrackingService
     }
 
     /**
@@ -45,23 +46,19 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
      */
     @Override
     List<String> fetchSampleCodesFor(String projectCode, Status status) {
-        String queryTemplate = Query.fetchLatestSampleEntries()
-        queryTemplate += " WHERE sample_status = ?"
-        Connection connection = connectionProvider.connect()
         List<String> sampleCodes = new ArrayList<>()
-        String sqlRegex = "${projectCode}%"
-        connection.withCloseable {
-            PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
-            preparedStatement.setString(1, sqlRegex)
-            preparedStatement.setString(2, status.toString())
-            ResultSet resultSet = preparedStatement.executeQuery()
-            while (resultSet.next()) {
-                String sampleCode = resultSet.getString("sample_id")
-                sampleCodes.add(sampleCode)
+
+        List samples = sampleTrackingService.requestProjectSamplesStatus(projectCode)
+
+        samples.each { sample ->
+            if (sample.status == status.toString()) {
+                sampleCodes.add(sample.sampleCode)
             }
         }
+
         return sampleCodes
     }
+
 
     /**
      * Given a project code, returns all sample codes with that project
@@ -70,21 +67,16 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
      */
     @Override
     List<String> fetchSampleCodesFor(String projectCode) {
-        String queryTemplate = Query.fetchLatestSampleEntries()
-        Connection connection = connectionProvider.connect()
         List<String> sampleCodes = new ArrayList<>()
-        String sqlRegex = "${projectCode}%"
-        connection.withCloseable {
-            PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
-            preparedStatement.setString(1, sqlRegex)
-            ResultSet resultSet = preparedStatement.executeQuery()
-            while (resultSet.next()) {
-                String sampleCode = resultSet.getString("sample_id")
-                sampleCodes.add(sampleCode)
-            }
+
+        List trackedSamples = sampleTrackingService.requestProjectSamplesStatus(projectCode)
+
+        trackedSamples.each { trackedSample ->
+            sampleCodes << trackedSample.sampleCode
         }
         return sampleCodes
     }
+
 
     /**
      * {@inheritDoc}
@@ -94,139 +86,65 @@ class SamplesDbConnector implements CountSamplesDataSource, DownloadSamplesDataS
      */
     @Override
     List<Status> fetchSampleStatusesForProject(String projectCode) throws DataSourceException {
-        String queryTemplate = Query.fetchLatestSampleEntries()
-        Connection connection = connectionProvider.connect()
         List<Status> statuses = new ArrayList<>()
-        String sqlRegex = "${projectCode}%"
-        connection.withCloseable {
-            PreparedStatement preparedStatement = it.prepareStatement(queryTemplate)
-            preparedStatement.setString(1, sqlRegex)
-            ResultSet resultSet = preparedStatement.executeQuery()
-            while (resultSet.next()) {
-                String sampleCode = resultSet.getString("sample_id")
-                String sampleStatusString = resultSet.getString("sample_status")
-                String arrivalTime = resultSet.getString("arrival_time")
-                Status sampleStatus
-                try {
-                    sampleStatus = Status.valueOf(sampleStatusString)
-                } catch(IllegalArgumentException statusNotFound) {
-                    // The status in the database is invalid. This should never be the case!
-                    log.error("Could not parse status $sampleStatusString for $sampleCode at $arrivalTime", statusNotFound)
-                    throw new DataSourceException("Retrieval of sample statuses failed for sample $sampleCode")
-                }
-                statuses.add(sampleStatus)
-            }
+
+        List trackedSamples = sampleTrackingService.requestProjectSamplesStatus(projectCode)
+        trackedSamples.each { trackedSample ->
+            parseStatus(trackedSample.status).ifPresent({ statuses.add(it) })
         }
         return statuses
     }
 
-
-    
     /**
+     * Parses a string status to a {@link Status} in an optional. The optional is empty if
+     * the status cannot be parsed
+     * @param status A status as string
+     * @return an Optional of a status
+     */
+    private Optional<Status> parseStatus(String status) {
+        try {
+            Status parsedStatus = Status.valueOf(status)
+            return Optional.of(parsedStatus)
+        } catch (Exception e) {
+            log.error(e.getMessage(), e)
+            return Optional.empty()
+        }
+    }
+    /**
+     * Keep in mind this will return any sample events and not only sample status updates
      * {@inheritDoc}
      * @since 1.0.0
      */
     @Override
     Instant getLatestChange(String projectCode) throws DataSourceException {
-      Connection connection = connectionProvider.connect()
-      String latestChangeQuery = "select MAX(UNIX_TIMESTAMP(arrival_time)) from samples_locations where sample_id LIKE ?"
-      String sqlRegex = "${projectCode}%"
-      Instant latest = Instant.MIN
-      connection.withCloseable {
-          PreparedStatement preparedStatement = it.prepareStatement(latestChangeQuery)
-          preparedStatement.setString(1, sqlRegex)
-          ResultSet resultSet = preparedStatement.executeQuery()
-          while (resultSet.next()) {
-            long arrivalTime = resultSet.getLong(1)
-            if(arrivalTime > 0) {
-              try {
-                latest = Instant.ofEpochSecond(arrivalTime)
-              } catch(Exception e) {
-                // The status in the database is invalid. This should never be the case!
-                log.error("Could not parse arrival time $arrivalTime", e)
-                throw new DataSourceException("Retrieval of latest change failed for project $projectCode")
-              }
+        Instant latest = Instant.MIN
+
+        List<TrackedSample> samples = sampleTrackingService.requestProjectSamplesStatus(projectCode)
+
+        samples.each {sample ->
+            if(Instant.parse(sample.validSince).isAfter(latest)){
+                latest = Instant.parse(sample.validSince)
             }
-          }
-      }
-      return latest
+        }
+        return latest
     }
 
     @Override
     Map<String, Status> fetchSampleStatusesFor(Collection<String> sampleCodes) {
         Map<String, Status> sampleCodesToStatus = new HashMap<>()
-        Connection connection = connectionProvider.connect()
-        connection.withCloseable {closableConnection ->
-            PreparedStatement preparedStatement = closableConnection.prepareStatement(Query.fetchLatestSampleEntries())
-            sampleCodes.forEach({
-               sampleCodesToStatus.putAll(mapSampleCodeToStatus(it, preparedStatement))
-           })
+
+        sampleCodes.each {sampleCode ->
+            Optional sample = sampleTrackingService.requestSampleStatus(sampleCode)
+
+            sample.ifPresent({
+                Optional status = parseStatus(sample.get().status)
+                status.ifPresent({
+                    sampleCodesToStatus.put(sample.get().sampleCode, status.get())
+                })
+            })
         }
+
         return sampleCodesToStatus
     }
 
-    private static Map<String, Status> mapSampleCodeToStatus(String sampleCode, PreparedStatement preparedStatement) {
-        preparedStatement.setString(1, sampleCode)
-        ResultSet resultSet = preparedStatement.executeQuery()
-        Map<String, Status> sampleCodeToStatus = new HashMap<>()
-        while (resultSet.next()) {
-            String fetchedSampleCode = resultSet.getString("sample_id")
-            String fetchedSampleStatusString = resultSet.getString("sample_status")
-            String arrivalTime = resultSet.getString("arrival_time")
-            Status fetchedSampleStatus
-            try {
-                fetchedSampleStatus = Status.valueOf(fetchedSampleStatusString)
-            } catch(IllegalArgumentException statusNotFound) {
-                // The status in the database is invalid. This should never be the case!
-                log.error("Could not parse status $fetchedSampleStatusString for $sampleCode at $arrivalTime", statusNotFound)
-                throw new DataSourceException("Retrieval of sample statuses failed for sample $sampleCode")
-            }
-            sampleCodeToStatus.put(fetchedSampleCode, fetchedSampleStatus)
-        }
-        return sampleCodeToStatus
-    }
-
-    private static class Query {
-        /**
-         * Generates a query with one wildcard ? that can be filled with a sql match to
-         * filter by sample_id. Does not return "ENTITY" samples.
-         * <p>The returned query provides all rows for which the arrival_time matches the
-         * latest arrival_time recorded for this sample_id.</p>
-         * @return a query template
-         * @since 1.0.0
-         */
-        private static String fetchLatestSampleEntries() {
-            /*
-            The filter criteria to avoid applying the query to the whole table.
-            Replace `?` with your matching sample_id.
-             */
-            final String filterCriteria = "WHERE sample_id LIKE ? AND sample_id NOT LIKE \"%ENTITY%\""
-            /*
-             * This query constructs a table in the form of
-             # sample_id| MAX(arrival_time)
-             QSTTS030A8 | 2021-05-11 15:05:00
-             QSTTS029A5 | 2021-05-11 15:05:00
-             QSTTS028AV | 2021-05-11 15:05:00
-             QSTTS027AN | 2021-05-11 15:05:00
-             QSTTS026AF | 2021-05-11 15:05:00
-             QSTTS025A7 | 2021-05-11 15:05:00
-             QSTTS024AX | 2021-05-11 15:05:00
-             QSTTS023AP | 2021-05-11 15:05:00
-             QSTTS022AH | 2021-05-11 15:05:00
-             */
-            final String latestEditQuery = "SELECT sample_id, MAX(arrival_time) as arrival_time FROM samples_locations $filterCriteria GROUP BY sample_id"
-
-            /*
-             * This query filters the samples_locations table and only returns samples whose
-             * arrival_time matches the latest arrival_time.
-             * We do need this since we cannot assume that there is only one entry with the latest time.
-             */
-            final String latestEntriesQuery = "SELECT samples_locations.* FROM samples_locations " +
-                    "INNER JOIN ($latestEditQuery) AS latest_arrivals " +
-                    "ON latest_arrivals.sample_id = samples_locations.sample_id " +
-                    "AND latest_arrivals.arrival_time = samples_locations.arrival_time"
-
-            return latestEntriesQuery
-        }
-    }
 }
