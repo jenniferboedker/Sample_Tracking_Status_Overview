@@ -2,6 +2,8 @@ package life.qbic.business.samples.count
 
 import life.qbic.business.DataSourceException
 import life.qbic.datamodel.samples.Status
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 /**
  * <b>Count samples</b>
@@ -21,6 +23,8 @@ class CountSamples implements CountSamplesInput{
   private List<Status> sampleStatuses
   private int totalSampleCount
   private String projectCode
+
+  private static final Logger log = LogManager.getLogger(CountSamples.class)
 
   /**
    * Default constructor for this use case
@@ -50,8 +54,10 @@ class CountSamples implements CountSamplesInput{
       StatusCount statusCount = new StatusCount(projectCode, received, passedQc, failedQc, libraryPrep, availableData, totalCount)
       output.countedSamples(statusCount)
     } catch (DataSourceException dataSourceException) {
+      log.error(dataSourceException.message, dataSourceException)
       output.failedExecution(dataSourceException.getMessage())
     } catch (Exception ignored) {
+      log.error(ignored.message, ignored)
       output.failedExecution("Could not count samples.")
     }
   }

@@ -76,6 +76,13 @@ You can run the application in a ``testing`` mode:
 The email property is used to generate your portal-user id, the auth-id is the one that is provided by the authentication provider after successful login into the portal.
 The first and last name as they are stored in the database need to be provided as well. As we run in test mode here, you need to simulate it with the properties.
 
+Furthermore, you need to provide the sample tracking user and password as ENV variables for the sample tracking service:
+
+.. code-block:: bash
+
+    SERVICE_USER = <username>
+    SERVICE_USER_PW = <userpassword>
+
 Datastructures
 --------------
 
