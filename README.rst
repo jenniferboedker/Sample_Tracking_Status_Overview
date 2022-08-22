@@ -67,7 +67,7 @@ The created war file can then be deployed on a portal system.
 Test environment
 ----------------
 
-You can run the  application in a ``testing`` mode:
+You can run the application in a ``testing`` mode:
 
 .. code-block:: bash
 
