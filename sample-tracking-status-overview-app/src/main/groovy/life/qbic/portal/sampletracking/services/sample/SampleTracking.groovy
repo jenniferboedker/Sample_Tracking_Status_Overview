@@ -78,7 +78,7 @@ class SampleTracking implements SampleTrackingService{
     }
 
     private HttpGet createHttpGETSampleStatement(String sampleCode) {
-        HttpGet httpGet = new HttpGet(serviceEndPoint + SAMPLES_ROUTE + "/" + sampleCode + STATUS_ENDPOINT)
+        HttpGet httpGet = new HttpGet(serviceEndPoint + "/" + SAMPLES_ROUTE + "/" + sampleCode + STATUS_ENDPOINT)
         httpGet.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((serviceUser + ":" + userPass).getBytes()))
 
         return httpGet
