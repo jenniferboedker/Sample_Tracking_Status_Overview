@@ -144,7 +144,7 @@ class DependencyManager {
     }
 
     private SampleTrackingService setUpTrackingService(){
-        String serviceURL = requireNonNull(configurationManager.getServicesRegistryUrl())
+        String serviceURL = requireNonNull(configurationManager.getSampleTrackingServiceUrl())
         def user = requireNonNull(configurationManager.getServiceUser())
 
         Credentials credentials = new Credentials(
