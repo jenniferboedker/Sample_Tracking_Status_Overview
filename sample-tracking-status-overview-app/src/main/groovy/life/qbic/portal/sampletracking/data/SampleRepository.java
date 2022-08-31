@@ -11,7 +11,5 @@ import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
  * @since <version tag>
  */
 public interface SampleRepository {
-
-  List<Sample> findAll();
-
+  List<Sample> findAllSamplesForProject(String projectCode);
 }

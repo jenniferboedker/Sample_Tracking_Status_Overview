@@ -39,10 +39,12 @@ class DependencyManager {
     private Subscriber subscriptionUser
 
     private static final int PROJECT_LOADING_THREAD_COUNT = 20;
-    private static final int SAMPLE_LOADING_THREAD_COUNT = 2;
+    private static final int SAMPLE_LOADING_THREAD_COUNT = 20;
     private final ExecutorService projectLoadingExecutor = Executors.newFixedThreadPool(PROJECT_LOADING_THREAD_COUNT)
     private final ExecutorService sampleLoadingExecutor = Executors.newFixedThreadPool(SAMPLE_LOADING_THREAD_COUNT)
 
+
+    private OpenBisConnector openBisConnector;
     DependencyManager(PortalUser user) {
         portalUser = user
         subscriptionUser = subscriberFor(portalUser)
@@ -62,6 +64,7 @@ class DependencyManager {
 
     private void initializeDependencies() {
         setupDatabaseConnections()
+      setupOpenBisConnection()
     }
 
 
@@ -74,6 +77,14 @@ class DependencyManager {
 
         DatabaseSession.init(user, password, host, port, sqlDatabase)
     }
+
+  private void setupOpenBisConnection() {
+    Credentials openBisCredentials = new Credentials(
+            user: configurationManager.getDataSourceUser(),
+            password: configurationManager.getDataSourcePassword()
+    )
+    this.openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
+  }
 
     /**
      * @return the main view of the application
@@ -135,17 +146,14 @@ class DependencyManager {
   }
 
   ProjectRepository getProjectRepository() {
-    Credentials openBisCredentials = new Credentials(
-            user: configurationManager.getDataSourceUser(),
-            password: configurationManager.getDataSourcePassword()
-    )
-    return new OpenBisProjectRepository(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
+    return openBisConnector;
 //        ProjectRepository projectRepository = () -> [new Project("QABCD", "bla test project")]
 //        return projectRepository
   }
 
   SampleRepository getSampleRepository() {
-    SampleRepository sampleRepository = () -> [new Sample("QABCD001A0", "My awesome sample")]
+//    return openBisConnector;
+    SampleRepository sampleRepository = it -> [new Sample(it.toString() + "001A0", "My awesome sample")]
     return sampleRepository
   }
 

@@ -69,7 +69,7 @@ public class ProjectView extends ProjectDesign {
     addProjectFilter();
     this.spinnerLayout = createSpinner();
     addSpinner();
-//    hideDownloadButton();
+    hideDownloadButton();
     listenToProjectSelection();
     addTooltips();
   }
@@ -91,6 +91,7 @@ public class ProjectView extends ProjectDesign {
   }
 
   private void selectProject(Project project) {
+    showDownloadButton();
     fireProjectSelectionEvent(new ProjectSelectionEvent(project.code()));
   }
 
@@ -160,7 +161,7 @@ public class ProjectView extends ProjectDesign {
     projectGrid.setVisible(false);
     CompletableFuture.runAsync(
         () -> {
-          List<Project> projects = projectRepository.findAll();
+          List<Project> projects = projectRepository.findAllProjects();
           log.info(String.format("loaded %s valid projects", projects.size()));
           ui.access(() -> {
             projectGrid.setVisible(true);

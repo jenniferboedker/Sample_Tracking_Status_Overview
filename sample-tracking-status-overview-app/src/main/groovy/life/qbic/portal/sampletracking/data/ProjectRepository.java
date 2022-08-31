@@ -5,6 +5,6 @@ import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
 
 public interface ProjectRepository {
 
-  List<Project> findAll();
+  List<Project> findAllProjects();
 
 }

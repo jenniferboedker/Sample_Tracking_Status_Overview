@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import life.qbic.datamodel.dtos.portal.PortalUser;
 import life.qbic.portal.sampletracking.old.datasources.Credentials;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
+import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -24,9 +25,9 @@ import org.apache.logging.log4j.Logger;
  *
  * @since <version tag>
  */
-public class OpenBisProjectRepository implements ProjectRepository {
+public class OpenBisConnector implements ProjectRepository, SampleRepository {
 
-  private static final Logger log = getLogger(OpenBisProjectRepository.class);
+  private static final Logger log = getLogger(OpenBisConnector.class);
 
   private final String sessionToken;
 
@@ -37,7 +38,7 @@ public class OpenBisProjectRepository implements ProjectRepository {
   private List<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> cache = new ArrayList<>();
 
 
-  public OpenBisProjectRepository(Credentials credentials, PortalUser portalUser,
+  public OpenBisConnector(Credentials credentials, PortalUser portalUser,
       String openBisUrl) {
     this.api = HttpInvokerUtils.createServiceStub(IApplicationServerApi.class,
         openBisUrl + "/rmi-application-server-v3", TIMEOUT);
@@ -46,7 +47,7 @@ public class OpenBisProjectRepository implements ProjectRepository {
   }
 
   @Override
-  public List<Project> findAll() {
+  public List<Project> findAllProjects() {
     if (cache.isEmpty()) {
       ProjectFetchOptions fetchOptions = new ProjectFetchOptions();
       fetchOptions.withSpace();
@@ -59,6 +60,20 @@ public class OpenBisProjectRepository implements ProjectRepository {
     }
     return cache.stream().map(it -> new Project(it.getCode(), Optional.ofNullable(it.getDescription()).orElse("")))
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<Sample> findAllSamplesForProject(String projectCode) {
+    Optional<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> cachedProject = cache.stream()
+        .filter(it -> it.getCode().equals(projectCode))
+        .findAny();
+    if (cachedProject.isPresent()) {
+      ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project project = cachedProject.get();
+      return project.getSamples().stream()
+          .map(it -> new Sample(it.getCode(), it.getProperty("Q_SECONDARY_NAME")))
+          .collect(Collectors.toList());
+    }
+    return new ArrayList<>();
   }
 
   private boolean isValidProjectCode(String code) {

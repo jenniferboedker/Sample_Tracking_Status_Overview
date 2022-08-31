@@ -21,6 +21,8 @@ public class SampleView extends SampleDesign {
   private final SampleRepository sampleRepository;
   private final SampleStatusProvider sampleStatusProvider;
 
+  private String projectCode;
+
   public SampleView(SampleRepository sampleRepository, SampleStatusProvider sampleStatusProvider) {
     this.sampleRepository = sampleRepository;
     this.sampleStatusProvider = sampleStatusProvider;
@@ -28,6 +30,13 @@ public class SampleView extends SampleDesign {
     sampleGrid = createSampleGrid();
     addSampleGrid();
     setHeaderRowStyle();
+  }
+
+  public void setProjectCode(String projectCode) {
+    this.projectCode = projectCode;
+    if (this.isAttached()) {
+      loadSamplesForProject(projectCode);
+    }
   }
 
   private void addSampleGrid() {
@@ -69,6 +78,10 @@ public class SampleView extends SampleDesign {
   @Override
   public void attach() {
     super.attach();
-    sampleGrid.setItems(sampleRepository.findAll());
+    loadSamplesForProject(projectCode);
+  }
+
+  private void loadSamplesForProject(String projectCode) {
+    sampleGrid.setItems(sampleRepository.findAllSamplesForProject(this.projectCode));
   }
 }
