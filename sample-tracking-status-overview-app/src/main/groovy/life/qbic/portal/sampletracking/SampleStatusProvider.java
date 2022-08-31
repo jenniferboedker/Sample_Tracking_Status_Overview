@@ -1,6 +1,5 @@
 package life.qbic.portal.sampletracking;
 
-import life.qbic.portal.sampletracking.components.projects.viewmodel.ProjectStatus;
 import life.qbic.portal.sampletracking.components.samples.viewmodel.SampleStatus;
 
 /**
@@ -10,9 +9,7 @@ import life.qbic.portal.sampletracking.components.samples.viewmodel.SampleStatus
  *
  * @since <version tag>
  */
-public interface TrackingStatusProvider {
-
-  ProjectStatus getForProject(String projectCode);
+public interface SampleStatusProvider {
 
   SampleStatus getForSample(String sampleCode);
 

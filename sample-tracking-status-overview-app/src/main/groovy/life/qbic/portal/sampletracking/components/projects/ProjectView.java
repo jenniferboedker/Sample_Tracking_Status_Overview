@@ -6,16 +6,18 @@ import com.vaadin.event.selection.SingleSelectionEvent;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import life.qbic.portal.sampletracking.SubscriptionStatusProvider;
 import life.qbic.portal.sampletracking.components.ResponsiveGrid;
 import life.qbic.portal.sampletracking.components.Spinner;
 import life.qbic.portal.sampletracking.components.projects.ProjectView.ProjectSelectionListener.ProjectSelectionEvent;
@@ -38,7 +40,9 @@ public class ProjectView extends ProjectDesign {
 
   private final ExecutorService projectLoadingExecutor;
 
-  private final SampleStatusSummaryProvider sampleStatusSummaryProvider;
+  private final ProjectStatusComponentProvider projectStatusComponentProvider;
+
+  private final SubscriptionStatusProvider subscriptionStatusProvider;
 
   protected ResponsiveGrid<Project> projectGrid;
 
@@ -50,10 +54,11 @@ public class ProjectView extends ProjectDesign {
 
 
   public ProjectView(ExecutorService projectLoadingExecutor,
-      SampleStatusSummaryProvider sampleStatusSummaryProvider,
-      ProjectRepository projectRepository) {
-    this.sampleStatusSummaryProvider = sampleStatusSummaryProvider;
+      ProjectStatusComponentProvider projectStatusComponentProvider,
+      SubscriptionStatusProvider subscriptionStatusProvider, ProjectRepository projectRepository) {
+    this.projectStatusComponentProvider = projectStatusComponentProvider;
     this.projectLoadingExecutor = projectLoadingExecutor;
+    this.subscriptionStatusProvider = subscriptionStatusProvider;
     this.projectRepository = projectRepository;
     avoidElementOverlap();
     this.projectGrid = createProjectGrid();
@@ -83,9 +88,6 @@ public class ProjectView extends ProjectDesign {
   }
 
   private void selectProject(Project project) {
-    if (project.hasAvailableData()) {
-      showDownloadButton();
-    }
     fireProjectSelectionEvent(new ProjectSelectionEvent(project.code()));
   }
 
@@ -166,10 +168,18 @@ public class ProjectView extends ProjectDesign {
           ui.access(() -> {
             projectGrid.setVisible(true);
             spinnerLayout.setVisible(false);
+            loadSubscriptions(projects);
             projectGrid.setItems(projects);
           });
         });
 
+  }
+
+  private void loadSubscriptions(List<Project> projects) {
+    projects.forEach(it -> {
+      boolean subscriptionStatus = subscriptionStatusProvider.getForProject(it.code());
+      it.setSubscribed(subscriptionStatus);
+    });
   }
 
   private void avoidElementOverlap() {
@@ -179,11 +189,10 @@ public class ProjectView extends ProjectDesign {
 
   private ResponsiveGrid<Project> createProjectGrid() {
     ResponsiveGrid<Project> grid = new ResponsiveGrid<>();
-    grid.addColumn(it -> {
-          if (Objects.isNull(it.subscriptionStatus())) {
-            return false;
-          }
-          return it.subscriptionStatus().isSubscribed();
+    grid.addComponentColumn(it -> {
+          CheckBox checkBox = new CheckBox();
+          checkBox.setValue(it.subscribed());
+          return checkBox;
         })
         .setCaption("Subscribe")
         .setId("subscription")
@@ -191,7 +200,6 @@ public class ProjectView extends ProjectDesign {
         .setSortable(false)
         .setMinimumWidth(MIN_CODE_COLUMN_WIDTH)
         .setMaximumWidth(MAX_CODE_COLUMN_WIDTH);
-
 
     grid.addColumn(Project::title)
         .setCaption("Project Title")
@@ -209,22 +217,60 @@ public class ProjectView extends ProjectDesign {
         .setMaximumWidth(MAX_CODE_COLUMN_WIDTH);
 
     grid.addComponentColumn(
-            it -> sampleStatusSummaryProvider.getForProject(it.code()))
+            it -> projectStatusComponentProvider.getForProject(it.code()))
         .setId("projectStatus")
         .setHandleWidgetEvents(true)
-        .setMinimumWidth(900)
+        .setMinimumWidth(4 * ProjectStatusComponent.COLUMN_WIDTH)
         .setSortable(false);
 
-    grid.addColumn(it -> {
-      if (Objects.isNull(it.projectStatus())) {
-        return Instant.MIN;
-      }
-      return it.projectStatus().getLastModified();
-    }).setId("lastModified").setHidden(true);
-
     grid.setSizeFull();
+    grid.getHeaderRow(0).getCell("projectStatus").setComponent(getProjectStatusHeader());
     grid.setSelectionMode(SelectionMode.SINGLE);
     return grid;
+  }
+
+  private static HorizontalLayout getProjectStatusHeader() {
+    HorizontalLayout layout = new HorizontalLayout();
+    layout.setMargin(false);
+    layout.setSpacing(false);
+
+    Label samplesReceived = new Label("Samples Received");
+    Label samplesPassedQc = new Label("Samples Passed QC");
+    Label libraryPrepFinished = new Label("Library Prep Finished");
+    Label dataAvailable = new Label("Data Available");
+
+    HorizontalLayout samplesReceivedLayout = new HorizontalLayout(samplesReceived);
+    HorizontalLayout samplesPassedQcLayout = new HorizontalLayout(samplesPassedQc);
+    HorizontalLayout libraryPrepFinishedLayout = new HorizontalLayout(libraryPrepFinished);
+    HorizontalLayout dataAvailableLayout = new HorizontalLayout(dataAvailable);
+
+    samplesReceivedLayout.setComponentAlignment(samplesReceived, Alignment.MIDDLE_CENTER);
+    samplesPassedQcLayout.setComponentAlignment(samplesPassedQc, Alignment.MIDDLE_CENTER);
+    libraryPrepFinishedLayout.setComponentAlignment(libraryPrepFinished, Alignment.MIDDLE_CENTER);
+    dataAvailableLayout.setComponentAlignment(dataAvailable, Alignment.MIDDLE_CENTER);
+
+    samplesReceivedLayout.setMargin(false);
+    samplesPassedQcLayout.setMargin(false);
+    libraryPrepFinishedLayout.setMargin(false);
+    dataAvailableLayout.setMargin(false);
+
+    samplesReceivedLayout.setSpacing(false);
+    samplesPassedQcLayout.setSpacing(false);
+    libraryPrepFinishedLayout.setSpacing(false);
+    dataAvailableLayout.setSpacing(false);
+
+    samplesReceivedLayout.setSizeUndefined();
+    samplesPassedQcLayout.setSizeUndefined();
+    libraryPrepFinishedLayout.setSizeUndefined();
+    dataAvailableLayout.setSizeUndefined();
+
+    samplesReceived.setWidth(ProjectStatusComponent.COLUMN_WIDTH, Unit.PIXELS);
+    samplesPassedQc.setWidth(ProjectStatusComponent.COLUMN_WIDTH, Unit.PIXELS);
+    libraryPrepFinished.setWidth(ProjectStatusComponent.COLUMN_WIDTH, Unit.PIXELS);
+    dataAvailable.setWidth(ProjectStatusComponent.COLUMN_WIDTH, Unit.PIXELS);
+
+    layout.addComponents(samplesReceivedLayout, samplesPassedQcLayout, libraryPrepFinishedLayout, dataAvailableLayout);
+    return layout;
   }
 
   public void addProjectSelectionListener(ProjectSelectionListener listener) {

@@ -1,7 +1,5 @@
 package life.qbic.portal.sampletracking;
 
-import life.qbic.portal.sampletracking.components.projects.viewmodel.Project.SubscriptionStatus;
-
 /**
  * <b>short description</b>
  *
@@ -9,8 +7,9 @@ import life.qbic.portal.sampletracking.components.projects.viewmodel.Project.Sub
  *
  * @since <version tag>
  */
+@FunctionalInterface
 public interface SubscriptionStatusProvider {
 
-  SubscriptionStatus getForProject(String projectCode);
+  boolean getForProject(String projectCode);
 
 }

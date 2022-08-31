@@ -1,4 +1,4 @@
-package life.qbic.portal.sampletracking.old.components.projectoverview.statusdisplay
+package life.qbic.portal.sampletracking.components.projects
 
 
 /**

@@ -18,13 +18,13 @@ import com.vaadin.ui.renderers.ComponentRenderer
 import groovy.util.logging.Log4j2
 import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.portal.sampletracking.components.projects.ProjectDesign
+import life.qbic.portal.sampletracking.components.projects.State
 import life.qbic.portal.sampletracking.old.Constants
 import life.qbic.portal.sampletracking.old.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.old.components.Responsive
 import life.qbic.portal.sampletracking.old.components.ViewModel
 import life.qbic.portal.sampletracking.old.components.projectoverview.download.DownloadProjectController
 import life.qbic.portal.sampletracking.old.components.projectoverview.statusdisplay.SampleCount
-import life.qbic.portal.sampletracking.old.components.projectoverview.statusdisplay.State
 import life.qbic.portal.sampletracking.old.components.projectoverview.subscribe.SubscribeProjectController
 import life.qbic.portal.sampletracking.old.components.projectoverview.subscribe.SubscriptionCheckboxFactory
 

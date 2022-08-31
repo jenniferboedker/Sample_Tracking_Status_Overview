@@ -2,20 +2,12 @@ package life.qbic.portal.sampletracking
 
 import com.vaadin.ui.VerticalLayout
 import groovy.transform.CompileStatic
-import life.qbic.business.project.load.LastChangedDateDataSource
-import life.qbic.business.project.load.LoadProjectsDataSource
-import life.qbic.business.project.load.SubscribedProjectsDataSource
 import life.qbic.business.project.subscribe.Subscriber
-import life.qbic.business.project.subscribe.SubscriptionDataSource
-import life.qbic.business.samples.count.CountSamplesDataSource
-import life.qbic.business.samples.download.DownloadSamplesDataSource
-import life.qbic.business.samples.info.GetSamplesInfoDataSource
-import life.qbic.business.samples.info.SampleStatusDataSource
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.portal.sampletracking.components.projects.OpenBisProjectRepository
 import life.qbic.portal.sampletracking.components.projects.ProjectRepository
+import life.qbic.portal.sampletracking.components.projects.ProjectStatusComponentProvider
 import life.qbic.portal.sampletracking.components.projects.ProjectView
-import life.qbic.portal.sampletracking.components.projects.SampleStatusSummaryProvider
 import life.qbic.portal.sampletracking.components.projects.viewmodel.ProjectStatus
 import life.qbic.portal.sampletracking.components.samples.viewmodel.SampleStatus
 import life.qbic.portal.sampletracking.old.datasources.Credentials
@@ -41,23 +33,15 @@ import static java.util.Objects.requireNonNull
  */
 @CompileStatic
 class DependencyManager {
-    private VerticalLayout portletView
     private ConfigurationManager configurationManager
     private final PortalUser portalUser
-
-    private LoadProjectsDataSource loadProjectsDataSource
-    private LastChangedDateDataSource lastChangedDateDataSource
-    private CountSamplesDataSource countSamplesDataSource
-    private GetSamplesInfoDataSource getSamplesInfoDataSource
-    private DownloadSamplesDataSource downloadSamplesDataSource
-    private SubscriptionDataSource subscriptionDataSource
-    private SubscribedProjectsDataSource subscribedProjectsDataSource
-    private SampleStatusDataSource sampleStatusDataSource
 
     private Subscriber subscriptionUser
 
     private static final int PROJECT_LOADING_THREAD_COUNT = 2;
-    private final ExecutorService executorService = Executors.newFixedThreadPool(PROJECT_LOADING_THREAD_COUNT)
+    private static final int SAMPLE_LOADING_THREAD_COUNT = 2;
+    private final ExecutorService projectLoadingExecutor = Executors.newFixedThreadPool(PROJECT_LOADING_THREAD_COUNT)
+    private final ExecutorService sampleLoadingExecutor = Executors.newFixedThreadPool(SAMPLE_LOADING_THREAD_COUNT)
 
     DependencyManager(PortalUser user) {
         portalUser = user
@@ -96,10 +80,10 @@ class DependencyManager {
      * @since 1.0.0
      */
     VerticalLayout getPortletView() {
-        return new ProjectView(Executors.newFixedThreadPool(1), getSampleStatusSummaryProvider(), getProjectRepository())
+        return new ProjectView(Executors.newFixedThreadPool(1), getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
     }
 
-  public static class DummyTrackingProvider implements TrackingStatusProvider {
+  public static class DummyTrackingProvider implements SampleStatusProvider, ProjectStatusProvider {
 
     private final Map<String, ProjectStatus> knownStatuses = new HashMap<>();
 
@@ -117,11 +101,12 @@ class DependencyManager {
 
     private ProjectStatus randomStatus() {
       def someNumber = new Random().nextInt(10) * new Random().nextInt(100)
-      if (new Random().nextBoolean()) {
+      if (someNumber < 50) {
         return new ProjectStatus(someNumber, someNumber, 1, 0, 0, 0, Instant.MIN)
+      } else if (someNumber < 500 ){
+        return new ProjectStatus(someNumber, someNumber, someNumber, 0, someNumber, someNumber, Instant.MIN)
       } else {
-        return new ProjectStatus(someNumber, someNumber, someNumber, someNumber, someNumber, someNumber, Instant.MIN)
-
+        return new ProjectStatus(someNumber, someNumber, someNumber - 3, 3, 0, 0, Instant.MIN)
       }
     }
 
@@ -141,11 +126,20 @@ class DependencyManager {
 //        return projectRepository
     }
 
-  SampleStatusSummaryProvider getSampleStatusSummaryProvider() {
-    return new SampleStatusSummaryProvider(executorService, getTrackingStatusProvider())
+  ProjectStatusComponentProvider getSampleStatusSummaryProvider() {
+    return new ProjectStatusComponentProvider(projectLoadingExecutor, getProjectStatusProvider())
   }
 
-  TrackingStatusProvider getTrackingStatusProvider() {
+  SampleStatusProvider getSampleStatusProvider() {
     return new DummyTrackingProvider()
+  }
+  ProjectStatusProvider getProjectStatusProvider() {
+    return new DummyTrackingProvider()
+  }
+
+  SubscriptionStatusProvider getSubscriptionServiceProvider() {
+    SubscriptionStatusProvider provider = it -> new Random().nextBoolean()
+    return provider
+
   }
 }

@@ -3,7 +3,7 @@ package life.qbic.portal.sampletracking.components.projects;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import life.qbic.portal.sampletracking.TrackingStatusProvider;
+import life.qbic.portal.sampletracking.ProjectStatusProvider;
 
 /**
  * <b>short description</b>
@@ -12,23 +12,23 @@ import life.qbic.portal.sampletracking.TrackingStatusProvider;
  *
  * @since <version tag>
  */
-public class SampleStatusSummaryProvider {
+public class ProjectStatusComponentProvider {
   private final ExecutorService executorService;
-  private final TrackingStatusProvider trackingStatusProvider;
+  private final ProjectStatusProvider trackingStatusProvider;
 
-  private final Map<String, SampleStatusSummary> summaries = new HashMap<>();
+  private final Map<String, ProjectStatusComponent> summaries = new HashMap<>();
 
-  public SampleStatusSummaryProvider(ExecutorService executorService,
-      TrackingStatusProvider trackingStatusProvider) {
+  public ProjectStatusComponentProvider(ExecutorService executorService,
+      ProjectStatusProvider trackingStatusProvider) {
     this.executorService = executorService;
     this.trackingStatusProvider = trackingStatusProvider;
   }
 
-  public SampleStatusSummary getForProject(String projectCode) {
+  public ProjectStatusComponent getForProject(String projectCode) {
     if (summaries.containsKey(projectCode)) {
       return summaries.get(projectCode);
     }
-    SampleStatusSummary statusSummary = new SampleStatusSummary(projectCode, executorService,
+    ProjectStatusComponent statusSummary = new ProjectStatusComponent(projectCode, executorService,
         trackingStatusProvider);
     summaries.put(projectCode, statusSummary);
     return statusSummary;
