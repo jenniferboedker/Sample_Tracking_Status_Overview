@@ -4,14 +4,14 @@ import com.vaadin.ui.VerticalLayout
 import groovy.transform.CompileStatic
 import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.datamodel.dtos.portal.PortalUser
-import life.qbic.portal.sampletracking.components.projects.OpenBisProjectRepository
-import life.qbic.portal.sampletracking.components.projects.ProjectRepository
-import life.qbic.portal.sampletracking.components.projects.ProjectStatusComponentProvider
-import life.qbic.portal.sampletracking.components.projects.ProjectView
-import life.qbic.portal.sampletracking.components.projects.viewmodel.ProjectStatus
-import life.qbic.portal.sampletracking.components.samples.viewmodel.SampleStatus
+import life.qbic.portal.sampletracking.data.*
 import life.qbic.portal.sampletracking.old.datasources.Credentials
 import life.qbic.portal.sampletracking.old.datasources.database.DatabaseSession
+import life.qbic.portal.sampletracking.view.projects.ProjectStatusComponentProvider
+import life.qbic.portal.sampletracking.view.projects.ProjectView
+import life.qbic.portal.sampletracking.view.projects.viewmodel.ProjectStatus
+import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample
+import life.qbic.portal.sampletracking.view.samples.viewmodel.SampleStatus
 import life.qbic.portal.utils.ConfigurationManager
 import life.qbic.portal.utils.ConfigurationManagerFactory
 
@@ -38,7 +38,7 @@ class DependencyManager {
 
     private Subscriber subscriptionUser
 
-    private static final int PROJECT_LOADING_THREAD_COUNT = 2;
+    private static final int PROJECT_LOADING_THREAD_COUNT = 20;
     private static final int SAMPLE_LOADING_THREAD_COUNT = 2;
     private final ExecutorService projectLoadingExecutor = Executors.newFixedThreadPool(PROJECT_LOADING_THREAD_COUNT)
     private final ExecutorService sampleLoadingExecutor = Executors.newFixedThreadPool(SAMPLE_LOADING_THREAD_COUNT)
@@ -81,6 +81,7 @@ class DependencyManager {
      */
     VerticalLayout getPortletView() {
         return new ProjectView(Executors.newFixedThreadPool(1), getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
+//          return new SampleView(getSampleRepository(), getSampleStatusProvider());
     }
 
   public static class DummyTrackingProvider implements SampleStatusProvider, ProjectStatusProvider {
@@ -99,6 +100,11 @@ class DependencyManager {
       return status
     }
 
+    @Override
+    Optional<ProjectStatus> getCachedStatusForProject(String projectCode) {
+      Optional.empty();
+    }
+
     private ProjectStatus randomStatus() {
       def someNumber = new Random().nextInt(10) * new Random().nextInt(100)
       if (someNumber < 50) {
@@ -112,19 +118,37 @@ class DependencyManager {
 
     @Override
     public SampleStatus getForSample(String sampleCode) {
-      return new SampleStatus("METADATA_REGISTERED")
+      def someNumber = new Random().nextInt(3)
+      if (someNumber == 0) {
+        return new SampleStatus("METADATA_REGISTERED")
+      } else if (someNumber == 1) {
+        return new SampleStatus("SAMPLE_QC_FAIL")
+      } else {
+        return new SampleStatus("DATA_AVAILABLE")
+      }
+    }
+
+    @Override
+    Optional<SampleStatus> getCachedStatusForSample(String sampleCode) {
+      return Optional.empty()
     }
   }
 
-    ProjectRepository getProjectRepository() {
-        Credentials openBisCredentials = new Credentials(
-                user: configurationManager.getDataSourceUser(),
-                password: configurationManager.getDataSourcePassword()
-        )
-        return new OpenBisProjectRepository(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
+  ProjectRepository getProjectRepository() {
+    Credentials openBisCredentials = new Credentials(
+            user: configurationManager.getDataSourceUser(),
+            password: configurationManager.getDataSourcePassword()
+    )
+    return new OpenBisProjectRepository(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
 //        ProjectRepository projectRepository = () -> [new Project("QABCD", "bla test project")]
 //        return projectRepository
-    }
+  }
+
+  SampleRepository getSampleRepository() {
+    SampleRepository sampleRepository = () -> [new Sample("QABCD001A0", "My awesome sample")]
+    return sampleRepository
+  }
+
 
   ProjectStatusComponentProvider getSampleStatusSummaryProvider() {
     return new ProjectStatusComponentProvider(projectLoadingExecutor, getProjectStatusProvider())

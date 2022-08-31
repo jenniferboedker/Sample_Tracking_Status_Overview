@@ -8,10 +8,11 @@ import com.vaadin.ui.components.grid.HeaderRow
 import life.qbic.business.samples.Sample
 import life.qbic.business.samples.info.GetSamplesInfoOutput
 import life.qbic.datamodel.samples.Status
-import life.qbic.portal.sampletracking.components.projects.State
 import life.qbic.portal.sampletracking.old.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.old.components.Responsive
 import life.qbic.portal.sampletracking.old.components.ViewModel
+import life.qbic.portal.sampletracking.view.projects.State
+import life.qbic.portal.sampletracking.view.samples.SampleDesign
 
 class SampleView extends SampleDesign implements Responsive {
 
