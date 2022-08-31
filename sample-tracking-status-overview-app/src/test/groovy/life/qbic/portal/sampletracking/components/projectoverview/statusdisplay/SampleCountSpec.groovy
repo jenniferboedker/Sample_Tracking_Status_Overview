@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.components.projectoverview.statusdisplay
 
+import life.qbic.portal.sampletracking.old.components.projectoverview.statusdisplay.SampleCount
 import spock.lang.Specification
 
 /**

@@ -39,17 +39,17 @@
   /* Include all the styles from the valo theme */
   @include valo;
 
-  .v-grid-cell.status-completed {
+  .status-completed {
     background-color: #31c44a;
     text-align: center;
   }
 
-  .v-grid-cell.status-in-progress {
+  .status-in-progress {
     background-color: #EDEDED;
     text-align: center;
   }
 
-  .v-grid-cell.status-failed {
+  .status-failed {
     background-color: #fc4c4c;
     text-align: center;
   }

@@ -1,5 +1,7 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
+import life.qbic.portal.sampletracking.old.components.projectoverview.LastChangedComparator
+import life.qbic.portal.sampletracking.old.components.projectoverview.ProjectSummary
 import spock.lang.Specification
 
 import java.time.Instant
@@ -10,7 +12,7 @@ class LastChangedComparatorSpec extends Specification {
     Instant middleAges = Instant.now().minus(500)
     Instant now = Instant.now()
 
-    ProjectSummary oldest = fakeProjectSummary("QOLDY", iceAge)
+  ProjectSummary oldest = fakeProjectSummary("QOLDY", iceAge)
     ProjectSummary middle = fakeProjectSummary("QBTWN", middleAges)
     ProjectSummary newest = fakeProjectSummary("QNOWY", now)
 

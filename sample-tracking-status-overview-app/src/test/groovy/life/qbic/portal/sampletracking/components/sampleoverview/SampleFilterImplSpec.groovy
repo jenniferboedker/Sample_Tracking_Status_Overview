@@ -2,6 +2,8 @@ package life.qbic.portal.sampletracking.components.sampleoverview
 
 import life.qbic.business.samples.Sample
 import life.qbic.datamodel.samples.Status
+import life.qbic.portal.sampletracking.old.components.sampleoverview.SampleFilter
+import life.qbic.portal.sampletracking.old.components.sampleoverview.SampleFilterImpl
 import spock.lang.Specification
 
 class SampleFilterImplSpec extends Specification {

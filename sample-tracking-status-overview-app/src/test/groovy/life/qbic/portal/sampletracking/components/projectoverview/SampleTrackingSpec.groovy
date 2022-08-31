@@ -1,10 +1,10 @@
 package life.qbic.portal.sampletracking.components.projectoverview
 
 import life.qbic.datamodel.samples.Status
-import life.qbic.portal.sampletracking.datasources.database.ConnectionProvider
-import life.qbic.portal.sampletracking.datasources.samples.SamplesDbConnector
-import life.qbic.portal.sampletracking.services.sample.SampleTracking
-import life.qbic.portal.sampletracking.services.sample.SampleTrackingService
+import life.qbic.portal.sampletracking.old.datasources.database.ConnectionProvider
+import life.qbic.portal.sampletracking.old.datasources.samples.SamplesDbConnector
+import life.qbic.portal.sampletracking.old.services.sample.SampleTracking
+import life.qbic.portal.sampletracking.old.services.sample.SampleTrackingService
 import spock.lang.Specification
 
 import java.time.Instant

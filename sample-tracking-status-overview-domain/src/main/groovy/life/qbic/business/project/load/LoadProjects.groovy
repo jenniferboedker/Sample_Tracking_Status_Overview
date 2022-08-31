@@ -6,6 +6,8 @@ import life.qbic.business.project.subscribe.Subscriber
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
+import java.time.Instant
+
 /**
  * <b>Load projects</b>
  *
@@ -70,7 +72,9 @@ class LoadProjects implements LoadProjectsInput{
     }
 
     private List<Project> loadUserProjects() {
+        log.info("loading projects started: ${Instant.now()}");
         List<Project> projects = dataSource.fetchUserProjects()
+        log.info("loading projects finished: ${Instant.now()}");
         loadLastChangedInformationInto(projects)
         return projects
     }

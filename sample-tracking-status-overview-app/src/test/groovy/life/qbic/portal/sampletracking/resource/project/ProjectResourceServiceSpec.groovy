@@ -1,8 +1,9 @@
 package life.qbic.portal.sampletracking.resource.project
 
 import life.qbic.business.project.Project
-import life.qbic.portal.sampletracking.communication.Subscriber
-import life.qbic.portal.sampletracking.communication.Topic
+import life.qbic.portal.sampletracking.old.communication.Subscriber
+import life.qbic.portal.sampletracking.old.communication.Topic
+import life.qbic.portal.sampletracking.old.resource.project.ProjectResourceService
 import spock.lang.Specification
 
 /**

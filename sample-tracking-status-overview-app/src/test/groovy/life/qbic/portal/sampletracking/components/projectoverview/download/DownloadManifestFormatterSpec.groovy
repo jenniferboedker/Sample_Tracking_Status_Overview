@@ -1,5 +1,7 @@
 package life.qbic.portal.sampletracking.components.projectoverview.download
 
+import life.qbic.portal.sampletracking.old.components.projectoverview.download.DownloadManifest
+import life.qbic.portal.sampletracking.old.components.projectoverview.download.DownloadManifestFormatter
 import spock.lang.Specification
 
 /**
