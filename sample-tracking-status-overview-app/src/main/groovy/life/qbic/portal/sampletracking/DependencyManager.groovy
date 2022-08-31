@@ -9,7 +9,10 @@ import life.qbic.portal.sampletracking.old.datasources.Credentials
 import life.qbic.portal.sampletracking.old.datasources.database.DatabaseSession
 import life.qbic.portal.sampletracking.view.projects.ProjectStatusComponentProvider
 import life.qbic.portal.sampletracking.view.projects.ProjectView
+import life.qbic.portal.sampletracking.view.projects.viewmodel.Project
 import life.qbic.portal.sampletracking.view.projects.viewmodel.ProjectStatus
+import life.qbic.portal.sampletracking.view.samples.SampleStatusComponentProvider
+import life.qbic.portal.sampletracking.view.samples.SampleView
 import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample
 import life.qbic.portal.sampletracking.view.samples.viewmodel.SampleStatus
 import life.qbic.portal.utils.ConfigurationManager
@@ -44,8 +47,11 @@ class DependencyManager {
     private final ExecutorService sampleLoadingExecutor = Executors.newFixedThreadPool(SAMPLE_LOADING_THREAD_COUNT)
 
 
-    private OpenBisConnector openBisConnector;
-    DependencyManager(PortalUser user) {
+    private OpenBisConnector openBisConnector
+  private ProjectStatusComponentProvider statusComponentProvider
+  private SampleStatusComponentProvider sampleStatusComponentProvider
+
+  DependencyManager(PortalUser user) {
         portalUser = user
         subscriptionUser = subscriberFor(portalUser)
         // Load the app environment configuration
@@ -63,7 +69,7 @@ class DependencyManager {
 
 
     private void initializeDependencies() {
-        setupDatabaseConnections()
+      setupDatabaseConnections()
       setupOpenBisConnection()
     }
 
@@ -91,11 +97,19 @@ class DependencyManager {
      * @since 1.0.0
      */
     VerticalLayout getPortletView() {
-        return new ProjectView(Executors.newFixedThreadPool(1), getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
-//          return new SampleView(getSampleRepository(), getSampleStatusProvider());
+      new ProjectView(Executors.newFixedThreadPool(1), getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
+      new SampleView(getSampleRepository(), getSampleStatusComponentProvider());
     }
 
-  public static class DummyTrackingProvider implements SampleStatusProvider, ProjectStatusProvider {
+  SampleStatusComponentProvider getSampleStatusComponentProvider() {
+    if (Objects.nonNull(sampleStatusComponentProvider)) {
+      return sampleStatusComponentProvider
+    }
+    sampleStatusComponentProvider = new SampleStatusComponentProvider(sampleLoadingExecutor, getSampleStatusProvider())
+    return sampleStatusComponentProvider
+  }
+
+  static class DummyTrackingProvider implements SampleStatusProvider, ProjectStatusProvider {
 
     private final Map<String, ProjectStatus> knownStatuses = new HashMap<>();
 
@@ -146,20 +160,24 @@ class DependencyManager {
   }
 
   ProjectRepository getProjectRepository() {
-    return openBisConnector;
-//        ProjectRepository projectRepository = () -> [new Project("QABCD", "bla test project")]
-//        return projectRepository
+        ProjectRepository projectRepository = () -> [new Project("QABCD", "bla test project")]
+        return projectRepository
+//    return openBisConnector;
   }
 
   SampleRepository getSampleRepository() {
-//    return openBisConnector;
     SampleRepository sampleRepository = it -> [new Sample(it.toString() + "001A0", "My awesome sample")]
     return sampleRepository
+//    return openBisConnector;
   }
 
 
   ProjectStatusComponentProvider getSampleStatusSummaryProvider() {
-    return new ProjectStatusComponentProvider(projectLoadingExecutor, getProjectStatusProvider())
+    if (Objects.nonNull(statusComponentProvider)) {
+      return statusComponentProvider;
+    }
+    statusComponentProvider = new ProjectStatusComponentProvider(projectLoadingExecutor, getProjectStatusProvider())
+    return statusComponentProvider
   }
 
   SampleStatusProvider getSampleStatusProvider() {
@@ -172,6 +190,5 @@ class DependencyManager {
   SubscriptionStatusProvider getSubscriptionServiceProvider() {
     SubscriptionStatusProvider provider = it -> new Random().nextBoolean()
     return provider
-
   }
 }

@@ -3,7 +3,6 @@ package life.qbic.portal.sampletracking.view.samples;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.components.grid.HeaderRow;
 import life.qbic.portal.sampletracking.data.SampleRepository;
-import life.qbic.portal.sampletracking.data.SampleStatusProvider;
 import life.qbic.portal.sampletracking.view.ResponsiveGrid;
 import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
 
@@ -19,13 +18,14 @@ public class SampleView extends SampleDesign {
   private final ResponsiveGrid<Sample> sampleGrid;
 
   private final SampleRepository sampleRepository;
-  private final SampleStatusProvider sampleStatusProvider;
+
+  private final SampleStatusComponentProvider sampleStatusComponentProvider;
 
   private String projectCode;
 
-  public SampleView(SampleRepository sampleRepository, SampleStatusProvider sampleStatusProvider) {
+  public SampleView(SampleRepository sampleRepository, SampleStatusComponentProvider sampleStatusComponentProvider) {
     this.sampleRepository = sampleRepository;
-    this.sampleStatusProvider = sampleStatusProvider;
+    this.sampleStatusComponentProvider = sampleStatusComponentProvider;
     avoidElementOverlap();
     sampleGrid = createSampleGrid();
     addSampleGrid();
@@ -57,8 +57,7 @@ public class SampleView extends SampleDesign {
         .setId("code")
         .setCaption("QBiC Code");
     grid.addComponentColumn(
-            it -> new SampleStatusComponent(sampleStatusProvider.getForSample(it.code()).toString(),
-                sampleStatusProvider))
+            it -> sampleStatusComponentProvider.getForSample(it.code()))
         .setId("status")
         .setCaption("Status");
     grid.setSizeFull();
@@ -82,6 +81,6 @@ public class SampleView extends SampleDesign {
   }
 
   private void loadSamplesForProject(String projectCode) {
-    sampleGrid.setItems(sampleRepository.findAllSamplesForProject(this.projectCode));
+    sampleGrid.setItems(sampleRepository.findAllSamplesForProject(projectCode));
   }
 }
