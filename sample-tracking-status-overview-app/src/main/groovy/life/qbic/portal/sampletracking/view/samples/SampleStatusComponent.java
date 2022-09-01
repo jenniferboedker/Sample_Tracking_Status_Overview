@@ -5,6 +5,7 @@ import com.vaadin.ui.Composite;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import life.qbic.portal.sampletracking.data.SampleStatusProvider;
 import life.qbic.portal.sampletracking.view.Spinner;
@@ -22,9 +23,10 @@ public class SampleStatusComponent extends Composite {
 
   private final SampleStatusProvider sampleStatusProvider;
   private final Label label;
-  private Spinner spinner = new Spinner();
-  
+  private final Spinner spinner = new Spinner();
   private final String sampleCode;
+
+  private SampleStatus loadedData;
 
   public SampleStatusComponent(String sampleCode, SampleStatusProvider sampleStatusProvider) {
     this.sampleStatusProvider = sampleStatusProvider;
@@ -44,18 +46,27 @@ public class SampleStatusComponent extends Composite {
   }
 
   private void loadStatusInformation() {
+    if (Objects.nonNull(loadedData)) {
+      return;
+    }
     UI ui = UI.getCurrent();
+    getCompositionRoot().removeStyleNames(State.FAILED.getCssClass(), State.IN_PROGRESS.getCssClass(), State.COMPLETED.getCssClass());
     spinner.setVisible(true);
     label.setVisible(false);
     CompletableFuture.runAsync(() -> {
       SampleStatus sampleStatus = sampleStatusProvider.getForSample(sampleCode);
       ui.access(() -> {
-        label.setValue(sampleStatus.toString());
-        getCompositionRoot().setStyleName(determineStyleName(sampleStatus.toString()));
+        showSampleStatus(sampleStatus);
         spinner.setVisible(false);
         label.setVisible(true);
       });
     });
+  }
+
+  private void showSampleStatus(SampleStatus sampleStatus) {
+    label.setValue(sampleStatus.toString());
+    getCompositionRoot().setStyleName(determineStyleName(sampleStatus.toString()));
+    loadedData = sampleStatus;
   }
 
   private String determineStyleName(String status) {
