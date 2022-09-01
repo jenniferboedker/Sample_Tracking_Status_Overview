@@ -46,12 +46,15 @@ public class SampleTracking implements ProjectStatusProvider, SampleStatusProvid
     return getCachedStatusForProject(projectCode).orElse(askService());
   }
 
+  private ProjectStatus emptyStatus() {
+    return new ProjectStatus(0, 0, 0, 0, 0, 0, Instant.MIN);
+  }
+
   private ProjectStatus askService() {
     return null;
   }
 
-  @Override
-  public Optional<ProjectStatus> getCachedStatusForProject(String projectCode) {
+  private Optional<ProjectStatus> getCachedStatusForProject(String projectCode) {
     if (cache.containsKey(projectCode)) {
       return Optional.empty();//fixme
     }

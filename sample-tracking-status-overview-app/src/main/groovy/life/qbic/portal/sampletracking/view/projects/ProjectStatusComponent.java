@@ -1,7 +1,6 @@
 package life.qbic.portal.sampletracking.view.projects;
 
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -11,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import life.qbic.portal.sampletracking.data.ProjectStatusProvider;
 import life.qbic.portal.sampletracking.view.Spinner;
+import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.ProjectStatus;
 
 public class ProjectStatusComponent extends Composite {
@@ -23,7 +23,8 @@ public class ProjectStatusComponent extends Composite {
   private final Label sampleQcCountLabel;
   private final Label libraryPreparedCountLabel;
   private final Label dataAvailableCountLabel;
-  private final String projectCode;
+
+  private final Project project;
   private final Spinner spinner;
   private final HorizontalLayout statusLayout;
   private final HorizontalLayout receivedLayout;
@@ -35,9 +36,9 @@ public class ProjectStatusComponent extends Composite {
   private ProjectStatus loadedData;
 
 
-  public ProjectStatusComponent(String projectCode, ExecutorService executorService,
+  public ProjectStatusComponent(Project project, ExecutorService executorService,
       ProjectStatusProvider trackingStatusProvider) {
-    this.projectCode = projectCode;
+    this.project = project;
     this.executorService = executorService;
     this.trackingStatusProvider = trackingStatusProvider;
     spinner = new Spinner();
@@ -96,68 +97,65 @@ public class ProjectStatusComponent extends Composite {
   }
 
   private void loadInformation() {
-    if (Objects.nonNull(loadedData)) {
-      return;
+    ProjectStatus projectStatus = project.projectStatus();
+    if (Objects.nonNull(loadedData) && Objects.nonNull(projectStatus)) {
+      if (loadedData.equals(projectStatus)) {
+        return;
+      }
     }
     UI ui = getUI();
     ui.setPollInterval(200);
     statusLayout.setVisible(false);
     spinner.setVisible(true);
     loadingTask = executorService.submit(() -> {
-      ProjectStatus loadedStatus = trackingStatusProvider.getForProject(projectCode);
+      ProjectStatus retrieved = trackingStatusProvider.getForProject(project.code());
       ui.access(() -> {
-        showProjectStatus(loadedStatus);
+        showProjectStatus(retrieved);
+        project.setProjectStatus(retrieved);
         spinner.setVisible(false);
         statusLayout.setVisible(true);
         this.setWidthFull();
       });
     });
-//    loadingTask = CompletableFuture.runAsync(() -> {
-//      ProjectStatus loadedStatus = trackingStatusProvider.getForProject(projectCode);
-//      ui.access(() -> {
-//        showProjectStatus(loadedStatus);
-//        spinner.setVisible(false);
-//        statusLayout.setVisible(true);
-//        this.setWidthFull();
-//      });
-//    });
   }
 
   private void showProjectStatus(ProjectStatus projectStatus) {
-    if (!projectStatus.equals(loadedData)) {
-      receivedCountLabel.setValue(String.format("%s / %s",
-          projectStatus.countReceived(),
-          projectStatus.totalCount()));
-
-      sampleQcCountLabel.setValue(String.format("%s / %s",
-          projectStatus.countPassedQc(),
-          projectStatus.totalCount()));
-
-      libraryPreparedCountLabel.setValue(String.format("%s / %s",
-          projectStatus.countLibraryPrepared(),
-          projectStatus.totalCount()));
-
-      dataAvailableCountLabel.setValue(String.format("%s / %s",
-          projectStatus.countDataAvailable(),
-          projectStatus.totalCount()));
-
-      receivedLayout.setStyleName(getStyleName(projectStatus.countReceived(), 0,
-          projectStatus.totalCount()));
-      sampleQcLayout.setStyleName(getStyleName(projectStatus.countPassedQc(),
-          projectStatus.countFailedQc(),
-          projectStatus.totalCount()));
-      libraryPreparedLayout.setStyleName(getStyleName(projectStatus.countLibraryPrepared(), 0,
-          projectStatus.totalCount()));
-      dataAvailableLayout.setStyleName(getStyleName(projectStatus.countDataAvailable(), 0,
-          projectStatus.totalCount()));
-
-      receivedCountLabel.setSizeUndefined();
-      sampleQcCountLabel.setSizeUndefined();
-      libraryPreparedCountLabel.setSizeUndefined();
-      dataAvailableCountLabel.setSizeUndefined();
-
-      loadedData = projectStatus;
+    if (projectStatus.equals(loadedData)) {
+      return;
     }
+    receivedCountLabel.setValue(String.format("%s / %s",
+        projectStatus.countReceived(),
+        projectStatus.totalCount()));
+
+    sampleQcCountLabel.setValue(String.format("%s / %s",
+        projectStatus.countPassedQc(),
+        projectStatus.totalCount()));
+
+    libraryPreparedCountLabel.setValue(String.format("%s / %s",
+        projectStatus.countLibraryPrepared(),
+        projectStatus.totalCount()));
+
+    dataAvailableCountLabel.setValue(String.format("%s / %s",
+        projectStatus.countDataAvailable(),
+        projectStatus.totalCount()));
+
+    receivedLayout.setStyleName(getStyleName(projectStatus.countReceived(), 0,
+        projectStatus.totalCount()));
+    sampleQcLayout.setStyleName(getStyleName(projectStatus.countPassedQc(),
+        projectStatus.countFailedQc(),
+        projectStatus.totalCount()));
+    libraryPreparedLayout.setStyleName(getStyleName(projectStatus.countLibraryPrepared(), 0,
+        projectStatus.totalCount()));
+    dataAvailableLayout.setStyleName(getStyleName(projectStatus.countDataAvailable(), 0,
+        projectStatus.totalCount()));
+
+    receivedCountLabel.setSizeUndefined();
+    sampleQcCountLabel.setSizeUndefined();
+    libraryPreparedCountLabel.setSizeUndefined();
+    dataAvailableCountLabel.setSizeUndefined();
+
+    loadedData = projectStatus;
+
   }
 
   private String getStyleName(int passingCount, int failingCount, int totalCount) {
@@ -180,37 +178,6 @@ public class ProjectStatusComponent extends Composite {
       loadingTask.cancel(true);
     }
     super.detach();
-  }
-
-  public interface ProjectStatusLoadedListener {
-
-    class ProjectStatusLoadedEvent {
-      private final Component source;
-      private final String projectCode;
-      private final ProjectStatus projectStatus;
-
-      public ProjectStatusLoadedEvent(Component source, String projectCode,
-          ProjectStatus projectStatus) {
-        this.source = source;
-        this.projectCode = projectCode;
-        this.projectStatus = projectStatus;
-      }
-
-      public Component source() {
-        return source;
-      }
-
-      public String projectCode() {
-        return projectCode;
-      }
-
-      public ProjectStatus projectStatus() {
-        return projectStatus;
-      }
-    }
-
-
-    void onProjectStatusLoaded(ProjectStatusLoadedEvent event);
   }
 
 }

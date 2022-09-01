@@ -127,7 +127,7 @@ public class ProjectView extends ProjectDesign {
   }
 
   private void addSorting() {
-    sort.setItems("Subscribed", "Not Subscribed");
+    sort.setItems("Newest Changes", "Oldest Changes", "Subscribed", "Not Subscribed");
 
     sort.addValueChangeListener(it -> {
       if (Objects.nonNull(it.getValue())) {
@@ -137,6 +137,12 @@ public class ProjectView extends ProjectDesign {
             break;
           case "Not Subscribed":
             projectGrid.sort("subscription", SortDirection.ASCENDING);
+            break;
+          case "Newest Changes":
+            projectGrid.sort("lastModified", SortDirection.DESCENDING);
+            break;
+          case "Oldest Changes":
+            projectGrid.sort("lastModified", SortDirection.ASCENDING);
             break;
           default:
             projectGrid.clearSortOrder();
@@ -207,12 +213,16 @@ public class ProjectView extends ProjectDesign {
         .setMinimumWidth(MIN_CODE_COLUMN_WIDTH)
         .setMaximumWidth(MAX_CODE_COLUMN_WIDTH);
 
-    grid.addComponentColumn(
-            it -> projectStatusComponentProvider.getForProject(it.code()))
+    grid.addComponentColumn(projectStatusComponentProvider::getForProject)
         .setId("projectStatus")
         .setHandleWidgetEvents(true)
         .setMinimumWidth(4 * ProjectStatusComponent.COLUMN_WIDTH)
         .setSortable(false);
+
+    grid.addColumn(it -> it.projectStatus().getLastModified())
+        .setComparator((p1, p2) -> p1.projectStatus().getLastModified().compareTo(p2.projectStatus().getLastModified()))
+        .setHidden(true)
+        .setId("lastModified");
 
     grid.setSizeFull();
     grid.getHeaderRow(0).getCell("projectStatus").setComponent(getProjectStatusHeader());

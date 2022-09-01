@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import life.qbic.portal.sampletracking.data.ProjectStatusProvider;
+import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
 
 /**
  * <b>short description</b>
@@ -24,13 +25,13 @@ public class ProjectStatusComponentProvider {
     this.trackingStatusProvider = trackingStatusProvider;
   }
 
-  public ProjectStatusComponent getForProject(String projectCode) {
-    if (summaries.containsKey(projectCode)) {
-      return summaries.get(projectCode);
+  public ProjectStatusComponent getForProject(Project project) {
+    if (summaries.containsKey(project.code())) {
+      return summaries.get(project.code());
     }
-    ProjectStatusComponent statusSummary = new ProjectStatusComponent(projectCode, executorService,
+    ProjectStatusComponent statusSummary = new ProjectStatusComponent(project, executorService,
         trackingStatusProvider);
-    summaries.put(projectCode, statusSummary);
+    summaries.put(project.code(), statusSummary);
     return statusSummary;
   }
 

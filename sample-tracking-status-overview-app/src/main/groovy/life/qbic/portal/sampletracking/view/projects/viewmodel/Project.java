@@ -1,15 +1,19 @@
 package life.qbic.portal.sampletracking.view.projects.viewmodel;
 
+import java.time.Instant;
+
 public class Project {
 
   private final String code;
   private final String title;
 
+  private ProjectStatus projectStatus;
   private boolean subscribed;
 
   public Project(String code, String title) {
     this.code = code;
     this.title = title;
+    projectStatus = new ProjectStatus(0, 0, 0, 0, 0, 0, Instant.MIN);
   }
 
   public String code() {
@@ -26,6 +30,15 @@ public class Project {
 
   public void setSubscribed(boolean subscribed) {
     this.subscribed = subscribed;
+  }
+
+  public ProjectStatus projectStatus() {
+    return projectStatus;
+  }
+
+  public void setProjectStatus(
+      ProjectStatus projectStatus) {
+    this.projectStatus = projectStatus;
   }
 
   @Override

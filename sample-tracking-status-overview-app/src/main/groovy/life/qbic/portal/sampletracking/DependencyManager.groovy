@@ -97,7 +97,7 @@ class DependencyManager {
       def projectView = new ProjectView(getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
       def sampleView = new SampleView(getSampleRepository(), getSampleStatusComponentProvider());
       sampleView.setProjectCode("QSTTS")
-      return sampleView;
+      return projectView;
     }
 
   SampleStatusComponentProvider getSampleStatusComponentProvider() {
@@ -124,19 +124,16 @@ class DependencyManager {
       return status
     }
 
-    @Override
-    Optional<ProjectStatus> getCachedStatusForProject(String projectCode) {
-      Optional.empty();
-    }
-
     private ProjectStatus randomStatus() {
-      def someNumber = new Random().nextInt(10) * new Random().nextInt(100)
+      def random = new Random()
+      def someNumber = random.nextInt(10) * random.nextInt(100)
+
       if (someNumber < 50) {
-        return new ProjectStatus(someNumber, someNumber, 1, 0, 0, 0, Instant.MIN)
+        return new ProjectStatus(someNumber, someNumber, 1, 0, 0, 0, Instant.now())
       } else if (someNumber < 500 ){
-        return new ProjectStatus(someNumber, someNumber, someNumber, 0, someNumber, someNumber, Instant.MIN)
+        return new ProjectStatus(someNumber, someNumber, someNumber, 0, someNumber, someNumber, Instant.now())
       } else {
-        return new ProjectStatus(someNumber, someNumber, someNumber - 3, 3, 0, 0, Instant.MIN)
+        return new ProjectStatus(someNumber, someNumber, someNumber - 3, 3, 0, 0, Instant.now())
       }
     }
 
@@ -150,11 +147,6 @@ class DependencyManager {
       } else {
         return "DATA_AVAILABLE"
       }
-    }
-
-    @Override
-    Optional<String> getCachedStatusForSample(String sampleCode) {
-      return Optional.empty()
     }
   }
 
