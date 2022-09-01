@@ -1,5 +1,7 @@
 package life.qbic.portal.sampletracking.data;
 
+import java.util.Optional;
+
 /**
  * <b>short description</b>
  *
@@ -9,5 +11,5 @@ package life.qbic.portal.sampletracking.data;
  */
 public interface SampleStatusProvider {
 
-  String getForSample(String sampleCode);
+  Optional<String> getForSample(String sampleCode);
 }

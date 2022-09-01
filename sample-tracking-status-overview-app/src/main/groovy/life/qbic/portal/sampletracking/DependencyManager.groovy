@@ -9,13 +9,11 @@ import life.qbic.portal.sampletracking.old.datasources.Credentials
 import life.qbic.portal.sampletracking.old.datasources.database.DatabaseSession
 import life.qbic.portal.sampletracking.view.projects.ProjectStatusComponentProvider
 import life.qbic.portal.sampletracking.view.projects.ProjectView
-import life.qbic.portal.sampletracking.view.projects.viewmodel.ProjectStatus
 import life.qbic.portal.sampletracking.view.samples.SampleStatusComponentProvider
 import life.qbic.portal.sampletracking.view.samples.SampleView
 import life.qbic.portal.utils.ConfigurationManager
 import life.qbic.portal.utils.ConfigurationManagerFactory
 
-import java.time.Instant
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -44,9 +42,11 @@ class DependencyManager {
     private final ExecutorService sampleLoadingExecutor = Executors.newFixedThreadPool(SAMPLE_LOADING_THREAD_COUNT)
 
 
-    private OpenBisConnector openBisConnector
-  private ProjectStatusComponentProvider statusComponentProvider
+  private OpenBisConnector openBisConnector
+  private ProjectStatusComponentProvider projectStatusComponentProvider
   private SampleStatusComponentProvider sampleStatusComponentProvider
+  private DummyTrackingConnector dummyTrackingConnector = new DummyTrackingConnector()
+  private SampleTrackingConnector sampleTrackingConnector
 
   DependencyManager(PortalUser user) {
         portalUser = user
@@ -68,6 +68,7 @@ class DependencyManager {
     private void initializeDependencies() {
       setupDatabaseConnections()
       setupOpenBisConnection()
+      setupSampleTracking()
     }
 
 
@@ -89,16 +90,37 @@ class DependencyManager {
     this.openBisConnector = new OpenBisConnector(openBisCredentials, portalUser, configurationManager.getDataSourceUrl() + "/openbis/openbis")
   }
 
+  private void setupSampleTracking() {
+    if (Objects.nonNull(sampleTrackingConnector)) {
+      return
+    }
+    def credentials = new Credentials(configurationManager.getServiceUser().name,
+            configurationManager.getServiceUser().password)
+    sampleTrackingConnector = new SampleTrackingConnector(configurationManager.getSampleTrackingServiceUrl(),
+            "/v2/samples",
+            "/status",
+            "/v2/projects",
+            credentials)
+  }
+
     /**
      * @return the main view of the application
      * @since 1.0.0
      */
     VerticalLayout getPortletView() {
       def projectView = new ProjectView(getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
-      def sampleView = new SampleView(getSampleRepository(), getSampleStatusComponentProvider());
+      def sampleView = new SampleView(getSampleRepository(), getSampleStatusComponentProvider())
       sampleView.setProjectCode("QSTTS")
-      return projectView;
+      return projectView
     }
+
+  ProjectRepository getProjectRepository() {
+    return openBisConnector
+  }
+
+  SampleRepository getSampleRepository() {
+    return openBisConnector
+  }
 
   SampleStatusComponentProvider getSampleStatusComponentProvider() {
     if (Objects.nonNull(sampleStatusComponentProvider)) {
@@ -108,74 +130,19 @@ class DependencyManager {
     return sampleStatusComponentProvider
   }
 
-  static class DummyTrackingProvider implements SampleStatusProvider, ProjectStatusProvider {
-
-    private final Map<String, ProjectStatus> knownStatuses = new HashMap<>();
-
-    @Override
-    public ProjectStatus getForProject(String projectCode) {
-      def knownStatus = knownStatuses.get(projectCode);
-      if (Objects.nonNull(knownStatus)) {
-        return knownStatus;
-      }
-      sleep(new Random().nextInt(100) * 10)
-      def status = randomStatus()
-      knownStatuses.put(projectCode, status)
-      return status
-    }
-
-    private ProjectStatus randomStatus() {
-      def random = new Random()
-      def someNumber = random.nextInt(10) * random.nextInt(100)
-
-      if (someNumber < 50) {
-        return new ProjectStatus(someNumber, someNumber, 1, 0, 0, 0, Instant.now())
-      } else if (someNumber < 500 ){
-        return new ProjectStatus(someNumber, someNumber, someNumber, 0, someNumber, someNumber, Instant.now())
-      } else {
-        return new ProjectStatus(someNumber, someNumber, someNumber - 3, 3, 0, 0, Instant.now())
-      }
-    }
-
-    @Override
-    public String getForSample(String sampleCode) {
-      def someNumber = new Random().nextInt(3)
-      if (someNumber == 0) {
-        return "METADATA_REGISTERED"
-      } else if (someNumber == 1) {
-        return "SAMPLE_QC_FAIL"
-      } else {
-        return "DATA_AVAILABLE"
-      }
-    }
-  }
-
-  ProjectRepository getProjectRepository() {
-//        ProjectRepository projectRepository = () -> [new Project("QABCD", "bla test project")]
-//        return projectRepository
-    return openBisConnector;
-  }
-
-  SampleRepository getSampleRepository() {
-//    SampleRepository sampleRepository = it -> [new Sample(it.toString() + "001A0", "My awesome sample")]
-//    return sampleRepository
-    return openBisConnector;
-  }
-
-
   ProjectStatusComponentProvider getSampleStatusSummaryProvider() {
-    if (Objects.nonNull(statusComponentProvider)) {
-      return statusComponentProvider;
+    if (Objects.nonNull(projectStatusComponentProvider)) {
+      return projectStatusComponentProvider
     }
-    statusComponentProvider = new ProjectStatusComponentProvider(projectLoadingExecutor, getProjectStatusProvider())
-    return statusComponentProvider
+    projectStatusComponentProvider = new ProjectStatusComponentProvider(projectLoadingExecutor, getProjectStatusProvider())
+    return projectStatusComponentProvider
+  }
+  SampleStatusProvider getSampleStatusProvider() {
+    return sampleTrackingConnector
   }
 
-  SampleStatusProvider getSampleStatusProvider() {
-    return new DummyTrackingProvider()
-  }
   ProjectStatusProvider getProjectStatusProvider() {
-    return new DummyTrackingProvider()
+    return sampleTrackingConnector
   }
 
   SubscriptionStatusProvider getSubscriptionServiceProvider() {

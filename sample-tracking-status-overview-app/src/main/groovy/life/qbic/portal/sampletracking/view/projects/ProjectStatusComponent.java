@@ -6,6 +6,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import life.qbic.portal.sampletracking.data.ProjectStatusProvider;
@@ -31,6 +32,7 @@ public class ProjectStatusComponent extends Composite {
   private final HorizontalLayout sampleQcLayout;
   private final HorizontalLayout libraryPreparedLayout;
   private final HorizontalLayout dataAvailableLayout;
+  private final Label errorMessage;
   private Future<?> loadingTask;
 
   private ProjectStatus loadedData;
@@ -41,6 +43,7 @@ public class ProjectStatusComponent extends Composite {
     this.project = project;
     this.executorService = executorService;
     this.trackingStatusProvider = trackingStatusProvider;
+
     spinner = new Spinner();
     HorizontalLayout panelContent = new HorizontalLayout();
     panelContent.setMargin(false);
@@ -52,8 +55,8 @@ public class ProjectStatusComponent extends Composite {
     libraryPreparedCountLabel = new Label();
     dataAvailableCountLabel = new Label();
 
-    receivedLayout = new HorizontalLayout( receivedCountLabel);
-    sampleQcLayout = new HorizontalLayout( sampleQcCountLabel);
+    receivedLayout = new HorizontalLayout(receivedCountLabel);
+    sampleQcLayout = new HorizontalLayout(sampleQcCountLabel);
     libraryPreparedLayout = new HorizontalLayout(
         libraryPreparedCountLabel);
     dataAvailableLayout = new HorizontalLayout(
@@ -85,6 +88,9 @@ public class ProjectStatusComponent extends Composite {
     statusLayout.setWidth(4 * COLUMN_WIDTH, Unit.PIXELS);
     panelContent.addComponents(statusLayout);
     setCompositionRoot(panelContent);
+    errorMessage = new Label("Information not available");
+    panelContent.addComponent(errorMessage);
+    panelContent.setComponentAlignment(errorMessage, Alignment.TOP_CENTER);
 
     panelContent.setWidthFull();
 
@@ -106,14 +112,20 @@ public class ProjectStatusComponent extends Composite {
     UI ui = getUI();
     ui.setPollInterval(200);
     statusLayout.setVisible(false);
+    errorMessage.setVisible(false);
     spinner.setVisible(true);
     loadingTask = executorService.submit(() -> {
-      ProjectStatus retrieved = trackingStatusProvider.getForProject(project.code());
+      Optional<ProjectStatus> retrieved = trackingStatusProvider.getForProject(project.code());
       ui.access(() -> {
-        showProjectStatus(retrieved);
-        project.setProjectStatus(retrieved);
+        retrieved.ifPresent(it -> {
+          showProjectStatus(it);
+          project.setProjectStatus(it);
+          statusLayout.setVisible(true);
+        });
+        if (!retrieved.isPresent()) {
+          errorMessage.setVisible(true);
+        }
         spinner.setVisible(false);
-        statusLayout.setVisible(true);
         this.setWidthFull();
       });
     });
@@ -153,9 +165,7 @@ public class ProjectStatusComponent extends Composite {
     sampleQcCountLabel.setSizeUndefined();
     libraryPreparedCountLabel.setSizeUndefined();
     dataAvailableCountLabel.setSizeUndefined();
-
     loadedData = projectStatus;
-
   }
 
   private String getStyleName(int passingCount, int failingCount, int totalCount) {

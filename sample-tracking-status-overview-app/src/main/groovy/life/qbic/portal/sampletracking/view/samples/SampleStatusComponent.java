@@ -6,7 +6,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import life.qbic.portal.sampletracking.data.SampleStatusProvider;
 import life.qbic.portal.sampletracking.view.Spinner;
@@ -62,11 +62,18 @@ public class SampleStatusComponent extends Composite implements Comparable<Sampl
     getCompositionRoot().removeStyleNames(State.FAILED.getCssClass(), State.IN_PROGRESS.getCssClass(), State.COMPLETED.getCssClass());
     spinner.setVisible(true);
     label.setVisible(false);
-    CompletableFuture.runAsync(() -> {
-      String sampleStatus = sampleStatusProvider.getForSample(sample.code());
+    removeStyle();
+    executorService.submit(() -> {
+      Optional<String> retrieved = sampleStatusProvider.getForSample(sample.code());
       ui.access(() -> {
-        sample.setSampleStatus(sampleStatus);
-        showSampleStatus(sampleStatus);
+        retrieved.ifPresent(it -> {
+          showSampleStatus(it);
+          sample.setSampleStatus(it);
+
+        });
+        if (!retrieved.isPresent()) {
+          showError();
+        }
         spinner.setVisible(false);
         label.setVisible(true);
       });
@@ -77,6 +84,14 @@ public class SampleStatusComponent extends Composite implements Comparable<Sampl
     label.setValue(sampleStatus);
     getCompositionRoot().setStyleName(determineStyleName(sampleStatus));
     loadedData = sampleStatus;
+  }
+
+  private void showError() {
+    label.setValue("Information not available");
+  }
+
+  private void removeStyle() {
+    getCompositionRoot().removeStyleName(getCompositionRoot().getStyleName());
   }
 
   private String determineStyleName(String status) {

@@ -10,7 +10,7 @@ import spock.lang.Specification
 import java.time.Instant
 
 
-class SampleTrackingSpec extends Specification{
+class SampleTrackingConnectorSpec extends Specification{
 
     def "when fetchSampleCodesFor project, then return a list of samples" () {
         given:
