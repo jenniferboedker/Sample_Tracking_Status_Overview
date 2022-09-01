@@ -59,17 +59,16 @@ public class SampleStatusComponent extends Composite implements Comparable<Sampl
       }
     }
     UI ui = UI.getCurrent();
+    ui.setPollInterval(200);
     getCompositionRoot().removeStyleNames(State.FAILED.getCssClass(), State.IN_PROGRESS.getCssClass(), State.COMPLETED.getCssClass());
     spinner.setVisible(true);
     label.setVisible(false);
-    removeStyle();
     executorService.submit(() -> {
       Optional<String> retrieved = sampleStatusProvider.getForSample(sample.code());
       ui.access(() -> {
         retrieved.ifPresent(it -> {
           showSampleStatus(it);
           sample.setSampleStatus(it);
-
         });
         if (!retrieved.isPresent()) {
           showError();

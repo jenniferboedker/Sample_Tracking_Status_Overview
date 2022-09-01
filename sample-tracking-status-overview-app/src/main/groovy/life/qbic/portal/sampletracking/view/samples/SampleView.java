@@ -110,7 +110,6 @@ public class SampleView extends SampleDesign {
         });
     statusComboBox.addValueChangeListener(
         it -> {
-          System.out.println(it);
           SampleFilter gridFilter = (SampleFilter) sampleGrid.getGridFilter();
           sampleGrid.setFilter(gridFilter.withStatus(it.getValue()));
         });

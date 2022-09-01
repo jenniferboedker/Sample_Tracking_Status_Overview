@@ -111,7 +111,7 @@ class DependencyManager {
       def projectView = new ProjectView(getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
       def sampleView = new SampleView(getSampleRepository(), getSampleStatusComponentProvider())
       sampleView.setProjectCode("QSTTS")
-      return projectView
+      return sampleView
     }
 
   ProjectRepository getProjectRepository() {
