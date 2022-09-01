@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.view.samples;
 
+import java.util.Objects;
 import life.qbic.portal.sampletracking.view.GridFilter;
 import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
 
@@ -20,8 +21,19 @@ public class SampleFilter implements GridFilter<Sample> {
   }
 
   @Override
-  public boolean test(Sample item) {
-    return false;
+  public boolean test(Sample sample) {
+    if (Objects.isNull(sample)) {
+      return false;
+    }
+    return containsText(sample.code())
+        || containsText(sample.label());
+  }
+
+  private boolean containsText(String value) {
+    if (Objects.isNull(value)) {
+      return false;
+    }
+    return value.toLowerCase().contains(containedText.toLowerCase());
   }
 
   @Override

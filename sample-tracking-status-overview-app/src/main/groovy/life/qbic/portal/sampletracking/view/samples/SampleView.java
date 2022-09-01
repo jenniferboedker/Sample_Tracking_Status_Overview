@@ -1,5 +1,6 @@
 package life.qbic.portal.sampletracking.view.samples;
 
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.components.grid.HeaderRow;
 import life.qbic.portal.sampletracking.data.SampleRepository;
@@ -30,6 +31,7 @@ public class SampleView extends SampleDesign {
     sampleGrid = createSampleGrid();
     addSampleGrid();
     setHeaderRowStyle();
+    addSampleFilter();
   }
 
   public void setProjectCode(String projectCode) {
@@ -82,5 +84,11 @@ public class SampleView extends SampleDesign {
 
   private void loadSamplesForProject(String projectCode) {
     sampleGrid.setItems(sampleRepository.findAllSamplesForProject(projectCode));
+  }
+
+  private void addSampleFilter() {
+    searchField.setValueChangeMode(ValueChangeMode.LAZY);
+    searchField.addValueChangeListener(
+        it -> sampleGrid.setFilter(new SampleFilter().containingText(it.getValue())));
   }
 }

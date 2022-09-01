@@ -9,11 +9,9 @@ import life.qbic.portal.sampletracking.old.datasources.Credentials
 import life.qbic.portal.sampletracking.old.datasources.database.DatabaseSession
 import life.qbic.portal.sampletracking.view.projects.ProjectStatusComponentProvider
 import life.qbic.portal.sampletracking.view.projects.ProjectView
-import life.qbic.portal.sampletracking.view.projects.viewmodel.Project
 import life.qbic.portal.sampletracking.view.projects.viewmodel.ProjectStatus
 import life.qbic.portal.sampletracking.view.samples.SampleStatusComponentProvider
 import life.qbic.portal.sampletracking.view.samples.SampleView
-import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample
 import life.qbic.portal.sampletracking.view.samples.viewmodel.SampleStatus
 import life.qbic.portal.utils.ConfigurationManager
 import life.qbic.portal.utils.ConfigurationManagerFactory
@@ -97,8 +95,10 @@ class DependencyManager {
      * @since 1.0.0
      */
     VerticalLayout getPortletView() {
-      new ProjectView(Executors.newFixedThreadPool(1), getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
-      new SampleView(getSampleRepository(), getSampleStatusComponentProvider());
+      def projectView = new ProjectView(Executors.newFixedThreadPool(1), getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
+      def sampleView = new SampleView(getSampleRepository(), getSampleStatusComponentProvider());
+      sampleView.setProjectCode("QSTTS")
+      return sampleView;
     }
 
   SampleStatusComponentProvider getSampleStatusComponentProvider() {
@@ -160,15 +160,15 @@ class DependencyManager {
   }
 
   ProjectRepository getProjectRepository() {
-        ProjectRepository projectRepository = () -> [new Project("QABCD", "bla test project")]
-        return projectRepository
-//    return openBisConnector;
+//        ProjectRepository projectRepository = () -> [new Project("QABCD", "bla test project")]
+//        return projectRepository
+    return openBisConnector;
   }
 
   SampleRepository getSampleRepository() {
-    SampleRepository sampleRepository = it -> [new Sample(it.toString() + "001A0", "My awesome sample")]
-    return sampleRepository
-//    return openBisConnector;
+//    SampleRepository sampleRepository = it -> [new Sample(it.toString() + "001A0", "My awesome sample")]
+//    return sampleRepository
+    return openBisConnector;
   }
 
 
