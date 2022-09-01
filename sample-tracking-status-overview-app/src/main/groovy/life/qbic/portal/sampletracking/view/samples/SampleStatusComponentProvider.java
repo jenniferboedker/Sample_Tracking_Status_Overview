@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import life.qbic.portal.sampletracking.data.SampleStatusProvider;
+import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
 
 /**
  * <b>short description</b>
@@ -17,7 +18,7 @@ public class SampleStatusComponentProvider {
   private final ExecutorService executorService;
   private final SampleStatusProvider trackingStatusProvider;
 
-  private Map<String, SampleStatusComponent> components = new HashMap<>();
+  private final Map<Sample, SampleStatusComponent> components = new HashMap<>();
 
   public SampleStatusComponentProvider(ExecutorService executorService,
       SampleStatusProvider trackingStatusProvider) {
@@ -25,12 +26,13 @@ public class SampleStatusComponentProvider {
     this.trackingStatusProvider = trackingStatusProvider;
   }
 
-  public SampleStatusComponent getForSample(String sampleCode) {
-    if (components.containsKey(sampleCode)) {
-      return components.get(sampleCode);
+  public SampleStatusComponent getForSample(Sample sample) {
+    if (components.containsKey(sample)) {
+      return components.get(sample);
     }
-    SampleStatusComponent component = new SampleStatusComponent(sampleCode, trackingStatusProvider);
-    components.put(sampleCode, component);
+    SampleStatusComponent component = new SampleStatusComponent(sample, trackingStatusProvider,
+        executorService);
+    components.put(sample, component);
     return component;
   }
 }

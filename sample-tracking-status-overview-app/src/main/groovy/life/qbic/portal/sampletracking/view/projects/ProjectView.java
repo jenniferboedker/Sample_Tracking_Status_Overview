@@ -1,7 +1,5 @@
 package life.qbic.portal.sampletracking.view.projects;
 
-import static org.apache.logging.log4j.LogManager.getLogger;
-
 import com.vaadin.event.selection.SingleSelectionEvent;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.ValueChangeMode;
@@ -17,13 +15,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import life.qbic.portal.sampletracking.data.ProjectRepository;
 import life.qbic.portal.sampletracking.data.SubscriptionStatusProvider;
 import life.qbic.portal.sampletracking.view.ResponsiveGrid;
 import life.qbic.portal.sampletracking.view.Spinner;
 import life.qbic.portal.sampletracking.view.projects.ProjectView.ProjectSelectionListener.ProjectSelectionEvent;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -35,31 +33,26 @@ import org.apache.logging.log4j.Logger;
  */
 public class ProjectView extends ProjectDesign {
 
-  private static final Logger log = getLogger(ProjectView.class);
+  private static final Logger log = LogManager.getLogger(ProjectView.class);
 
   private static final int MIN_CODE_COLUMN_WIDTH = 100;
   private final static int MAX_CODE_COLUMN_WIDTH = 200;
 
-  private final ExecutorService projectLoadingExecutor;
-
   private final ProjectStatusComponentProvider projectStatusComponentProvider;
-
   private final SubscriptionStatusProvider subscriptionStatusProvider;
 
   protected ResponsiveGrid<Project> projectGrid;
 
   private final ProjectRepository projectRepository;
 
-  private HorizontalLayout spinnerLayout;
+  private final HorizontalLayout spinnerLayout;
 
   private final List<ProjectSelectionListener> projectSelectionListeners = new ArrayList<>();
 
 
-  public ProjectView(ExecutorService projectLoadingExecutor,
-      ProjectStatusComponentProvider projectStatusComponentProvider,
+  public ProjectView(ProjectStatusComponentProvider projectStatusComponentProvider,
       SubscriptionStatusProvider subscriptionStatusProvider, ProjectRepository projectRepository) {
     this.projectStatusComponentProvider = projectStatusComponentProvider;
-    this.projectLoadingExecutor = projectLoadingExecutor;
     this.subscriptionStatusProvider = subscriptionStatusProvider;
     this.projectRepository = projectRepository;
     avoidElementOverlap();

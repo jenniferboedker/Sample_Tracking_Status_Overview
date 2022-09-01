@@ -32,6 +32,10 @@ public class ResponsiveGrid<T> extends Grid<T> {
     filterData();
   }
 
+  public GridFilter<T> getGridFilter() {
+    return gridFilter;
+  }
+
   @Override
   public void setItems(Collection<T> items) {
     super.setItems(items);

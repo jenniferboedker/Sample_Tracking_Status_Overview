@@ -7,10 +7,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import life.qbic.portal.sampletracking.data.SampleStatusProvider;
 import life.qbic.portal.sampletracking.view.Spinner;
 import life.qbic.portal.sampletracking.view.projects.State;
-import life.qbic.portal.sampletracking.view.samples.viewmodel.SampleStatus;
+import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
 
 /**
  * <b>short description</b>
@@ -19,18 +20,21 @@ import life.qbic.portal.sampletracking.view.samples.viewmodel.SampleStatus;
  *
  * @since <version tag>
  */
-public class SampleStatusComponent extends Composite {
+public class SampleStatusComponent extends Composite implements Comparable<SampleStatusComponent> {
 
   private final SampleStatusProvider sampleStatusProvider;
+
+  private final ExecutorService executorService;
   private final Label label;
   private final Spinner spinner = new Spinner();
-  private final String sampleCode;
+  private final Sample sample;
+  private String loadedData = "";
 
-  private SampleStatus loadedData;
-
-  public SampleStatusComponent(String sampleCode, SampleStatusProvider sampleStatusProvider) {
+  public SampleStatusComponent(Sample sample, SampleStatusProvider sampleStatusProvider,
+      ExecutorService executorService) {
     this.sampleStatusProvider = sampleStatusProvider;
-    this.sampleCode = sampleCode;
+    this.sample = sample;
+    this.executorService = executorService;
     label = new Label();
     HorizontalLayout rootLayout = new HorizontalLayout();
     rootLayout.setMargin(new MarginInfo(false, true));
@@ -46,16 +50,22 @@ public class SampleStatusComponent extends Composite {
   }
 
   private void loadStatusInformation() {
-    if (Objects.nonNull(loadedData)) {
-      return;
+    if (Objects.nonNull(loadedData) && Objects.nonNull(sample.sampleStatus())) {
+      if (loadedData.equals(sample.sampleStatus())) {
+        return;
+      } else {
+        showSampleStatus(sample.sampleStatus());
+        return;
+      }
     }
     UI ui = UI.getCurrent();
     getCompositionRoot().removeStyleNames(State.FAILED.getCssClass(), State.IN_PROGRESS.getCssClass(), State.COMPLETED.getCssClass());
     spinner.setVisible(true);
     label.setVisible(false);
     CompletableFuture.runAsync(() -> {
-      SampleStatus sampleStatus = sampleStatusProvider.getForSample(sampleCode);
+      String sampleStatus = sampleStatusProvider.getForSample(sample.code());
       ui.access(() -> {
+        sample.setSampleStatus(sampleStatus);
         showSampleStatus(sampleStatus);
         spinner.setVisible(false);
         label.setVisible(true);
@@ -63,9 +73,9 @@ public class SampleStatusComponent extends Composite {
     });
   }
 
-  private void showSampleStatus(SampleStatus sampleStatus) {
-    label.setValue(sampleStatus.toString());
-    getCompositionRoot().setStyleName(determineStyleName(sampleStatus.toString()));
+  private void showSampleStatus(String sampleStatus) {
+    label.setValue(sampleStatus);
+    getCompositionRoot().setStyleName(determineStyleName(sampleStatus));
     loadedData = sampleStatus;
   }
 
@@ -84,4 +94,8 @@ public class SampleStatusComponent extends Composite {
     return state.getCssClass();
   }
 
+  @Override
+  public int compareTo(SampleStatusComponent o) {
+    return this.loadedData.compareTo(o.loadedData);
+  }
 }

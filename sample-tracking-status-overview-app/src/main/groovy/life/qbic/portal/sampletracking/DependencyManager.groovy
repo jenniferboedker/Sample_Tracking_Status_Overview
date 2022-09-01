@@ -12,7 +12,6 @@ import life.qbic.portal.sampletracking.view.projects.ProjectView
 import life.qbic.portal.sampletracking.view.projects.viewmodel.ProjectStatus
 import life.qbic.portal.sampletracking.view.samples.SampleStatusComponentProvider
 import life.qbic.portal.sampletracking.view.samples.SampleView
-import life.qbic.portal.sampletracking.view.samples.viewmodel.SampleStatus
 import life.qbic.portal.utils.ConfigurationManager
 import life.qbic.portal.utils.ConfigurationManagerFactory
 
@@ -39,8 +38,8 @@ class DependencyManager {
 
     private Subscriber subscriptionUser
 
-    private static final int PROJECT_LOADING_THREAD_COUNT = 20;
-    private static final int SAMPLE_LOADING_THREAD_COUNT = 20;
+    private static final int PROJECT_LOADING_THREAD_COUNT = 20
+    private static final int SAMPLE_LOADING_THREAD_COUNT = 20
     private final ExecutorService projectLoadingExecutor = Executors.newFixedThreadPool(PROJECT_LOADING_THREAD_COUNT)
     private final ExecutorService sampleLoadingExecutor = Executors.newFixedThreadPool(SAMPLE_LOADING_THREAD_COUNT)
 
@@ -95,7 +94,7 @@ class DependencyManager {
      * @since 1.0.0
      */
     VerticalLayout getPortletView() {
-      def projectView = new ProjectView(Executors.newFixedThreadPool(1), getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
+      def projectView = new ProjectView(getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
       def sampleView = new SampleView(getSampleRepository(), getSampleStatusComponentProvider());
       sampleView.setProjectCode("QSTTS")
       return sampleView;
@@ -142,19 +141,19 @@ class DependencyManager {
     }
 
     @Override
-    public SampleStatus getForSample(String sampleCode) {
+    public String getForSample(String sampleCode) {
       def someNumber = new Random().nextInt(3)
       if (someNumber == 0) {
-        return new SampleStatus("METADATA_REGISTERED")
+        return "METADATA_REGISTERED"
       } else if (someNumber == 1) {
-        return new SampleStatus("SAMPLE_QC_FAIL")
+        return "SAMPLE_QC_FAIL"
       } else {
-        return new SampleStatus("DATA_AVAILABLE")
+        return "DATA_AVAILABLE"
       }
     }
 
     @Override
-    Optional<SampleStatus> getCachedStatusForSample(String sampleCode) {
+    Optional<String> getCachedStatusForSample(String sampleCode) {
       return Optional.empty()
     }
   }

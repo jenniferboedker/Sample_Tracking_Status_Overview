@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.ProjectStatus;
-import life.qbic.portal.sampletracking.view.samples.viewmodel.SampleStatus;
 
 /**
  * <b>short description</b>
@@ -60,7 +59,7 @@ public class SampleTracking implements ProjectStatusProvider, SampleStatusProvid
   }
 
   @Override
-  public SampleStatus getForSample(String sampleCode) {
+  public String getForSample(String sampleCode) {
     if (cache.containsKey(sampleCode.substring(0, 5))) {
       Project project = cache.get(sampleCode.substring(0, 5));
       project.stream().filter(it -> it.code().equals(sampleCode)).findAny();
@@ -69,12 +68,7 @@ public class SampleTracking implements ProjectStatusProvider, SampleStatusProvid
     return askServiceForSample();
   }
 
-  private SampleStatus askServiceForSample() {
+  private String askServiceForSample() {
     return null;
-  }
-
-  @Override
-  public Optional<SampleStatus> getCachedStatusForSample(String sampleCode) {
-    return Optional.empty();
   }
 }

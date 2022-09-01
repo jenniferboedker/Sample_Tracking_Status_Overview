@@ -1,8 +1,10 @@
 package life.qbic.portal.sampletracking.view.samples;
 
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.components.grid.HeaderRow;
+import java.util.ArrayList;
 import life.qbic.portal.sampletracking.data.SampleRepository;
 import life.qbic.portal.sampletracking.view.ResponsiveGrid;
 import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
@@ -31,7 +33,18 @@ public class SampleView extends SampleDesign {
     sampleGrid = createSampleGrid();
     addSampleGrid();
     setHeaderRowStyle();
+    fillFilterDropdown();
     addSampleFilter();
+  }
+
+  private void fillFilterDropdown() {
+    statusComboBox.setItems("METADATA_REGISTERED",
+        "SAMPLE_RECEIVED",
+        "SAMPLE_QC_FAIL",
+        "SAMPLE_QC_PASS",
+        "LIBRARY_PREP_FINISHED",
+        "DATA_AVAILABLE");
+    statusComboBox.setSizeUndefined();
   }
 
   public void setProjectCode(String projectCode) {
@@ -52,18 +65,19 @@ public class SampleView extends SampleDesign {
 
   private ResponsiveGrid<Sample> createSampleGrid() {
     ResponsiveGrid<Sample> grid = new ResponsiveGrid<>();
+    grid.setDataProvider(new ListDataProvider<>(new ArrayList<>()));
     grid.addColumn(Sample::label)
         .setId("label")
         .setCaption("Sample Label");
     grid.addColumn(Sample::code)
         .setId("code")
         .setCaption("QBiC Code");
-    grid.addComponentColumn(
-            it -> sampleStatusComponentProvider.getForSample(it.code()))
+    grid.addComponentColumn(sampleStatusComponentProvider::getForSample)
         .setId("status")
+        .setHandleWidgetEvents(true)
         .setCaption("Status");
     grid.setSizeFull();
-    grid.setSelectionMode(SelectionMode.NONE);
+    grid.setSelectionMode(SelectionMode.SINGLE);
     return grid;
   }
 
@@ -87,8 +101,18 @@ public class SampleView extends SampleDesign {
   }
 
   private void addSampleFilter() {
+    sampleGrid.setFilter(new SampleFilter());
     searchField.setValueChangeMode(ValueChangeMode.LAZY);
     searchField.addValueChangeListener(
-        it -> sampleGrid.setFilter(new SampleFilter().containingText(it.getValue())));
+        it -> {
+          SampleFilter gridFilter = (SampleFilter) sampleGrid.getGridFilter();
+          sampleGrid.setFilter(gridFilter.containingText(it.getValue()));
+        });
+    statusComboBox.addValueChangeListener(
+        it -> {
+          System.out.println(it);
+          SampleFilter gridFilter = (SampleFilter) sampleGrid.getGridFilter();
+          sampleGrid.setFilter(gridFilter.withStatus(it.getValue()));
+        });
   }
 }
