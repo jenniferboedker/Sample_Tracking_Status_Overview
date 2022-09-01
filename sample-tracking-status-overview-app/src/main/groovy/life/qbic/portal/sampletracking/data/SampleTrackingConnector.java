@@ -1,13 +1,25 @@
 package life.qbic.portal.sampletracking.data;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import life.qbic.portal.sampletracking.old.datasources.Credentials;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.ProjectStatus;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 
 /**
  * <b>short description</b>
@@ -101,7 +113,29 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
   }
 
   private Optional<Project> askServiceForProject(String projectCode) {
-    //TODO add to cache
+    String changingProjectSuffix = String.format("/%s", projectCode);
+    // uses httpclient5 https://hc.apache.org/httpcomponents-client-5.1.x/quickstart.html
+    BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+    credentialsProvider.setCredentials(new AuthScope(serviceAddress, -1),
+        new UsernamePasswordCredentials(serviceUser, userPass.toCharArray()));
+    try (CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build()) {
+      HttpGet httpGet = new HttpGet(
+          serviceAddress + projectsSuffix + changingProjectSuffix + statusSuffix);
+      try (CloseableHttpResponse response = httpclient.execute(httpGet)) {
+        System.out.println(response.getCode() + " " + response.getReasonPhrase());
+        HttpEntity entity = response.getEntity();
+
+        String response1 = EntityUtils.toString(entity);
+        System.out.println(response1);
+        //todo parse sample response
+        //TODO add to cache
+        EntityUtils.consume(entity);
+      } catch (ParseException e) {
+        throw new RuntimeException(e);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
     return Optional.empty();
   }
 
@@ -113,13 +147,33 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
   static private class ProjectSatusMapper {
 
     static ProjectStatus toProjectStatus(Project project) {
-      return emptyStatus();
-    }
+      int totalCount = project.size();
+      int receivedCount = (int) project.stream()
+          .filter(it -> it.status.equals("SAMPLE_RECEIVED"))
+          .count();
+      int sampleQcFailedCount = (int) project.stream()
+          .filter(it -> it.status.equals("SAMPLE_QC_FAIL"))
+          .count();
+      int sampleQcPassedCount = (int) project.stream()
+          .filter(it -> it.status.equals("SAMPLE_QC_PASS"))
+          .count();
+      int libraryPreparedCount = (int) project.stream()
+          .filter(it -> it.status.equals("LIBRARY_PREP_FINISHED"))
+          .count();
+      int dataAvailableCount = (int) project.stream()
+          .filter(it -> it.status.equals("DATA_AVAILABLE"))
+          .count();
+      Instant lastModified = project.stream().map(Sample::statusValidSince)
+          .max(Comparator.naturalOrder()).orElse(Instant.MIN);
 
-    public static ProjectStatus emptyStatus() {
-      return new ProjectStatus(0, 0, 0, 0, 0, 0, Instant.MIN);
+      return new ProjectStatus(totalCount,
+          receivedCount,
+          sampleQcPassedCount,
+          sampleQcFailedCount,
+          libraryPreparedCount,
+          dataAvailableCount,
+          lastModified);
     }
-
   }
 
   static private class SampleStatusMapper {
