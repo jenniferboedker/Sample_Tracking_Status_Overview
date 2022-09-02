@@ -10,6 +10,7 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.fetchoptions.SampleFetchO
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.search.SampleSearchCriteria;
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -58,7 +59,8 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository {
           api.searchProjects(sessionToken, new ProjectSearchCriteria(), fetchOptions);
 
       List<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> projects = projectSearchResult.getObjects().stream()
-          .filter(hasValidProjectCode())
+          .filter(hasValidProjectCode()).sorted(Comparator.comparing(
+              ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project::getRegistrationDate).reversed())
           .collect(Collectors.toList());
       cachedProjects.addAll(projects);
     }

@@ -111,10 +111,12 @@ class DependencyManager {
       def projectView = new ProjectView(getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
       def sampleView = new SampleView(getSampleRepository(), getSampleStatusComponentProvider())
       sampleView.setProjectCode("QSTTS")
-      return sampleView
+      return projectView
     }
 
   ProjectRepository getProjectRepository() {
+//    ProjectRepository projectRepository = () -> [new Project("QSTTS", "bla"), new Project("QABCD", "bla 2")]
+//    return projectRepository
     return openBisConnector
   }
 

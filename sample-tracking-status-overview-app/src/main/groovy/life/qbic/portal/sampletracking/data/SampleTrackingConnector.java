@@ -1,10 +1,20 @@
 package life.qbic.portal.sampletracking.data;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,6 +30,7 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.slf4j.Logger;
 
 /**
  * <b>short description</b>
@@ -29,6 +40,8 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
  * @since <version tag>
  */
 public class SampleTrackingConnector implements ProjectStatusProvider, SampleStatusProvider {
+
+  private static final Logger log = getLogger(SampleTrackingConnector.class);
 
   public final String samplesSuffix;
   public final String statusSuffix;
@@ -53,13 +66,19 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
 
   private static class Sample {
 
-    final String status;
-    final String code;
-    final Instant statusValidSince;
+    @JsonProperty("status")
+    private String status;
+    @JsonProperty("sampleCode")
+    private String sampleCode;
+    @JsonProperty("statusValidSince")
+    private Instant statusValidSince;
 
-    private Sample(String status, String code, Instant statusValidSince) {
+    private Sample() {
+    }
+
+    private Sample(String status, String sampleCode, Instant statusValidSince) {
       this.status = status;
-      this.code = code;
+      this.sampleCode = sampleCode;
       this.statusValidSince = statusValidSince;
     }
 
@@ -68,7 +87,7 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
     }
 
     public String code() {
-      return code;
+      return sampleCode;
     }
 
     public Instant statusValidSince() {
@@ -76,7 +95,7 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
     }
   }
 
-  private final Map<String, Project> cachedProjects = new HashMap<>();
+  private final Map<String, Project> cachedProjects = Collections.synchronizedMap(new HashMap<>());
 
   @Override
   public Optional<ProjectStatus> getForProject(String projectCode) {
@@ -86,9 +105,11 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
   }
 
   private Optional<ProjectStatus> getCachedStatusForProject(String projectCode) {
-    if (cachedProjects.containsKey(projectCode)) {
-      Project project = cachedProjects.get(projectCode);
-      return Optional.of(ProjectSatusMapper.toProjectStatus(project));
+    synchronized (cachedProjects) {
+      if (cachedProjects.containsKey(projectCode)) {
+        Project project = cachedProjects.get(projectCode);
+        return Optional.of(ProjectSatusMapper.toProjectStatus(project));
+      }
     }
     return Optional.empty();
   }
@@ -100,48 +121,126 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
         : askServiceForSample(sampleCode).map(SampleStatusMapper::toSampleStatus);
   }
 
-  private Optional<String> getCachedStatusForSample(String sampleCode) {
+  private synchronized Optional<String> getCachedStatusForSample(String sampleCode) {
     String projectCode = sampleCode.substring(0, 5);
-    if (cachedProjects.containsKey(projectCode)) {
-      Project project = cachedProjects.get(projectCode);
-      return project.stream()
-          .filter(it -> it.code().equals(sampleCode))
-          .map(Sample::status)
-          .findAny();
+    synchronized (cachedProjects) {
+      if (cachedProjects.containsKey(projectCode)) {
+        Project project = cachedProjects.get(projectCode);
+        return project.stream()
+            .filter(it -> it.code().equals(sampleCode))
+            .map(Sample::status)
+            .findAny();
+      }
     }
     return Optional.empty();
   }
 
   private Optional<Project> askServiceForProject(String projectCode) {
+    String projectJson = requestProjectOverHttp(projectCode);
+    if (projectJson.isEmpty()) {
+      return Optional.empty();
+    }
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    try {
+      List<Sample> samples = objectMapper.readValue(projectJson, new TypeReference<ArrayList<Sample>>() {
+      });
+      Project project = new Project();
+      project.addAll(samples);
+      synchronized (cachedProjects) {
+        cachedProjects.put(projectCode, project);
+      }
+      return Optional.of(project);
+    } catch (JsonProcessingException e) {
+      log.error(e.getMessage(), e);
+      return Optional.empty();
+    }
+  }
+
+  private String requestProjectOverHttp(String projectCode) {
     String changingProjectSuffix = String.format("/%s", projectCode);
     // uses httpclient5 https://hc.apache.org/httpcomponents-client-5.1.x/quickstart.html
-    BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-    credentialsProvider.setCredentials(new AuthScope(serviceAddress, -1),
+    final BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
+    credsProvider.setCredentials(
+        new AuthScope(null, -1),
         new UsernamePasswordCredentials(serviceUser, userPass.toCharArray()));
-    try (CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build()) {
+    try (CloseableHttpClient httpclient = HttpClients.custom()
+        .setDefaultCredentialsProvider(credsProvider).build()) {
       HttpGet httpGet = new HttpGet(
           serviceAddress + projectsSuffix + changingProjectSuffix + statusSuffix);
       try (CloseableHttpResponse response = httpclient.execute(httpGet)) {
-        System.out.println(response.getCode() + " " + response.getReasonPhrase());
+        if (response.getCode() != 200) {
+          throw new RuntimeException(
+              String.format("Unsuccessful response for project %s: %s %s", projectCode, response.getCode(),
+                  response.getReasonPhrase()));
+        }
         HttpEntity entity = response.getEntity();
-
-        String response1 = EntityUtils.toString(entity);
-        System.out.println(response1);
-        //todo parse sample response
-        //TODO add to cache
+        String responseBody = EntityUtils.toString(entity);
         EntityUtils.consume(entity);
+
+        return responseBody;
       } catch (ParseException e) {
         throw new RuntimeException(e);
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    return Optional.empty();
+  }
+
+  private String requestSampleOverHttp(String sampleCode) {
+    String changingSampleSuffix = String.format("/%s", sampleCode);
+    // uses httpclient5 https://hc.apache.org/httpcomponents-client-5.1.x/quickstart.html
+    final BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
+    credsProvider.setCredentials(
+        new AuthScope(null, -1),
+        new UsernamePasswordCredentials(serviceUser, userPass.toCharArray()));
+    try (CloseableHttpClient httpclient = HttpClients.custom()
+        .setDefaultCredentialsProvider(credsProvider).build()) {
+      HttpGet httpGet = new HttpGet(
+          serviceAddress + samplesSuffix + changingSampleSuffix + statusSuffix);
+      try (CloseableHttpResponse response = httpclient.execute(httpGet)) {
+        if (response.getCode() != 200) {
+          throw new RuntimeException(
+              String.format("Unsuccessful response for sample %s: %s %s", sampleCode, response.getCode(),
+                  response.getReasonPhrase()));
+        }
+        HttpEntity entity = response.getEntity();
+        String responseBody = EntityUtils.toString(entity);
+        EntityUtils.consume(entity);
+
+        return responseBody;
+      } catch (ParseException e) {
+        throw new RuntimeException(e);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private Optional<Sample> askServiceForSample(String sampleCode) {
-    //TODO add to cache
-    return Optional.empty();
+    String sampleJson = requestSampleOverHttp(sampleCode);
+    if (sampleJson.isEmpty()) {
+      return Optional.empty();
+    }
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    try {
+      Sample sample = objectMapper.readValue(sampleJson, Sample.class);
+      String projectCode = sampleCode.substring(0, 5);
+      synchronized (cachedProjects) {
+        if (cachedProjects.containsKey(projectCode)) {
+          Project cachedProject = cachedProjects.get(projectCode);
+          cachedProject.add(sample);
+          cachedProjects.put(projectCode, cachedProject);
+        }
+      }
+      return Optional.of(sample);
+    } catch (JsonProcessingException e) {
+      log.error(e.getMessage(), e);
+      return Optional.empty();
+    }
   }
 
   static private class ProjectSatusMapper {
@@ -167,10 +266,10 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
           .max(Comparator.naturalOrder()).orElse(Instant.MIN);
 
       return new ProjectStatus(totalCount,
-          receivedCount,
-          sampleQcPassedCount,
-          sampleQcFailedCount,
-          libraryPreparedCount,
+          receivedCount + sampleQcFailedCount + sampleQcPassedCount + libraryPreparedCount + dataAvailableCount,
+          sampleQcPassedCount + libraryPreparedCount + dataAvailableCount,
+          sampleQcFailedCount + libraryPreparedCount + dataAvailableCount,
+          libraryPreparedCount + dataAvailableCount,
           dataAvailableCount,
           lastModified);
     }
