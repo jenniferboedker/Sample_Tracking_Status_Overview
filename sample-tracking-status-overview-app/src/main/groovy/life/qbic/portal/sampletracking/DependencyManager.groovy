@@ -37,8 +37,8 @@ class DependencyManager {
 
     private Subscriber subscriptionUser
 
-    private static final int PROJECT_LOADING_THREAD_COUNT = 20
-    private static final int SAMPLE_LOADING_THREAD_COUNT = 20
+    private static final int PROJECT_LOADING_THREAD_COUNT = 2
+    private static final int SAMPLE_LOADING_THREAD_COUNT = 2
     private final ExecutorService projectLoadingExecutor = Executors.newFixedThreadPool(PROJECT_LOADING_THREAD_COUNT)
     private final ExecutorService sampleLoadingExecutor = Executors.newFixedThreadPool(SAMPLE_LOADING_THREAD_COUNT)
 
