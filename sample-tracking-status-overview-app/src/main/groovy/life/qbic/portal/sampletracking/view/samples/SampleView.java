@@ -91,7 +91,7 @@ public class SampleView extends SampleDesign {
         .setHandleWidgetEvents(true)
         .setCaption("Status");
     grid.setSizeFull();
-    grid.setSelectionMode(SelectionMode.SINGLE);
+    grid.setSelectionMode(SelectionMode.NONE);
     return grid;
   }
 
