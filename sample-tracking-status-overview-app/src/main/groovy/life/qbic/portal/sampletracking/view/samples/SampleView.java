@@ -6,6 +6,7 @@ import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.components.grid.HeaderRow;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import life.qbic.portal.sampletracking.data.SampleRepository;
 import life.qbic.portal.sampletracking.view.ResponsiveGrid;
 import life.qbic.portal.sampletracking.view.samples.SampleView.ProjectViewRequestedListener.ProjectViewRequested;
@@ -58,7 +59,7 @@ public class SampleView extends SampleDesign {
   }
 
   public void setProjectCode(String projectCode) {
-    if (this.projectCode.equals(projectCode)) {
+    if (Objects.nonNull(this.projectCode) && this.projectCode.equals(projectCode)) {
       return;
     }
     this.projectCode = projectCode;
