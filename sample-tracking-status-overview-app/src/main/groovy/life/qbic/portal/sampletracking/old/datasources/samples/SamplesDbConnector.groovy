@@ -7,7 +7,7 @@ import life.qbic.business.samples.count.CountSamplesDataSource
 import life.qbic.business.samples.download.DownloadSamplesDataSource
 import life.qbic.business.samples.info.SampleStatusDataSource
 import life.qbic.datamodel.samples.Status
-import life.qbic.portal.sampletracking.old.datasources.database.ConnectionProvider
+import life.qbic.portal.sampletracking.data.database.ConnectionProvider
 import life.qbic.portal.sampletracking.old.services.sample.SampleTracking.TrackedSample
 import life.qbic.portal.sampletracking.old.services.sample.SampleTrackingService
 

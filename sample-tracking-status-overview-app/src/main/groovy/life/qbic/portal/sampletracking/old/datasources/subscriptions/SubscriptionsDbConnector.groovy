@@ -5,7 +5,7 @@ import life.qbic.business.DataSourceException
 import life.qbic.business.project.load.SubscribedProjectsDataSource
 import life.qbic.business.project.subscribe.Subscriber
 import life.qbic.business.project.subscribe.SubscriptionDataSource
-import life.qbic.portal.sampletracking.old.datasources.database.ConnectionProvider
+import life.qbic.portal.sampletracking.data.database.ConnectionProvider
 
 import java.sql.Connection
 import java.sql.PreparedStatement
