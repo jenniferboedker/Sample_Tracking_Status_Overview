@@ -35,4 +35,9 @@ public class ProjectStatusComponentProvider {
     return statusSummary;
   }
 
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    executorService.shutdownNow();
+  }
 }

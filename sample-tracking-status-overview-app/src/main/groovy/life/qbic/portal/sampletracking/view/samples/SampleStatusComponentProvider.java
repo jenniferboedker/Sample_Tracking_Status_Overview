@@ -35,4 +35,10 @@ public class SampleStatusComponentProvider {
     components.put(sample, component);
     return component;
   }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    executorService.shutdownNow();
+  }
 }
