@@ -1,7 +1,5 @@
 package life.qbic.portal.sampletracking.data;
 
-import static org.apache.logging.log4j.LogManager.getLogger;
-
 import ch.ethz.sis.openbis.generic.asapi.v3.IApplicationServerApi;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.project.fetchoptions.ProjectFetchOptions;
@@ -11,7 +9,9 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.search.SampleSearchCriter
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -20,7 +20,6 @@ import life.qbic.datamodel.dtos.portal.PortalUser;
 import life.qbic.portal.sampletracking.old.datasources.Credentials;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
 import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
-import org.apache.logging.log4j.Logger;
 
 /**
  * <b>short description</b>
@@ -31,8 +30,6 @@ import org.apache.logging.log4j.Logger;
  */
 public class OpenBisConnector implements ProjectRepository, SampleRepository {
 
-  private static final Logger log = getLogger(OpenBisConnector.class);
-
   private final String sessionToken;
 
   private final IApplicationServerApi api;
@@ -40,6 +37,8 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository {
   private static final int TIMEOUT = 10_000;
 
   private final List<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> cachedProjects = new ArrayList<>();
+  private final Map<String, List<ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample>> cachedSamples = new HashMap<>();
+
 
 
   public OpenBisConnector(Credentials credentials, PortalUser portalUser,
@@ -73,13 +72,9 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository {
   @Override
   public List<Sample> findAllSamplesForProject(String projectCode) {
 
-    Optional<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> cachedProject = cachedProjects.stream()
-        .filter(it -> it.getCode().equals(projectCode))
-        .findAny();
     List<ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample> samples;
-    if (cachedProject.isPresent()) {
-      ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project project = cachedProject.get();
-       samples = project.getSamples();
+    if (cachedSamples.containsKey(projectCode)) {
+      samples = cachedSamples.get(projectCode);
     } else {
       SampleSearchCriteria sampleSearchCriteria = new SampleSearchCriteria();
       sampleSearchCriteria.withCode().thatStartsWith(projectCode);
@@ -88,6 +83,7 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository {
       SearchResult<ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample> sampleSearchResult = api.searchSamples(
           sessionToken, sampleSearchCriteria, fetchOptions);
       samples = sampleSearchResult.getObjects();
+      cachedSamples.put(projectCode, samples);
     }
     return samples.stream()
         .filter(hasValidSampleCode())

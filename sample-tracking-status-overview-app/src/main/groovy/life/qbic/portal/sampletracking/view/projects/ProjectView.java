@@ -13,13 +13,13 @@ import com.vaadin.ui.components.grid.HeaderRow;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 import life.qbic.portal.sampletracking.data.ProjectRepository;
 import life.qbic.portal.sampletracking.data.SubscriptionStatusProvider;
 import life.qbic.portal.sampletracking.view.ResponsiveGrid;
 import life.qbic.portal.sampletracking.view.Spinner;
-import life.qbic.portal.sampletracking.view.projects.ProjectView.ProjectSelectionListener.ProjectSelectionEvent;
+import life.qbic.portal.sampletracking.view.projects.ProjectView.SampleViewRequestedListener.SampleViewRequested;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,7 +47,7 @@ public class ProjectView extends ProjectDesign {
 
   private final HorizontalLayout spinnerLayout;
 
-  private final List<ProjectSelectionListener> projectSelectionListeners = new ArrayList<>();
+  private final List<SampleViewRequestedListener> sampleViewRequestedListeners = new ArrayList<>();
 
 
   public ProjectView(ProjectStatusComponentProvider projectStatusComponentProvider,
@@ -65,6 +65,13 @@ public class ProjectView extends ProjectDesign {
     hideDownloadButton();
     listenToProjectSelection();
     addTooltips();
+    listenToSampleViewButton();
+  }
+
+  private void listenToSampleViewButton() {
+    this.samplesButton.addClickListener(
+        it -> projectGrid.getSelectedItems().stream().findFirst().ifPresent(
+            project -> fireSampleViewRequestedListener(new SampleViewRequested(project.code()))));
   }
 
   private void listenToProjectSelection() {
@@ -80,12 +87,14 @@ public class ProjectView extends ProjectDesign {
 
   private void clearSelectedProject() {
     hideDownloadButton();
-    fireProjectSelectionEvent(new ProjectSelectionEvent(null));
   }
 
   private void selectProject(Project project) {
     showDownloadButton();
-    fireProjectSelectionEvent(new ProjectSelectionEvent(project.code()));
+    if (project.projectStatus().totalCount() < 1) {
+      return;
+    }
+    samplesButton.setEnabled(true);
   }
 
   private void showDownloadButton() {
@@ -281,38 +290,48 @@ public class ProjectView extends ProjectDesign {
         .setDescription("Select a project to get send status updates over email.");
   }
 
-  public void addProjectSelectionListener(ProjectSelectionListener listener) {
-    if (projectSelectionListeners.contains(listener)) {
+  public void addSampleViewRequestedListener(SampleViewRequestedListener listener) {
+    if (sampleViewRequestedListeners.contains(listener)) {
       return;
     }
-    projectSelectionListeners.add(listener);
+    sampleViewRequestedListeners.add(listener);
   }
 
-  public void removeProjectSelectionListener(ProjectSelectionListener listener) {
-    projectSelectionListeners.remove(listener);
+  public void removeSampleViewRequestedListener(SampleViewRequestedListener listener) {
+    sampleViewRequestedListeners.remove(listener);
   }
 
-  private void fireProjectSelectionEvent(ProjectSelectionEvent projectSelectionEvent) {
-    projectSelectionListeners.forEach(it -> it.onProjectSelected(projectSelectionEvent));
+  private void fireSampleViewRequestedListener(SampleViewRequested event) {
+    log.info(String.format("firing event %s", event));
+    sampleViewRequestedListeners.forEach(it -> it.onSampleViewRequested(event));
   }
 
-  public interface ProjectSelectionListener {
+  @FunctionalInterface
+  public interface SampleViewRequestedListener {
 
-    class ProjectSelectionEvent {
-
+    class SampleViewRequested {
       private final String projectCode;
 
-      public ProjectSelectionEvent(String projectCode) {
+      public SampleViewRequested(String projectCode) {
         this.projectCode = projectCode;
       }
 
-      public Optional<String> projectCode() {
-        return Optional.ofNullable(projectCode);
+      public String projectCode() {
+        return projectCode;
+      }
+
+      @Override
+      public String toString() {
+        return new StringJoiner(", ", SampleViewRequested.class.getSimpleName() + "[", "]")
+            .add("projectCode='" + projectCode + "'")
+            .toString();
       }
     }
 
-    void onProjectSelected(ProjectSelectionEvent event);
+    void onSampleViewRequested(SampleViewRequested event);
+
   }
+
 
 
 }

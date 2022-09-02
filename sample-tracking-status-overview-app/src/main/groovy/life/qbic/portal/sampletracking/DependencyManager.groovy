@@ -7,6 +7,7 @@ import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.portal.sampletracking.data.*
 import life.qbic.portal.sampletracking.old.datasources.Credentials
 import life.qbic.portal.sampletracking.old.datasources.database.DatabaseSession
+import life.qbic.portal.sampletracking.view.MainView
 import life.qbic.portal.sampletracking.view.projects.ProjectStatusComponentProvider
 import life.qbic.portal.sampletracking.view.projects.ProjectView
 import life.qbic.portal.sampletracking.view.samples.SampleStatusComponentProvider
@@ -110,8 +111,7 @@ class DependencyManager {
     VerticalLayout getPortletView() {
       def projectView = new ProjectView(getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
       def sampleView = new SampleView(getSampleRepository(), getSampleStatusComponentProvider())
-      sampleView.setProjectCode("QSTTS")
-      return projectView
+      return new MainView(projectView, sampleView)
     }
 
   ProjectRepository getProjectRepository() {
