@@ -80,6 +80,11 @@ public class SampleStatusComponent extends Composite implements Comparable<Sampl
   }
 
   private void showSampleStatus(String sampleStatus) {
+    if (Objects.nonNull(loadedData) && Objects.nonNull(sampleStatus)) {
+      if (sampleStatus.equals(loadedData)) {
+        return;
+      }
+    }
     label.setValue(sampleStatus);
     getCompositionRoot().setStyleName(determineStyleName(sampleStatus));
     loadedData = sampleStatus;
@@ -87,10 +92,6 @@ public class SampleStatusComponent extends Composite implements Comparable<Sampl
 
   private void showError() {
     label.setValue("Information not available");
-  }
-
-  private void removeStyle() {
-    getCompositionRoot().removeStyleName(getCompositionRoot().getStyleName());
   }
 
   private String determineStyleName(String status) {

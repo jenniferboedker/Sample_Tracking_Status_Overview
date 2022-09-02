@@ -1,7 +1,5 @@
 package life.qbic.portal.sampletracking.data;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -31,6 +29,7 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <b>short description</b>
@@ -41,7 +40,7 @@ import org.slf4j.Logger;
  */
 public class SampleTrackingConnector implements ProjectStatusProvider, SampleStatusProvider {
 
-  private static final Logger log = getLogger(SampleTrackingConnector.class);
+  private static final Logger log = LoggerFactory.getLogger(SampleTrackingConnector.class);
 
   public final String samplesSuffix;
   public final String statusSuffix;
@@ -188,7 +187,7 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
     }
   }
 
-  private String requestSampleOverHttp(String sampleCode) {
+  private Optional<String> requestSampleOverHttp(String sampleCode) {
     String changingSampleSuffix = String.format("/%s", sampleCode);
     // uses httpclient5 https://hc.apache.org/httpcomponents-client-5.1.x/quickstart.html
     final BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
@@ -200,16 +199,20 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
       HttpGet httpGet = new HttpGet(
           serviceAddress + samplesSuffix + changingSampleSuffix + statusSuffix);
       try (CloseableHttpResponse response = httpclient.execute(httpGet)) {
+        if (response.getCode() == 404) {
+          return Optional.empty();
+        }
         if (response.getCode() != 200) {
-          throw new RuntimeException(
-              String.format("Unsuccessful response for sample %s: %s %s", sampleCode, response.getCode(),
-                  response.getReasonPhrase()));
+          log.warn(String.format("Unsuccessful response for sample %s: %s %s", sampleCode,
+              response.getCode(),
+              response.getReasonPhrase()));
+          return Optional.empty();
         }
         HttpEntity entity = response.getEntity();
         String responseBody = EntityUtils.toString(entity);
         EntityUtils.consume(entity);
 
-        return responseBody;
+        return Optional.of(responseBody);
       } catch (ParseException e) {
         throw new RuntimeException(e);
       }
@@ -219,15 +222,16 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
   }
 
   private Optional<Sample> askServiceForSample(String sampleCode) {
-    String sampleJson = requestSampleOverHttp(sampleCode);
-    if (sampleJson.isEmpty()) {
+
+    Optional<String> sampleJson = requestSampleOverHttp(sampleCode);
+    if (!sampleJson.isPresent()) {
       return Optional.empty();
     }
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.registerModule(new JavaTimeModule());
     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     try {
-      Sample sample = objectMapper.readValue(sampleJson, Sample.class);
+      Sample sample = objectMapper.readValue(sampleJson.get(), Sample.class);
       String projectCode = sampleCode.substring(0, 5);
       synchronized (cachedProjects) {
         if (cachedProjects.containsKey(projectCode)) {
