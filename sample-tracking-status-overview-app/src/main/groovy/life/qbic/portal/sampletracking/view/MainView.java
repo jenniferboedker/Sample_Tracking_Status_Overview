@@ -23,9 +23,15 @@ public class MainView extends VerticalLayout {
     sampleView.setVisible(false);
     this.setMargin(false);
     this.addComponents(projectView, sampleView);
+    makeThisScrollable();
     projectView.addSampleViewRequestedListener(
         it -> showSampleView(it.projectCode()));
     sampleView.addProjectViewRequestedListener(it -> showProjectView());
+  }
+
+  private void makeThisScrollable() {
+    this.setSizeFull();
+    this.addStyleName("scrollable-layout");
   }
 
   private void showSampleView(String projectCode) {
