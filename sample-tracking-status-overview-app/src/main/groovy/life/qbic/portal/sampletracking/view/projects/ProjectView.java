@@ -87,6 +87,7 @@ public class ProjectView extends ProjectDesign {
 
   private void clearSelectedProject() {
     hideDownloadButton();
+    samplesButton.setEnabled(false);
   }
 
   private void selectProject(Project project) {
@@ -302,7 +303,6 @@ public class ProjectView extends ProjectDesign {
   }
 
   private void fireSampleViewRequestedListener(SampleViewRequested event) {
-    log.info(String.format("firing event %s", event));
     sampleViewRequestedListeners.forEach(it -> it.onSampleViewRequested(event));
   }
 
