@@ -1,7 +1,5 @@
 package life.qbic.portal.sampletracking.data;
 
-import static org.apache.logging.log4j.LogManager.getLogger;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import life.qbic.business.project.subscribe.Subscriber;
 import life.qbic.portal.sampletracking.data.database.ConnectionProvider;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -25,7 +24,7 @@ public class SubscriptionDatabaseConnector implements SubscriptionRepository{
   private final ConnectionProvider connectionProvider;
   private final Subscriber subscriber;
 
-  private static final Logger log = getLogger(SubscriptionDatabaseConnector.class);
+  private static final Logger log = LogManager.getLogger(SubscriptionDatabaseConnector.class);
 
   public SubscriptionDatabaseConnector(ConnectionProvider connectionProvider,
       Subscriber subscriber) {
@@ -126,7 +125,7 @@ public class SubscriptionDatabaseConnector implements SubscriptionRepository{
       connection.setAutoCommit(false);
       int personId = getPersonId().orElseThrow(() -> new RuntimeException("Could not find user in the database"));
       if (!existingSubscriptionExists(connection, personId, projectCode)) {
-        return false;
+        return true;
       }
       try {
         removeSubscription(connection, personId, projectCode);
