@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @since 1.0.0
  */
-class DatabaseSession implements ConnectionProvider {
+public class DatabaseSession implements ConnectionProvider {
 
     private static final Logger log = LogManager.getLogger(DatabaseSession.class);
 
@@ -40,7 +40,7 @@ class DatabaseSession implements ConnectionProvider {
      * @param port the port on which the database is hosted
      * @param sqlDatabase the name of the database
      */
-    static void init(String user,
+    public static void init(String user,
                      String password,
                      String host,
                      String port,
@@ -85,7 +85,7 @@ class DatabaseSession implements ConnectionProvider {
      * Returns the current DatabaseSession object
      * @return the global database session
      */
-    static DatabaseSession getInstance() {
+    public static DatabaseSession getInstance() {
         if (Objects.isNull(INSTANCE)) {
             throw new RuntimeException(
                 "Call the init method first. Instance has not been initialized.");
