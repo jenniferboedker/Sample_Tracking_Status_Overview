@@ -10,6 +10,7 @@ import life.qbic.portal.sampletracking.old.datasources.Credentials
 import life.qbic.portal.sampletracking.view.MainView
 import life.qbic.portal.sampletracking.view.projects.ProjectStatusComponentProvider
 import life.qbic.portal.sampletracking.view.projects.ProjectView
+import life.qbic.portal.sampletracking.view.projects.SubscriptionCheckboxProvider
 import life.qbic.portal.sampletracking.view.samples.SampleStatusComponentProvider
 import life.qbic.portal.sampletracking.view.samples.SampleView
 import life.qbic.portal.utils.ConfigurationManager
@@ -46,6 +47,7 @@ class DependencyManager {
   private OpenBisConnector openBisConnector
   private ProjectStatusComponentProvider projectStatusComponentProvider
   private SampleStatusComponentProvider sampleStatusComponentProvider
+  private SubscriptionCheckboxProvider subscriptionCheckboxProvider
   private DummyTrackingConnector dummyTrackingConnector = new DummyTrackingConnector()
   private SampleTrackingConnector sampleTrackingConnector
   private SubscriptionDatabaseConnector subscriptionDatabaseConnector
@@ -112,7 +114,7 @@ class DependencyManager {
      * @since 1.0.0
      */
     VerticalLayout getPortletView() {
-      def projectView = new ProjectView(getSampleStatusSummaryProvider(), getSubscriptionServiceProvider(), getProjectRepository())
+      def projectView = new ProjectView(getSampleStatusSummaryProvider(), getSubscriptionRepository(), getSubscriptionCheckboxProvider(), getProjectRepository())
       def sampleView = new SampleView(getSampleRepository(), getSampleStatusComponentProvider())
       return new MainView(projectView, sampleView)
     }
@@ -150,7 +152,15 @@ class DependencyManager {
     return sampleTrackingConnector
   }
 
-  SubscriptionRepository getSubscriptionServiceProvider() {
+  SubscriptionRepository getSubscriptionRepository() {
     return subscriptionDatabaseConnector
+  }
+
+  SubscriptionCheckboxProvider getSubscriptionCheckboxProvider() {
+    if (Objects.nonNull(subscriptionCheckboxProvider)) {
+      return subscriptionCheckboxProvider
+    }
+    subscriptionCheckboxProvider = new SubscriptionCheckboxProvider(getSubscriptionRepository())
+    return subscriptionCheckboxProvider
   }
 }

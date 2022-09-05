@@ -4,7 +4,6 @@ import com.vaadin.event.selection.SingleSelectionEvent;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -40,9 +39,9 @@ public class ProjectView extends ProjectDesign {
   private static final int MIN_CODE_COLUMN_WIDTH = 100;
   private final static int MAX_CODE_COLUMN_WIDTH = 200;
 
-  private final ProjectStatusComponentProvider projectStatusComponentProvider;
   private final SubscriptionRepository subscriptionRepository;
-
+  private final ProjectStatusComponentProvider projectStatusComponentProvider;
+  private final SubscriptionCheckboxProvider subscriptionCheckboxProvider;
   protected ResponsiveGrid<Project> projectGrid;
 
   private final ProjectRepository projectRepository;
@@ -53,9 +52,11 @@ public class ProjectView extends ProjectDesign {
 
 
   public ProjectView(ProjectStatusComponentProvider projectStatusComponentProvider,
-      SubscriptionRepository subscriptionRepository, ProjectRepository projectRepository) {
+      SubscriptionRepository subscriptionRepository,
+      SubscriptionCheckboxProvider subscriptionCheckboxProvider, ProjectRepository projectRepository) {
     this.projectStatusComponentProvider = projectStatusComponentProvider;
     this.subscriptionRepository = subscriptionRepository;
+    this.subscriptionCheckboxProvider = subscriptionCheckboxProvider;
     this.projectRepository = projectRepository;
     avoidElementOverlap();
     this.projectGrid = createProjectGrid();
@@ -199,11 +200,7 @@ public class ProjectView extends ProjectDesign {
 
   private ResponsiveGrid<Project> createProjectGrid() {
     ResponsiveGrid<Project> grid = new ResponsiveGrid<>();
-    grid.addComponentColumn(it -> {
-          CheckBox checkBox = new CheckBox();
-          checkBox.setValue(it.subscribed());
-          return checkBox;
-        })
+    grid.addComponentColumn(subscriptionCheckboxProvider::getForProject)
         .setComparator((p1,p2) -> Boolean.compare(p1.subscribed(), p2.subscribed()))
         .setCaption("Subscribe")
         .setId("subscription")

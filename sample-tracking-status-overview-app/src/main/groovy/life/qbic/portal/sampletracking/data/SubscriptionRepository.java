@@ -9,10 +9,10 @@ import java.util.List;
  *
  * @since <version tag>
  */
-@FunctionalInterface
 public interface SubscriptionRepository {
 
   List<Subscription> findAll();
 
-
+  boolean add(Subscription subscription);
+  boolean remove(Subscription subscription);
 }
