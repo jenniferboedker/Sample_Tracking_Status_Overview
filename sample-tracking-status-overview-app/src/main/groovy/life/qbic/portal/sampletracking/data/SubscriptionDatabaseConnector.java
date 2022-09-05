@@ -11,6 +11,7 @@ public class SubscriptionDatabaseConnector implements SubscriptionStatusProvider
 
   @Override
   public boolean getForProject(String projectCode) {
+
     return false;
   }
 }

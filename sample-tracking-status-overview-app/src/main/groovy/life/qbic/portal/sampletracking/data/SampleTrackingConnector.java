@@ -203,10 +203,9 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
           return Optional.empty();
         }
         if (response.getCode() != 200) {
-          log.warn(String.format("Unsuccessful response for sample %s: %s %s", sampleCode,
+          throw new RuntimeException(String.format("Unsuccessful response for sample %s: %s %s", sampleCode,
               response.getCode(),
               response.getReasonPhrase()));
-          return Optional.empty();
         }
         HttpEntity entity = response.getEntity();
         String responseBody = EntityUtils.toString(entity);

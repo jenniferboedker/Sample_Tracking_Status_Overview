@@ -12,6 +12,8 @@ import life.qbic.portal.sampletracking.data.SampleStatusProvider;
 import life.qbic.portal.sampletracking.view.Spinner;
 import life.qbic.portal.sampletracking.view.projects.State;
 import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <b>short description</b>
@@ -21,6 +23,8 @@ import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
  * @since <version tag>
  */
 public class SampleStatusComponent extends Composite implements Comparable<SampleStatusComponent> {
+
+  private static final Logger log = LogManager.getLogger(SampleStatusComponent.class);
 
   private final SampleStatusProvider sampleStatusProvider;
 
@@ -64,18 +68,27 @@ public class SampleStatusComponent extends Composite implements Comparable<Sampl
     spinner.setVisible(true);
     label.setVisible(false);
     executorService.submit(() -> {
-      Optional<String> retrieved = sampleStatusProvider.getForSample(sample.code());
-      ui.access(() -> {
-        retrieved.ifPresent(it -> {
-          showSampleStatus(it);
-          sample.setSampleStatus(it);
+      try {
+        Optional<String> retrieved = sampleStatusProvider.getForSample(sample.code());
+        ui.access(() -> {
+          retrieved.ifPresent(it -> {
+            showSampleStatus(it);
+            sample.setSampleStatus(it);
+          });
+          if (!retrieved.isPresent()) {
+            showError();
+          }
+          spinner.setVisible(false);
+          label.setVisible(true);
         });
-        if (!retrieved.isPresent()) {
+      } catch (Exception e) {
+        log.error(e.getMessage(), e);
+        ui.access(() -> {
           showError();
-        }
-        spinner.setVisible(false);
-        label.setVisible(true);
-      });
+          spinner.setVisible(false);
+          label.setVisible(true);
+        });
+      }
     });
   }
 
