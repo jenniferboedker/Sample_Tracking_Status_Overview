@@ -48,6 +48,7 @@ class DependencyManager {
   private SampleStatusComponentProvider sampleStatusComponentProvider
   private DummyTrackingConnector dummyTrackingConnector = new DummyTrackingConnector()
   private SampleTrackingConnector sampleTrackingConnector
+  private SubscriptionDatabaseConnector subscriptionDatabaseConnector
 
   DependencyManager(PortalUser user) {
         portalUser = user
@@ -81,6 +82,8 @@ class DependencyManager {
         String sqlDatabase = requireNonNull(configurationManager.getMysqlDB(), "Mysql database name missing.")
 
         DatabaseSession.init(user, password, host, port, sqlDatabase)
+        subscriptionDatabaseConnector= new SubscriptionDatabaseConnector(DatabaseSession.getInstance(), subscriptionUser)
+
     }
 
   private void setupOpenBisConnection() {
@@ -147,8 +150,7 @@ class DependencyManager {
     return sampleTrackingConnector
   }
 
-  SubscriptionStatusProvider getSubscriptionServiceProvider() {
-    SubscriptionStatusProvider provider = it -> new Random().nextBoolean()
-    return provider
+  SubscriptionRepository getSubscriptionServiceProvider() {
+    return subscriptionDatabaseConnector
   }
 }

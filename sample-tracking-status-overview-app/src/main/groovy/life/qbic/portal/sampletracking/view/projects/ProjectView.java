@@ -15,8 +15,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import life.qbic.portal.sampletracking.data.ProjectRepository;
-import life.qbic.portal.sampletracking.data.SubscriptionStatusProvider;
+import life.qbic.portal.sampletracking.data.Subscription;
+import life.qbic.portal.sampletracking.data.SubscriptionRepository;
 import life.qbic.portal.sampletracking.view.ResponsiveGrid;
 import life.qbic.portal.sampletracking.view.Spinner;
 import life.qbic.portal.sampletracking.view.projects.ProjectView.SampleViewRequestedListener.SampleViewRequested;
@@ -39,7 +41,7 @@ public class ProjectView extends ProjectDesign {
   private final static int MAX_CODE_COLUMN_WIDTH = 200;
 
   private final ProjectStatusComponentProvider projectStatusComponentProvider;
-  private final SubscriptionStatusProvider subscriptionStatusProvider;
+  private final SubscriptionRepository subscriptionRepository;
 
   protected ResponsiveGrid<Project> projectGrid;
 
@@ -51,9 +53,9 @@ public class ProjectView extends ProjectDesign {
 
 
   public ProjectView(ProjectStatusComponentProvider projectStatusComponentProvider,
-      SubscriptionStatusProvider subscriptionStatusProvider, ProjectRepository projectRepository) {
+      SubscriptionRepository subscriptionRepository, ProjectRepository projectRepository) {
     this.projectStatusComponentProvider = projectStatusComponentProvider;
-    this.subscriptionStatusProvider = subscriptionStatusProvider;
+    this.subscriptionRepository = subscriptionRepository;
     this.projectRepository = projectRepository;
     avoidElementOverlap();
     this.projectGrid = createProjectGrid();
@@ -183,10 +185,11 @@ public class ProjectView extends ProjectDesign {
   }
 
   private void loadSubscriptions(List<Project> projects) {
-    projects.forEach(it -> {
-      boolean subscriptionStatus = subscriptionStatusProvider.getForProject(it.code());
-      it.setSubscribed(subscriptionStatus);
-    });
+    List<Subscription> subscriptions = subscriptionRepository.findAll();
+    List<Project> subscribedProjects = projects.stream()
+        .filter(project -> subscriptions.stream()
+            .anyMatch(subscription -> subscription.projectCode().equals(project.code()))).collect(Collectors.toList());
+    projects.forEach(it -> it.setSubscribed(subscribedProjects.contains(it)));
   }
 
   private void avoidElementOverlap() {

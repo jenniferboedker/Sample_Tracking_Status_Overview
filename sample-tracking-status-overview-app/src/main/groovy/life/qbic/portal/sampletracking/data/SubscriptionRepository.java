@@ -1,5 +1,7 @@
 package life.qbic.portal.sampletracking.data;
 
+import java.util.List;
+
 /**
  * <b>short description</b>
  *
@@ -8,8 +10,9 @@ package life.qbic.portal.sampletracking.data;
  * @since <version tag>
  */
 @FunctionalInterface
-public interface SubscriptionStatusProvider {
+public interface SubscriptionRepository {
 
-  boolean getForProject(String projectCode);
+  List<Subscription> findAll();
+
 
 }
