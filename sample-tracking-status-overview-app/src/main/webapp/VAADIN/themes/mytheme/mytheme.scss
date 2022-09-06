@@ -54,6 +54,16 @@
     text-align: center;
   }
 
+  .v-grid-row-selected .status-completed {
+    color: initial;
+  }
+  .v-grid-row-selected .status-in-progress {
+    color: initial;
+  }
+  .v-grid-row-selected .status-failed {
+    color: initial;
+  }
+
   .subscription-cell {
     text-align: center;
     min-width: 100px;
