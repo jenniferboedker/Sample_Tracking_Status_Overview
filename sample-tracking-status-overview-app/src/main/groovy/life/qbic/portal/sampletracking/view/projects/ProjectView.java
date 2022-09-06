@@ -204,6 +204,7 @@ public class ProjectView extends ProjectDesign {
         .setComparator((p1,p2) -> Boolean.compare(p1.subscribed(), p2.subscribed()))
         .setCaption("Subscribe")
         .setId("subscription")
+        .setStyleGenerator(it -> "subscription-cell")
         .setMinimumWidthFromContent(false)
         .setSortable(false)
         .setMinimumWidth(MIN_CODE_COLUMN_WIDTH)
