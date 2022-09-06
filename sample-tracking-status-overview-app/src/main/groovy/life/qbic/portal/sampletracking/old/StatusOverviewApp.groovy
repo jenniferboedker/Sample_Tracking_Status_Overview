@@ -10,9 +10,9 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Log4j2
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.portal.sampletracking.QBiCPortletUI
-import life.qbic.portal.sampletracking.old.components.StyledNotification
 import life.qbic.portal.sampletracking.old.system.SystemContext
 import life.qbic.portal.sampletracking.old.system.TestingSystemContext
+import life.qbic.portal.sampletracking.view.notifications.StyledNotification
 
 @Theme("mytheme")
 @SuppressWarnings("serial")

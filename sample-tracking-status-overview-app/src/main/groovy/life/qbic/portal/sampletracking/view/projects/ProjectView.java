@@ -51,9 +51,9 @@ public class ProjectView extends ProjectDesign {
   private final List<SampleViewRequestedListener> sampleViewRequestedListeners = new ArrayList<>();
 
 
-  public ProjectView(ProjectStatusComponentProvider projectStatusComponentProvider,
-      SubscriptionRepository subscriptionRepository,
-      SubscriptionCheckboxProvider subscriptionCheckboxProvider, ProjectRepository projectRepository) {
+  public ProjectView(ProjectRepository projectRepository,
+      SubscriptionRepository subscriptionRepository, ProjectStatusComponentProvider projectStatusComponentProvider,
+      SubscriptionCheckboxProvider subscriptionCheckboxProvider) {
     this.projectStatusComponentProvider = projectStatusComponentProvider;
     this.subscriptionRepository = subscriptionRepository;
     this.subscriptionCheckboxProvider = subscriptionCheckboxProvider;

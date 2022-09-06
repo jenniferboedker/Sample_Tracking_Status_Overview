@@ -8,6 +8,8 @@ import life.qbic.portal.sampletracking.data.*
 import life.qbic.portal.sampletracking.data.database.DatabaseSession
 import life.qbic.portal.sampletracking.old.datasources.Credentials
 import life.qbic.portal.sampletracking.view.MainView
+import life.qbic.portal.sampletracking.view.notifications.NotificationCenter
+import life.qbic.portal.sampletracking.view.notifications.NotificationHandler
 import life.qbic.portal.sampletracking.view.projects.ProjectStatusComponentProvider
 import life.qbic.portal.sampletracking.view.projects.ProjectView
 import life.qbic.portal.sampletracking.view.projects.SubscriptionCheckboxProvider
@@ -48,9 +50,9 @@ class DependencyManager {
   private ProjectStatusComponentProvider projectStatusComponentProvider
   private SampleStatusComponentProvider sampleStatusComponentProvider
   private SubscriptionCheckboxProvider subscriptionCheckboxProvider
-  private DummyTrackingConnector dummyTrackingConnector = new DummyTrackingConnector()
   private SampleTrackingConnector sampleTrackingConnector
   private SubscriptionDatabaseConnector subscriptionDatabaseConnector
+  private NotificationCenter notificationCenter
 
   DependencyManager(PortalUser user) {
         portalUser = user
@@ -114,14 +116,12 @@ class DependencyManager {
      * @since 1.0.0
      */
     VerticalLayout getPortletView() {
-      def projectView = new ProjectView(getSampleStatusSummaryProvider(), getSubscriptionRepository(), getSubscriptionCheckboxProvider(), getProjectRepository())
+      def projectView = new ProjectView(getProjectRepository(), getSubscriptionRepository(), getSampleStatusSummaryProvider(), getSubscriptionCheckboxProvider())
       def sampleView = new SampleView(getSampleRepository(), getSampleStatusComponentProvider())
-      return new MainView(projectView, sampleView)
+      return new MainView(projectView, sampleView, notificationCenter)
     }
 
   ProjectRepository getProjectRepository() {
-//    ProjectRepository projectRepository = () -> [new Project("QSTTS", "bla"), new Project("QABCD", "bla 2")]
-//    return projectRepository
     return openBisConnector
   }
 
@@ -160,7 +160,15 @@ class DependencyManager {
     if (Objects.nonNull(subscriptionCheckboxProvider)) {
       return subscriptionCheckboxProvider
     }
-    subscriptionCheckboxProvider = new SubscriptionCheckboxProvider(getSubscriptionRepository())
+    subscriptionCheckboxProvider = new SubscriptionCheckboxProvider(getSubscriptionRepository(), getNotificationHandler())
     return subscriptionCheckboxProvider
+  }
+
+  NotificationHandler getNotificationHandler() {
+    if (Objects.nonNull(notificationCenter)) {
+      return notificationCenter
+    }
+    notificationCenter = new NotificationCenter()
+    return notificationCenter
   }
 }

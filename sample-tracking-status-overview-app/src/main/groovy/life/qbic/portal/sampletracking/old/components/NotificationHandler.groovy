@@ -5,6 +5,7 @@ import com.vaadin.ui.Notification.Type
 import groovy.util.logging.Log4j2
 import life.qbic.portal.sampletracking.old.communication.Topic
 import life.qbic.portal.sampletracking.old.communication.notification.NotificationService
+import life.qbic.portal.sampletracking.view.notifications.StyledNotification
 
 /**
  * <p>Subscribes to notifications and displays them to the user.</p>

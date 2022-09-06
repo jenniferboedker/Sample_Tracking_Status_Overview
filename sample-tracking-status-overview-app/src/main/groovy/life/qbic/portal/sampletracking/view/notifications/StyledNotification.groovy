@@ -1,4 +1,4 @@
-package life.qbic.portal.sampletracking.old.components
+package life.qbic.portal.sampletracking.view.notifications
 
 import com.vaadin.shared.Position
 import com.vaadin.ui.Notification
