@@ -77,7 +77,9 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository {
     } else {
       SampleSearchCriteria sampleSearchCriteria = new SampleSearchCriteria();
       sampleSearchCriteria.withCode().thatStartsWith(projectCode);
+      sampleSearchCriteria.withType().withCode().thatEquals("Q_TEST_SAMPLE");
       SampleFetchOptions fetchOptions = new SampleFetchOptions();
+      fetchOptions.withType();
       fetchOptions.withProperties();
       SearchResult<ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample> sampleSearchResult = api.searchSamples(
           sessionToken, sampleSearchCriteria, fetchOptions);
