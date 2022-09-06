@@ -2,11 +2,10 @@ package life.qbic.portal.sampletracking
 
 import com.vaadin.ui.VerticalLayout
 import groovy.transform.CompileStatic
-import life.qbic.business.project.subscribe.Subscriber
+import life.qbic.business.subscribe.Subscriber
 import life.qbic.datamodel.dtos.portal.PortalUser
 import life.qbic.portal.sampletracking.data.*
 import life.qbic.portal.sampletracking.data.database.DatabaseSession
-import life.qbic.portal.sampletracking.old.datasources.Credentials
 import life.qbic.portal.sampletracking.view.MainView
 import life.qbic.portal.sampletracking.view.notifications.NotificationCenter
 import life.qbic.portal.sampletracking.view.notifications.NotificationHandler

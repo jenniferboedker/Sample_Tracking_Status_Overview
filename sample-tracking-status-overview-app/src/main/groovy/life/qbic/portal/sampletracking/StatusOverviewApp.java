@@ -6,8 +6,8 @@ import com.vaadin.ui.Layout;
 import java.util.Objects;
 import java.util.Optional;
 import life.qbic.datamodel.dtos.portal.PortalUser;
-import life.qbic.portal.sampletracking.old.system.SystemContext;
-import life.qbic.portal.sampletracking.old.system.TestingSystemContext;
+import life.qbic.portal.sampletracking.system.SystemContext;
+import life.qbic.portal.sampletracking.system.TestingSystemContext;
 
 /**
  * <b>short description</b>

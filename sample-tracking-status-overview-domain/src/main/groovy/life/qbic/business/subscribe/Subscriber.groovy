@@ -1,4 +1,4 @@
-package life.qbic.business.project.subscribe
+package life.qbic.business.subscribe
 
 import groovy.transform.EqualsAndHashCode
 

@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import life.qbic.business.project.subscribe.Subscriber;
+import life.qbic.business.subscribe.Subscriber;
 import life.qbic.portal.sampletracking.data.database.ConnectionProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
