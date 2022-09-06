@@ -6,7 +6,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import life.qbic.business.samples.download.DownloadManifest;
+import life.qbic.business.samples.download.DownloadManifestFormatter;
 import life.qbic.portal.sampletracking.old.datasources.Credentials;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.ProjectStatus;
 import org.apache.hc.client5.http.auth.AuthScope;
@@ -38,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @since <version tag>
  */
-public class SampleTrackingConnector implements ProjectStatusProvider, SampleStatusProvider {
+public class SampleTrackingConnector implements ProjectStatusProvider, SampleStatusProvider, DownloadManifestProvider {
 
   private static final Logger log = LoggerFactory.getLogger(SampleTrackingConnector.class);
 
@@ -58,6 +63,18 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
     this.serviceAddress = Objects.requireNonNull(serviceUrlBase);
     this.serviceUser = Objects.requireNonNull(credentials.getUser());
     this.userPass = Objects.requireNonNull(credentials.getPassword());
+  }
+
+  @Override
+  public InputStream getManifestForProject(String projectCode) {
+    if (!cachedProjects.containsKey(projectCode)) {
+      return new ByteArrayInputStream("".getBytes());
+    }
+    List<String> sampleCodes = cachedProjects.get(projectCode).stream()
+        .filter(sample -> sample.status.equals("DATA_AVAILABLE"))
+        .map(Sample::code).collect(Collectors.toList());
+    DownloadManifest downloadManifest = DownloadManifest.from(sampleCodes);
+    return new ByteArrayInputStream(DownloadManifestFormatter.format(downloadManifest).getBytes());
   }
 
   private static class Project extends ArrayList<Sample> {

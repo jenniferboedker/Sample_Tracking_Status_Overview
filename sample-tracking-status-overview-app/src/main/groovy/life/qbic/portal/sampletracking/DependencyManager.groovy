@@ -116,7 +116,7 @@ class DependencyManager {
      * @since 1.0.0
      */
     VerticalLayout getPortletView() {
-      def projectView = new ProjectView(getProjectRepository(), getSubscriptionRepository(), getSampleStatusSummaryProvider(), getSubscriptionCheckboxProvider())
+      def projectView = new ProjectView(getProjectRepository(), getSubscriptionRepository(), getSampleStatusSummaryProvider(), getSubscriptionCheckboxProvider(), getDownloadManifestProvider())
       def sampleView = new SampleView(getSampleRepository(), getSampleStatusComponentProvider())
       return new MainView(projectView, sampleView, notificationCenter)
     }
@@ -170,5 +170,9 @@ class DependencyManager {
     }
     notificationCenter = new NotificationCenter()
     return notificationCenter
+  }
+
+  DownloadManifestProvider getDownloadManifestProvider() {
+    return sampleTrackingConnector
   }
 }

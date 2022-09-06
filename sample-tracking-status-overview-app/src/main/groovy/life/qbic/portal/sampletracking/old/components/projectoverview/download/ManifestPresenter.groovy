@@ -2,6 +2,8 @@ package life.qbic.portal.sampletracking.old.components.projectoverview.download
 
 import life.qbic.business.OutputException
 import life.qbic.business.samples.download.DownloadSamplesOutput
+import life.qbic.portal.sampletracking.data.download.DownloadManifest
+import life.qbic.portal.sampletracking.data.download.DownloadManifestFormatter
 import life.qbic.portal.sampletracking.old.communication.notification.NotificationService
 import life.qbic.portal.sampletracking.old.components.ViewModel
 

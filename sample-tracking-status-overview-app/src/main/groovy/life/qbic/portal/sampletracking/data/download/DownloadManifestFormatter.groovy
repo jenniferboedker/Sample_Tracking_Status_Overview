@@ -1,4 +1,4 @@
-package life.qbic.portal.sampletracking.old.components.projectoverview.download
+package life.qbic.portal.sampletracking.data.download
 
 /**
  * <b>Formatter for DownloadManifest</b>
