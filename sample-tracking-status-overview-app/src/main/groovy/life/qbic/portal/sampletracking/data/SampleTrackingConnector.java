@@ -287,7 +287,7 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
       return new ProjectStatus(totalCount,
           receivedCount + sampleQcFailedCount + sampleQcPassedCount + libraryPreparedCount + dataAvailableCount,
           sampleQcPassedCount + libraryPreparedCount + dataAvailableCount,
-          sampleQcFailedCount + libraryPreparedCount + dataAvailableCount,
+          sampleQcFailedCount,
           libraryPreparedCount + dataAvailableCount,
           dataAvailableCount,
           lastModified);
