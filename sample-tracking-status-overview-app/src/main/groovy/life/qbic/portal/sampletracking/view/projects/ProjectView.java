@@ -308,6 +308,16 @@ public class ProjectView extends ProjectDesign {
     HorizontalLayout libraryPrepFinishedLayout = new HorizontalLayout(libraryPrepFinished);
     HorizontalLayout dataAvailableLayout = new HorizontalLayout(dataAvailable);
 
+    samplesReceivedLayout.setDescription("Number of samples that arrived in the sequencing facility.");
+    samplesPassedQcLayout.setDescription("Number of samples that passed quality control.");
+    libraryPrepFinishedLayout.setDescription("Number of samples where library preparation has finished.");
+    dataAvailableLayout.setDescription("Number of available raw datasets.");
+
+    samplesReceivedLayout.addStyleName("header-with-tooltip");
+    samplesPassedQcLayout.addStyleName("header-with-tooltip");
+    libraryPrepFinishedLayout.addStyleName("header-with-tooltip");
+    dataAvailableLayout.addStyleName("header-with-tooltip");
+
     samplesReceivedLayout.setComponentAlignment(samplesReceived, Alignment.MIDDLE_CENTER);
     samplesPassedQcLayout.setComponentAlignment(samplesPassedQc, Alignment.MIDDLE_CENTER);
     libraryPrepFinishedLayout.setComponentAlignment(libraryPrepFinished, Alignment.MIDDLE_CENTER);
