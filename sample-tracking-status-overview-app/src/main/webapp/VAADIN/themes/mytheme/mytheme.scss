@@ -41,17 +41,14 @@
 
   .status-completed {
     background-color: #31c44a;
-    text-align: center;
   }
 
   .status-in-progress {
     background-color: #EDEDED;
-    text-align: center;
   }
 
   .status-failed {
     background-color: #fc4c4c;
-    text-align: center;
   }
 
   .v-grid-row-selected .status-completed {
@@ -64,10 +61,6 @@
     color: initial;
   }
 
-  .subscription-cell {
-    text-align: center;
-    min-width: 100px;
-  }
 
   /* Insert your theme rules here */
   .portlet-footer {
@@ -91,6 +84,41 @@
 
   .header-with-tooltip {
     cursor: help;
+  }
+
+  .subscription-cell {
+    width: 100px;
+  }
+
+  .title-cell {
+    max-width: 40%;
+  }
+
+  .code-cell {
+    min-width: 200px;
+    max-width: 250px;
+  }
+
+  .v-grid-cell .status-cell, .v-grid-header .status-cell {
+    margin: 0 1px;
+    width: 150px;
+  }
+
+  .v-grid-cell.component-cell {
+    text-align: center;
+    text-align-last: center;
+  }
+
+  .v-grid-cell.status-cell, .v-grid-header .status-cell {
+    padding: 0;
+  }
+
+  .v-grid-cell.status-header {
+    padding: 0;
+  }
+
+  .component-wrap {
+
   }
 
   .backColor {

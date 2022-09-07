@@ -1,6 +1,6 @@
 package life.qbic.portal.sampletracking.view.projects;
 
-import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -45,10 +45,6 @@ public class ProjectStatusComponent extends Composite {
     this.trackingStatusProvider = trackingStatusProvider;
 
     spinner = new Spinner();
-    HorizontalLayout panelContent = new HorizontalLayout();
-    panelContent.setMargin(false);
-    panelContent.addComponent(spinner);
-    panelContent.setComponentAlignment(spinner, Alignment.MIDDLE_CENTER);
 
     receivedCountLabel = new Label();
     sampleQcCountLabel = new Label();
@@ -62,37 +58,51 @@ public class ProjectStatusComponent extends Composite {
     dataAvailableLayout = new HorizontalLayout(
         dataAvailableCountLabel);
 
-    receivedLayout.setComponentAlignment(receivedCountLabel, Alignment.TOP_CENTER);
-    sampleQcLayout.setComponentAlignment(sampleQcCountLabel, Alignment.TOP_CENTER);
-    libraryPreparedLayout.setComponentAlignment(libraryPreparedCountLabel, Alignment.TOP_CENTER);
-    dataAvailableLayout.setComponentAlignment(dataAvailableCountLabel, Alignment.TOP_CENTER);
+//    receivedLayout.setComponentAlignment(receivedCountLabel, Alignment.TOP_CENTER);
+//    sampleQcLayout.setComponentAlignment(sampleQcCountLabel, Alignment.TOP_CENTER);
+//    libraryPreparedLayout.setComponentAlignment(libraryPreparedCountLabel, Alignment.TOP_CENTER);
+//    dataAvailableLayout.setComponentAlignment(dataAvailableCountLabel, Alignment.TOP_CENTER);
 
-    receivedLayout.setMargin(false);
-    sampleQcLayout.setMargin(false);
-    libraryPreparedLayout.setMargin(false);
-    dataAvailableLayout.setMargin(false);
+    receivedLayout.setMargin(false); //determined by css
+    sampleQcLayout.setMargin(false); //determined by css
+    libraryPreparedLayout.setMargin(false); //determined by css
+    dataAvailableLayout.setMargin(false); //determined by css
 
-    receivedLayout.setWidth(COLUMN_WIDTH, Unit.PIXELS);
-    sampleQcLayout.setWidth(COLUMN_WIDTH, Unit.PIXELS);
-    libraryPreparedLayout.setWidth(COLUMN_WIDTH, Unit.PIXELS);
-    dataAvailableLayout.setWidth(COLUMN_WIDTH, Unit.PIXELS);
+    receivedLayout.addStyleName("status-cell");
+    sampleQcLayout.addStyleName("status-cell");
+    libraryPreparedLayout.addStyleName("status-cell");
+    dataAvailableLayout.addStyleName("status-cell");
+
+    receivedLayout.setWidthUndefined();
+    sampleQcLayout.setWidthUndefined();
+    libraryPreparedLayout.setWidthUndefined();
+    dataAvailableLayout.setWidthUndefined();
 
     statusLayout = new HorizontalLayout();
     statusLayout.setMargin(false);
-    statusLayout.setSpacing(true);
+    statusLayout.setSpacing(false);
     statusLayout.addComponents(receivedLayout,
         sampleQcLayout,
         libraryPreparedLayout,
         dataAvailableLayout);
 
-    statusLayout.setWidth(4 * COLUMN_WIDTH, Unit.PIXELS);
-    panelContent.addComponents(statusLayout);
-    setCompositionRoot(panelContent);
-    errorMessage = new Label("Information not available");
-    panelContent.addComponent(errorMessage);
-    panelContent.setComponentAlignment(errorMessage, Alignment.TOP_CENTER);
+    statusLayout.setWidthUndefined();
 
-    panelContent.setWidthFull();
+    errorMessage = new Label("Information not available");
+
+    HorizontalLayout panelContent = new HorizontalLayout();
+    panelContent.setMargin(false); // determined by CSS
+    panelContent.setSpacing(false); // determined by CSS
+    panelContent.addComponent(spinner);
+//    panelContent.setComponentAlignment(spinner, Alignment.TOP_CENTER);
+
+    panelContent.addComponent(statusLayout);
+//    panelContent.setComponentAlignment(statusLayout, Alignment.TOP_CENTER);
+    panelContent.addComponent(errorMessage);
+//    panelContent.setComponentAlignment(errorMessage, Alignment.TOP_CENTER);
+
+    setCompositionRoot(panelContent);
+    panelContent.setWidthUndefined();
 
   }
 
@@ -151,14 +161,19 @@ public class ProjectStatusComponent extends Composite {
         projectStatus.countDataAvailable(),
         projectStatus.totalCount()));
 
-    receivedLayout.setStyleName(getStyleName(projectStatus.countReceived(), 0,
+    removeStateStyles(receivedCountLabel);
+    removeStateStyles(sampleQcCountLabel);
+    removeStateStyles(libraryPreparedCountLabel);
+    removeStateStyles(dataAvailableCountLabel);
+
+    receivedLayout.addStyleName(getStyleName(projectStatus.countReceived(), 0,
         projectStatus.totalCount()));
-    sampleQcLayout.setStyleName(getStyleName(projectStatus.countPassedQc(),
+    sampleQcLayout.addStyleName(getStyleName(projectStatus.countPassedQc(),
         projectStatus.countFailedQc(),
         projectStatus.totalCount()));
-    libraryPreparedLayout.setStyleName(getStyleName(projectStatus.countLibraryPrepared(), 0,
+    libraryPreparedLayout.addStyleName(getStyleName(projectStatus.countLibraryPrepared(), 0,
         projectStatus.totalCount()));
-    dataAvailableLayout.setStyleName(getStyleName(projectStatus.countDataAvailable(), 0,
+    dataAvailableLayout.addStyleName(getStyleName(projectStatus.countDataAvailable(), 0,
         projectStatus.totalCount()));
 
     receivedCountLabel.setSizeUndefined();
@@ -166,6 +181,10 @@ public class ProjectStatusComponent extends Composite {
     libraryPreparedCountLabel.setSizeUndefined();
     dataAvailableCountLabel.setSizeUndefined();
     loadedData = projectStatus;
+  }
+
+  private void removeStateStyles(Component component) {
+    component.removeStyleNames(State.FAILED.getCssClass(), State.IN_PROGRESS.getCssClass(), State.COMPLETED.getCssClass());
   }
 
   private String getStyleName(int passingCount, int failingCount, int totalCount) {

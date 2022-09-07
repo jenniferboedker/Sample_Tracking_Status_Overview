@@ -14,6 +14,7 @@ import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.components.grid.HeaderCell;
 import com.vaadin.ui.components.grid.HeaderRow;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +43,6 @@ import org.apache.logging.log4j.Logger;
 public class ProjectView extends ProjectDesign {
 
   private static final Logger log = LogManager.getLogger(ProjectView.class);
-
-  private static final int MIN_CODE_COLUMN_WIDTH = 100;
-  private final static int MAX_CODE_COLUMN_WIDTH = 200;
 
   private final SubscriptionRepository subscriptionRepository;
   private final ProjectStatusComponentProvider projectStatusComponentProvider;
@@ -254,17 +252,16 @@ public class ProjectView extends ProjectDesign {
         .setComparator((p1, p2) -> Boolean.compare(p1.subscribed(), p2.subscribed()))
         .setCaption("Subscribe")
         .setId("subscription")
-        .setStyleGenerator(it -> "subscription-cell")
+        .setStyleGenerator(it -> "component-cell subscription-cell")
         .setMinimumWidthFromContent(false)
-        .setSortable(false)
-        .setMinimumWidth(MIN_CODE_COLUMN_WIDTH)
-        .setMaximumWidth(MAX_CODE_COLUMN_WIDTH);
+        .setSortable(false);
 
     grid.addColumn(Project::title)
         .setCaption("Project Title")
         .setId("title")
         .setMinimumWidthFromContent(false)
         .setExpandRatio(1)
+        .setStyleGenerator(it -> "title-cell")
         .setSortable(false);
 
     grid.addColumn(Project::code)
@@ -272,13 +269,13 @@ public class ProjectView extends ProjectDesign {
         .setId("code")
         .setMinimumWidthFromContent(false)
         .setSortable(false)
-        .setMinimumWidth(MIN_CODE_COLUMN_WIDTH)
-        .setMaximumWidth(MAX_CODE_COLUMN_WIDTH);
+        .setStyleGenerator(it -> "code-cell");
 
     grid.addComponentColumn(projectStatusComponentProvider::getForProject)
         .setId("projectStatus")
         .setHandleWidgetEvents(true)
         .setMinimumWidth(4 * ProjectStatusComponent.COLUMN_WIDTH)
+        .setStyleGenerator(it -> "component-cell status-cell")
         .setSortable(false);
 
     grid.addColumn(it -> it.projectStatus().getLastModified())
@@ -288,15 +285,25 @@ public class ProjectView extends ProjectDesign {
         .setId("lastModified");
 
     grid.setSizeFull();
-    grid.getHeaderRow(0).getCell("projectStatus").setComponent(getProjectStatusHeader());
+    HeaderCell statusHeader = grid.getHeaderRow(0).getCell("projectStatus");
+    HeaderCell titleHeader = grid.getHeaderRow(0).getCell("title");
+    HeaderCell codeHeader = grid.getHeaderRow(0).getCell("code");
+    HeaderCell subscriptionHeader = grid.getHeaderRow(0).getCell("subscription");
+
+    statusHeader.setComponent(getProjectStatusHeader());
+    statusHeader.setStyleName(statusHeader.getStyleName() + " " + "component-cell");
+    titleHeader.setStyleName(statusHeader.getStyleName() + " " + "title-cell");
+    codeHeader.setStyleName(statusHeader.getStyleName() + " " + "code-cell");
+    subscriptionHeader.setStyleName(
+        statusHeader.getStyleName() + " " + "component-cell subscription-cell");
     grid.setSelectionMode(SelectionMode.SINGLE);
     return grid;
   }
 
   private static HorizontalLayout getProjectStatusHeader() {
     HorizontalLayout layout = new HorizontalLayout();
-    layout.setMargin(false);
-    layout.setSpacing(false);
+    layout.setMargin(false); //determined by CSS
+    layout.setSpacing(false); //determined by CSS
 
     Label samplesReceived = new Label("Samples Received");
     Label samplesPassedQc = new Label("Samples Passed QC");
@@ -318,33 +325,39 @@ public class ProjectView extends ProjectDesign {
     libraryPrepFinishedLayout.addStyleName("header-with-tooltip");
     dataAvailableLayout.addStyleName("header-with-tooltip");
 
+    samplesReceivedLayout.addStyleName("status-cell");
+    samplesPassedQcLayout.addStyleName("status-cell");
+    libraryPrepFinishedLayout.addStyleName("status-cell");
+    dataAvailableLayout.addStyleName("status-cell");
+
     samplesReceivedLayout.setComponentAlignment(samplesReceived, Alignment.MIDDLE_CENTER);
     samplesPassedQcLayout.setComponentAlignment(samplesPassedQc, Alignment.MIDDLE_CENTER);
     libraryPrepFinishedLayout.setComponentAlignment(libraryPrepFinished, Alignment.MIDDLE_CENTER);
     dataAvailableLayout.setComponentAlignment(dataAvailable, Alignment.MIDDLE_CENTER);
 
-    samplesReceivedLayout.setMargin(false);
-    samplesPassedQcLayout.setMargin(false);
-    libraryPrepFinishedLayout.setMargin(false);
-    dataAvailableLayout.setMargin(false);
+    samplesReceivedLayout.setMargin(false); // determined by CSS
+    samplesPassedQcLayout.setMargin(false); // determined by CSS
+    libraryPrepFinishedLayout.setMargin(false); // determined by CSS
+    dataAvailableLayout.setMargin(false); // determined by CSS
 
-    samplesReceivedLayout.setSpacing(false);
-    samplesPassedQcLayout.setSpacing(false);
-    libraryPrepFinishedLayout.setSpacing(false);
-    dataAvailableLayout.setSpacing(false);
+    samplesReceivedLayout.setSpacing(false); // determined by CSS
+    samplesPassedQcLayout.setSpacing(false); // determined by CSS
+    libraryPrepFinishedLayout.setSpacing(false); // determined by CSS
+    dataAvailableLayout.setSpacing(false); // determined by CSS
 
     samplesReceivedLayout.setSizeUndefined();
     samplesPassedQcLayout.setSizeUndefined();
     libraryPrepFinishedLayout.setSizeUndefined();
     dataAvailableLayout.setSizeUndefined();
 
-    samplesReceived.setWidth(ProjectStatusComponent.COLUMN_WIDTH, Unit.PIXELS);
-    samplesPassedQc.setWidth(ProjectStatusComponent.COLUMN_WIDTH, Unit.PIXELS);
-    libraryPrepFinished.setWidth(ProjectStatusComponent.COLUMN_WIDTH, Unit.PIXELS);
-    dataAvailable.setWidth(ProjectStatusComponent.COLUMN_WIDTH, Unit.PIXELS);
+    samplesReceived.setWidthUndefined();
+    samplesPassedQc.setWidthUndefined();
+    libraryPrepFinished.setWidthUndefined();
+    dataAvailable.setWidthUndefined();
 
     layout.addComponents(samplesReceivedLayout, samplesPassedQcLayout, libraryPrepFinishedLayout,
         dataAvailableLayout);
+    layout.setWidthUndefined();
     return layout;
   }
 
