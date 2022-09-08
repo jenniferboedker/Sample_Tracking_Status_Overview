@@ -117,10 +117,6 @@
     padding: 0;
   }
 
-  .component-wrap {
-
-  }
-
   .backColor {
     background: grey;
   }
@@ -133,10 +129,5 @@
   .responsive-grid-layout {
     min-width: 1000px;
     display: block;
-  }
-
-  /* Style to cut off cells if their content would expand the cell above 40% of the viewWidth*/
-  .cell-max-width {
-    max-width: 40%;
   }
 }

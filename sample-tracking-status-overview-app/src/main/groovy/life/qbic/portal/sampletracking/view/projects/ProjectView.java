@@ -253,6 +253,7 @@ public class ProjectView extends ProjectDesign {
         .setCaption("Subscribe")
         .setId("subscription")
         .setStyleGenerator(it -> "component-cell subscription-cell")
+        .setResizable(false)
         .setSortable(false);
 
     grid.addColumn(Project::title)
@@ -260,11 +261,14 @@ public class ProjectView extends ProjectDesign {
         .setId("title")
         .setExpandRatio(1)
         .setStyleGenerator(it -> "title-cell")
+        .setDescriptionGenerator(Project::title)
+        .setResizable(false)
         .setSortable(false);
 
     grid.addColumn(Project::code)
         .setCaption("Project Code")
         .setId("code")
+        .setResizable(false)
         .setSortable(false)
         .setStyleGenerator(it -> "code-cell");
 
@@ -272,12 +276,14 @@ public class ProjectView extends ProjectDesign {
         .setId("projectStatus")
         .setHandleWidgetEvents(true)
         .setStyleGenerator(it -> "component-cell status-cell")
+        .setResizable(false)
         .setSortable(false);
 
     grid.addColumn(it -> it.projectStatus().getLastModified())
         .setComparator((p1, p2) -> p1.projectStatus().getLastModified()
             .compareTo(p2.projectStatus().getLastModified()))
         .setHidden(true)
+        .setResizable(false)
         .setId("lastModified");
 
     grid.setSizeFull();
