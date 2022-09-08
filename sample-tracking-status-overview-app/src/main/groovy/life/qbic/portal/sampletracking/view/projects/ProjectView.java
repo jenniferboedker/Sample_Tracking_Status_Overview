@@ -253,13 +253,11 @@ public class ProjectView extends ProjectDesign {
         .setCaption("Subscribe")
         .setId("subscription")
         .setStyleGenerator(it -> "component-cell subscription-cell")
-        .setMinimumWidthFromContent(false)
         .setSortable(false);
 
     grid.addColumn(Project::title)
         .setCaption("Project Title")
         .setId("title")
-        .setMinimumWidthFromContent(false)
         .setExpandRatio(1)
         .setStyleGenerator(it -> "title-cell")
         .setSortable(false);
@@ -267,14 +265,12 @@ public class ProjectView extends ProjectDesign {
     grid.addColumn(Project::code)
         .setCaption("Project Code")
         .setId("code")
-        .setMinimumWidthFromContent(false)
         .setSortable(false)
         .setStyleGenerator(it -> "code-cell");
 
     grid.addComponentColumn(projectStatusComponentProvider::getForProject)
         .setId("projectStatus")
         .setHandleWidgetEvents(true)
-        .setMinimumWidth(4 * ProjectStatusComponent.COLUMN_WIDTH)
         .setStyleGenerator(it -> "component-cell status-cell")
         .setSortable(false);
 
@@ -292,8 +288,8 @@ public class ProjectView extends ProjectDesign {
 
     statusHeader.setComponent(getProjectStatusHeader());
     statusHeader.setStyleName(statusHeader.getStyleName() + " " + "component-cell");
-    titleHeader.setStyleName(statusHeader.getStyleName() + " " + "title-cell");
-    codeHeader.setStyleName(statusHeader.getStyleName() + " " + "code-cell");
+    titleHeader.setStyleName(titleHeader.getStyleName() + " " + "title-cell");
+    codeHeader.setStyleName(codeHeader.getStyleName() + " " + "code-cell");
     subscriptionHeader.setStyleName(
         statusHeader.getStyleName() + " " + "component-cell subscription-cell");
     grid.setSelectionMode(SelectionMode.SINGLE);
@@ -372,10 +368,6 @@ public class ProjectView extends ProjectDesign {
       return;
     }
     sampleViewRequestedListeners.add(listener);
-  }
-
-  public void removeSampleViewRequestedListener(SampleViewRequestedListener listener) {
-    sampleViewRequestedListeners.remove(listener);
   }
 
   private void fireSampleViewRequestedListener(SampleViewRequested event) {
