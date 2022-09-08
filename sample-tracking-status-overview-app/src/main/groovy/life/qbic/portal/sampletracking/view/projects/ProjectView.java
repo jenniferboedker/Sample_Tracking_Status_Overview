@@ -137,8 +137,12 @@ public class ProjectView extends ProjectDesign {
     if (project.projectStatus().countDataAvailable() > 0) {
       showDownloadButton();
       enableDownloadButton();
+      updateDownloadableProject(project.code());
+    } else {
+      hideDownloadButton();
+      disableDownloadButton();
+      removeFileDownloaders(downloadButton);
     }
-    updateDownloadableProject(project.code());
     if (project.projectStatus().totalCount() < 1) {
       return;
     }
