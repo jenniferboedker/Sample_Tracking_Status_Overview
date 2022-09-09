@@ -64,6 +64,8 @@ public class SampleView extends SampleDesign {
     }
     this.projectCode = projectCode;
     if (this.isAttached()) {
+      searchField.clear();
+      statusComboBox.clear();
       loadSamplesForProject(projectCode);
     }
   }
@@ -107,6 +109,7 @@ public class SampleView extends SampleDesign {
   @Override
   public void attach() {
     super.attach();
+    System.out.println("isAttached() = " + isAttached());
     loadSamplesForProject(projectCode);
   }
 
