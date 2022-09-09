@@ -57,8 +57,9 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository {
           api.searchProjects(sessionToken, new ProjectSearchCriteria(), fetchOptions);
 
       List<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> projects = projectSearchResult.getObjects().stream()
-          .filter(hasValidProjectCode()).sorted(Comparator.comparing(
-              ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project::getRegistrationDate).reversed())
+          .filter(hasValidProjectCode())
+          .sorted(Comparator.comparing(
+              ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project::getModificationDate).reversed())
           .collect(Collectors.toList());
       cachedProjects.addAll(projects);
     }
