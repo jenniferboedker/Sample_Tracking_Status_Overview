@@ -58,10 +58,6 @@ public class ProjectStatusComponent extends Composite {
     dataAvailableLayout = new HorizontalLayout(
         dataAvailableCountLabel);
 
-//    receivedLayout.setComponentAlignment(receivedCountLabel, Alignment.TOP_CENTER);
-//    sampleQcLayout.setComponentAlignment(sampleQcCountLabel, Alignment.TOP_CENTER);
-//    libraryPreparedLayout.setComponentAlignment(libraryPreparedCountLabel, Alignment.TOP_CENTER);
-//    dataAvailableLayout.setComponentAlignment(dataAvailableCountLabel, Alignment.TOP_CENTER);
 
     receivedLayout.setMargin(false); //determined by css
     sampleQcLayout.setMargin(false); //determined by css
