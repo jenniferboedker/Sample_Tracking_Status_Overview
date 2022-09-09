@@ -13,11 +13,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * <b>short description</b>
+ * Connects with the database. CRUD access to persistent subscriptions.
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public class SubscriptionDatabaseConnector implements SubscriptionRepository{
 

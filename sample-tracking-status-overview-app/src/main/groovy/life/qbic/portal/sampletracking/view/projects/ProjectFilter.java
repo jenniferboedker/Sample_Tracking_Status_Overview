@@ -5,11 +5,9 @@ import life.qbic.portal.sampletracking.view.GridFilter;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
 
 /**
- * <b>short description</b>
+ * A filter for projects. This filter allows to filter for projects containing a text.
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public class ProjectFilter implements GridFilter<Project> {
 
@@ -35,11 +33,6 @@ public class ProjectFilter implements GridFilter<Project> {
       return false;
     }
     return value.toLowerCase().contains(containedText.toLowerCase());
-  }
-
-  @Override
-  public void clear() {
-    containedText = "";
   }
 
 

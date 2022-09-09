@@ -20,13 +20,6 @@ import life.qbic.datamodel.dtos.portal.PortalUser;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
 import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
 
-/**
- * <b>short description</b>
- *
- * <p>detailed description</p>
- *
- * @since <version tag>
- */
 public class OpenBisConnector implements ProjectRepository, SampleRepository {
 
   private final String sessionToken;

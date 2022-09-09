@@ -33,13 +33,6 @@ import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * <b>short description</b>
- *
- * <p>detailed description</p>
- *
- * @since <version tag>
- */
 public class ProjectView extends ProjectDesign {
 
   private static final Logger log = LogManager.getLogger(ProjectView.class);

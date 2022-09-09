@@ -15,13 +15,6 @@ import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * <b>short description</b>
- *
- * <p>detailed description</p>
- *
- * @since <version tag>
- */
 public class SampleStatusComponent extends Composite implements Comparable<SampleStatusComponent> {
 
   private static final Logger log = LogManager.getLogger(SampleStatusComponent.class);

@@ -4,13 +4,17 @@ import java.util.Optional;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.ProjectStatus;
 
 /**
- * <b>short description</b>
+ * Provides project statuses for projects
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public interface ProjectStatusProvider {
+
+  /**
+   * Provide the project status for a project
+   * @param projectCode the project code
+   * @return the project status if exists, Optional::empty otherwise.
+   */
   Optional<ProjectStatus> getForProject(String projectCode);
 
 }

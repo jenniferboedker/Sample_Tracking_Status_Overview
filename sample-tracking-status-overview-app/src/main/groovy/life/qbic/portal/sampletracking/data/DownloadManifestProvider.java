@@ -1,16 +1,19 @@
 package life.qbic.portal.sampletracking.data;
 
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 
 /**
- * <b>short description</b>
+ * Provides a {@link life.qbic.business.download.DownloadManifest} given a set of properties.
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public interface DownloadManifestProvider {
 
-  InputStream getManifestForProject(String projectCode);
+  /**
+   * Provides a download manifest as input stream given a project code.
+   * @param projectCode the project code for the provided manifest
+   * @return an byte array input stream containing the manifest
+   */
+  ByteArrayInputStream getManifestForProject(String projectCode);
 
 }

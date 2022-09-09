@@ -1,19 +1,22 @@
 package life.qbic.portal.sampletracking.view.notifications;
 
 /**
- * <b>short description</b>
+ * Handles notifications of interest to the user
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public interface NotificationHandler {
 
-  enum NotificationStyle {
+  enum NotificationType {
     SUCCESS,
     FAILURE,
     INFO
   }
 
-  void handleNotification(String message, NotificationStyle notificationStyle);
+  /**
+   * handles notifications and makes the user aware of them
+   * @param message the message to notify about
+   * @param notificationType the notification type
+   */
+  void handleNotification(String message, NotificationType notificationType);
 }

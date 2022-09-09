@@ -3,11 +3,9 @@ package life.qbic.portal.sampletracking.view.projects.viewmodel;
 import java.time.Instant;
 
 /**
- * <b>short description</b>
+ * The status of a project. Contains aggregated information about the status of all samples.
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public class ProjectStatus {
 

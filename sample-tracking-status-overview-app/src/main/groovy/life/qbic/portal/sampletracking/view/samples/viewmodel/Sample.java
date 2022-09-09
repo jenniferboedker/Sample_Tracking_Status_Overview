@@ -1,11 +1,9 @@
 package life.qbic.portal.sampletracking.view.samples.viewmodel;
 
 /**
- * <b>short description</b>
+ * <p>The view model for a sample. It holds all information related to a sample that is relevant for display.</p>
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public class Sample {
 

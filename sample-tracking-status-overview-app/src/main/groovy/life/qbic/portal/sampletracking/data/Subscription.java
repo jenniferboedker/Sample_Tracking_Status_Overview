@@ -3,11 +3,9 @@ package life.qbic.portal.sampletracking.data;
 import java.util.Objects;
 
 /**
- * <b>short description</b>
+ * A subscription ot a project. Contains information associated to the subscription.
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public class Subscription {
   private final String projectCode;

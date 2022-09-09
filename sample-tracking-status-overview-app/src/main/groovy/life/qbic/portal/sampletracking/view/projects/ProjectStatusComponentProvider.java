@@ -7,11 +7,9 @@ import life.qbic.portal.sampletracking.data.ProjectStatusProvider;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
 
 /**
- * <b>short description</b>
+ * Provides {@link ProjectStatusComponent}s. Caches components to prevent duplicate creation.
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public class ProjectStatusComponentProvider {
   private final ExecutorService executorService;

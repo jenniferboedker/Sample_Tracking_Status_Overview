@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,11 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <b>short description</b>
+ * Connects to the sample tracking service.
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public class SampleTrackingConnector implements ProjectStatusProvider, SampleStatusProvider, DownloadManifestProvider {
 
@@ -65,7 +62,7 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
   }
 
   @Override
-  public InputStream getManifestForProject(String projectCode) {
+  public ByteArrayInputStream getManifestForProject(String projectCode) {
     if (!cachedProjects.containsKey(projectCode)) {
       return new ByteArrayInputStream("".getBytes());
     }

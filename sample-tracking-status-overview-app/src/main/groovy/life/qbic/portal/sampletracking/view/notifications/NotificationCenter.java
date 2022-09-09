@@ -8,23 +8,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * <b>short description</b>
+ * A vaadin component that has no view of itself. It can display notifications if attached to a {@link Page}
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public class NotificationCenter extends CustomComponent implements NotificationHandler {
 
   private static final Logger log = LogManager.getLogger(NotificationCenter.class);
 
   @Override
-  public void handleNotification(String message, NotificationStyle notificationStyle) {
+  public void handleNotification(String message, NotificationType notificationType) {
     if (!isAttached()) {
-      log.warn(String.format("Component not attached. Failed to show [%s]: %s", notificationStyle, message));
+      log.warn(String.format("Component not attached. Failed to show [%s]: %s", notificationType, message));
     }
     Notification.Type type;
-    switch (notificationStyle) {
+    switch (notificationType) {
       case INFO:
         type = Type.ASSISTIVE_NOTIFICATION;
         break;
@@ -35,7 +33,7 @@ public class NotificationCenter extends CustomComponent implements NotificationH
         type = Type.HUMANIZED_MESSAGE;
         break;
       default:
-        throw new RuntimeException(String.format("Enum value %s not handled", notificationStyle));
+        throw new RuntimeException(String.format("Enum value %s not handled", notificationType));
     }
     Page page = Page.getCurrent();
     StyledNotification styledNotification = new StyledNotification(message, type);

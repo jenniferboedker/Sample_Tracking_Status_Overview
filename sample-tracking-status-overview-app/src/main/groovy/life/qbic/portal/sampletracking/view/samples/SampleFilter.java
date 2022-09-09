@@ -5,11 +5,9 @@ import life.qbic.portal.sampletracking.view.GridFilter;
 import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
 
 /**
- * <b>short description</b>
+ * A filter for samples. Allows for filtering by status and contained text.
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public class SampleFilter implements GridFilter<Sample> {
 
@@ -59,9 +57,4 @@ public class SampleFilter implements GridFilter<Sample> {
     return allowedStatus.equalsIgnoreCase(value);
   }
 
-  @Override
-  public void clear() {
-    allowedStatus = "";
-    containedText = "";
-  }
 }

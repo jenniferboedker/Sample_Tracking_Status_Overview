@@ -12,13 +12,6 @@ import life.qbic.portal.sampletracking.view.ResponsiveGrid;
 import life.qbic.portal.sampletracking.view.samples.SampleView.ProjectViewRequestedListener.ProjectViewRequested;
 import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
 
-/**
- * <b>short description</b>
- *
- * <p>detailed description</p>
- *
- * @since <version tag>
- */
 public class SampleView extends SampleDesign {
 
   private final ResponsiveGrid<Sample> sampleGrid;

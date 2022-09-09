@@ -5,13 +5,6 @@ import life.qbic.portal.sampletracking.view.notifications.NotificationCenter;
 import life.qbic.portal.sampletracking.view.projects.ProjectView;
 import life.qbic.portal.sampletracking.view.samples.SampleView;
 
-/**
- * <b>short description</b>
- *
- * <p>detailed description</p>
- *
- * @since <version tag>
- */
 public class MainView extends VerticalLayout {
 
   private final ProjectView projectView;

@@ -3,11 +3,9 @@ package life.qbic.portal.sampletracking.view;
 import com.vaadin.ui.ProgressBar;
 
 /**
- * <b>short description</b>
+ * A vaadin spinner.
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public class Spinner extends ProgressBar {
 

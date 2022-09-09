@@ -6,15 +6,12 @@ import java.util.Map;
 import life.qbic.portal.sampletracking.data.Subscription;
 import life.qbic.portal.sampletracking.data.SubscriptionRepository;
 import life.qbic.portal.sampletracking.view.notifications.NotificationHandler;
-import life.qbic.portal.sampletracking.view.notifications.NotificationHandler.NotificationStyle;
+import life.qbic.portal.sampletracking.view.notifications.NotificationHandler.NotificationType;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
 
 /**
- * <b>short description</b>
- *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * Provides checkbox components linked to the subscription status of projects.
+ * @since 1.1.4
  */
 public class SubscriptionCheckboxProvider {
 
@@ -45,7 +42,7 @@ public class SubscriptionCheckboxProvider {
           if (isAdded) {
             notificationHandler.handleNotification(String.format(
                     SUCCESSFULLY_SUBSCRIBED, project.code(), project.code()),
-                NotificationStyle.SUCCESS);
+                NotificationType.SUCCESS);
           }
           checkBox.setValue(isAdded);
         } else {
@@ -53,7 +50,7 @@ public class SubscriptionCheckboxProvider {
           if (isRemoved) {
             notificationHandler.handleNotification(String.format(
                     SUCCESSFULLY_UNSUBSCRIBED, project.code(), project.code()),
-                NotificationStyle.SUCCESS);
+                NotificationType.SUCCESS);
           }
           checkBox.setValue(!isRemoved);
         }

@@ -7,11 +7,9 @@ import life.qbic.portal.sampletracking.data.SampleStatusProvider;
 import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
 
 /**
- * <b>short description</b>
+ * Provides {@link SampleStatusComponent}s.
  *
- * <p>detailed description</p>
- *
- * @since <version tag>
+ * @since 1.1.4
  */
 public class SampleStatusComponentProvider {
 

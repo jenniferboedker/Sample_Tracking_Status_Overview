@@ -9,13 +9,6 @@ import life.qbic.datamodel.dtos.portal.PortalUser;
 import life.qbic.portal.sampletracking.system.SystemContext;
 import life.qbic.portal.sampletracking.system.TestingSystemContext;
 
-/**
- * <b>short description</b>
- *
- * <p>detailed description</p>
- *
- * @since <version tag>
- */
 @Theme("mytheme")
 public class StatusOverviewApp extends QBiCPortletUI {
 
