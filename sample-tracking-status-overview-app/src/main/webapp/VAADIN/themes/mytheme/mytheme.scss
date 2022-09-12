@@ -39,25 +39,28 @@
   /* Include all the styles from the valo theme */
   @include valo;
 
-  .v-grid-cell.status-completed {
+  .status-completed {
     background-color: #31c44a;
-    text-align: center;
   }
 
-  .v-grid-cell.status-in-progress {
+  .status-in-progress {
     background-color: #EDEDED;
-    text-align: center;
   }
 
-  .v-grid-cell.status-failed {
+  .status-failed {
     background-color: #fc4c4c;
-    text-align: center;
   }
 
-  .subscription-cell {
-    text-align: center;
-    min-width: 100px;
+  .v-grid-row-selected .status-completed {
+    color: initial;
   }
+  .v-grid-row-selected .status-in-progress {
+    color: initial;
+  }
+  .v-grid-row-selected .status-failed {
+    color: initial;
+  }
+
 
   /* Insert your theme rules here */
   .portlet-footer {
@@ -79,8 +82,39 @@
     cursor: pointer;
   }
 
-  .v-grid-cell.header-with-tooltip {
+  .header-with-tooltip {
     cursor: help;
+  }
+
+  .subscription-cell {
+    width: 100px;
+  }
+
+  .title-cell {
+    min-width: 100px;
+    max-width: 40%;
+  }
+
+  .code-cell {
+    min-width: 100px;
+  }
+
+  .v-grid-cell .status-cell, .v-grid-header .status-cell {
+    margin: 0 1px;
+    width: 150px;
+  }
+
+  .v-grid-cell.component-cell {
+    text-align: center;
+    text-align-last: center;
+  }
+
+  .v-grid-cell.status-cell, .v-grid-header .status-cell {
+    padding: 0;
+  }
+
+  .v-grid-cell.status-header {
+    padding: 0;
   }
 
   .backColor {
@@ -95,10 +129,5 @@
   .responsive-grid-layout {
     min-width: 1000px;
     display: block;
-  }
-
-  /* Style to cut off cells if their content would expand the cell above 40% of the viewWidth*/
-  .cell-max-width {
-    max-width: 40%;
   }
 }
