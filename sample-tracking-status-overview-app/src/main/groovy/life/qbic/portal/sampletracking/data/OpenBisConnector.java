@@ -42,13 +42,13 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository, Ng
     if (cachedProjects.isEmpty()) {
       ProjectFetchOptions fetchOptions = new ProjectFetchOptions();
       fetchOptions.withSpace();
-   //   fetchOptions.withSamples();
+      //todo can we optimize the load by using search criteria smart?
       SearchResult<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> projectSearchResult =
           api.searchProjects(sessionToken, new ProjectSearchCriteria(), fetchOptions);
 
       List<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> projects = projectSearchResult.getObjects().stream()
           .filter(hasValidProjectCode())
-             // .filter(isNgsProject())
+              .filter(isNgsProject())
           .sorted(Comparator.comparing(
               ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project::getModificationDate).reversed())
           .collect(Collectors.toList());
@@ -111,7 +111,8 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository, Ng
 
   private Predicate<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> isNgsProject() {
     //if there is a ngs sample on test sample level its at least multi omics and needs to be included
-    return project -> project.getSamples().stream().anyMatch(it -> Objects.equals(it.getType().getCode(), "Q_TEST_SAMPLE") && isNGSSample(it));
+
+    return project -> findAllSamplesForProject(project.getCode()).size() > 0;
   }
 
   private static boolean isNGSSample(ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample it) {
