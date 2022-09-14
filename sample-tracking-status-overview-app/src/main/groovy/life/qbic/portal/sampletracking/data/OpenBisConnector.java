@@ -83,7 +83,6 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository, Ng
     fetchOptions.withProject();
     SearchResult<ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample> sampleSearchResult = api.searchSamples(
         sessionToken, isNgs, fetchOptions);
-    System.out.println("sampleSearchResult = " + sampleSearchResult);
     Map<String, List<ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample>> projectSampleMap = sampleSearchResult.getObjects()
         .stream()
         .filter(hasValidSampleCode())
