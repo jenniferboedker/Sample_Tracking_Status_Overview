@@ -50,15 +50,17 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
   private final String serviceAddress;
   private final String serviceUser;
   private final String userPass;
+  private final NgsSampleRepository ngsSampleRepository;
 
   public SampleTrackingConnector(String serviceUrlBase, String samplesSuffix, String statusSuffix,
-      String projectsSuffix, Credentials credentials) {
+                                 String projectsSuffix, Credentials credentials, NgsSampleRepository ngsSampleRepository) {
     this.samplesSuffix = samplesSuffix;
     this.statusSuffix = statusSuffix;
     this.projectsSuffix = projectsSuffix;
     this.serviceAddress = Objects.requireNonNull(serviceUrlBase);
     this.serviceUser = Objects.requireNonNull(credentials.getUser());
     this.userPass = Objects.requireNonNull(credentials.getPassword());
+    this.ngsSampleRepository = ngsSampleRepository;
   }
 
   @Override
@@ -113,14 +115,14 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
   public Optional<ProjectStatus> getForProject(String projectCode) {
     Optional<ProjectStatus> cachedStatusForProject = getCachedStatusForProject(projectCode);
     return cachedStatusForProject.isPresent() ? cachedStatusForProject
-        : askServiceForProject(projectCode).map(ProjectSatusMapper::toProjectStatus);
+        : askServiceForProject(projectCode).map(ProjectStatusMapper::toProjectStatus);
   }
 
   private Optional<ProjectStatus> getCachedStatusForProject(String projectCode) {
     synchronized (cachedProjects) {
       if (cachedProjects.containsKey(projectCode)) {
         Project project = cachedProjects.get(projectCode);
-        return Optional.of(ProjectSatusMapper.toProjectStatus(project));
+        return Optional.of(ProjectStatusMapper.toProjectStatus(project));
       }
     }
     return Optional.empty();
@@ -158,6 +160,10 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
     try {
       List<Sample> samples = objectMapper.readValue(projectJson, new TypeReference<ArrayList<Sample>>() {
       });
+
+      List<String> ngsSamples = ngsSampleRepository.findNGSSamplesForProject(projectCode);
+      samples = samples.stream().filter(sample -> ngsSamples.contains(sample.sampleCode)).collect(Collectors.toList());
+
       Project project = new Project();
       project.addAll(samples);
       synchronized (cachedProjects) {
@@ -259,7 +265,7 @@ public class SampleTrackingConnector implements ProjectStatusProvider, SampleSta
     }
   }
 
-  static private class ProjectSatusMapper {
+  static private class ProjectStatusMapper {
 
     static ProjectStatus toProjectStatus(Project project) {
       int totalCount = project.size();

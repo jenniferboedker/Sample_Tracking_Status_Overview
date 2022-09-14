@@ -7,12 +7,8 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.project.search.ProjectSearchCrit
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.fetchoptions.SampleFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.search.SampleSearchCriteria;
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -20,7 +16,7 @@ import life.qbic.datamodel.dtos.portal.PortalUser;
 import life.qbic.portal.sampletracking.view.projects.viewmodel.Project;
 import life.qbic.portal.sampletracking.view.samples.viewmodel.Sample;
 
-public class OpenBisConnector implements ProjectRepository, SampleRepository {
+public class OpenBisConnector implements ProjectRepository, SampleRepository, NgsSampleRepository {
 
   private final String sessionToken;
 
@@ -46,20 +42,33 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository {
     if (cachedProjects.isEmpty()) {
       ProjectFetchOptions fetchOptions = new ProjectFetchOptions();
       fetchOptions.withSpace();
+   //   fetchOptions.withSamples();
       SearchResult<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> projectSearchResult =
           api.searchProjects(sessionToken, new ProjectSearchCriteria(), fetchOptions);
 
       List<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> projects = projectSearchResult.getObjects().stream()
           .filter(hasValidProjectCode())
+             // .filter(isNgsProject())
           .sorted(Comparator.comparing(
               ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project::getModificationDate).reversed())
           .collect(Collectors.toList());
+
+     // System.out.println(projects.get(0).getSamples());
+
       cachedProjects.addAll(projects);
     }
     return cachedProjects.stream()
         .map(it -> new Project(it.getCode(),
             Optional.ofNullable(it.getDescription()).orElse("")))
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<String> findNGSSamplesForProject(String projectCode){
+
+    return findAllSamplesForProject(projectCode).stream()
+            .map(Sample::code)
+            .collect(Collectors.toList());
   }
 
   @Override
@@ -72,12 +81,17 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository {
       SampleSearchCriteria sampleSearchCriteria = new SampleSearchCriteria();
       sampleSearchCriteria.withCode().thatStartsWith(projectCode);
       sampleSearchCriteria.withType().withCode().thatEquals("Q_TEST_SAMPLE");
+      //sampleSearchCriteria.withProperty("Q_SAMPLE_TYPE").thatContains("DNA");
+      //sampleSearchCriteria.withProperty("Q_SAMPLE_TYPE").thatContains("RNA");
+
       SampleFetchOptions fetchOptions = new SampleFetchOptions();
       fetchOptions.withType();
       fetchOptions.withProperties();
       SearchResult<ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample> sampleSearchResult = api.searchSamples(
           sessionToken, sampleSearchCriteria, fetchOptions);
       samples = sampleSearchResult.getObjects();
+      samples = samples.stream().filter(OpenBisConnector::isNGSSample).collect(Collectors.toList());
+
       cachedSamples.put(projectCode, samples);
     }
     return samples.stream()
@@ -93,6 +107,17 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository {
 
   private Predicate<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> hasValidProjectCode() {
     return project -> project.getCode().matches("^Q[A-X0-9]{4}$");
+  }
+
+  private Predicate<ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project> isNgsProject() {
+    //if there is a ngs sample on test sample level its at least multi omics and needs to be included
+    return project -> project.getSamples().stream().anyMatch(it -> Objects.equals(it.getType().getCode(), "Q_TEST_SAMPLE") && isNGSSample(it));
+  }
+
+  private static boolean isNGSSample(ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample it) {
+    if(it == null || it.getProperty("Q_SAMPLE_TYPE") == null) return false;
+
+    return it.getProperty("Q_SAMPLE_TYPE").contains("DNA") || it.getProperty("Q_SAMPLE_TYPE").contains("RNA");
   }
 
   private static Function<ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample, Sample> convertToSample() {
