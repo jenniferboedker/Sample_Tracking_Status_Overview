@@ -16,8 +16,6 @@ import life.qbic.portal.sampletracking.view.projects.viewmodel.ProjectStatus;
 
 public class ProjectStatusComponent extends Composite {
 
-  public static final int COLUMN_WIDTH = 100;
-
   private final ExecutorService executorService;
   private final ProjectStatusProvider trackingStatusProvider;
   private final Label receivedCountLabel;
@@ -90,12 +88,9 @@ public class ProjectStatusComponent extends Composite {
     panelContent.setMargin(false); // determined by CSS
     panelContent.setSpacing(false); // determined by CSS
     panelContent.addComponent(spinner);
-//    panelContent.setComponentAlignment(spinner, Alignment.TOP_CENTER);
 
     panelContent.addComponent(statusLayout);
-//    panelContent.setComponentAlignment(statusLayout, Alignment.TOP_CENTER);
     panelContent.addComponent(errorMessage);
-//    panelContent.setComponentAlignment(errorMessage, Alignment.TOP_CENTER);
 
     setCompositionRoot(panelContent);
     panelContent.setWidthUndefined();

@@ -137,6 +137,7 @@ public class ProjectView extends ProjectDesign {
       removeFileDownloaders(downloadButton);
     }
     if (project.projectStatus().totalCount() < 1) {
+      samplesButton.setEnabled(false);
       return;
     }
     samplesButton.setEnabled(true);

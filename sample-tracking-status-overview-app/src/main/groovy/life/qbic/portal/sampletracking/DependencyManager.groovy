@@ -107,7 +107,7 @@ class DependencyManager {
             "/v2/samples",
             "/status",
             "/v2/projects",
-            credentials)
+            credentials, getNgsSampleRepository())
   }
 
     /**
@@ -173,5 +173,9 @@ class DependencyManager {
 
   DownloadManifestProvider getDownloadManifestProvider() {
     return sampleTrackingConnector
+  }
+
+  NgsSampleRepository getNgsSampleRepository() {
+    return openBisConnector
   }
 }
