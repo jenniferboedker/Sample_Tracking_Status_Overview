@@ -259,6 +259,7 @@ public class ProjectView extends ProjectDesign {
         .setId("title")
         .setExpandRatio(1)
         .setStyleGenerator(it -> "title-cell")
+        .setMinimumWidthFromContent(false)
         .setDescriptionGenerator(Project::title)
         .setResizable(false)
         .setSortable(false);
