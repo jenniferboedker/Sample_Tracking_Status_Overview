@@ -92,7 +92,6 @@
 
   .title-cell {
     min-width: 100px;
-    max-width: 40%;
   }
 
   .code-cell {
@@ -127,7 +126,7 @@
 
   /* projectGrid layout can't be smaller otherwise the download button and project/sample button will overlap*/
   .responsive-grid-layout {
-    min-width: 1000px;
+    min-width: 1200px;
     display: block;
   }
 }
