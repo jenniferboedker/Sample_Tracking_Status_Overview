@@ -75,6 +75,11 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository, Ng
     isNgs.withOrOperator();
     isNgs.withProperty("Q_SAMPLE_TYPE").thatContains("DNA");
     isNgs.withProperty("Q_SAMPLE_TYPE").thatContains("RNA");
+    isNgs.withProperty("Q_SAMPLE_TYPE").thatContains("AMPLICON");
+    isNgs.withProperty("Q_SAMPLE_TYPE").thatContains("R_RNA");
+    isNgs.withProperty("Q_SAMPLE_TYPE").thatContains("M_RNA");
+    isNgs.withProperty("Q_SAMPLE_TYPE").thatContains("SINGLE_NUCLEI");
+    isNgs.withProperty("Q_SAMPLE_TYPE").thatContains("CF_DNA");
     // this guarantees that no q-entity is contained as only test samples have Q_SAMPLE_TYPE
 
     SampleFetchOptions fetchOptions = new SampleFetchOptions();
