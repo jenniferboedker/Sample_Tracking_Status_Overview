@@ -73,6 +73,7 @@ public class OpenBisConnector implements ProjectRepository, SampleRepository, Ng
 
     SampleSearchCriteria isNgs = new SampleSearchCriteria();
     isNgs.withOrOperator();
+    //search for all sample types that are related to NGS
     isNgs.withProperty("Q_SAMPLE_TYPE").thatContains("DNA");
     isNgs.withProperty("Q_SAMPLE_TYPE").thatContains("RNA");
     isNgs.withProperty("Q_SAMPLE_TYPE").thatContains("AMPLICON");
