@@ -8,6 +8,7 @@ import com.vaadin.ui.UI;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import life.qbic.portal.sampletracking.data.SampleStatusProvider;
 import life.qbic.portal.sampletracking.view.Spinner;
 import life.qbic.portal.sampletracking.view.projects.State;
@@ -60,7 +61,7 @@ public class SampleStatusComponent extends Composite implements Comparable<Sampl
     getCompositionRoot().removeStyleNames(State.FAILED.getCssClass(), State.IN_PROGRESS.getCssClass(), State.COMPLETED.getCssClass());
     spinner.setVisible(true);
     label.setVisible(false);
-    executorService.submit(() -> {
+    Future<?> submit = executorService.submit(() -> {
       try {
         Optional<String> retrieved = sampleStatusProvider.getForSample(sample.code());
         ui.access(() -> {
